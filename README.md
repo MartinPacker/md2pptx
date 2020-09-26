@@ -13,6 +13,8 @@ Before you can use this you need to:
 
 as this code relies on that Python 3 library.
 
+(On a Raspberry Pi you might want to use `pip3` (or `python3 -m pip`) to install for Python 3.)
+
 You will probably need to issue the following command from the directory where you install it:
 
   `chmod +x md2pptx`
