@@ -1,0 +1,2455 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+md2pptx - Converts (a subset of) Markdown to Powerpoint (PPTX)
+
+First argument is file to write to
+
+Reads from stdin
+
+"""
+
+import re
+import sys
+import os
+from pptx import Presentation
+from pptx.util import Inches, Pt
+from pptx.dml.color import RGBColor, MSO_THEME_COLOR
+from pptx.enum.text import MSO_AUTO_SIZE, PP_ALIGN
+from pptx.enum.shapes import PP_PLACEHOLDER
+from pptx.enum.shapes import MSO_SHAPE
+from pptx.enum.text import MSO_ANCHOR
+from pptx.dml.color import RGBColor
+import imghdr, struct
+import datetime
+import HTMLParser
+from pptx.oxml.xmlchemy import OxmlElement
+# import xml.etree
+from lxml import etree
+
+
+md2pptx_level = "0.9"
+md2pptx_date = "4 September, 2020"
+
+# Following functions are workarounds for python-pptx not having these functions for the font object
+def set_subscript(font):
+    if font.size < Pt(24):
+        font._element.set("baseline", "-50000")
+    else:
+        font._element.set("baseline", "-25000")
+
+
+def set_superscript(font):
+    if font.size < Pt(24):
+        font._element.set("baseline", "60000")
+    else:
+        font._element.set("baseline", "30000")
+
+
+def set_strikethrough(font):
+    font._element.set("strike", "sngStrike")
+
+
+def set_highlight(run, color):
+    # get run properties
+    rPr = run._r.get_or_add_rPr()
+
+    # Create highlight element
+    hl = OxmlElement("a:highlight")
+
+    # Create specify RGB Colour element with color specified
+    srgbClr = OxmlElement("a:srgbClr")
+    setattr(srgbClr, "val", color)
+
+    # Add colour specification to highlight element
+    hl.append(srgbClr)
+
+    # Add highlight element to run properties
+    rPr.append(hl)
+
+    return run
+
+def removeBullet(paragraph):
+    pPr = paragraph._p.get_or_add_pPr()
+    pPr.insert(0, etree.Element("{http://schemas.openxmlformats.org/drawingml/2006/main}buNone"))
+
+def removeBullets(textFrame):
+    for p in textFrame.paragraphs:
+        removeBullet(p)
+
+def get_image_size(fname):
+    """Determine the image type of fhandle and return its size.
+	from draco"""
+    try:
+        with open(fname, "rb") as fhandle:
+            head = fhandle.read(24)
+            if len(head) != 24:
+                return
+            if imghdr.what(fname) == "png":
+                check = struct.unpack(">i", head[4:8])[0]
+                if check != 0x0D0A1A0A:
+                    return
+                width, height = struct.unpack(">ii", head[16:24])
+            elif imghdr.what(fname) == "gif":
+                width, height = struct.unpack("<HH", head[6:10])
+            elif imghdr.what(fname) == "jpeg":
+                try:
+                    fhandle.seek(0)  # Read 0xff next
+                    size = 2
+                    ftype = 0
+                    while not 0xC0 <= ftype <= 0xCF:
+                        fhandle.seek(size, 1)
+                        byte = fhandle.read(1)
+                        while ord(byte) == 0xFF:
+                            byte = fhandle.read(1)
+                        ftype = ord(byte)
+                        size = struct.unpack(">H", fhandle.read(2))[0] - 2
+                    # We are at a SOFn block
+                    fhandle.seek(1, 1)  # Skip `precision' byte.
+                    height, width = struct.unpack(">HH", fhandle.read(4))
+                except Exception:  # IGNORE:W0703
+                    return
+            else:
+                return
+            return width, height
+    except EnvironmentError:
+        return -1, -1
+
+
+def findSlideTitle(slide):
+    if slide.shapes.title == None:
+        # Have to use first shape as title
+        return slide.shapes[0]
+    else:
+        return slide.shapes.title
+
+
+def findBodyShape(slide):
+    return slide.shapes[1]
+
+
+def formatTitle(presentation, title, titleText):
+    title.top = marginBase
+    title.left = marginBase
+    title.width = presentation.slide_width - marginBase * 2
+
+    # Figure out how many lines title will need (ignoring overflow)
+    titleLines = len(titleText.split("<br/>"))
+
+    title.height = Pt(pageTitleSize) * titleLines
+    title.text_frame.paragraphs[0].font.size = Pt(pageTitleSize)
+    title.text_frame.vertical_anchor = MSO_ANCHOR.TOP
+
+    return title.top + title.height
+
+
+def parseText(text):
+    textArray = []
+    state = "N"
+    fragment = ""
+    lastChar = ""
+
+    # Replace any "\#" strings with entity reference
+    text2 = text.replace("\\#", "&#x23;")
+
+    # Replace any "<br/>" strings with newline single character
+    text2 = text2.replace("<br/>", "\n")
+
+    # Replace any escaped asterisk strings with entity reference
+    text2 = text2.replace("\\*", "&lowast;")
+
+    # Replace certain entity references with actual characters
+    text2 = text2.replace("&equals;", "=")
+    text2 = text2.replace("&lt;", "<")
+    text2 = text2.replace("&gt;", ">")
+    text2 = text2.replace("&le;", "≤")
+    text2 = text2.replace("&ge;", "≥")
+    text2 = text2.replace("&asymp;", "≈")
+    text2 = text2.replace("&Delta;", "Δ")
+    text2 = text2.replace("&delta;", "δ")
+    text2 = text2.replace("&sim;", "∼")
+    text2 = text2.replace("&semi;", ";")
+    text2 = text2.replace("&colon;", ":")
+    text2 = text2.replace("&comma;", ",")
+    text2 = text2.replace("&amp;", "&")
+    text2 = text2.replace("&larr;", "←")
+    text2 = text2.replace("&rarr;", "→")
+    text2 = text2.replace("&uarr;", "↑")
+    text2 = text2.replace("&darr;", "↓")
+    text2 = text2.replace("&harr;", "↔")
+    text2 = text2.replace("&varr;", "↕")
+    text2 = text2.replace("&nwarr;", "↖")
+    text2 = text2.replace("&nearr;", "↗")
+    text2 = text2.replace("&swarr;", "↙")
+    text2 = text2.replace("&searr;", "↘")
+    text2 = text2.replace("&lsqb;", "\[")
+    text2 = text2.replace("&rsqb;", "\]")
+    text2 = text2.replace("&infin;", "∞")
+
+    # Replace any asterisks with spaces either side with entity reference
+    text2 = text2.replace(" * ", " &lowast; ")
+    if text2[-2:] == " *":
+        text2 = text2[:-2] + " &lowast;"
+
+    # Replace any footnote reference starts with char 238
+    text2 = text2.replace("[^", chr(238))
+
+    # Replace any potential footnote reference ends with char 238
+    text2 = text2.replace("]", chr(239))
+
+    # Replace any span class starts with char 240
+    text2 = text2.replace("<span class=", chr(240))
+
+    # Replace any span ends with char 241
+    text2 = text2.replace("</span>", chr(241))
+
+    # Replace any abbreviation starts with char 242
+    text2 = text2.replace("<abbr title=", chr(242))
+
+    # Replace any abbreviation ends with char 243
+    text2 = text2.replace("</abbr>", chr(243))
+
+    # Replace any \[ with char 244
+    text2 = text2.replace("\[", chr(244))
+
+    # Replace any \] with char 245
+    text2 = text2.replace("\]", chr(245))
+
+    # 246 is link separator special character. See below
+
+    # Replace any {~~ with char 247
+    text2 = text2.replace("{~~", chr(247))
+
+    # Replace any ~~} with char 247
+    text2 = text2.replace("~~}", chr(247))
+
+    # Replace any {== with char 248
+    text2 = text2.replace("{==", chr(248))
+
+    # Replace any ==} with char 248
+    text2 = text2.replace("==}", chr(248))
+
+    # Replace any {>> with char 249
+    text2 = text2.replace("{>>", chr(249))
+
+    # Replace any <<} with char 249
+    text2 = text2.replace("<<}", chr(249))
+
+    # Replace any {-- with char 250
+    text2 = text2.replace("{--", chr(250))
+
+    # Replace any --} with char 250
+    text2 = text2.replace("--}", chr(250))
+
+    # Replace any {++ with char 251
+    text2 = text2.replace("{++", chr(251))
+
+    # Replace any ++} with char 251
+    text2 = text2.replace("++}", chr(251))
+
+    # Replace any <ins> with char 252
+    text2 = text2.replace("<ins>", chr(252))
+
+    # Replace any </ins> with char 252
+    text2 = text2.replace("</ins>", chr(252))
+
+    # Replace any <del> with char 253
+    text2 = text2.replace("<del>", chr(253))
+
+    # Replace any </del> with char 253
+    text2 = text2.replace("</del>", chr(253))
+
+    # Replace any <sub> with char 254
+    text2 = text2.replace("<sub>", chr(254))
+
+    # Replace any </sub> with char 254
+    text2 = text2.replace("</sub>", chr(254))
+
+    # Replace any <sup> with char 255
+    text2 = text2.replace("<sup>", chr(255))
+
+    # Replace any </sup> with char 255
+    text2 = text2.replace("</sup>", chr(255))
+
+    # Unescape any numeric character references
+    h = HTMLParser.HTMLParser()
+
+    textSplit = re.split("(&\#x?[0-9a-f]{2,6};)", text2, flags=re.IGNORECASE)
+    text3 = ""
+    for t in textSplit:
+        if t == "":
+            text3 = text3 + t
+        elif (t[0:2] == "&#") & (t[-1] == ";"):
+            text3 = text3 + h.unescape(t).encode("utf-8")
+        else:
+            text3 = text3 + t
+
+    for c in text3:
+        if c == "*":
+            # Changing state
+            if state == "N":
+                # First * potentially starts italic
+                textArray.append([state, fragment])
+                fragment = ""
+                state = "I"
+            elif state == "I":
+                # Either go to bold or end italic
+                if lastChar == "*":
+                    # Go to bold
+                    state = "B1"
+                else:
+                    # End italic
+                    textArray.append([state, fragment])
+                    fragment = ""
+                    state = "N"
+            elif state == "B1":
+                # Starting to close bold bracket
+                state = "B2"
+            elif lastChar == "*":
+                # closing either bold or italic bracket
+                textArray.append([state, fragment])
+                fragment = ""
+                state = "N"
+        elif c == "`":
+            if state == "N":
+                # Going to code
+                textArray.append([state, fragment])
+                fragment = ""
+                state = "C"
+            else:
+                # exiting code
+                textArray.append([state, fragment])
+                fragment = ""
+                state = "N"
+        elif ord(c) == 247:
+            # Entering or leaving CriticMarkup replacement
+            if state == "N":
+                # Going to CriticMarkup replacement
+                textArray.append([state, fragment])
+                fragment = ""
+                state = "CMRep"
+            else:
+                # exiting CriticMarkup replacement
+                textArray.append([state, fragment])
+                fragment = ""
+                state = "N"
+        elif ord(c) == 248:
+            # Entering or leaving CriticMarkup highlight
+            if state == "N":
+                # Going to CriticMarkup highlight
+                textArray.append([state, fragment])
+                fragment = ""
+                state = "CMHig"
+            else:
+                # exiting CriticMarkup highlight
+                textArray.append([state, fragment])
+                fragment = ""
+                state = "N"
+        elif ord(c) == 249:
+            # Entering or leaving CriticMarkup comment
+            if state == "N":
+                # Going to CriticMarkup comment
+                textArray.append([state, fragment])
+                fragment = ""
+                state = "CMCom"
+            else:
+                # exiting CriticMarkup comment
+                textArray.append([state, fragment])
+                fragment = ""
+                state = "N"
+        elif ord(c) == 250:
+            # Entering or leaving CriticMarkup deletion
+            if state == "N":
+                # Going to CriticMarkup deletion
+                textArray.append([state, fragment])
+                fragment = ""
+                state = "CMDel"
+            else:
+                # exiting CriticMarkup deletion
+                textArray.append([state, fragment])
+                fragment = ""
+                state = "N"
+        elif ord(c) == 251:
+            # Entering or leaving CriticMarkup addition
+            if state == "N":
+                # Going to CriticMarkup addition
+                textArray.append([state, fragment])
+                fragment = ""
+                state = "CMAdd"
+            else:
+                # exiting CriticMarkup addition
+                textArray.append([state, fragment])
+                fragment = ""
+                state = "N"
+        elif ord(c) == 252:
+            # Entering or leaving underline
+            if state == "N":
+                # Going to underline
+                textArray.append([state, fragment])
+                fragment = ""
+                state = "Ins"
+            else:
+                # exiting underline
+                textArray.append([state, fragment])
+                fragment = ""
+                state = "N"
+        elif ord(c) == 253:
+            # Entering or leaving strikethrough
+            if state == "N":
+                # Going to strikethrough
+                textArray.append([state, fragment])
+                fragment = ""
+                state = "Del"
+            else:
+                # exiting strikethrough
+                textArray.append([state, fragment])
+                fragment = ""
+                state = "N"
+        elif ord(c) == 254:
+            # Entering or leaving subscript
+            if state == "N":
+                # Going to subscript
+                textArray.append([state, fragment])
+                fragment = ""
+                state = "Sub"
+            else:
+                # exiting subscript
+                textArray.append([state, fragment])
+                fragment = ""
+                state = "N"
+        elif ord(c) == 255:
+            # Entering or leaving superscript
+            if state == "N":
+                # Going to superscript
+                textArray.append([state, fragment])
+                fragment = ""
+                state = "Sup"
+            else:
+                # exiting superscript
+                textArray.append([state, fragment])
+                fragment = ""
+                state = "N"
+        elif c == "[":
+            if state == "N":
+                # Could be entering a Link
+                if fragment != "":
+                    textArray.append([state, fragment])
+
+                # The bracket is kept in in case there is no matching ]
+                fragment = "["
+                state = "LinkText1"
+        elif c == "]":
+            # Could be ending picking up the link text
+            if state == "LinkText1":
+                # Picked up end of link text
+                state = "LinkText2"
+
+                # Remove [ and add a separator to allow for link URL
+                fragment = fragment[1:] + chr(246)
+            else:
+                fragment = fragment + c
+        elif c == "(":
+            # Could be starting to pick up the link URL
+            if state == "LinkText2":
+                # Picked up start of link URL
+                state = "LinkURL1"
+            else:
+                fragment = fragment + c
+        elif c == ")":
+            # Could be ending picking up the link URL
+            if state == "LinkURL1":
+                # Picked up end of link URL
+                textArray.append(["Link", fragment])
+                fragment = ""
+                state = "N"
+            else:
+                fragment = fragment + c
+        elif ord(c) == 244:
+            fragment = fragment + "["
+        elif ord(c) == 245:
+            fragment = fragment + "]"
+        elif ord(c) == 242:
+            if fragment != "":
+                textArray.append([state, fragment])
+                fragment = ""
+            dictEntry = ""
+        elif ord(c) == 243:
+            dictEntry = fragment.split(">")
+            dictAbbrev = dictEntry[1]
+            dictFull = dictEntry[0].strip().strip("'").strip('"')
+            abbrevDictionary[dictAbbrev] = dictFull
+            fragment = dictAbbrev
+        elif ord(c) == 240:
+            if fragment != "":
+                textArray.append([state, fragment])
+                fragment = ""
+        elif ord(c) == 241:
+            splitting = fragment.split(">")
+            spanText = splitting[1]
+            className = splitting[0].strip().strip("'").strip('"')
+            if (className in bgcolors) | (className in fgcolors) | (className in emphases):
+                textArray.append(["Span", [className, spanText]])
+                fragment = ""
+            else:
+                print(className + " is not defined. Ignoring reference to it in <span> element.")
+                fragment = spanText
+        elif ord(c) == 238:
+            if fragment != "":
+                textArray.append([state, fragment])
+                fragment = ""
+                state = "fnref"
+        elif ord(c) == 239:
+            if state == "fnref":
+                # This terminates a footnote reference
+                textArray.append([state,fragment])
+                state = "N"
+                fragment = ""
+            else:
+                # This was an ordinary square bracket
+                fragment += "]"
+        else:
+            fragment = fragment + c
+
+        lastChar = c
+
+    if fragment != "":
+        textArray.append([state, fragment])
+
+    return textArray
+
+
+def addFormattedText(p, text):
+    parsedText = parseText(text)
+
+    # Prime flattened Text
+    flattenedText = ""
+    for fragment in parsedText:
+        fragType, fragDetail = fragment
+
+        # Break into subfragments around a newline
+        if fragType == "Span":
+            className, fragText = fragDetail
+            subfragments = fragText.split("\n")
+        else:
+            subfragments = fragDetail.split("\n")
+
+        # Process each subfragment
+        sfnum = 0
+        for subfragment in subfragments:
+            if sfnum > 0:
+                # Subfragments after the first need to be preceded by a line break
+                p.add_line_break()
+
+            sfnum += 1
+            # Ensure "\*" is rendered as a literal asterisk
+            subfragment = subfragment.replace("&lowast;", "*")
+
+            # Ensure "\#" is rendered as a literal octothorpe
+            subfragment = subfragment.replace("&#x23;", "#")
+
+            run = p.add_run()
+            if fragType not in ["Link","fnref"]:
+                run.text = subfragment
+
+            if fragType == "I":
+                font = run.font
+                if want_italic_italic == True:
+                    font.italic = True
+                if want_italic_colour == True:
+                    font.color.theme_color = italic_colour
+            elif fragType == "fnref":
+                font = run.font
+                set_superscript(font)
+                font.size = Pt(16)
+                fnref = fragment[1]
+                if fnref in footnoteReferences:
+                    footnoteNumber = footnoteReferences.index(fnref)
+                    run.text = "[" + str(footnoteNumber + 1) + "]"
+                else:
+                    run.text = "[?]"
+                    print (   "Error: Footnote reference '" + fnref + "' unresolved.")
+                linkText = "!"
+                fragment = ""
+
+            elif fragType == "Span":
+                if className in bgcolors:
+                    run = set_highlight(run, bgcolors[className])
+                if className in fgcolors:
+                    font = run.font
+                    font.color.rgb = RGBColor.from_string(fgcolors[className])
+                if className in emphases:
+                    if ' bold ' in ' ' + emphases[className] + ' ':
+                        font.bold = True
+                    else:
+                        font.bold = False
+                    if ' italic ' in ' ' + emphases[className] + ' ':
+                        font.italic = True
+                    else:
+                        font.italic = False
+                    if ' underline ' in ' ' + emphases[className] + ' ':
+                        font.underline = True
+                    else:
+                        font.underline = False
+            elif fragType == "B2":
+                font = run.font
+                if want_bold_bold == True:
+                    font.bold = True
+                if want_bold_colour == True:
+                    font.color.theme_color = bold_colour
+            elif fragType == "C":
+                font = run.font
+                font.name = monoFont
+            elif fragType == "CMRep":
+                font = run.font
+                font.color.rgb = RGBColor(255, 140, 0)
+                run.text = "{~~" + subfragment + "~~}"
+            elif fragType == "CMHig":
+                font = run.font
+                font.color.rgb = RGBColor(195, 0, 195)
+                run.text = "{==" + subfragment + "==}"
+            elif fragType == "CMCom":
+                font = run.font
+                font.color.rgb = RGBColor(0, 0, 195)
+                run.text = "{>>" + subfragment + "<<}"
+            elif fragType == "CMDel":
+                font = run.font
+                font.color.rgb = RGBColor(195, 0, 0)
+                run.text = "{--" + subfragment + "--}"
+            elif fragType == "CMAdd":
+                font = run.font
+                font.color.rgb = RGBColor(0, 195, 0)
+                run.text = "{++" + subfragment + "++}"
+            elif fragType == "Ins":
+                font = run.font
+                font.underline = True
+            elif fragType == "Del":
+                font = run.font
+                set_strikethrough(font)
+            elif fragType == "Sub":
+                font = run.font
+                set_subscript(font)
+            elif fragType == "Sup":
+                font = run.font
+                set_superscript(font)
+            elif fragType == "Link":
+                linkArray = subfragment.split(chr(246))
+                linkText = linkArray[0]
+                linkURL = linkArray[1]
+                run.text = linkText
+                if linkURL.startswith("#") is not True:
+                    # Not an internal link so create it
+                    hlink = run.hyperlink
+                    hlink.address = linkURL
+
+            # Add the flattened text from this subfragment
+            if fragType == "Link":
+                flattenedText = flattenedText + linkText
+            else:
+                flattenedText = flattenedText + subfragment
+
+    return flattenedText
+
+
+def addFooter(presentation, slideNumber, slide):
+    shapes = slide.shapes
+    footer = shapes.add_textbox(
+        Inches(0.1),
+        presentation.slide_height - numbers_height,
+        Inches(0.2),
+        numbers_height / 2,
+    )
+    frame = footer.text_frame
+    p = frame.paragraphs[0]
+    run = p.add_run()
+    run.text = str(slideNumber)
+    font = run.font
+    font.size = Pt(12)
+
+
+def processingSummarySlide(presentation, metadata):
+    slide = presentation.slides[0]
+
+    # Build "run time" text
+    now = datetime.datetime.now()
+    runTime = now.strftime("%H:%M").lstrip()
+    runDate = now.strftime("%e %B, %G").lstrip()
+    runDateTime = "Presentation built: " + runTime + " on " + runDate
+
+    # Find title
+    title = findSlideTitle(slide)
+
+    # Format title
+    titleBottom = formatTitle(presentation, title, "")
+
+    # Add title text into formatted title
+    addFormattedText(title.text_frame.paragraphs[0], banner)
+    title.text_frame.paragraphs[0].font.size = Pt(pageTitleSize)
+
+    # Get second shape
+    body_shape = findBodyShape(slide)
+
+    body_shape.text = runDateTime
+
+    tf = body_shape.text_frame
+
+    p = tf.add_paragraph()
+    p.level = 0
+    r = p.add_run()
+    r.text = "Metadata:"
+    for item in metadata:
+        key, value = item
+        p = tf.add_paragraph()
+        p.level = 1
+        r = p.add_run()
+        r.text = key + ": " + value
+
+
+def titleSlide(presentation, slideNumber, titleText, subtitleText):
+    slide = presentation.slides.add_slide(presentation.slide_layouts[titleSlideLayout])
+
+    # Add title
+    title = findSlideTitle(slide)
+    flattenedTitle = addFormattedText(title.text_frame.paragraphs[0], titleText)
+    title.text_frame.paragraphs[0].font.size = Pt(sectionTitleSize)
+
+    print(str(slideNumber).rjust(4) + " " + flattenedTitle)
+
+    # Add subtitle - if there is one
+    subtitleText = subtitleText.strip()
+    if subtitleText != "":
+        # There is a subtitle
+        subtitle = findBodyShape(slide)
+
+        addFormattedText(subtitle.text_frame.paragraphs[0], subtitleText)
+        subtitle.text_frame.paragraphs[0].font.size = Pt(sectionSubtitleSize)
+    else:
+        # There isn't a subtitle so move the title down a bit
+        title.height = marginBase * 4
+        title.width = presentation.slide_width - marginBase * 8
+        title.left = marginBase * 2
+        title.top = (presentation.slide_height - title.height) / 2
+
+        # Reformat subtitle to be out of the way
+        subtitle = findBodyShape(slide)
+
+        subtitle.top = title.top + title.height + marginBase * 2
+        subtitle.width = title.width
+        subtitle.left = title.left
+        subtitle.height = marginBase * 2
+
+    if want_numbers_headings is True:
+        addFooter(presentation, slideNumber, slide)
+
+    return slide
+
+
+def sectionSlide(presentation, slideNumber, titleText, subtitleText):
+    slide = presentation.slides.add_slide(
+        presentation.slide_layouts[sectionSlideLayout]
+    )
+
+    # Add title
+    title = findSlideTitle(slide)
+    flattenedTitle = addFormattedText(title.text_frame.paragraphs[0], titleText)
+
+    print(str(slideNumber).rjust(4) + "   " + flattenedTitle)
+
+    title_height = Pt(sectionTitleSize)
+
+    title.text_frame.paragraphs[0].font.size = title_height
+
+    # Position title
+    title.top = (presentation.slide_height - Pt(sectionTitleSize)) / 2
+    title.height = title_height
+    title.width = presentation.slide_width - 2 * marginBase
+    title.left = marginBase
+
+    if subtitleText != "":
+        subtitle = findBodyShape(slide)
+
+        subtitle.text = subtitleText
+        subtitle.text_frame.paragraphs[0].font.size = Pt(sectionSubtitleSize)
+
+    if want_numbers_headings is True:
+        addFooter(presentation, slideNumber, slide)
+
+    return slide
+
+
+def graphicSlide(presentation, slideNumber, titleText, graphicFilename):
+    if titleText != "":
+        slide = presentation.slides.add_slide(
+            presentation.slide_layouts[titleOnlyLayout]
+        )
+
+        # Add title and constrain its size and placement
+        title = findSlideTitle(slide)
+        titleBottom = formatTitle(presentation, title, titleText)
+        flattenedTitle = addFormattedText(title.text_frame.paragraphs[0], titleText)
+
+        print(
+            str(slideNumber).rjust(4)
+            + "     "
+            + flattenedTitle.ljust(50)
+            + "   --> "
+            + graphicFilename
+        )
+
+        # Figure out graphic height on slide
+        maxPicHeight = presentation.slide_height - titleBottom - numbers_content_margin
+    else:
+        print(
+            str(slideNumber).rjust(4)
+            + "        "
+            + " ".ljust(50)
+            + "--> "
+            + graphicFilename
+        )
+
+        slide = presentation.slides.add_slide(presentation.slide_layouts[blankLayout])
+
+        # There is not title so title bottom is a fixed place
+        titleBottom = marginBase
+
+        # Figure out graphic height on slide
+        maxPicHeight = presentation.slide_height - marginBase * 2.5
+
+    # Figure out picture width - with 2 x marginBase margins
+    maxPicWidth = presentation.slide_width - marginBase * 4
+
+    # Get image dimensions
+    imgWidth, imgHeight = get_image_size(graphicFilename)
+    if imgWidth == -1:
+        print("Missing image file: " + graphicFilename)
+        return slide
+
+    heightIfWidthUsed = maxPicWidth * imgHeight / imgWidth
+    widthIfHeightUsed = maxPicHeight * imgWidth / imgHeight
+
+    if heightIfWidthUsed > maxPicHeight:
+        # Use the height to scale
+        picWidth = widthIfHeightUsed
+        picHeight = maxPicHeight
+    else:
+        # Use the width to scale
+        picWidth = maxPicWidth
+        picHeight = heightIfWidthUsed
+
+    # Calculate horizontal start - centred
+    picX = (presentation.slide_width - picWidth) / 2
+    picY = titleBottom + marginBase
+    picY = titleBottom + marginBase + (maxPicHeight - picHeight) / 2
+
+    picture = slide.shapes.add_picture(graphicFilename, picX, picY, picWidth, picHeight)
+
+    if want_numbers_content is True:
+        addFooter(presentation, slideNumber, slide)
+
+    return slide
+
+
+def codeSlide(presentation, slideNumber, titleText, code):
+    if titleText != "":
+        slide = presentation.slides.add_slide(
+            presentation.slide_layouts[titleOnlyLayout]
+        )
+
+        # Add title and constrain its size and placement
+        title = findSlideTitle(slide)
+        titleBottom = formatTitle(presentation, title, titleText)
+
+        flattenedTitle = addFormattedText(title.text_frame.paragraphs[0], titleText)
+        title.top = marginBase
+        title.left = marginBase * 2
+        title.width = presentation.slide_width - marginBase * 4
+        title.height = marginBase * 2
+        title.text_frame.paragraphs[0].font.size = Pt(pageTitleSize)
+
+        print(str(slideNumber).rjust(4) + "     " + flattenedTitle)
+
+        # Add code
+        codeWidth = presentation.slide_width - marginBase * 4
+        codeBox = slide.shapes.add_textbox(
+            marginBase * 2, marginBase * 4, codeWidth, marginBase * 24
+        )
+
+        # Get the sole paragraph
+        p = codeBox.text_frame.paragraphs[0]
+
+        # Set the font size - if not default
+        if baseTextSize > 0:
+            p.font.size = Pt(baseTextSize)
+
+        for codeLine in code:
+            run = p.add_run()
+            run.text = codeLine + "\n"
+            font = run.font
+            font.name = monoFont
+        tf = codeBox.text_frame
+        tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
+        tf.word_wrap = False
+        fill = codeBox.fill
+        fill.solid()
+        fill.fore_color.rgb = RGBColor(223, 255, 223)
+    else:
+        print(str(slideNumber).rjust(4) + "   " + graphicFilename)
+
+        slide = presentation.slides.add_slide(presentation.slide_layouts[blankLayout])
+
+        # Add code
+
+    if want_numbers_content is True:
+        addFooter(presentation, slideNumber, slide)
+
+    return slide
+
+
+def abstractSlide(presentation, slideNumber, titleText, subtitleText, bullets):
+    slide = presentation.slides.add_slide(presentation.slide_layouts[titleOnlyLayout])
+
+    shapes = slide.shapes
+
+    # Add title and constrain its size and placement
+    title = findSlideTitle(slide)
+    titleBottom = formatTitle(presentation, title, titleText)
+
+    flattenedTitle = addFormattedText(title.text_frame.paragraphs[0], titleText)
+
+    print(str(slideNumber).rjust(4) + "     Abstract: " + flattenedTitle)
+
+    title.top = marginBase
+    title.left = marginBase * 2
+    title.width = presentation.slide_width - marginBase * 4
+    title.height = marginBase * 2
+    title.text_frame.paragraphs[0].font.size = Pt(pageTitleSize)
+
+    # Add abstract text
+    abstractWidth = presentation.slide_width - marginBase * 8
+    abstractBox = slide.shapes.add_textbox(
+        marginBase * 4, titleBottom + marginBase * 4, abstractWidth, marginBase * 24
+    )
+    p = abstractBox.text_frame.paragraphs[0]
+    para = 1
+    tf = abstractBox.text_frame
+    f = p.font
+    f.size = Pt(22)
+    for abstractLine in bullets:
+        lineLevel, lineText = abstractLine
+        if para > 1:
+
+            # Spacer paragraph
+            p = tf.add_paragraph()
+            f = p.font
+            f.size = Pt(22)
+
+            # Content paragraph
+            p = tf.add_paragraph()
+            f = p.font
+            f.size = Pt(22)
+        addFormattedText(p, lineText)
+        para = para + 1
+
+    # tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
+    tf.word_wrap = True
+    # fill = abstractBox.fill
+    # fill.solid()
+    # fill.fore_color.rgb = RGBColor(223, 255, 223)
+
+    if want_numbers_content is True:
+        addFooter(presentation, slideNumber, slide)
+
+    return slide
+
+
+def contentSlide(presentation, slideNumber, titleText, subtitleText, bullets):
+    slide = presentation.slides.add_slide(
+        presentation.slide_layouts[contentSlideLayout]
+    )
+
+    shapes = slide.shapes
+
+    # Add title
+    title = findSlideTitle(slide)
+    titleBottom = formatTitle(presentation, title, titleText)
+
+    flattenedTitle = addFormattedText(title.text_frame.paragraphs[0], titleText)
+    title.text_frame.paragraphs[0].font.size = Pt(pageTitleSize)
+
+    print(str(slideNumber).rjust(4) + "     " + flattenedTitle)
+
+    # Added bulleted list
+    body_shape = findBodyShape(slide)
+
+    tf = body_shape.text_frame
+
+    body_shape.top = titleBottom + Inches(0.5)
+    body_shape.left = Inches(0.5)
+    body_shape.width = presentation.slide_width - Inches(1.0)
+    body_shape.height = presentation.slide_height - Inches(1.0) - titleBottom
+
+    bulletNumber = 0
+    for bullet in bullets:
+        if bulletNumber == 0:
+            para0 = tf.paragraphs[0]
+
+            # Set the font size - if not default
+            if baseTextSize > 0:
+                para0.font.size = Pt(baseTextSize)
+
+            addFormattedText(para0, bullet[1])
+        else:
+            # We need a new paragraph
+            p = tf.add_paragraph()
+
+            # Set the paragraph's level
+            p.level = bullet[0] - 1
+
+            # Set the paragraph's font size, adjusted for level, if necessary
+            if baseTextSize > 0:
+                p.font.size = Pt(baseTextSize - p.level * baseTextDecrement)
+
+            addFormattedText(p, bullet[1])
+
+        bulletNumber = bulletNumber + 1
+
+    tf.auto_size = MSO_AUTO_SIZE.TEXT_TO_FIT_SHAPE
+
+    if want_numbers_content is True:
+        addFooter(presentation, slideNumber, slide)
+
+    return slide
+
+
+def delinkify(text):
+    if linkRegex.match(text):
+        linkMatch = linkRegex.match(text)
+        linkText = linkMatch.group(1)
+        linkURL = linkMatch.group(2)
+
+        return linkText
+    else:
+        return text
+
+
+def createChevron(chevronText, x, y, width, height, filled, shapes):
+    shape = shapes.add_shape(MSO_SHAPE.CHEVRON, x, y, width, height)
+    shape.text = chevronText
+    tf = shape.text_frame
+    p = tf.paragraphs[0]
+    f = p.font
+    f.size = Pt(14)
+    shape.line.color.rgb = RGBColor(0, 0, 0)
+    f.color.rgb = RGBColor(0, 0, 0)
+    shape.line.width = Pt(1.0)
+
+    if filled is False:
+        shape.fill.background()
+
+
+def tocSlide(presentation, slideNumber, titleText, subtitleText, bullets):
+    print(
+        str(slideNumber).rjust(4)
+        + '     Table Of Contents (Style: "'
+        + tocStyle
+        + '") '
+        + titleText
+    )
+
+    slide = presentation.slides.add_slide(presentation.slide_layouts[titleOnlyLayout])
+
+    shapes = slide.shapes
+
+    # Add title
+    title = findSlideTitle(slide)
+    titleBottom = formatTitle(presentation, title, titleText)
+
+    if titleText == tocTitle:
+        addFormattedText(title.text_frame.paragraphs[0], titleText)
+        title.text_frame.paragraphs[0].font.size = Pt(pageTitleSize)
+
+    # Figure out TOC height
+    maxTOCHeight = (
+        presentation.slide_height - titleBottom - numbers_content_margin - marginBase
+    )
+
+    # Figure out table width
+    maxTOCWidth = presentation.slide_width - 2 * marginBase
+
+    width = Inches(3)
+    height = Inches(1)
+    rowGap = Inches(0.75)
+
+    chevronsPerRow = 4
+
+    # Create global list of TOC entries
+    for bullet in bullets:
+        bulletLevel, bulletText = bullet
+        if bulletLevel == 1:
+            tocEntries.append(delinkify(bulletText))
+
+    rowCount = 1 + len(tocEntries) / chevronsPerRow
+
+    # Calculate actual TOC height so it can be vertically centred
+    TOCHeight = (rowCount * height) + ((rowCount - 1) * rowGap)
+
+    TOCtop = titleBottom + (maxTOCHeight - TOCHeight + height) / 2
+
+    # Calculate actual TOC width
+    TOCWidth = chevronsPerRow * (width - Inches(0.5)) + Inches(0.5)
+    TOCleft = (presentation.slide_width - TOCWidth) / 2
+
+    x = TOCleft
+    y = TOCtop
+    chevronNumber = 1
+    for bulletText in tocEntries:
+        if bulletText == titleText:
+            wantFilled = False
+        else:
+            wantFilled = True
+
+        createChevron(bulletText, x, y, width, height, wantFilled, shapes)
+        x = x + width - Inches(0.5)
+        chevronNumber = chevronNumber + 1
+        if chevronNumber == chevronsPerRow + 1:
+            x = TOCleft
+            y = y + rowGap + height
+            chevronNumber = 1
+
+    if want_numbers_content is True:
+        addFooter(presentation, slideNumber, slide)
+
+    return slide
+
+
+def tableSlide(presentation, slideNumber, titleText, table):
+    slide = presentation.slides.add_slide(presentation.slide_layouts[titleOnlyLayout])
+
+    shapes = slide.shapes
+
+    # Add title
+    title = findSlideTitle(slide)
+    titleBottom = formatTitle(presentation, title, titleText)
+
+    flattenedTitle = addFormattedText(title.text_frame.paragraphs[0], titleText)
+    title.text_frame.paragraphs[0].font.size = Pt(pageTitleSize)
+
+    # Handle table body
+    if (len(table) <= 2) & (len(table[0]) <= 2):
+        # This is a table with 1 or 2 rows and 1 or 2 columns
+        isGraphicsGrid = True
+        gridRows = len(table)
+        gridColumns = len(table[0])
+        isThreeUp = False
+
+        # Attempt to retrieve filename for left side - top row
+        topLeftSide = table[0][0]
+        if graphicRegex.match(topLeftSide):
+            topLeftGraphicMatch = graphicRegex.match(topLeftSide)
+            topLeftGraphicTitle = topLeftGraphicMatch.group(1)
+            topLeftGraphicFilename = topLeftGraphicMatch.group(2)
+            topLeftHTML = ""
+        else:
+            topLeftGraphicFilename = ""
+            topLeftHTML = topLeftSide
+
+        # Attempt to retrieve filename for right side - top row
+        if gridColumns == 2:
+            topRightSide = table[0][1]
+            if graphicRegex.match(topRightSide):
+                topRightGraphicMatch = graphicRegex.match(topRightSide)
+                topRightGraphicTitle = topRightGraphicMatch.group(1)
+                topRightGraphicFilename = topRightGraphicMatch.group(2)
+                topRightHTML = ""
+            else:
+                topRightGraphicFilename = ""
+                topRightHTML = topRightSide
+        else:
+            topRightGraphicFilename = ""
+            topRightHTML = ""
+
+        if (topLeftGraphicFilename == "") or (
+            (gridColumns == 2) and (topRightGraphicFilename == "")
+        ):
+            # Revert to normal table processing as no graphic spec in at least one cell
+            isGraphicsGrid = False
+
+        if gridRows == 2:
+            # Attempt to retrieve filename for left side - bottom row
+            bottomLeftSide = table[1][0]
+            if graphicRegex.match(bottomLeftSide):
+                bottomLeftGraphicMatch = graphicRegex.match(bottomLeftSide)
+                bottomLeftGraphicTitle = bottomLeftGraphicMatch.group(1)
+                bottomLeftGraphicFilename = bottomLeftGraphicMatch.group(2)
+                bottomLeftHTML = ""
+            else:
+                bottomLeftGraphicFilename = ""
+                bottomLeftHTML = bottomLeftSide
+
+            # Attempt to retrieve filename for right side - bottom row
+            if gridColumns == 2:
+                if len(table[1]) == 1:
+                    # There is no bottom right so this is "3-up"
+                    isThreeUp = True
+                    bottomRightGraphicFilename = ""
+                else:
+                    # There is a bottom right so this is "4-up"
+                    bottomRightSide = table[1][1]
+                    if graphicRegex.match(bottomRightSide):
+                        bottomRightGraphicMatch = graphicRegex.match(bottomRightSide)
+                        bottomRightGraphicTitle = bottomRightGraphicMatch.group(1)
+                        bottomRightGraphicFilename = bottomRightGraphicMatch.group(2)
+                        bottomRightHTML = ""
+                    else:
+                        bottomRightGraphicFilename = ""
+                        bottomRightHTML = bottomRightSide
+            else:
+                bottomRightGraphicFilename = ""
+                bottomRightHTML = ""
+
+            if (bottomLeftGraphicFilename == "") or (
+                (gridColumns == 2)
+                and ((bottomRightGraphicFilename == "") and (isThreeUp == False))
+            ):
+                # Revert to normal table processing as no graphic spec in at least one cell
+                isGraphicsGrid = False
+
+    else:
+        # This is a normal table because it has too many rows or columns to be a graphics grid
+        isGraphicsGrid = False
+
+    if isGraphicsGrid == True:
+        if gridColumns == 2:
+            # Doing 1- or 2-row side-by-side graphics slide
+            print(
+                str(slideNumber).rjust(4)
+                + "     "
+                + flattenedTitle.ljust(50)
+                + "   --> "
+                + topLeftGraphicFilename.ljust(30)
+                + " , "
+                + topRightGraphicFilename
+            )
+        else:
+            # Doing 2 row, single column graphics slide
+            print(
+                str(slideNumber).rjust(4)
+                + "     "
+                + flattenedTitle.ljust(50)
+                + "   --> "
+                + topLeftGraphicFilename.ljust(30)
+            )
+
+        if gridRows == 2:
+            # Second row of filenames
+            if gridColumns == 2:
+                print(
+                    " ".rjust(4)
+                    + "     "
+                    + " ".ljust(50)
+                    + "   --> "
+                    + bottomLeftGraphicFilename.ljust(30)
+                    + " , "
+                    + bottomRightGraphicFilename
+                )
+            else:
+                print(
+                    " ".rjust(4)
+                    + "     "
+                    + " ".ljust(50)
+                    + "   --> "
+                    + bottomLeftGraphicFilename.ljust(30)
+                )
+
+        # Get top left image dimensions
+        topLeftImgWidth, topLeftImgHeight = get_image_size(topLeftGraphicFilename)
+        if topLeftImgWidth == -1:
+            if gridRows == 2:
+                print("Missing top left image file: " + topLeftGraphicFilename)
+            else:
+                print("Missing left image file: " + topLeftGraphicFilename)
+
+            return slide
+
+        if gridColumns == 2:
+            # Get top right image dimensions
+            topRightImgWidth, topRightImgHeight = get_image_size(
+                topRightGraphicFilename
+            )
+            if topRightImgWidth == -1:
+                if gridRows == 2:
+                    print("Missing top right image file: " + topRightGraphicFilename)
+                else:
+                    print("Missing right image file: " + topRightGraphicFilename)
+
+                return slide
+
+        if gridRows == 2:
+            # Get bottom left image dimensions
+            bottomLeftImgWidth, bottomLeftImgHeight = get_image_size(
+                bottomLeftGraphicFilename
+            )
+            if bottomLeftImgWidth == -1:
+                print("Missing bottom left image file: " + bottomLeftGraphicFilename)
+                return slide
+
+            if gridColumns == 2:
+                if isThreeUp is True:
+                    bottomRightImgWidth = 0
+                    bottomRightImgHeight = 0
+                else:
+                    # Get bottom right image dimensions
+                    bottomRightImgWidth, bottomRightImgHeight = get_image_size(
+                        bottomRightGraphicFilename
+                    )
+                    if bottomRightImgWidth == -1:
+                        print(
+                            "Missing bottom right image file: "
+                            + bottomRightGraphicFilename
+                        )
+                        return slide
+
+        # Figure out graphic height on slide
+        maxPicHeight = presentation.slide_height - titleBottom - numbers_content_margin
+
+        if gridRows == 2:
+            # gridRows adjusted if two rows
+            maxPicHeight = maxPicHeight / 2 + Inches(0.2)
+
+        # Middle of slide
+        midSlideX = presentation.slide_width / 2
+
+        # Figure out picture width - with 0.5 inch margin plus 0.25 inch other margin
+        # (Unaffected by whether gridRows is 1 or 2)
+        if gridColumns == 2:
+            maxPicWidth = midSlideX - marginBase * 3
+        else:
+            maxPicWidth = presentation.slide_width - marginBase * 2
+
+        # Top Left Picture
+        topLeftHeightIfWidthUsed = maxPicWidth * topLeftImgHeight / topLeftImgWidth
+        topLeftWidthIfHeightUsed = maxPicHeight * topLeftImgWidth / topLeftImgHeight
+
+        if topLeftHeightIfWidthUsed > maxPicHeight:
+            # Use the height to scale
+            topLeftPicWidth = topLeftWidthIfHeightUsed
+            topLeftPicHeight = maxPicHeight
+
+            # Calculate horizontal start
+            if gridColumns == 2:
+                # Align top left picture to the left
+                topLeftPicX = (
+                    marginBase + (midSlideX - marginBase - topLeftPicWidth) / 2
+                )
+            else:
+                # Center sole top picture
+                topLeftPicX = midSlideX - topLeftPicWidth / 2
+        else:
+            # Use the width to scale
+            topLeftPicWidth = maxPicWidth
+            topLeftPicHeight = topLeftHeightIfWidthUsed
+
+            # Calculate horizontal start
+            if gridColumns == 2:
+                # Align top left picture to the left
+                topLeftPicX = marginBase
+            else:
+                # Center sole top picture
+                topLeftPicX = midSlideX - topLeftPicWidth / 2
+
+        # Calculate vertical start
+        topLeftPicY = titleBottom + marginBase + (maxPicHeight - topLeftPicHeight) / 2
+        if gridRows == 2:
+            topLeftPicY -= Inches(0.2)
+
+        topLeftPicture = slide.shapes.add_picture(
+            topLeftGraphicFilename,
+            topLeftPicX,
+            topLeftPicY,
+            topLeftPicWidth,
+            topLeftPicHeight,
+        )
+
+        if gridColumns == 2:
+            # Top Right Picture
+            topRightHeightIfWidthUsed = (
+                maxPicWidth * topRightImgHeight / topLeftImgWidth
+            )
+            topRightWidthIfHeightUsed = (
+                maxPicHeight * topRightImgWidth / topLeftImgHeight
+            )
+
+            if topRightHeightIfWidthUsed > maxPicHeight:
+                # Use the height to scale
+                topRightPicWidth = topRightWidthIfHeightUsed
+                topRightPicHeight = maxPicHeight
+
+                # Calculate horizontal start
+                topRightPicX = (
+                    presentation.slide_width + midSlideX - topRightPicWidth - marginBase
+                ) / 2
+            else:
+                # Use the width to scale
+                topRightPicWidth = maxPicWidth
+                topRightPicHeight = topRightHeightIfWidthUsed
+
+                # Calculate horizontal start
+                topRightPicX = (
+                    presentation.slide_width + midSlideX - topRightPicWidth - marginBase
+                ) / 2
+
+            # Calculate vertical start
+            topRightPicY = (
+                titleBottom + marginBase + (maxPicHeight - topRightPicHeight) / 2
+            )
+
+            if gridRows == 2:
+                topRightPicY -= Inches(0.2)
+
+            topRightPicture = slide.shapes.add_picture(
+                topRightGraphicFilename,
+                topRightPicX,
+                topRightPicY,
+                topRightPicWidth,
+                topRightPicHeight,
+            )
+        if gridRows == 2:
+            # Need second row of pictures
+            # Bottom Left Picture
+            bottomLeftHeightIfWidthUsed = (
+                maxPicWidth * bottomLeftImgHeight / bottomLeftImgWidth
+            )
+            bottomLeftWidthIfHeightUsed = (
+                maxPicHeight * bottomLeftImgWidth / bottomLeftImgHeight
+            )
+
+            if bottomLeftHeightIfWidthUsed > maxPicHeight:
+                # Use the height to scale
+                bottomLeftPicWidth = bottomLeftWidthIfHeightUsed
+                bottomLeftPicHeight = maxPicHeight
+
+                # Calculate horizontal start
+                if gridColumns == 2:
+                    bottomLeftPicX = (
+                        marginBase + (midSlideX - marginBase - bottomLeftPicWidth) / 2
+                    )
+                else:
+                    bottomLeftPicX = midSlideX - bottomLeftPicWidth / 2
+            else:
+                # Use the width to scale
+                bottomLeftPicWidth = maxPicWidth
+                bottomLeftPicHeight = bottomLeftHeightIfWidthUsed
+
+                # Calculate horizontal start
+                if (gridColumns == 2) and (isThreeUp == False):
+                    # Align top left picture to the left
+                    bottomLeftPicX = marginBase
+                else:
+                    # Center sole top picture
+                    bottomLeftPicX = midSlideX - bottomLeftPicWidth / 2
+
+            # Calculate vertical start
+            bottomLeftPicY = (
+                titleBottom + marginBase + (maxPicHeight + bottomLeftPicHeight) / 2
+            )
+
+            if gridRows == 2:
+                bottomLeftPicY -= Inches(0.2)
+
+            bottomLeftPicture = slide.shapes.add_picture(
+                bottomLeftGraphicFilename,
+                bottomLeftPicX,
+                bottomLeftPicY,
+                bottomLeftPicWidth,
+                bottomLeftPicHeight,
+            )
+
+            if gridColumns == 2:
+                # Bottom Right Picture
+                bottomRightHeightIfWidthUsed = (
+                    maxPicWidth * bottomRightImgHeight / bottomLeftImgWidth
+                )
+                bottomRightWidthIfHeightUsed = (
+                    maxPicHeight * bottomRightImgWidth / bottomLeftImgHeight
+                )
+
+                if bottomRightHeightIfWidthUsed > maxPicHeight:
+                    # Use the height to scale
+                    bottomRightPicWidth = bottomRightWidthIfHeightUsed
+                    bottomRightPicHeight = maxPicHeight
+
+                    # Calculate horizontal start
+                    bottomRightPicX = (
+                        presentation.slide_width
+                        + midSlideX
+                        - bottomRightPicWidth
+                        - marginBase
+                    ) / 2
+
+                else:
+                    # Use the width to scale
+                    bottomRightPicWidth = maxPicWidth
+                    bottomRightPicHeight = bottomRightHeightIfWidthUsed
+
+                    # Calculate horizontal start
+                    bottomRightPicX = (
+                        presentation.slide_width
+                        + midSlideX
+                        - bottomRightPicWidth
+                        - marginBase
+                    ) / 2
+
+                # Calculate vertical start
+                bottomRightPicY = (
+                    titleBottom + marginBase + (maxPicHeight + bottomRightPicHeight) / 2
+                )
+
+                if gridRows == 2:
+                    bottomRightPicY -= Inches(0.2)
+
+                if isThreeUp == False:
+                    bottomRightPicture = slide.shapes.add_picture(
+                        bottomRightGraphicFilename,
+                        bottomRightPicX,
+                        bottomRightPicY,
+                        bottomRightPicWidth,
+                        bottomRightPicHeight,
+                    )
+    else:
+        # Normal table slide
+
+        # Calculate maximum number of columns - as this is how wide we'll make the table
+        columns = 0
+        for row in table:
+            columns = max(columns, len(row))
+
+        alignments = []
+        widths = []
+
+        # Adjust table if it contains a dash line as it's second line
+        if len(table) > 1:
+            firstCellSecondRow = table[1][0]
+            if (firstCellSecondRow.startswith("-")) | (
+                firstCellSecondRow.startswith(":-")
+            ):
+                haveTableHeading = True
+            else:
+                haveTableHeading = False
+        else:
+            haveTableHeading = False
+
+        if haveTableHeading is True:
+            # Has table heading
+            tableHeadingBlurb = " with heading"
+            # Figure out alignments of cells
+            for cell in table[1]:
+                if cell.startswith(":-"):
+                    if cell.endswith("-:"):
+                        alignments.append("c")
+                    else:
+                        alignments.append("l")
+                elif cell.endswith("-:"):
+                    alignments.append("r")
+                else:
+                    alignments.append("l")
+
+                widths.append(cell.count("-"))
+            widths_total = sum(widths)
+            del table[1]
+            wantTableHeading = True
+        else:
+            # No table heading
+            tableHeadingBlurb = " without heading"
+            wantTableHeading = False
+
+            # Use default width - 1 - and default alignment - l
+            for c in range(columns):
+                widths.append(1)
+                alignments.append("l")
+
+            # We don't know the widths so treat all equal
+            widths_total = columns
+
+        # Calculate number of rows
+        rows = len(table)
+        alignments_count = len(alignments)
+
+        # Figure out table height
+        maxTableHeight = (
+            presentation.slide_height
+            - titleBottom
+            - numbers_content_margin
+            - marginBase
+        )
+        tableHeight = min(maxTableHeight, Inches(0.25) * rows)
+
+        # Figure out table top
+        # tableTop = titleBottom + marginBase + (maxTableHeight - tableHeight ) / 2
+        tableTop = titleBottom + Inches(0.5)
+
+        # Figure out table width
+        tableWidth = presentation.slide_width - 2 * tableMargin
+
+        # Create the table with the above number of rows and columns
+        newTable = shapes.add_table(
+            rows, columns, tableMargin, tableTop, tableWidth, tableHeight
+        ).table
+
+        # Set whether first row is not special
+        newTable.first_row = wantTableHeading
+
+        print(
+            str(slideNumber).rjust(4)
+            + "     "
+            + flattenedTitle.ljust(40)
+            + "             --> "
+            + str(rows)
+            + " x "
+            + str(columns)
+            + " table"
+            + tableHeadingBlurb
+        )
+
+        # Set column widths
+        cols = newTable.columns
+        for colno in range(columns):
+            cols[colno].width = tableWidth * widths[colno] / widths_total
+
+        # Fill in the cells
+        rowNumber = 0
+        for row in table:
+            columnNumber = 0
+            for cell in row:
+                newCell = newTable.cell(rowNumber, columnNumber)
+
+                # For compact table remove the margins around the text
+                if compactTables > 0:
+                    newCell.margin_top = Pt(0)
+                    newCell.margin_bottom = Pt(0)
+
+                newCell.text = ""
+                text_frame = newCell.text_frame
+
+                # Set cell's text alignment
+                p = text_frame.paragraphs[0]
+
+                # Set cell's text size - if necessary
+                if baseTextSize > 0:
+                    p.font.size = Pt(baseTextSize)
+
+                # For compact table use specified point size for text
+                if compactTables > 0:
+                    p.font.size = Pt(compactTables)
+
+                if columnNumber >= alignments_count:
+                    p.alignment = PP_ALIGN.LEFT
+                elif alignments[columnNumber] == "r":
+                    p.alignment = PP_ALIGN.RIGHT
+                elif alignments[columnNumber] == "c":
+                    p.alignment = PP_ALIGN.CENTER
+                else:
+                    p.alignment = PP_ALIGN.LEFT
+
+                addFormattedText(p, cell)
+                columnNumber += 1
+            rowNumber += 1
+
+    if want_numbers_content is True:
+        addFooter(presentation, slideNumber, slide)
+
+    return slide
+
+
+def createSlide(
+    presentation, slideNumber, titleText, bodyText, block_type, bulletsOrFilename
+):
+    if block_type == "title":
+        slide = titleSlide(presentation, slideNumber, titleText, slide_subtitle)
+    elif block_type == "section":
+        if tocStyle != "":
+            # This is a section slide in TOC style
+            slide = tocSlide(
+                presentation, slideNumber, titleText, slide_subtitle, bullets
+            )
+        else:
+            slide = sectionSlide(presentation, slideNumber, titleText, slide_subtitle)
+    elif block_type == "graphic":
+        slide = graphicSlide(presentation, slideNumber, titleText, bulletsOrFilename)
+    elif block_type == "content":
+        if (tocStyle != "") & (tocTitle == titleText):
+            # This is a Table Of Contents slide
+            slide = tocSlide(
+                presentation, slideNumber, titleText, slide_subtitle, bullets
+            )
+        elif (abstractTitle != "") & (abstractTitle == titleText):
+            # This is an abstract slide
+            slide = abstractSlide(
+                presentation, slideNumber, titleText, slide_subtitle, bullets
+            )
+        else:
+            slide = contentSlide(
+                presentation, slideNumber, titleText, slide_subtitle, bullets
+            )
+    elif block_type == "code":
+        slide = codeSlide(presentation, slideNumber, titleText, code)
+    elif block_type == "table":
+        slide = tableSlide(presentation, slideNumber, titleText, table_rows)
+
+    slideNumber = slideNumber + 1
+
+    return [slideNumber, slide]
+
+
+def createTaskSlides(prs, slideNumber, tasks, titleStem):
+    taskNumber = 0
+    taskSlideNumber = 0
+
+    taskCount = len(tasks)
+
+    for task in tasks:
+        if taskNumber % tasksPerPage == 0:
+            # Is first task in a page
+            if taskNumber > 0:
+                # Print a "tasks" slide - as we have one to print out
+                taskSlideNumber += 1
+                if taskCount > tasksPerPage:
+                    # More than one task page
+                    title = titleStem + " - " + str(taskSlideNumber)
+                else:
+                    # Only one task page
+                    title = titleStem
+
+                slide = tableSlide(prs, slideNumber, title, table_rows)
+                slideNumber += 1
+
+            table_rows = [["Slide", "Due", "Task", "Tags", "Done"]]
+            table_rows.append(["-:", ":--:", ":----", ":----", ":--:"])
+            old_sNum = 0
+
+        sNum, taskText, dueDate, tags, done = task
+
+        if tags <> "":
+            # Sort tags - if there are any
+            tagList = re.split("[, ]", tags)
+            sortedTagList = sorted(tagList)
+            tags = str.join(",", sortedTagList)
+
+        if sNum != old_sNum:
+            table_rows.append([str(sNum), dueDate, taskText, tags, done])
+        else:
+            table_rows.append(["", dueDate, taskText, tags, done])
+        old_sNum = sNum
+
+        taskNumber += 1
+
+    # Print a final "tasks" slide
+    taskSlideNumber += 1
+    if taskCount > tasksPerPage:
+        title = titleStem + " - " + str(taskSlideNumber)
+    else:
+        title = titleStem
+
+    slide = tableSlide(prs, slideNumber, title, table_rows)
+    slideNumber += 1
+
+
+def createGlossarySlides(prs, slideNumber, abbrevDictionary):
+    termNumber = 0
+    termSlideNumber = 0
+
+    termCount = len(abbrevDictionary)
+
+    for term in sorted(abbrevDictionary.keys()):
+        if termNumber % glossaryPerPage == 0:
+            # Is first glossary term in a page
+            if termNumber > 0:
+                # Print a "glossary" slide - as we have one to print out
+                termSlideNumber += 1
+                if termCount > glossaryPerPage:
+                    # More than one glossary page
+                    title = glossaryTitle + " - " + str(termSlideNumber)
+                else:
+                    # Only one glossary page
+                    title = glossaryTerm
+
+                slide = tableSlide(prs, slideNumber, title, table_rows)
+                slideNumber += 1
+
+            table_rows = [[glossaryTerm, glossaryMeaning]]
+            table_rows.append([":-", ":" + ("-" * glossaryMeaningWidth)])
+            old_sNum = 0
+
+        meaning = abbrevDictionary.get(term)
+
+        table_rows.append([term, meaning])
+
+        termNumber += 1
+
+    # Print a final "glossary" slide
+    termSlideNumber += 1
+    if termCount > glossaryPerPage:
+        # More than one glossary page
+        title = glossaryTitle + " - " + str(termSlideNumber)
+    else:
+        # Only one glossary page
+        title = glossaryTitle
+
+    slide = tableSlide(prs, slideNumber, title, table_rows)
+    slideNumber += 1
+
+def createFootnoteSlides(prs, slideNumber, footnoteDefinitions):
+    footnoteNumber = 0
+    footnotesSlideNumber = 0
+
+    footnoteCount = len(footnoteDefinitions)
+
+    for footnote in footnoteDefinitions:
+        if footnoteNumber % footnotesPerPage == 0:
+            # Is first footnote in a page
+            if footnoteNumber > 0:
+                # Print a "footnotes" slide - as we have one to print out
+                footnotesSlideNumber += 1
+                if footnoteCount > footnotesPerPage:
+                    # More than one footnotes page
+                    title = footnotesTitle + " - " + str(footnotesSlideNumber)
+                else:
+                    # Only one footnotes page
+                    title = footnotesTitle
+
+                slide = contentSlide(prs, slideNumber, title, "", bullets)
+                
+                # Turn off bulleting
+                removeBullets(findBodyShape(slide).text_frame)
+
+
+                slideNumber += 1
+            bullets = []
+            old_sNum = 0
+
+        bullets.append([1,str(footnoteNumber + 1) + ". " + footnoteDefinitions[footnoteNumber][1]])
+
+        footnoteNumber += 1
+
+    # Print a final "glossary" slide
+    footnotesSlideNumber += 1
+    if footnoteCount > footnotesPerPage:
+        # More than one glossary page
+        title = footnotesTitle + " - " + str(footnotesSlideNumber)
+    else:
+        # Only one glossary page
+        title = footnotesTitle
+
+    slide = contentSlide(prs, slideNumber, title, "", bullets)
+    
+    # Turn off bulleting
+    removeBullets(findBodyShape(slide).text_frame)
+       
+    slideNumber += 1
+
+
+banner = (
+    "md2pptx Markdown To Powerpoint Converter " + md2pptx_level + " " + md2pptx_date
+)
+bannerUnderline = ""
+for i in range(len(banner)):
+    bannerUnderline = bannerUnderline + "="
+
+print("\n" + banner + "\n" + bannerUnderline)
+
+output_file = sys.argv[1]
+
+input_file = sys.stdin.readlines()
+
+slideNumber = 1
+
+bulletRegex = re.compile("^(\s)*\*(.*)")
+metadataRegex = re.compile("^(.+):(.+)")
+graphicRegex = re.compile("^!\[(.*)\]\((.+)\)")
+linkRegex = re.compile("^\[(.+)\]\((.+)\)")
+twoUpRegex = re.compile("^\|(.+?)\|(.+?)\|")
+footnoteDefinitionRegex = re.compile("^\[\^(.+?)]: (.+)")
+
+# Slide layout enumeration
+titleSlideLayout = 0
+sectionSlideLayout = 1
+contentSlideLayout = 2
+titleOnlyLayout = 5
+blankLayout = 6
+
+# Abbreviation Dictionary
+abbrevDictionary = {}
+
+# Extract metadata
+metadata_lines = []
+after_metadata = []
+
+in_metadata = True
+in_comment = False
+in_HTML = False
+
+for line in input_file:
+    if line.lstrip().startswith("<!--"):
+        if line.rstrip().endswith("-->"):
+            # Note: Not taking text after end of comment
+            continue
+        else:
+            in_comment = True
+            continue
+
+    elif line.rstrip().endswith("-->"):
+        # Note: Not taking text after end of comment
+        in_comment = False
+        continue
+
+    elif in_comment is True:
+        continue
+
+    elif line.lstrip()[:1] == "<":
+        in_HTML = True
+        continue
+
+    elif line.lstrip()[:1] == "#":
+        # Heading has triggered end of metadata and end of HTML
+        in_metadata = False
+        in_HTML = False
+
+    elif in_HTML is True:
+        continue
+
+    elif line == "\n":
+        # Blank line has triggered end of metadata
+        in_metadata = False
+
+    if in_metadata is True:
+        # Line goes to metadata array
+        metadata_lines.append(line)
+
+    else:
+        # Line goes to post-metadata array
+        after_metadata.append(line)
+
+want_numbers_headings = False
+want_numbers_content = False
+slideMasterFile = ""
+pageTitleSize = 30
+baseTextSize = 0
+baseTextDecrement = 2
+sectionTitleSize = 40
+sectionSubtitleSize = 28
+monoFont = "Courier"
+tocStyle = ""
+tocTitle = "Topics"
+tocEntries = []
+
+want_bold_colour = False
+want_bold_bold = True
+want_italic_colour = False
+want_italic_italic = True
+
+compactTables = 0
+abstractTitle = ""
+
+taskSlides = "all"
+tasksPerPage = 20
+
+glossaryTitle = "Glossary"
+glossaryTerm = "Term"
+glossaryMeaning = "Meaning"
+glossaryMeaningWidth = 5
+glossaryPerPage = 20
+footnotesTitle = "Footnotes"
+footnotesPerPage = 20
+
+metadata = []
+marginBase = Inches(0.2)
+tableMargin = Inches(0.2)
+
+# Space to leave at bottom if numbers
+numbers_height = Inches(0.4)
+
+# If no numbers leave all the above height anyway
+numbers_content_margin = numbers_height
+numbers_headings_margin = numbers_content_margin
+
+# Background colour class correspondence
+bgcolors = {}
+
+# Foreground colour class correspondence
+fgcolors = {}
+
+# Emphases class correspondence
+emphases = {}
+
+# List of footnote definitions. Each is a (ref, text) pair.
+# Also array of names - for quick searching
+footnoteDefinitions = []
+footnoteReferences = []
+
+if len(metadata_lines) > 0:
+    print("")
+    print("Metadata:")
+    print("=========")
+    print("")
+    print("Name".ljust(40) + " " + "Value")
+    print("----".ljust(40) + " " + "-----")
+for line in metadata_lines:
+    matchInfo = metadataRegex.match(line)
+    name = matchInfo.group(1).strip()
+    value = matchInfo.group(2).strip()
+    metadata.append([name, value])
+
+    print(name.ljust(40) + " " + value)
+
+    if name == "numbers":
+        if value == "yes":
+            # Want slide numbers everywhere
+            want_numbers_headings = True
+            numbers_headings_margin = numbers_height
+            want_numbers_content = True
+            numbers_content_margin = numbers_height
+        elif value == "content":
+            # Want slide numbers on content slides but not headings & sections
+            want_numbers_headings = False
+            want_numbers_content = True
+            numbers_content_margin = numbers_height
+        else:
+            # Don't want slide numbers - but they could still be added by slide master
+            # (Can code any other value, including 'no' or omit this metadata type)
+            want_numbers_headings = False
+            want_numbers_content = False
+    elif name == "pageTitleSize":
+        pageTitleSize = int(value)
+    elif name == "baseTextSize":
+        baseTextSize = int(value)
+    elif name == "baseTextDecrement":
+        baseTextDecrement = int(value)
+    elif name == "sectionTitleSize":
+        sectionTitleSize = int(value)
+    elif name == "sectionSubtitleSize":
+        sectionSubtitleSize = int(value)
+    elif name == "master":
+        slideMasterFile = value
+    elif name == "monoFont":
+        monoFont = value
+    elif name == "marginBase":
+        marginBase = Inches(float(value))
+    elif name == "tableMargin":
+        tableMargin = Inches(float(value))
+    elif name == "tocStyle":
+        tocStyle = value
+    elif name == "tocTitle":
+        tocTitle = value
+    elif name == "abstractTitle":
+        abstractTitle = value
+    elif name == "BoldBold":
+        if value == "no":
+            want_bold_bold = False
+    elif name == "compactTables":
+        compactTables = int(value)
+    elif (name == "BoldColour") | (name == "BoldColor"):
+        want_bold_colour = True
+        value2 = value.upper()
+        if value2 == "NONE":
+            bold_colour = MSO_THEME_COLOR.NOT_THEME_COLOR
+        elif value2 == "ACCENT 1":
+            bold_colour = MSO_THEME_COLOR.ACCENT_1
+        elif value2 == "ACCENT 2":
+            bold_colour = MSO_THEME_COLOR.ACCENT_2
+        elif value2 == "ACCENT 3":
+            bold_colour = MSO_THEME_COLOR.ACCENT_3
+        elif value2 == "ACCENT 4":
+            bold_colour = MSO_THEME_COLOR.ACCENT_4
+        elif value2 == "ACCENT 5":
+            bold_colour = MSO_THEME_COLOR.ACCENT_5
+        elif value2 == "ACCENT 6":
+            bold_colour = MSO_THEME_COLOR.ACCENT_6
+        elif value2 == "BACKGROUND 1":
+            bold_colour = MSO_THEME_COLOR.BACKGROUND_1
+        elif value2 == "BACKGROUND 2":
+            bold_colour = MSO_THEME_COLOR.BACKGROUND_2
+        elif value2 == "DARK 1":
+            bold_colour = MSO_THEME_COLOR.DARK_1
+        elif value2 == "DARK 2":
+            bold_colour = MSO_THEME_COLOR.DARK_2
+        elif value2 == "FOLLOWED HYPERLINK":
+            bold_colour = MSO_THEME_COLOR.FOLLOWED_HYPERLINK
+        elif value2 == "HYPERLINK":
+            bold_colour = MSO_THEME_COLOR.HYPERLINK
+        elif value2 == "LIGHT 1":
+            bold_colour = MSO_THEME_COLOR.LIGHT_1
+        elif value2 == "LIGHT 2":
+            bold_colour = MSO_THEME_COLOR.LIGHT_2
+        elif value2 == "TEXT 1":
+            bold_colour = MSO_THEME_COLOR.TEXT_1
+        elif value2 == "TEXT 2":
+            bold_colour = MSO_THEME_COLOR.TEXT_2
+        elif value2 == "MIXED":
+            bold_colour = MSO_THEME_COLOR.MIXED
+    elif name == "ItalicItalic":
+        if value == "no":
+            want_italic_italic = False
+    elif (name == "ItalicColour") | (name == "ItalicColor"):
+        want_italic_colour = True
+        value2 = value.upper()
+        if value2 == "NONE":
+            italic_colour = MSO_THEME_COLOR.NOT_THEME_COLOR
+        elif value2 == "ACCENT 1":
+            italic_colour = MSO_THEME_COLOR.ACCENT_1
+        elif value2 == "ACCENT 2":
+            italic_colour = MSO_THEME_COLOR.ACCENT_2
+        elif value2 == "ACCENT 3":
+            italic_colour = MSO_THEME_COLOR.ACCENT_3
+        elif value2 == "ACCENT 4":
+            italic_colour = MSO_THEME_COLOR.ACCENT_4
+        elif value2 == "ACCENT 5":
+            italic_colour = MSO_THEME_COLOR.ACCENT_5
+        elif value2 == "ACCENT 6":
+            italic_colour = MSO_THEME_COLOR.ACCENT_6
+        elif value2 == "BACKGROUND 1":
+            italic_colour = MSO_THEME_COLOR.BACKGROUND_1
+        elif value2 == "BACKGROUND 2":
+            italic_colour = MSO_THEME_COLOR.BACKGROUND_2
+        elif value2 == "DARK 1":
+            italic_colour = MSO_THEME_COLOR.DARK_1
+        elif value2 == "DARK 2":
+            italic_colour = MSO_THEME_COLOR.DARK_2
+        elif value2 == "FOLLOWED HYPERLINK":
+            italic_colour = MSO_THEME_COLOR.FOLLOWED_HYPERLINK
+        elif value2 == "HYPERLINK":
+            italic_colour = MSO_THEME_COLOR.HYPERLINK
+        elif value2 == "LIGHT 1":
+            italic_colour = MSO_THEME_COLOR.LIGHT_1
+        elif value2 == "LIGHT 2":
+            italic_colour = MSO_THEME_COLOR.LIGHT_2
+        elif value2 == "TEXT 1":
+            italic_colour = MSO_THEME_COLOR.TEXT_1
+        elif value2 == "TEXT 2":
+            italic_colour = MSO_THEME_COLOR.TEXT_2
+        elif value2 == "MIXED":
+            italic_colour = MSO_THEME_COLOR.MIXED
+    elif name == "taskSlides":
+        taskSlides = value
+    elif name == "tasksPerPage":
+        tasksPerPage = int(value)
+    elif name == "glossaryTitle":
+        glossaryTitle = value
+    elif name == "glossaryTerm":
+        glossaryTerm = value
+    elif name == "glossaryMeaning":
+        glossaryMeaning = value
+    elif name == "glossaryMeaningWidth":
+        glossaryMeaningWidth = int(value)
+    elif name == "footnotesPerPage":
+        footnotesPerPage = int(value)
+    elif name == "footnotesTitle":
+        footnotesTitle = value
+    elif name.startswith("style.bgcolor."):
+        spanClass = name[14:]
+        bgcolors[spanClass] = value
+    elif name.startswith("style.fgcolor."):
+        spanClass = name[14:]
+        fgcolors[spanClass] = value
+    elif name.startswith("style.emphasis."):
+        spanClass = name[15:]
+        emphases[spanClass] = value
+
+if slideMasterFile != "":
+    if "/" not in slideMasterFile:
+        # Slide master in same directory as md2pptx code
+        slideMasterFile = os.path.dirname(sys.argv[0]) + "/" + slideMasterFile
+    print("\nUsing " + slideMasterFile + " as base for presentation")
+
+print("")
+print("Slides:")
+print("=======")
+print("")
+
+if slideMasterFile == "":
+    # Use default slide deck that comes with python-pptx as base
+    prs = Presentation()
+else:
+    # Use user-specified presentation as base
+    prs = Presentation(slideMasterFile)
+    # slide_height = prs.slide_height
+    # slide_width = prs.slide_width
+
+    # If there is a slide to use fill it with metadata
+    if len(prs.slides) > 0:
+        processingSummarySlide(prs, metadata)
+
+in_block = False
+in_list = False
+in_table = False
+block_type = ""
+slide_title = ""
+slide_subtitle = ""
+bullets = []
+in_code = False
+notes_text = ""
+slide = None
+tasks = []
+
+
+# Pass to get footnote definitions
+metadata_linenumber=0
+for line in after_metadata:
+    line = line.rstrip()
+    if footnoteDefinitionRegex.match(line):
+        m = footnoteDefinitionRegex.match(line)
+
+        fnRef = m.group(1).strip()
+        fnText= m.group(2).strip()
+        footnoteDefinitions.append([fnRef,fnText])
+        footnoteReferences.append(fnRef)
+        
+        after_metadata[metadata_linenumber] = "<ignoreme>"
+    metadata_linenumber +=1
+
+# Main pass over the input file, now that footnote
+# references have been gathered
+for line in after_metadata:
+    line = line.rstrip()
+    line = line.replace("\t", "    ")
+    
+    if line == "<ignoreme>":
+        # Line was taken care of in the previous pass
+        continue
+
+    if (line == "") & (in_code is True):
+        in_code = False
+
+    if (line.startswith("    ")) & (in_list is False):
+        if in_code is False:
+            code = []
+        block_type = "code"
+        code.append(line[4:])
+        in_code = True
+
+    # Taskpaper task
+    if line[:1] == "-":
+        # Get start of attributes
+        attributesStart = line.find("@")
+
+        # Get text up to attributes
+        if attributesStart == -1:
+            text = line[2:]
+        else:
+            text = line[2 : attributesStart - 1]
+
+        # Attempt to extract @due information
+        startDue = line.find("@due(")
+        if startDue > -1:
+            startDue += 5
+            endDue = line.find(")", startDue)
+            if endDue > -1:
+                dueDate = line[startDue:endDue]
+        else:
+            dueDate = ""
+
+        # Attempt to extract @tags information
+        startTags = line.find("@tags(")
+        if startTags > -1:
+            startTags += 6
+            endTags = line.find(")", startTags)
+            if endTags > -1:
+                tags = line[startTags:endTags]
+        else:
+            tags = ""
+
+        # Attempt to extract @done information
+        startDone = line.find("@done(")
+        if startDone > -1:
+            startDone += 6
+            endDone = line.find(")", startDone)
+            if endDone > -1:
+                done = line[startDone:endDone]
+        else:
+            done = ""
+
+        tasks.append([slideNumber + 1, text, dueDate, tags, done])
+
+
+    elif line[:3] == "###":
+        # Heading Level 3 - slide
+        if in_block is True:
+            slideNumber, slide = createSlide(
+                prs, slideNumber, slide_title, slide_subtitle, block_type, bullets
+            )
+        slide_title = line[3:].strip().rstrip("#").rstrip()
+        in_block = True
+        block_type = "content"
+        slide_subtitle = ""
+        bullets = []
+        in_list = False
+        in_table = False
+
+        if (notes_text != "") & (slide != None):
+            notes_slide = slide.notes_slide
+            text_frame = notes_slide.notes_text_frame
+            text_frame.text = notes_text
+
+        notes_text = ""
+
+    elif line[:2] == "##":
+        # Heading Level 2 - section
+        if in_block is True:
+            slideNumber, slide = createSlide(
+                prs, slideNumber, slide_title, slide_subtitle, block_type, bullets
+            )
+        slide_title = line[2:].strip().rstrip("#").rstrip()
+        in_block = True
+        block_type = "section"
+        slide_subtitle = ""
+        bullets = []
+        in_list = False
+        in_table = False
+
+        if (notes_text != "") & (slide != None):
+            notes_slide = slide.notes_slide
+            text_frame = notes_slide.notes_text_frame
+            text_frame.text = notes_text
+
+        notes_text = ""
+
+    elif line[:1] == "#":
+        # Heading Level 1 - slide title
+        if in_block is True:
+            slideNumber, slide = createSlide(
+                prs, slideNumber, slide_title, slide_subtitle, block_type, bullets
+            )
+        slide_title = line[1:].strip().rstrip("#").rstrip()
+        in_block = True
+        block_type = "title"
+        slide_subtitle = ""
+        bullets = []
+        in_list = False
+        in_table = False
+
+        if (notes_text != "") & (slide != None):
+            notes_slide = slide.notes_slide
+            text_frame = notes_slide.notes_text_frame
+            text_frame.text = notes_text
+
+        notes_text = ""
+
+    elif line[:1] == "|":
+        # Table or side-by-side
+        if in_table is False:
+            block_type = "table"
+            table_rows = []
+            in_table = True
+            in_list = False
+
+        # Create a table row - but with (maybe empty) junk before and after
+        words = line.split("|")
+        table_row = []
+        for cell in words:
+            table_row.append(cell)
+
+        # Remove first element
+        table_row.pop(0)
+
+        # Remove last element
+        table_row.pop()
+
+        # Add clean table row (list of cells) to saved table rows
+        table_rows.append(table_row)
+
+    elif graphicRegex.match(line):
+        # Graphic
+        graphicMatch = graphicRegex.match(line)
+        graphicTitle = graphicMatch.group(1)
+        graphicFilename = graphicMatch.group(2)
+        block_type = "graphic"
+
+        if in_block is True:
+            slideNumber, slide = createSlide(
+                prs, slideNumber, slide_title, "", block_type, graphicFilename
+            )
+        else:
+            slideNumber, slide = createSlide(
+                prs, slideNumber, graphicTitle, "", block_type, graphicFilename
+            )
+
+        slide_title = ""
+        slide_subtitle = ""
+        in_block = False
+        in_list = False
+        in_table = False
+
+        if (notes_text != "") & (slide != None):
+            notes_slide = slide.notes_slide
+            text_frame = notes_slide.notes_text_frame
+            text_frame.text = notes_text
+
+        notes_text = ""
+
+    elif bulletRegex.match(line):
+        # Bulleted list
+        bulletPos = line.index("*") + 1
+        bulletLine = line[bulletPos:].lstrip()
+        bulletLevel = (bulletPos + 1) / 2
+        bullets.append([bulletLevel, bulletLine])
+        in_list = True
+        in_table = False
+    else:
+        # Must be a slide note line
+        slide_subtitle = slide_subtitle + "\n" + line
+        notes_text = notes_text + "\n" + line
+
+#  Finish off last slide
+if (in_block is True) | (in_code is True) | (in_table is True):
+    slideNumber, slide = createSlide(
+        prs, slideNumber, slide_title, slide_subtitle, block_type, bullets
+    )
+
+    if (notes_text != "") & (slide != None):
+        notes_slide = slide.notes_slide
+        text_frame = notes_slide.notes_text_frame
+        text_frame.text = notes_text
+
+    notes_text = ""
+
+# Add a footnotes slide - if there were any footnote definitions
+if len(footnoteDefinitions) > 0:
+    slideNumber = createFootnoteSlides(prs, slideNumber, footnoteDefinitions)
+
+# Add a dictionary slide - if there were any abbr elements encountered
+if len(abbrevDictionary) > 0:
+    slideNumber = createGlossarySlides(prs, slideNumber, abbrevDictionary)
+
+# Add final slide - or more than one - with any Taskpaper tasks in
+if (len(tasks) > 0) & (taskSlides <> "none"):
+    # Turn tasks into a table slide
+
+    # Might need to winnow slides
+    if taskSlides <> "all":
+        complete = []
+        incomplete = []
+        for task in tasks:
+            sNum, taskText, dueDate, tags, done = task
+            if done == "":
+                incomplete.append(task)
+            else:
+                complete.append(task)
+
+        if (taskSlides == "separate") & (len(tasks) > 0):
+            want_task_slides = True
+        elif (taskSlides == "remaining") & (len(incomplete) > 0):
+            want_task_slides = True
+        elif (taskSlides == "done") & (len(complete) > 0):
+            want_task_slides = True
+        else:
+            want_task_slides = False
+    else:
+        want_task_slides = True
+
+    if want_task_slides:
+        if taskSlides <> "separate":
+            createTaskSlides(prs, slideNumber, tasks, "Tasks")
+        else:
+            createTaskSlides(prs, slideNumber, complete, "Completed Tasks")
+            createTaskSlides(prs, slideNumber, incomplete, "Incomplete Tasks")
+
+prs.save(output_file)
+
+exit()

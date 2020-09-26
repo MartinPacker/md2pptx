@@ -1,0 +1,52 @@
+
+md2pptx Markdown To Powerpoint Converter 0.4.4 6 March, 2019
+============================================================
+
+Slides:
+=======
+
+   1 Markdown To Powerpoint User Guide
+   2     Table Of Contents
+   3   Why md2pptx?
+   4     A Real World Use Case
+   5     How Do You Use md2pptx?
+   6     python-pptx license
+   7     Change Log                                           --> 11 x 3 table with heading
+   8     Creating Slides                                      --> Simple1.png
+   9                                                          --> Simple2.png
+  10                                                          --> Simple3.png
+  11                                                          --> Simple4.png
+  12     Presentation Title Slides
+  13     Presentation Section Slides
+  14     Bullet Slides
+  15     Graphics Slides
+  16     Table Slides
+  17     # Special Case: Two Graphics Side By Side
+  18     # Special Case: Two By Two Grid Of Graphics
+  19     Code Slides
+  20     Task List Slides
+  21     Hyperlinks
+  22   HTML Comments
+  23     Special Text Formatting                              --> 5 x 4 table with heading
+  24     HTML Entity References                               --> 14 x 4 table with heading
+  25   Controlling The Presentation With Metadata
+  26     Specifying Metadata
+  27     Metadata Keys
+  28     # Slide Numbers - numbers
+  29     # Page Title Size - pageTitleSize
+  30     # Section Title Size - sectionTitleSize
+  31     # Section Subtitle Size - sectionSubtitleSize
+  32     # Monospace Font - monoFont
+  33     # Margin size - marginBase
+  34     # Master Presentation - master
+  35     # "Chevron Style" Table Of Contents - tocStyle And tocTitle   --> chevronTOC.png
+  36                                                          --> chevronSection.png
+  37     # Specifying An Abstract Slide With abstractTitle
+  38     # Specifying Text Size With baseTextSize And baseTextDecrement
+  39     # Specifying Bold And Italic Text Colour With BoldColour And ItalicColour
+  40     # Specifying Bold And Italic Text Effects With BoldBold And ItalicItalic
+  41     # Shrinking Tables With compactTables
+  42     # Controlling Task Slide Production With taskSlides and tasksPerSlide
+  43   Modifying The Slide Master
+  44     Basics
+  45     Slide Master Sequence                                --> 10 x 3 table with heading
