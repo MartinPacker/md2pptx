@@ -22,14 +22,14 @@ from pptx.enum.text import MSO_ANCHOR
 from pptx.dml.color import RGBColor
 import imghdr, struct
 import datetime
-import HTMLParser
+import html.parser
 from pptx.oxml.xmlchemy import OxmlElement
 # import xml.etree
 from lxml import etree
 
 
-md2pptx_level = "0.9"
-md2pptx_date = "4 September, 2020"
+md2pptx_level = "0.9.1"
+md2pptx_date = "4 October, 2020"
 
 # Following functions are workarounds for python-pptx not having these functions for the font object
 def set_subscript(font):
@@ -194,8 +194,9 @@ def parseText(text):
     # Replace any footnote reference starts with char 238
     text2 = text2.replace("[^", chr(238))
 
-    # Replace any potential footnote reference ends with char 238
-    text2 = text2.replace("]", chr(239))
+    # Replace any potential footnote reference ends with char 239
+    # Don't anymore because it collides with end-of-footnote
+    # text2 = text2.replace("]", chr(239))
 
     # Replace any span class starts with char 240
     text2 = text2.replace("<span class=", chr(240))
@@ -272,7 +273,7 @@ def parseText(text):
     text2 = text2.replace("</sup>", chr(255))
 
     # Unescape any numeric character references
-    h = HTMLParser.HTMLParser()
+    h = html.parser.HTMLParser()
 
     textSplit = re.split("(&\#x?[0-9a-f]{2,6};)", text2, flags=re.IGNORECASE)
     text3 = ""
@@ -446,8 +447,14 @@ def parseText(text):
 
                 # Remove [ and add a separator to allow for link URL
                 fragment = fragment[1:] + chr(246)
+            elif state == "fnref":
+                # This terminates a footnote reference
+                textArray.append([state,fragment])
+                state = "N"
+                fragment = ""
             else:
-                fragment = fragment + c
+                # This was an ordinary square bracket
+                fragment += "]"
         elif c == "(":
             # Could be starting to pick up the link URL
             if state == "LinkText2":
@@ -498,15 +505,6 @@ def parseText(text):
                 textArray.append([state, fragment])
                 fragment = ""
                 state = "fnref"
-        elif ord(c) == 239:
-            if state == "fnref":
-                # This terminates a footnote reference
-                textArray.append([state,fragment])
-                state = "N"
-                fragment = ""
-            else:
-                # This was an ordinary square bracket
-                fragment += "]"
         else:
             fragment = fragment + c
 
@@ -559,8 +557,8 @@ def addFormattedText(p, text):
                     font.color.theme_color = italic_colour
             elif fragType == "fnref":
                 font = run.font
-                set_superscript(font)
                 font.size = Pt(16)
+                set_superscript(font)
                 fnref = fragment[1]
                 if fnref in footnoteReferences:
                     footnoteNumber = footnoteReferences.index(fnref)
@@ -727,7 +725,7 @@ def titleSlide(presentation, slideNumber, titleText, subtitleText):
         title.height = marginBase * 4
         title.width = presentation.slide_width - marginBase * 8
         title.left = marginBase * 2
-        title.top = (presentation.slide_height - title.height) / 2
+        title.top = int((presentation.slide_height - title.height) / 2)
 
         # Reformat subtitle to be out of the way
         subtitle = findBodyShape(slide)
@@ -759,7 +757,7 @@ def sectionSlide(presentation, slideNumber, titleText, subtitleText):
     title.text_frame.paragraphs[0].font.size = title_height
 
     # Position title
-    title.top = (presentation.slide_height - Pt(sectionTitleSize)) / 2
+    title.top = int((presentation.slide_height - Pt(sectionTitleSize)) / 2)
     title.height = title_height
     title.width = presentation.slide_width - 2 * marginBase
     title.left = marginBase
@@ -1002,7 +1000,7 @@ def contentSlide(presentation, slideNumber, titleText, subtitleText, bullets):
             p = tf.add_paragraph()
 
             # Set the paragraph's level
-            p.level = bullet[0] - 1
+            p.level = int(bullet[0] - 1)
 
             # Set the paragraph's font size, adjusted for level, if necessary
             if baseTextSize > 0:
@@ -1612,7 +1610,7 @@ def tableSlide(presentation, slideNumber, titleText, table):
         # Set column widths
         cols = newTable.columns
         for colno in range(columns):
-            cols[colno].width = tableWidth * widths[colno] / widths_total
+            cols[colno].width = int(tableWidth * widths[colno] / widths_total)
 
         # Fill in the cells
         rowNumber = 0
@@ -1727,7 +1725,7 @@ def createTaskSlides(prs, slideNumber, tasks, titleStem):
 
         sNum, taskText, dueDate, tags, done = task
 
-        if tags <> "":
+        if tags != "":
             # Sort tags - if there are any
             tagList = re.split("[, ]", tags)
             sortedTagList = sorted(tagList)
@@ -2418,11 +2416,11 @@ if len(abbrevDictionary) > 0:
     slideNumber = createGlossarySlides(prs, slideNumber, abbrevDictionary)
 
 # Add final slide - or more than one - with any Taskpaper tasks in
-if (len(tasks) > 0) & (taskSlides <> "none"):
+if (len(tasks) > 0) & (taskSlides != "none"):
     # Turn tasks into a table slide
 
     # Might need to winnow slides
-    if taskSlides <> "all":
+    if taskSlides != "all":
         complete = []
         incomplete = []
         for task in tasks:
@@ -2444,7 +2442,7 @@ if (len(tasks) > 0) & (taskSlides <> "none"):
         want_task_slides = True
 
     if want_task_slides:
-        if taskSlides <> "separate":
+        if taskSlides != "separate":
             createTaskSlides(prs, slideNumber, tasks, "Tasks")
         else:
             createTaskSlides(prs, slideNumber, complete, "Completed Tasks")
