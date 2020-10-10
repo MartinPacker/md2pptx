@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 md2pptx - Converts (a subset of) Markdown to Powerpoint (PPTX)
@@ -24,6 +24,8 @@ import imghdr, struct
 import datetime
 import html.parser
 from pptx.oxml.xmlchemy import OxmlElement
+from pathlib import Path
+
 # import xml.etree
 from lxml import etree
 
@@ -2151,10 +2153,11 @@ for line in metadata_lines:
         emphases[spanClass] = value
 
 if slideMasterFile != "":
-    if "/" not in slideMasterFile:
+    if not Path(slideMasterFile).exists():
         # Slide master in same directory as md2pptx code
-        slideMasterFile = os.path.dirname(sys.argv[0]) + "/" + slideMasterFile
-    print("\nUsing " + slideMasterFile + " as base for presentation")
+        script_path = Path(".")
+        slideMasterFile = script_path / slideMasterFile
+    print(f"\nUsing {slideMasterFile} as base for presentation")
 
 print("")
 print("Slides:")
