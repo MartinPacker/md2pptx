@@ -1,13 +1,15 @@
 # md2pptx
 Markdown to Powerpoint Converter
 
-**Note:** md2pptx will very soon only support Python 3. So the installation instructions are for that.
+**Note:** md2pptx only supports Python 3. So the installation instructions are for that.
 
 **Usage:**
 
   `python3 md2pptx output.pptx < input.markdown`
 
-User guide to follow.
+or
+
+  `md2pptx output.pptx < input.markdown`
 
 Before you can use this you need to:
 
