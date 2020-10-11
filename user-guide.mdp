@@ -60,8 +60,8 @@ You write Markdown in exactly the same way as normal, with some understanding of
 To use md2pptx you need to
 
 1. Download it.
-1. Have Python 2 installed - at a reasonably high level.
-1. Install python-pptx using the command `pip install python-pptx`. (You might have to install pip firsst.)
+1. Have Python 3 installed - at a reasonably high level.
+1. Install python-pptx using the command `pip3 install python-pptx`. (You might have to install pip firsst.)
 1. Invoke it.
 
 The following instructions are for Unix-like systems. (It's developed and used by the developer on Mac OS but should also have identical syntax on Linux.) Windows users will need a slightly different form, but the principle is the same.
@@ -71,7 +71,16 @@ Here is a sample invocation:
 	md2pptx powerpoint-filename < markdown-filename
 
 An alternative is to have the Markdown be in-stream. md2pptx reads from stdin. \
-You can, of course, use stdin in a pipeline. Indeed the developer uses this to pipe from another program.
+You can, of course, use stdin in a pipeline. Indeed the developer uses this to pipe from another program. \
+
+Alternatively, you can specify both an input file and an output file:
+
+	md2pptx markdown-filename powerpoint-filename
+
+If the input file doesn't exist md2pptx will terminate with a message. If the input file is empty the same thing will happen.
+
+If you don't specify an input filename and don't redirect stdin md2pptx will await terminal input. \
+This works but is probably only useful when experimenting with syntax with md2pptx.
 
 Messages are written to stderr.
 
@@ -107,6 +116,7 @@ To quote from the python-pptx license statement:
 =colwidth 2 3 5
 =csv
 Level,Date,What
+1.0,12 October 2020, Python 3&comma; Support input filename as first command line parameter.
 0.9,4 September 2020, Footnote slide support
 0.8,14 June 2020,`bgcolor` is now `style.bgcolor`. Added `style.fgcolor` and `style.emphasis`.
 0.7.3,24 May 2020,Allow background colouring via `span` elements

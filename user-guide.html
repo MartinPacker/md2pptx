@@ -1102,8 +1102,8 @@ body .markdown-body
 <p>To use md2pptx you need to</p>
 <ol>
 <li>Download it.</li>
-<li>Have Python 2 installed - at a reasonably high level.</li>
-<li>Install python-pptx using the command <code>pip install python-pptx</code>. (You might have to install pip firsst.)</li>
+<li>Have Python 3 installed - at a reasonably high level.</li>
+<li>Install python-pptx using the command <code>pip3 install python-pptx</code>. (You might have to install pip firsst.)</li>
 <li>Invoke it.</li>
 </ol>
 <p>The following instructions are for Unix-like systems. (It&rsquo;s developed and used by the developer on Mac OS but should also have identical syntax on Linux.) Windows users will need a slightly different form, but the principle is the same.</p>
@@ -1112,7 +1112,14 @@ body .markdown-body
 </pre></div>
 
 
-<p>An alternative is to have the Markdown be in-stream. md2pptx reads from stdin. You can, of course, use stdin in a pipeline. Indeed the developer uses this to pipe from another program.</p>
+<p>An alternative is to have the Markdown be in-stream. md2pptx reads from stdin. You can, of course, use stdin in a pipeline. Indeed the developer uses this to pipe from another program.
+Alternatively, you can specify both an input file and an output file:</p>
+<div class="codehilite"><pre>md2pptx markdown-filename powerpoint-filename
+</pre></div>
+
+
+<p>If the input file doesn&rsquo;t exist md2pptx will terminate with a message. If the input file is empty the same thing will happen.</p>
+<p>If you don&rsquo;t specify an input filename and don&rsquo;t redirect stdin md2pptx will await terminal input. This works but is probably only useful when experimenting with syntax with md2pptx.</p>
 <p>Messages are written to stderr.</p>
 <h2 id="python-pptx-license">python-pptx license<a class="headerlink" href="#python-pptx-license" title="Permanent link"></a></h2>
 <p>While <a href="http://python-pptx.readthedocs.io/en/latest/">python-pptx</a> is not included in md2pptx it is used by it.</p>
@@ -1150,6 +1157,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">1.0</td>
+<td align="left">12 October 2020</td>
+<td align="left">Python 3&comma; Support input filename as first command line parameter.</td>
+</tr>
 <tr>
 <td align="left">0.9</td>
 <td align="left">4 September 2020</td>
