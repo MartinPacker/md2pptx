@@ -30,8 +30,8 @@ from pathlib import Path
 from lxml import etree
 
 
-md2pptx_level = "1.0 beta"
-md2pptx_date = "11 October, 2020"
+md2pptx_level = "1.0"
+md2pptx_date = "13 October, 2020"
 
 # Following functions are workarounds for python-pptx not having these functions for the font object
 def set_subscript(font):
