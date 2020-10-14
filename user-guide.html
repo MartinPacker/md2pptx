@@ -1048,7 +1048,7 @@ body .markdown-body
 <li><a href="#associating-a-class-name-with-a-background-colour-with-stylebgcolor">Associating A Class Name with A Background Colour With <code>style.bgcolor</code></a></li>
 <li><a href="#associating-a-class-name-with-a-foreground-colour-with-stylefgcolor">Associating A Class Name with A Foreground Colour With <code>style.fgcolor</code></a></li>
 <li><a href="#associating-a-class-name-with-text-emphasis-with-styleemphasis">Associating A Class Name With Text Emphasis With <code>style.emphasis</code></a></li>
-<li><a href="#master-presentation-master">Master Presentation - <code>master</code></a></li>
+<li><a href="#template-presentation-template">Template Presentation - <code>template</code></a></li>
 <li><a href="#chevron-style-table-of-contents-tocstyle-and-toctitle">&ldquo;Chevron Style&rdquo; Table Of Contents - <code>tocStyle</code> And <code>tocTitle</code></a></li>
 <li><a href="#specifying-an-abstract-slide-with-abstracttitle">Specifying An Abstract Slide With <code>abstractTitle</code></a></li>
 <li><a href="#specifying-text-size-with-basetextsize-and-basetextdecrement">Specifying Text Size With <code>baseTextSize</code> And <code>baseTextDecrement</code></a></li>
@@ -1061,9 +1061,9 @@ body .markdown-body
 </li>
 </ul>
 </li>
-<li><a href="#modifying-the-slide-master">Modifying The Slide Master</a><ul>
+<li><a href="#modifying-the-slide-template">Modifying The Slide Template</a><ul>
 <li><a href="#basics">Basics</a></li>
-<li><a href="#slide-master-sequence">Slide Master Sequence</a></li>
+<li><a href="#slide-template-sequence">Slide Template Sequence</a></li>
 </ul>
 </li>
 </ul>
@@ -1157,6 +1157,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">1.1</td>
+<td align="left">14 October 2020</td>
+<td align="left">Introduce Template as a better replacement for Master - which still works.</td>
+</tr>
 <tr>
 <td align="left">1.0</td>
 <td align="left">13 October 2020</td>
@@ -1261,7 +1266,7 @@ THE SOFTWARE.
 </table>
 <h2 id="creating-slides">Creating Slides<a class="headerlink" href="#creating-slides" title="Permanent link"></a></h2>
 <p>Let&rsquo;s start with a simple example. Consider the following text.</p>
-<div class="codehilite"><pre>master: Martin Master.pptx
+<div class="codehilite"><pre>template: Martin Template.pptx
 pageTitleSize: 24
 sectionTitleSize: 30
 
@@ -1290,11 +1295,11 @@ sectionTitleSize: 30
 <p>Metadata is specified in the first three lines of this sample. In general metadata is the lines before the first blank line. It consists of key/value pairs, with the key separated from the value by a colon.</p>
 <p>In this case the metadata specifies three things:</p>
 <ol>
-<li>The Powerpoint file the presentation is based on is &ldquo;Martin Master.pptx&rdquo; - which is provided with md2pptx.</li>
+<li>The Powerpoint file the presentation is based on is &ldquo;Martin Template.pptx&rdquo; - which is provided with md2pptx.</li>
 <li>Each page with a title has a title font 24 pixels high.</li>
 <li>Each presentation section slide has a title font 30 pixels high.</li>
 </ol>
-<p>All of the above are optional but you will almost certainly want to specify a master. Feel free to copy Martin Master.pptx and make stylistic changes.</p>
+<p>All of the above are optional but you will almost certainly want to specify a template. Feel free to copy Martin Template.pptx and make stylistic changes.</p>
 <p>For more on metadata see <a href="#controlling-the-presentation-with-metadata">Controlling The Presentation With Metadata</a>.</p>
 <p>As you can see the format of each slide is fairly straightforward. How to code slides is described in the following sections.</p>
 <h3 id="presentation-title-slides">Presentation Title Slides<a class="headerlink" href="#presentation-title-slides" title="Permanent link"></a></h3>
@@ -1789,13 +1794,14 @@ For everything else use <code>marginBase</code>.</p>
 <p>In this example the class &ldquo;important&rdquo; is associated with bolding the text and underlining it.</p>
 <p>You can also use <code>italic</code>.</p>
 <p>As the example shows, separate the emphasis attributes with a space.</p>
-<h4 id="master-presentation-master">Master Presentation - <code>master</code><a class="headerlink" href="#master-presentation-master" title="Permanent link"></a></h4>
-<p>You can specify a different master file to create the presentation from than the one supplied with python-pptx. The one supplied with md2pptx is a very good one to work from:</p>
-<div class="codehilite"><pre>master: Martin Master.pptx
+<h4 id="template-presentation-template">Template Presentation - <code>template</code><a class="headerlink" href="#template-presentation-template" title="Permanent link"></a></h4>
+<p>You can specify a different template file to create the presentation from than the one supplied with python-pptx. The one supplied with md2pptx is a very good one to work from:</p>
+<div class="codehilite"><pre>template: Martin Template.pptx
 </pre></div>
 
 
-<p>If you want to create your own master you probably want to take Martin Master.pptx and modify it. See <a href="/Users/martinpacker/md2pptx/modifying-the-slide-master">Modifying The Slide Master</a> for more information on how to do so</p>
+<p>If you want to create your own template you probably want to take Martin Template.pptx and modify it. See <a href="/Users/martinpacker/md2pptx/modifying-the-slide-template">Modifying The Slide Template</a> for more information on how to do so.</p>
+<p>(For compatibility purposes, you can continue to use <code>master</code> instead of <code>template</code>. It&rsquo;s probably better practice, though, to use <code>template</code>.)</p>
 <h4 id="chevron-style-table-of-contents-tocstyle-and-toctitle">&ldquo;Chevron Style&rdquo; Table Of Contents - <code>tocStyle</code> And <code>tocTitle</code><a class="headerlink" href="#chevron-style-table-of-contents-tocstyle-and-toctitle" title="Permanent link"></a></h4>
 <p>If you have a Table Of Contents slide - with each section title listed as a top level bullet you can create a &ldquo;Chevron Style&rdquo; Table Of Contents slide. It will look something like this:</p>
 <p><img alt="" src="/Users/martinpacker/md2pptx/chevronTOC.png" /></p>
@@ -1959,12 +1965,12 @@ baseTextDecrement: 1
 
 
 <p>will cause the maximum number of glossary items on a Glossary Slide to be 10. If there are more terms, a second page will be created. And so on. The default is 20.</p>
-<h2 id="modifying-the-slide-master">Modifying The Slide Master<a class="headerlink" href="#modifying-the-slide-master" title="Permanent link"></a></h2>
-<p>The included master presentation - Martin Master.pptx - is what the author tested with and gives good results. However, you probably want to develop your own master from it.</p>
+<h2 id="modifying-the-slide-template">Modifying The Slide Template<a class="headerlink" href="#modifying-the-slide-template" title="Permanent link"></a></h2>
+<p>The included template presentation - Martin Template.pptx - is what the author tested with and gives good results. However, you probably want to develop your own template from it.</p>
 <p>This section is a basic introduction to the rules of the game for doing so.</p>
 <h3 id="basics">Basics<a class="headerlink" href="#basics" title="Permanent link"></a></h3>
-<p>Don&rsquo;t change the order of the slides in the master view and don&rsquo;t delete any elements. It&rsquo;s probably also not useful to add elements. Take care with moving and resizing elements; It&rsquo;s probably best to experiment to see what effects you get.</p>
-<h3 id="slide-master-sequence">Slide Master Sequence<a class="headerlink" href="#slide-master-sequence" title="Permanent link"></a></h3>
+<p>Don&rsquo;t change the order of the slides in the slide master view and don&rsquo;t delete any elements. It&rsquo;s probably also not useful to add elements. Take care with moving and resizing elements; It&rsquo;s probably best to experiment to see what effects you get.</p>
+<h3 id="slide-template-sequence">Slide Template Sequence<a class="headerlink" href="#slide-template-sequence" title="Permanent link"></a></h3>
 <p>The following table shows how each slide type is created.</p>
 <table>
 <thead>
@@ -1977,7 +1983,7 @@ baseTextDecrement: 1
 <tbody>
 <tr>
 <td align="left">Processing Summary</td>
-<td align="left">Original slide from Master</td>
+<td align="left">Original slide from Template</td>
 <td align="left">Metadata: Second Shape</td>
 </tr>
 <tr>
@@ -2024,7 +2030,7 @@ baseTextDecrement: 1
 </table>
 <p><strong>Notes:</strong></p>
 <ol>
-<li>When looking for a title md2pptx looks first for a title shape and, failing that, uses the first shape. It&rsquo;s the Master&rsquo;s designer&rsquo;s responsibility to size and position it sensibly.</li>
+<li>When looking for a title md2pptx looks first for a title shape and, failing that, uses the first shape. It&rsquo;s the Template Designer&rsquo;s responsibility to size and position it sensibly.</li>
 <li>&ldquo;New Shape&rdquo; means md2pptx will create a new shape with, hopefully, sensible position and size.</li>
-<li>With &ldquo;Second Shape&rdquo; it&rsquo;s the Master&rsquo;s designer&rsquo;s responsibility to size and position it sensibly.</li>
+<li>With &ldquo;Second Shape&rdquo; it&rsquo;s the Template Designer&rsquo;s responsibility to size and position it sensibly.</li>
 </ol></article></body></html>
