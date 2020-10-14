@@ -1,4 +1,4 @@
-master: Martin Master.pptx
+template: Martin Template.pptx
 
 ### Slide One [IBM](http://w3.ibm.com)
 

@@ -48,7 +48,7 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 		* [Associating A Class Name with A Background Colour With `style.bgcolor`](#associating-a-class-name-with-a-background-colour-with-stylebgcolor)
 		* [Associating A Class Name with A Foreground Colour With `style.fgcolor`](#associating-a-class-name-with-a-foreground-colour-with-stylefgcolor)
 		* [Associating A Class Name With Text Emphasis With `style.emphasis`](#associating-a-class-name-with-text-emphasis-with-styleemphasis)
-		* [Master Presentation - `master`](#master-presentation-master)
+		* [Template Presentation - `template`](#template-presentation-template)
 		* ["Chevron Style" Table Of Contents - `tocStyle` And `tocTitle`](#chevron-style-table-of-contents-tocstyle-and-toctitle)
 		* [Specifying An Abstract Slide With `abstractTitle`](#specifying-an-abstract-slide-with-abstracttitle)
 		* [Specifying Text Size With `baseTextSize` And `baseTextDecrement`](#specifying-text-size-with-basetextsize-and-basetextdecrement)
@@ -57,9 +57,9 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 		* [Shrinking Tables With `compactTables`](#shrinking-tables-with-compacttables)
 		* [Controlling Task Slide Production With `taskSlides` and `tasksPerSlide`](#controlling-task-slide-production-with-taskslides-and-tasksperslide)
 		* [Controlling Glossary Slide Production With `glossaryTitle`, `glossaryTerm`, `glossaryMeaning`,`glossaryMeaningWidth`, and `glossaryPerPage`](#controlling-glossary-slide-production-with-glossarytitle-glossaryterm-glossarymeaningglossarymeaningwidth-and-glossaryperpage)
-* [Modifying The Slide Master](#modifying-the-slide-master)
+* [Modifying The Slide Template](#modifying-the-slide-template)
 	* [Basics](#basics)
-	* [Slide Master Sequence](#slide-master-sequence)
+	* [Slide Template Sequence](#slide-template-sequence)
 
 ## Why md2pptx?
 
@@ -153,6 +153,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:--|:---|:-----|
+|1.1|14 October 2020| Introduce Template as a better replacement for Master - which still works.|
 |1.0|13 October 2020| Python 3&comma; Support input filename as first command line parameter.|
 |0.9|4 September 2020| Footnote slide support|
 |0.8|14 June 2020|`bgcolor` is now `style.bgcolor`. Added `style.fgcolor` and `style.emphasis`.|
@@ -178,7 +179,7 @@ To quote from the python-pptx license statement:
 
 Let's start with a simple example. Consider the following text.
 
-	master: Martin Master.pptx
+	template: Martin Template.pptx
 	pageTitleSize: 24
 	sectionTitleSize: 30
 
@@ -212,11 +213,11 @@ Metadata is specified in the first three lines of this sample. In general metada
 
 In this case the metadata specifies three things:
 
-1. The Powerpoint file the presentation is based on is "Martin Master.pptx" - which is provided with md2pptx.
+1. The Powerpoint file the presentation is based on is "Martin Template.pptx" - which is provided with md2pptx.
 1. Each page with a title has a title font 24 pixels high.
 1. Each presentation section slide has a title font 30 pixels high.
 
-All of the above are optional but you will almost certainly want to specify a master. Feel free to copy Martin Master.pptx and make stylistic changes.
+All of the above are optional but you will almost certainly want to specify a template. Feel free to copy Martin Template.pptx and make stylistic changes.
 
 For more on metadata see [Controlling The Presentation With Metadata](#controlling-the-presentation-with-metadata).
 
@@ -718,13 +719,15 @@ You can also use `italic`.
 
 As the example shows, separate the emphasis attributes with a space.
 
-#### Master Presentation - `master`
+#### Template Presentation - `template`
 
-You can specify a different master file to create the presentation from than the one supplied with python-pptx. The one supplied with md2pptx is a very good one to work from:
+You can specify a different template file to create the presentation from than the one supplied with python-pptx. The one supplied with md2pptx is a very good one to work from:
 
-	master: Martin Master.pptx
+	template: Martin Template.pptx
 
-If you want to create your own master you probably want to take Martin Master.pptx and modify it. See [Modifying The Slide Master](modifying-the-slide-master) for more information on how to do so
+If you want to create your own template you probably want to take Martin Template.pptx and modify it. See [Modifying The Slide Template](modifying-the-slide-template) for more information on how to do so.
+
+(For compatibility purposes, you can continue to use `master` instead of `template`. It's probably better practice, though, to use `template`.)
 
 #### "Chevron Style" Table Of Contents - `tocStyle` And `tocTitle`
 
@@ -909,23 +912,23 @@ Coding
 will cause the maximum number of glossary items on a Glossary Slide to be 10. If there are more terms, a second page will be created. And so on. The default is 20.
 
 
-## Modifying The Slide Master
+## Modifying The Slide Template
 
-The included master presentation - Martin Master.pptx - is what the author tested with and gives good results. However, you probably want to develop your own master from it.
+The included template presentation - Martin Template.pptx - is what the author tested with and gives good results. However, you probably want to develop your own template from it.
 
 This section is a basic introduction to the rules of the game for doing so.
 
 ### Basics
 
-Don't change the order of the slides in the master view and don't delete any elements. It's probably also not useful to add elements. Take care with moving and resizing elements; It's probably best to experiment to see what effects you get.
+Don't change the order of the slides in the slide master view and don't delete any elements. It's probably also not useful to add elements. Take care with moving and resizing elements; It's probably best to experiment to see what effects you get.
 
-### Slide Master Sequence
+### Slide Template Sequence
 
 The following table shows how each slide type is created.
 
 |Slide Type|Origin|Non-Title Content|
 |:--|:---|:-----|
-|Processing Summary|Original slide from Master|Metadata: Second Shape|
+|Processing Summary|Original slide from Template|Metadata: Second Shape|
 |Presentation Title|Slide Layout 0|Subtitle: Second Shape|
 |Section|Slide Layout 1|Subtitle: Second Shape|
 |Graphic With Title|Slide Layout 5|Graphic: New Shape|
@@ -937,9 +940,9 @@ The following table shows how each slide type is created.
 
 **Notes:**
 
-1. When looking for a title md2pptx looks first for a title shape and, failing that, uses the first shape. It's the Master's designer's responsibility to size and position it sensibly.
+1. When looking for a title md2pptx looks first for a title shape and, failing that, uses the first shape. It's the Template Designer's responsibility to size and position it sensibly.
 2. "New Shape" means md2pptx will create a new shape with, hopefully, sensible position and size.
-3. With "Second Shape" it's the Master's designer's responsibility to size and position it sensibly.
+3. With "Second Shape" it's the Template Designer's responsibility to size and position it sensibly.
 
 
 

@@ -1,4 +1,4 @@
-master: Martin Master.pptx
+template: Martin Template.pptx
 pageTitleSize: 22
 sectionTitleSize: 30
 baseTextSize: 22

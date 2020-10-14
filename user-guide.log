@@ -1,11 +1,11 @@
 
-mdpre Markdown Preprocessor v0.4.4 (7 January, 2020)
-====================================================
-Def mdpre_date = 7 January, 2020
-Def mdpre_level = 0.4.4
+mdpre Markdown Preprocessor v0.4.5 (14 October, 2020)
+=====================================================
+Def mdpre_date = 14 October, 2020
+Def mdpre_level = 0.4.5
 Def userid = martinpacker
-Def time = 17&colon;25
-Def date = 11 October&comma; 2020
+Def time = 13&colon;20
+Def date = 14 October&comma; 2020
 Def TOC = Table Of Contents
 Def md = Markdown
 Def pp = Powerpoint
@@ -59,7 +59,7 @@ CSV Stop
 ..... ..... .....  Associating A Class Name with A Background Colour With `style.bgcolor`
 ..... ..... .....  Associating A Class Name with A Foreground Colour With `style.fgcolor`
 ..... ..... .....  Associating A Class Name With Text Emphasis With `style.emphasis`
-..... ..... .....  Master Presentation - `master`
+..... ..... .....  Template Presentation - `template`
 ..... ..... .....  "Chevron Style" Table Of Contents - `tocStyle` And `tocTitle`
 ..... ..... .....  Specifying An Abstract Slide With `abstractTitle`
 ..... ..... .....  Specifying Text Size With `baseTextSize` And `baseTextDecrement`
@@ -68,9 +68,9 @@ CSV Stop
 ..... ..... .....  Shrinking Tables With `compactTables`
 ..... ..... .....  Controlling Task Slide Production With `taskSlides` and `tasksPerSlide`
 ..... ..... .....  Controlling Glossary Slide Production With `glossaryTitle`, `glossaryTerm`, `glossaryMeaning`,`glossaryMeaningWidth`, and `glossaryPerPage`
-.....  Modifying The Slide Master
+.....  Modifying The Slide Template
 ..... .....  Basics
-..... .....  Slide Master Sequence
+..... .....  Slide Template Sequence
 CSV Start
 CSV Stop
 
