@@ -2048,9 +2048,15 @@ for line in metadata_lines:
     elif name == "sectionSubtitleSize":
         sectionSubtitleSize = int(value)
     elif name == "template":
-        slideTemplateFile = value
+        if value == "Martin Master.pptx":
+            slideTemplateFile = "Martin Template.pptx"
+        else:
+            slideTemplateFile = value
     elif name == "master":
-        slideTemplateFile = value
+        if value == "Martin Master.pptx":
+            slideTemplateFile = "Martin Template.pptx"
+        else:
+            slideTemplateFile = value
     elif name == "monoFont":
         monoFont = value
     elif name == "marginBase":
