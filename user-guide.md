@@ -341,11 +341,27 @@ If you code something like this the three graphics will be placed appropriately:
 	|![](top-left-graphic.png)|![](top-right-graphic.png)|
 	|![](bottom-graphic.png)|
 
+Here the layout will be a "T".
+
 A table won't be created in this case.
 
 Don't code any headings or more than two rows.
 
 To achieve the best result some margins around the graphics are reduced.
+
+There are some variants on the above scheme. For example, if you code:
+
+	|![](top-graphic.png)|
+	|![](bottom-left-graphic.png)|![](bottom-right-graphic.png)|
+
+Here the layout will be an inverted "T".
+
+You can also force left alignment or right alignment of the sole graphic in a row. For example:
+
+	|![](top-leftgraphic.png)||
+	|![](bottom-left-graphic.png)|![](bottom-right-graphic.png)|
+
+will align the sole top-row graphic to the left.
 
 #### Special Case: One Graphic Above Another
 
