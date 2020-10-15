@@ -31,7 +31,7 @@ from lxml import etree
 
 
 md2pptx_level = "1.1"
-md2pptx_date = "14 October, 2020"
+md2pptx_date = "15 October, 2020"
 
 # Following functions are workarounds for python-pptx not having these functions for the font object
 def set_subscript(font):
@@ -187,6 +187,14 @@ def parseText(text):
     text2 = text2.replace("&lsqb;", "\[")
     text2 = text2.replace("&rsqb;", "\]")
     text2 = text2.replace("&infin;", "∞")
+    text2 = text2.replace("&auml;", "ä")
+    text2 = text2.replace("&Auml;", "Ä")
+    text2 = text2.replace("&uuml;", "ü")
+    text2 = text2.replace("&Uuml;", "Ü")
+    text2 = text2.replace("&ouml;", "ö")
+    text2 = text2.replace("&Ouml;", "Ö")
+    text2 = text2.replace("&szlig;", "ß")
+    text2 = text2.replace("&euro;", "€")
 
     # Replace any asterisks with spaces either side with entity reference
     text2 = text2.replace(" * ", " &lowast; ")
