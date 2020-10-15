@@ -116,7 +116,7 @@ To quote from the python-pptx license statement:
 =colwidth 2 3 5
 =csv
 Level,Date,What
-1.1,15 October 2020, Introduce Template as a better replacement for Master - which still works. More flexibility in 3-graphic slide layout.
+1.1,15 October 2020, Introduce Template as a better replacement for Master - which still works. Add German characters.
 1.0,13 October 2020, Python 3&comma; Support input filename as first command line parameter.
 0.9,4 September 2020, Footnote slide support
 0.8,14 June 2020,`bgcolor` is now `style.bgcolor`. Added `style.fgcolor` and `style.emphasis`.
@@ -328,12 +328,28 @@ If you code something like this the three graphics will be placed appropriately:
 
 	|![](top-left-graphic.png)|![](top-right-graphic.png)|
 	|![](bottom-graphic.png)|
+	
+Here the layout will be a "T".
 
 A table won't be created in this case.
 
 Don't code any headings or more than two rows.
 
 To achieve the best result some margins around the graphics are reduced.
+
+There are some variants on the above scheme. For example, if you code:
+
+	|![](top-graphic.png)|
+	|![](bottom-left-graphic.png)|![](bottom-right-graphic.png)|
+	
+Here the layout will be an inverted "T".
+
+You can also force left alignment or right alignment of the sole graphic in a row. For example:
+
+	|![](top-leftgraphic.png)||
+	|![](bottom-left-graphic.png)|![](bottom-right-graphic.png)|
+
+will align the sole top-row graphic to the left.
 
 #### Special Case: One Graphic Above Another
 
@@ -500,15 +516,15 @@ md2pptx supports a few [HTML entity references](https://en.wikipedia.org/wiki/Li
 
 
 =csv
-"Entity Reference","Character","Entity Reference","Character"
-`&lt;`,&lt;,`&larr;`,&larr;
-`&gt;`,&gt;,`&rarr;`,&rarr;
-`&ge;`,&ge;,`&uarr;`,&uarr;
-`&le;`,&le;,`&darr;`,&darr;
-`&asymp;`,&asymp;,`&harr;`,&harr;
-`&Delta;`,&Delta;,`&varr;`,&varr;
-`&delta;`,&delta;,`&nearr;`,&nearr;
-`&sim;`,&sim;,`&nwarr;`,&nwarr;
+"Entity Reference","Character","Entity Reference","Character","Entity Reference","Character"
+`&lt;`,&lt;,`&larr;`,&larr;,`&auml;`,&auml;
+`&gt;`,&gt;,`&rarr;`,&rarr;,`&Auml;`,&Auml;
+`&ge;`,&ge;,`&uarr;`,&uarr;,`&uuml;`,&uuml;
+`&le;`,&le;,`&darr;`,&darr;,`&Uuml;`,&Uuml;
+`&asymp;`,&asymp;,`&harr;`,&harr;,`&ouml;`,&ouml;
+`&Delta;`,&Delta;,`&varr;`,&varr;,`&Ouml;`,&Ouml;
+`&delta;`,&delta;,`&nearr;`,&nearr;,`&szlig;`,&szlig;
+`&sim;`,&sim;,`&nwarr;`,&nwarr;,`&euro;`,&euro;
 `&lowast;`,&lowast;,`&searr;`,&searr;
 `&semi;`,&semi;,`&swarr;`,&swarr;
 `&colon;`,&colon;,`&lsqb;`,&lsqb;

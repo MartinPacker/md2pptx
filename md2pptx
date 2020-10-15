@@ -31,7 +31,7 @@ from lxml import etree
 
 
 md2pptx_level = "1.1"
-md2pptx_date = "14 October, 2020"
+md2pptx_date = "15 October, 2020"
 
 # Following functions are workarounds for python-pptx not having these functions for the font object
 def set_subscript(font):
@@ -187,6 +187,14 @@ def parseText(text):
     text2 = text2.replace("&lsqb;", "\[")
     text2 = text2.replace("&rsqb;", "\]")
     text2 = text2.replace("&infin;", "∞")
+    text2 = text2.replace("&auml;", "ä")
+    text2 = text2.replace("&Auml;", "Ä")
+    text2 = text2.replace("&uuml;", "ü")
+    text2 = text2.replace("&Uuml;", "Ü")
+    text2 = text2.replace("&ouml;", "ö")
+    text2 = text2.replace("&Ouml;", "Ö")
+    text2 = text2.replace("&szlig;", "ß")
+    text2 = text2.replace("&euro;", "€")
 
     # Replace any asterisks with spaces either side with entity reference
     text2 = text2.replace(" * ", " &lowast; ")
@@ -1138,8 +1146,12 @@ def tableSlide(presentation, slideNumber, titleText, table):
         # This is a table with 1 or 2 rows and 1 or 2 columns
         isGraphicsGrid = True
         gridRows = len(table)
-        gridColumns = len(table[0])
+        if gridRows == 1:
+            gridColumns = len(table[0])
+        else:
+            gridColumns = max(len(table[0]),len(table[1]))
         isThreeUp = False
+        topGraphicCount = 0
 
         # Attempt to retrieve filename for left side - top row
         topLeftSide = table[0][0]
@@ -1148,18 +1160,23 @@ def tableSlide(presentation, slideNumber, titleText, table):
             topLeftGraphicTitle = topLeftGraphicMatch.group(1)
             topLeftGraphicFilename = topLeftGraphicMatch.group(2)
             topLeftHTML = ""
+            topGraphicCount += 1
         else:
             topLeftGraphicFilename = ""
             topLeftHTML = topLeftSide
 
         # Attempt to retrieve filename for right side - top row
         if gridColumns == 2:
-            topRightSide = table[0][1]
+            if len(table[0]) == 2:
+                topRightSide = table[0][1]
+            else:
+                topRightSide = ""
             if graphicRegex.match(topRightSide):
                 topRightGraphicMatch = graphicRegex.match(topRightSide)
                 topRightGraphicTitle = topRightGraphicMatch.group(1)
                 topRightGraphicFilename = topRightGraphicMatch.group(2)
                 topRightHTML = ""
+                topGraphicCount += 1
             else:
                 topRightGraphicFilename = ""
                 topRightHTML = topRightSide
@@ -1167,20 +1184,20 @@ def tableSlide(presentation, slideNumber, titleText, table):
             topRightGraphicFilename = ""
             topRightHTML = ""
 
-        if (topLeftGraphicFilename == "") or (
-            (gridColumns == 2) and (topRightGraphicFilename == "")
-        ):
+        if topGraphicCount == 0:
             # Revert to normal table processing as no graphic spec in at least one cell
             isGraphicsGrid = False
 
         if gridRows == 2:
             # Attempt to retrieve filename for left side - bottom row
+            bottomGraphicCount = 0
             bottomLeftSide = table[1][0]
             if graphicRegex.match(bottomLeftSide):
                 bottomLeftGraphicMatch = graphicRegex.match(bottomLeftSide)
                 bottomLeftGraphicTitle = bottomLeftGraphicMatch.group(1)
                 bottomLeftGraphicFilename = bottomLeftGraphicMatch.group(2)
                 bottomLeftHTML = ""
+                bottomGraphicCount +=1
             else:
                 bottomLeftGraphicFilename = ""
                 bottomLeftHTML = bottomLeftSide
@@ -1188,17 +1205,19 @@ def tableSlide(presentation, slideNumber, titleText, table):
             # Attempt to retrieve filename for right side - bottom row
             if gridColumns == 2:
                 if len(table[1]) == 1:
-                    # There is no bottom right so this is "3-up"
+                    # There is one cell in bottom row so this is centred "3-up"
                     isThreeUp = True
                     bottomRightGraphicFilename = ""
                 else:
-                    # There is a bottom right so this is "4-up"
+                    # There is a bottom right so this is "4-up", though one or OTHER_MEMBERS
+                    # bottom cells might be empty
                     bottomRightSide = table[1][1]
                     if graphicRegex.match(bottomRightSide):
                         bottomRightGraphicMatch = graphicRegex.match(bottomRightSide)
                         bottomRightGraphicTitle = bottomRightGraphicMatch.group(1)
                         bottomRightGraphicFilename = bottomRightGraphicMatch.group(2)
                         bottomRightHTML = ""
+                        bottomGraphicCount +=1
                     else:
                         bottomRightGraphicFilename = ""
                         bottomRightHTML = bottomRightSide
@@ -1206,10 +1225,7 @@ def tableSlide(presentation, slideNumber, titleText, table):
                 bottomRightGraphicFilename = ""
                 bottomRightHTML = ""
 
-            if (bottomLeftGraphicFilename == "") or (
-                (gridColumns == 2)
-                and ((bottomRightGraphicFilename == "") and (isThreeUp == False))
-            ):
+            if bottomGraphicCount == 0:
                 # Revert to normal table processing as no graphic spec in at least one cell
                 isGraphicsGrid = False
 
@@ -1261,36 +1277,39 @@ def tableSlide(presentation, slideNumber, titleText, table):
                 )
 
         # Get top left image dimensions
-        topLeftImgWidth, topLeftImgHeight = get_image_size(topLeftGraphicFilename)
-        if topLeftImgWidth == -1:
-            if gridRows == 2:
-                print("Missing top left image file: " + topLeftGraphicFilename)
-            else:
-                print("Missing left image file: " + topLeftGraphicFilename)
+        if topLeftGraphicFilename != "":
+            topLeftImgWidth, topLeftImgHeight = get_image_size(topLeftGraphicFilename)
+            if topLeftImgWidth == -1:
+                if gridRows == 2:
+                    print("Missing top left image file: " + topLeftGraphicFilename)
+                else:
+                    print("Missing left image file: " + topLeftGraphicFilename)
 
-            return slide
+                return slide
 
         if gridColumns == 2:
             # Get top right image dimensions
-            topRightImgWidth, topRightImgHeight = get_image_size(
-                topRightGraphicFilename
-            )
-            if topRightImgWidth == -1:
-                if gridRows == 2:
-                    print("Missing top right image file: " + topRightGraphicFilename)
-                else:
-                    print("Missing right image file: " + topRightGraphicFilename)
+            if topRightGraphicFilename != "":
+                topRightImgWidth, topRightImgHeight = get_image_size(
+                    topRightGraphicFilename
+                )
+                if topRightImgWidth == -1:
+                    if gridRows == 2:
+                        print("Missing top right image file: " + topRightGraphicFilename)
+                    else:
+                        print("Missing right image file: " + topRightGraphicFilename)
 
-                return slide
+                    return slide
 
         if gridRows == 2:
             # Get bottom left image dimensions
-            bottomLeftImgWidth, bottomLeftImgHeight = get_image_size(
-                bottomLeftGraphicFilename
-            )
-            if bottomLeftImgWidth == -1:
-                print("Missing bottom left image file: " + bottomLeftGraphicFilename)
-                return slide
+            if bottomLeftGraphicFilename != "":
+                bottomLeftImgWidth, bottomLeftImgHeight = get_image_size(
+                    bottomLeftGraphicFilename
+                )
+                if bottomLeftImgWidth == -1:
+                    print("Missing bottom left image file: " + bottomLeftGraphicFilename)
+                    return slide
 
             if gridColumns == 2:
                 if isThreeUp is True:
@@ -1298,15 +1317,16 @@ def tableSlide(presentation, slideNumber, titleText, table):
                     bottomRightImgHeight = 0
                 else:
                     # Get bottom right image dimensions
-                    bottomRightImgWidth, bottomRightImgHeight = get_image_size(
-                        bottomRightGraphicFilename
-                    )
-                    if bottomRightImgWidth == -1:
-                        print(
-                            "Missing bottom right image file: "
-                            + bottomRightGraphicFilename
+                    if bottomRightGraphicFilename != "":
+                        bottomRightImgWidth, bottomRightImgHeight = get_image_size(
+                            bottomRightGraphicFilename
                         )
-                        return slide
+                        if bottomRightImgWidth == -1:
+                            print(
+                                "Missing bottom right image file: "
+                                + bottomRightGraphicFilename
+                            )
+                            return slide
 
         # Figure out graphic height on slide
         maxPicHeight = presentation.slide_height - titleBottom - numbers_content_margin
@@ -1326,194 +1346,198 @@ def tableSlide(presentation, slideNumber, titleText, table):
             maxPicWidth = presentation.slide_width - marginBase * 2
 
         # Top Left Picture
-        topLeftHeightIfWidthUsed = maxPicWidth * topLeftImgHeight / topLeftImgWidth
-        topLeftWidthIfHeightUsed = maxPicHeight * topLeftImgWidth / topLeftImgHeight
+        if topLeftGraphicFilename !="":
+            topLeftHeightIfWidthUsed = maxPicWidth * topLeftImgHeight / topLeftImgWidth
+            topLeftWidthIfHeightUsed = maxPicHeight * topLeftImgWidth / topLeftImgHeight
 
-        if topLeftHeightIfWidthUsed > maxPicHeight:
-            # Use the height to scale
-            topLeftPicWidth = topLeftWidthIfHeightUsed
-            topLeftPicHeight = maxPicHeight
-
-            # Calculate horizontal start
-            if gridColumns == 2:
-                # Align top left picture to the left
-                topLeftPicX = (
-                    marginBase + (midSlideX - marginBase - topLeftPicWidth) / 2
-                )
-            else:
-                # Center sole top picture
-                topLeftPicX = midSlideX - topLeftPicWidth / 2
-        else:
-            # Use the width to scale
-            topLeftPicWidth = maxPicWidth
-            topLeftPicHeight = topLeftHeightIfWidthUsed
-
-            # Calculate horizontal start
-            if gridColumns == 2:
-                # Align top left picture to the left
-                topLeftPicX = marginBase
-            else:
-                # Center sole top picture
-                topLeftPicX = midSlideX - topLeftPicWidth / 2
-
-        # Calculate vertical start
-        topLeftPicY = titleBottom + marginBase + (maxPicHeight - topLeftPicHeight) / 2
-        if gridRows == 2:
-            topLeftPicY -= Inches(0.2)
-
-        topLeftPicture = slide.shapes.add_picture(
-            topLeftGraphicFilename,
-            topLeftPicX,
-            topLeftPicY,
-            topLeftPicWidth,
-            topLeftPicHeight,
-        )
-
-        if gridColumns == 2:
-            # Top Right Picture
-            topRightHeightIfWidthUsed = (
-                maxPicWidth * topRightImgHeight / topLeftImgWidth
-            )
-            topRightWidthIfHeightUsed = (
-                maxPicHeight * topRightImgWidth / topLeftImgHeight
-            )
-
-            if topRightHeightIfWidthUsed > maxPicHeight:
+            if topLeftHeightIfWidthUsed > maxPicHeight:
                 # Use the height to scale
-                topRightPicWidth = topRightWidthIfHeightUsed
-                topRightPicHeight = maxPicHeight
-
-                # Calculate horizontal start
-                topRightPicX = (
-                    presentation.slide_width + midSlideX - topRightPicWidth - marginBase
-                ) / 2
-            else:
-                # Use the width to scale
-                topRightPicWidth = maxPicWidth
-                topRightPicHeight = topRightHeightIfWidthUsed
-
-                # Calculate horizontal start
-                topRightPicX = (
-                    presentation.slide_width + midSlideX - topRightPicWidth - marginBase
-                ) / 2
-
-            # Calculate vertical start
-            topRightPicY = (
-                titleBottom + marginBase + (maxPicHeight - topRightPicHeight) / 2
-            )
-
-            if gridRows == 2:
-                topRightPicY -= Inches(0.2)
-
-            topRightPicture = slide.shapes.add_picture(
-                topRightGraphicFilename,
-                topRightPicX,
-                topRightPicY,
-                topRightPicWidth,
-                topRightPicHeight,
-            )
-        if gridRows == 2:
-            # Need second row of pictures
-            # Bottom Left Picture
-            bottomLeftHeightIfWidthUsed = (
-                maxPicWidth * bottomLeftImgHeight / bottomLeftImgWidth
-            )
-            bottomLeftWidthIfHeightUsed = (
-                maxPicHeight * bottomLeftImgWidth / bottomLeftImgHeight
-            )
-
-            if bottomLeftHeightIfWidthUsed > maxPicHeight:
-                # Use the height to scale
-                bottomLeftPicWidth = bottomLeftWidthIfHeightUsed
-                bottomLeftPicHeight = maxPicHeight
+                topLeftPicWidth = topLeftWidthIfHeightUsed
+                topLeftPicHeight = maxPicHeight
 
                 # Calculate horizontal start
                 if gridColumns == 2:
-                    bottomLeftPicX = (
-                        marginBase + (midSlideX - marginBase - bottomLeftPicWidth) / 2
+                    # Align top left picture to the left
+                    topLeftPicX = (
+                        marginBase + (midSlideX - marginBase - topLeftPicWidth) / 2
                     )
                 else:
-                    bottomLeftPicX = midSlideX - bottomLeftPicWidth / 2
+                    # Center sole top picture
+                    topLeftPicX = midSlideX - topLeftPicWidth / 2
             else:
                 # Use the width to scale
-                bottomLeftPicWidth = maxPicWidth
-                bottomLeftPicHeight = bottomLeftHeightIfWidthUsed
+                topLeftPicWidth = maxPicWidth
+                topLeftPicHeight = topLeftHeightIfWidthUsed
 
                 # Calculate horizontal start
-                if (gridColumns == 2) and (isThreeUp == False):
+                if (gridColumns == 2) & (topRightGraphicFilename != ""):
                     # Align top left picture to the left
-                    bottomLeftPicX = marginBase
+                    topLeftPicX = marginBase
                 else:
                     # Center sole top picture
-                    bottomLeftPicX = midSlideX - bottomLeftPicWidth / 2
+                    topLeftPicX = midSlideX - topLeftPicWidth / 2
 
             # Calculate vertical start
-            bottomLeftPicY = (
-                titleBottom + marginBase + (maxPicHeight + bottomLeftPicHeight) / 2
-            )
-
+            topLeftPicY = titleBottom + marginBase + (maxPicHeight - topLeftPicHeight) / 2
             if gridRows == 2:
-                bottomLeftPicY -= Inches(0.2)
+                topLeftPicY -= Inches(0.2)
 
-            bottomLeftPicture = slide.shapes.add_picture(
-                bottomLeftGraphicFilename,
-                bottomLeftPicX,
-                bottomLeftPicY,
-                bottomLeftPicWidth,
-                bottomLeftPicHeight,
+            topLeftPicture = slide.shapes.add_picture(
+                topLeftGraphicFilename,
+                topLeftPicX,
+                topLeftPicY,
+                topLeftPicWidth,
+                topLeftPicHeight,
             )
 
-            if gridColumns == 2:
-                # Bottom Right Picture
-                bottomRightHeightIfWidthUsed = (
-                    maxPicWidth * bottomRightImgHeight / bottomLeftImgWidth
+        if gridColumns == 2:
+            # Top Right Picture
+            if topRightGraphicFilename != "":
+                topRightHeightIfWidthUsed = (
+                    maxPicWidth * topRightImgHeight / topRightImgWidth
                 )
-                bottomRightWidthIfHeightUsed = (
-                    maxPicHeight * bottomRightImgWidth / bottomLeftImgHeight
+                topRightWidthIfHeightUsed = (
+                    maxPicHeight * topRightImgWidth / topRightImgHeight
                 )
 
-                if bottomRightHeightIfWidthUsed > maxPicHeight:
+                if topRightHeightIfWidthUsed > maxPicHeight:
                     # Use the height to scale
-                    bottomRightPicWidth = bottomRightWidthIfHeightUsed
-                    bottomRightPicHeight = maxPicHeight
+                    topRightPicWidth = topRightWidthIfHeightUsed
+                    topRightPicHeight = maxPicHeight
 
                     # Calculate horizontal start
-                    bottomRightPicX = (
-                        presentation.slide_width
-                        + midSlideX
-                        - bottomRightPicWidth
-                        - marginBase
+                    topRightPicX = (
+                        presentation.slide_width + midSlideX - topRightPicWidth - marginBase
                     ) / 2
-
                 else:
                     # Use the width to scale
-                    bottomRightPicWidth = maxPicWidth
-                    bottomRightPicHeight = bottomRightHeightIfWidthUsed
+                    topRightPicWidth = maxPicWidth
+                    topRightPicHeight = topRightHeightIfWidthUsed
 
                     # Calculate horizontal start
-                    bottomRightPicX = (
-                        presentation.slide_width
-                        + midSlideX
-                        - bottomRightPicWidth
-                        - marginBase
+                    topRightPicX = (
+                        presentation.slide_width + midSlideX - topRightPicWidth - marginBase
                     ) / 2
 
                 # Calculate vertical start
-                bottomRightPicY = (
-                    titleBottom + marginBase + (maxPicHeight + bottomRightPicHeight) / 2
+                topRightPicY = (
+                    titleBottom + marginBase + (maxPicHeight - topRightPicHeight) / 2
                 )
 
                 if gridRows == 2:
-                    bottomRightPicY -= Inches(0.2)
+                    topRightPicY -= Inches(0.2)
 
-                if isThreeUp == False:
-                    bottomRightPicture = slide.shapes.add_picture(
-                        bottomRightGraphicFilename,
-                        bottomRightPicX,
-                        bottomRightPicY,
-                        bottomRightPicWidth,
-                        bottomRightPicHeight,
+                topRightPicture = slide.shapes.add_picture(
+                    topRightGraphicFilename,
+                    topRightPicX,
+                    topRightPicY,
+                    topRightPicWidth,
+                    topRightPicHeight,
+                )
+        if gridRows == 2:
+            # Need second row of pictures
+            # Bottom Left Picture
+            if bottomLeftGraphicFilename != "":
+                bottomLeftHeightIfWidthUsed = (
+                    maxPicWidth * bottomLeftImgHeight / bottomLeftImgWidth
+                )
+                bottomLeftWidthIfHeightUsed = (
+                    maxPicHeight * bottomLeftImgWidth / bottomLeftImgHeight
+                )
+
+                if bottomLeftHeightIfWidthUsed > maxPicHeight:
+                    # Use the height to scale
+                    bottomLeftPicWidth = bottomLeftWidthIfHeightUsed
+                    bottomLeftPicHeight = maxPicHeight
+
+                    # Calculate horizontal start
+                    if (gridColumns == 2) & (bottomRightFilename != ""):
+                        bottomLeftPicX = (
+                            marginBase + (midSlideX - marginBase - bottomLeftPicWidth) / 2
+                        )
+                    else:
+                        bottomLeftPicX = midSlideX - bottomLeftPicWidth / 2
+                else:
+                    # Use the width to scale
+                    bottomLeftPicWidth = maxPicWidth
+                    bottomLeftPicHeight = bottomLeftHeightIfWidthUsed
+
+                    # Calculate horizontal start
+                    if (gridColumns == 2) and (isThreeUp == False):
+                        # Align top left picture to the left
+                        bottomLeftPicX = marginBase
+                    else:
+                        # Center sole top picture
+                        bottomLeftPicX = midSlideX - bottomLeftPicWidth / 2
+
+                # Calculate vertical start
+                bottomLeftPicY = (
+                    titleBottom + marginBase + (maxPicHeight + bottomLeftPicHeight) / 2
+                )
+
+                if gridRows == 2:
+                    bottomLeftPicY -= Inches(0.2)
+
+                bottomLeftPicture = slide.shapes.add_picture(
+                    bottomLeftGraphicFilename,
+                    bottomLeftPicX,
+                    bottomLeftPicY,
+                    bottomLeftPicWidth,
+                    bottomLeftPicHeight,
+                )
+
+            if gridColumns == 2:
+                # Bottom Right Picture
+                if bottomRightGraphicFilename != "":
+                    bottomRightHeightIfWidthUsed = (
+                        maxPicWidth * bottomRightImgHeight / bottomRightImgWidth
                     )
+                    bottomRightWidthIfHeightUsed = (
+                        maxPicHeight * bottomRightImgWidth / bottomRightImgHeight
+                    )
+
+                    if bottomRightHeightIfWidthUsed > maxPicHeight:
+                        # Use the height to scale
+                        bottomRightPicWidth = bottomRightWidthIfHeightUsed
+                        bottomRightPicHeight = maxPicHeight
+
+                        # Calculate horizontal start
+                        bottomRightPicX = (
+                            presentation.slide_width
+                            + midSlideX
+                            - bottomRightPicWidth
+                            - marginBase
+                        ) / 2
+
+                    else:
+                        # Use the width to scale
+                        bottomRightPicWidth = maxPicWidth
+                        bottomRightPicHeight = bottomRightHeightIfWidthUsed
+
+                        # Calculate horizontal start
+                        bottomRightPicX = (
+                            presentation.slide_width
+                            + midSlideX
+                            - bottomRightPicWidth
+                            - marginBase
+                        ) / 2
+
+                    # Calculate vertical start
+                    bottomRightPicY = (
+                        titleBottom + marginBase + (maxPicHeight + bottomRightPicHeight) / 2
+                    )
+
+                    if gridRows == 2:
+                        bottomRightPicY -= Inches(0.2)
+
+                    if isThreeUp == False:
+                        bottomRightPicture = slide.shapes.add_picture(
+                            bottomRightGraphicFilename,
+                            bottomRightPicX,
+                            bottomRightPicY,
+                            bottomRightPicWidth,
+                            bottomRightPicHeight,
+                        )
     else:
         # Normal table slide
 
