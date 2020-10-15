@@ -116,7 +116,7 @@ To quote from the python-pptx license statement:
 =colwidth 2 3 5
 =csv
 Level,Date,What
-1.1,14 October 2020, Introduce Template as a better replacement for Master - which still works.
+1.1,15 October 2020, Introduce Template as a better replacement for Master - which still works. More flexibility in 3-graphic slide layout.
 1.0,13 October 2020, Python 3&comma; Support input filename as first command line parameter.
 0.9,4 September 2020, Footnote slide support
 0.8,14 June 2020,`bgcolor` is now `style.bgcolor`. Added `style.fgcolor` and `style.emphasis`.
