@@ -153,7 +153,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:--|:---|:-----|
-|1.1|15 October 2020| Introduce Template as a better replacement for Master - which still works. Add German characters.|
+|1.1|22 October 2020| Introduce Template as a better replacement for Master - which still works. Add German characters. Better template file searching.|
 |1.0|13 October 2020| Python 3&comma; Support input filename as first command line parameter.|
 |0.9|4 September 2020| Footnote slide support|
 |0.8|14 June 2020|`bgcolor` is now `style.bgcolor`. Added `style.fgcolor` and `style.emphasis`.|
@@ -744,6 +744,11 @@ You can specify a different template file to create the presentation from than t
 If you want to create your own template you probably want to take Martin Template.pptx and modify it. See [Modifying The Slide Template](modifying-the-slide-template) for more information on how to do so.
 
 (For compatibility purposes, you can continue to use `master` instead of `template`. It's probably better practice, though, to use `template`.)
+
+Templates are searched for in the following sequence:
+
+1. Using the name as given. For example `hipodz.pptx` will search the current directory.
+2. In the md2pptx installation directory.
 
 #### "Chevron Style" Table Of Contents - `tocStyle` And `tocTitle`
 
