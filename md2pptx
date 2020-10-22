@@ -31,7 +31,7 @@ from lxml import etree
 
 
 md2pptx_level = "1.1"
-md2pptx_date = "15 October, 2020"
+md2pptx_date = "22 October, 2020"
 
 # Following functions are workarounds for python-pptx not having these functions for the font object
 def set_subscript(font):
@@ -2206,10 +2206,18 @@ for line in metadata_lines:
         emphases[spanClass] = value
 
 if slideTemplateFile != "":
-    if not Path(slideTemplateFile).exists():
-        # Slide template file in same directory as md2pptx code
-        script_path = Path(".")
-        slideTemplateFile = script_path / slideTemplateFile
+    originalSlideTemplateFile = slideTemplateFile
+    if Path(os.path.expanduser(slideTemplateFile)).exists():
+        # We can successfully expand the path to pick up the file
+        slideTemplateFile = os.path.expanduser(slideTemplateFile)
+    else:
+        # Slide template file is not present if we expand path
+        script_path = os.path.dirname(__file__)
+        slideTemplateFile = script_path + os.sep + slideTemplateFile
+        if not Path(slideTemplateFile).exists():
+            print(f"\nTemplate file {originalSlideTemplateFile} does not exist. Terminating.")
+            sys.exit()
+
     print(f"\nUsing {slideTemplateFile} as base for presentation")
 
 print("")

@@ -1159,8 +1159,8 @@ THE SOFTWARE.
 <tbody>
 <tr>
 <td align="left">1.1</td>
-<td align="left">15 October 2020</td>
-<td align="left">Introduce Template as a better replacement for Master - which still works. Add German characters.</td>
+<td align="left">22 October 2020</td>
+<td align="left">Introduce Template as a better replacement for Master - which still works. Add German characters. Better template file searching.</td>
 </tr>
 <tr>
 <td align="left">1.0</td>
@@ -1397,9 +1397,24 @@ sectionTitleSize: 30
 </pre></div>
 
 
+<p>Here the layout will be a &ldquo;T&rdquo;.</p>
 <p>A table won&rsquo;t be created in this case.</p>
 <p>Don&rsquo;t code any headings or more than two rows.</p>
 <p>To achieve the best result some margins around the graphics are reduced.</p>
+<p>There are some variants on the above scheme. For example, if you code:</p>
+<div class="codehilite"><pre>|![](top-graphic.png)|
+|![](bottom-left-graphic.png)|![](bottom-right-graphic.png)|
+</pre></div>
+
+
+<p>Here the layout will be an inverted &ldquo;T&rdquo;.</p>
+<p>You can also force left alignment or right alignment of the sole graphic in a row. For example:</p>
+<div class="codehilite"><pre>|![](top-leftgraphic.png)||
+|![](bottom-left-graphic.png)|![](bottom-right-graphic.png)|
+</pre></div>
+
+
+<p>will align the sole top-row graphic to the left.</p>
 <h4 id="special-case-one-graphic-above-another">Special Case: One Graphic Above Another<a class="headerlink" href="#special-case-one-graphic-above-another" title="Permanent link"></a></h4>
 <p>The best Markdown fit for two graphics, on above the other, on a slide is a two row table with a single cell in each row. md2pptx will &ldquo;special case&rdquo; such a table.</p>
 <p>If you code something like this the two graphics will be placed in two rows of one:</p>
@@ -1830,6 +1845,11 @@ For everything else use <code>marginBase</code>.</p>
 
 <p>If you want to create your own template you probably want to take Martin Template.pptx and modify it. See <a href="/Users/martinpacker/md2pptx/modifying-the-slide-template">Modifying The Slide Template</a> for more information on how to do so.</p>
 <p>(For compatibility purposes, you can continue to use <code>master</code> instead of <code>template</code>. It&rsquo;s probably better practice, though, to use <code>template</code>.)</p>
+<p>Templates are searched for in the following sequence:</p>
+<ol>
+<li>Using the name as given. For example <code>hipodz.pptx</code> will search the current directory.</li>
+<li>In the md2pptx installation directory.</li>
+</ol>
 <h4 id="chevron-style-table-of-contents-tocstyle-and-toctitle">&ldquo;Chevron Style&rdquo; Table Of Contents - <code>tocStyle</code> And <code>tocTitle</code><a class="headerlink" href="#chevron-style-table-of-contents-tocstyle-and-toctitle" title="Permanent link"></a></h4>
 <p>If you have a Table Of Contents slide - with each section title listed as a top level bullet you can create a &ldquo;Chevron Style&rdquo; Table Of Contents slide. It will look something like this:</p>
 <p><img alt="" src="/Users/martinpacker/md2pptx/chevronTOC.png" /></p>
