@@ -153,7 +153,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:--|:---|:-----|
-|1.1|22 October 2020| Introduce Template as a better replacement for Master - which still works. Add German characters. Better template file searching.|
+|1.1|24 October 2020| Introduce Template as a better replacement for Master - which still works. Add German characters. Better template file searching. Escape underscore.|
 |1.0|13 October 2020| Python 3&comma; Support input filename as first command line parameter.|
 |0.9|4 September 2020| Footnote slide support|
 |0.8|14 June 2020|`bgcolor` is now `style.bgcolor`. Added `style.fgcolor` and `style.emphasis`.|
@@ -483,6 +483,8 @@ In this example the `span` element specifies a `class` attribute. The class name
 
 **Note:** A fragment of text in a span can't use any other text effect, such as bolding or italics.
 
+The class name can be specified with double quotes, single quotes, or no quotes at all.
+
 If you want to be able to process the text using a normal Markdown processor you can code Cascading Style Sheet (CSS) using the HTML `<style>` element. md2pptx will ignore any HTML after the metadata and before the first real Markdown text. For example:
 
 	<style>
@@ -538,6 +540,10 @@ md2pptx supports a few escaped characters. Of most interest are the two square b
 
 * `\[`
 * `\]`
+
+You can also escape the underscore character:
+
+* `\_`
 
 ### CriticMarkup
 

@@ -31,7 +31,7 @@ from lxml import etree
 
 
 md2pptx_level = "1.1"
-md2pptx_date = "22 October, 2020"
+md2pptx_date = "24 October, 2020"
 
 # Following functions are workarounds for python-pptx not having these functions for the font object
 def set_subscript(font):
@@ -162,8 +162,8 @@ def parseText(text):
 
     # Replace certain entity references with actual characters
     text2 = text2.replace("&equals;", "=")
-    text2 = text2.replace("&lt;", "<")
-    text2 = text2.replace("&gt;", ">")
+    text2 = text2.replace("&lt;", chr(236))
+    text2 = text2.replace("&gt;", chr(237))
     text2 = text2.replace("&le;", "≤")
     text2 = text2.replace("&ge;", "≥")
     text2 = text2.replace("&asymp;", "≈")
@@ -209,11 +209,11 @@ def parseText(text):
     # text2 = text2.replace("]", chr(239))
 
     # Replace any span class starts with char 240
-    text2 = text2.replace("<span class=", chr(240))
+    text2 = re.sub(spanRegex, chr(240), text2)
 
     # Replace any span ends with char 241
     text2 = text2.replace("</span>", chr(241))
-
+    
     # Replace any abbreviation starts with char 242
     text2 = text2.replace("<abbr title=", chr(242))
 
@@ -282,6 +282,9 @@ def parseText(text):
     # Replace any </sup> with char 255
     text2 = text2.replace("</sup>", chr(255))
 
+    # Handle escaped underscore
+    text2 = text2.replace("\_", "_")
+
     # Unescape any numeric character references
     h = html.parser.HTMLParser()
 
@@ -291,7 +294,7 @@ def parseText(text):
         if t == "":
             text3 = text3 + t
         elif (t[0:2] == "&#") & (t[-1] == ";"):
-            text3 = text3 + h.unescape(t).encode("utf-8")
+            text3 = text3 + html.unescape(t).encode("utf-8")
         else:
             text3 = text3 + t
 
@@ -481,6 +484,8 @@ def parseText(text):
                 state = "N"
             else:
                 fragment = fragment + c
+        elif ord(c) == 236:
+            fragment = fragment + "<"
         elif ord(c) == 244:
             fragment = fragment + "["
         elif ord(c) == 245:
@@ -497,10 +502,12 @@ def parseText(text):
             abbrevDictionary[dictAbbrev] = dictFull
             fragment = dictAbbrev
         elif ord(c) == 240:
+            # In span element where we hit the class name
             if fragment != "":
                 textArray.append([state, fragment])
                 fragment = ""
         elif ord(c) == 241:
+            # End of span
             splitting = fragment.split(">")
             spanText = splitting[1]
             className = splitting[0].strip().strip("'").strip('"')
@@ -528,6 +535,13 @@ def parseText(text):
 
 def addFormattedText(p, text):
     parsedText = parseText(text)
+    
+    # Replace chr(237) with > in each Fragment
+    for f in range(len(parsedText)):
+       if parsedText[f][0] == "Span":
+           parsedText[f][1][1] = parsedText[f][1][1].replace(chr(237),">")
+       else:
+           parsedText[f][-1] = parsedText[f][-1].replace(chr(237),">")
 
     # Prime flattened Text
     flattenedText = ""
@@ -1912,6 +1926,7 @@ graphicRegex = re.compile("^!\[(.*)\]\((.+)\)")
 linkRegex = re.compile("^\[(.+)\]\((.+)\)")
 twoUpRegex = re.compile("^\|(.+?)\|(.+?)\|")
 footnoteDefinitionRegex = re.compile("^\[\^(.+?)]: (.+)")
+spanRegex = re.compile("<span( )*class=")
 
 # Slide layout enumeration
 titleSlideLayout = 0
@@ -1925,7 +1940,7 @@ abbrevDictionary = {}
 
 # Extract metadata
 metadata_lines = []
-after_metadata = []
+after_metadata_and_css = []
 
 in_metadata = True
 in_comment = False
@@ -1970,7 +1985,7 @@ for line in input_file:
 
     else:
         # Line goes to post-metadata array
-        after_metadata.append(line)
+        after_metadata_and_css.append(line)
 
 want_numbers_headings = False
 want_numbers_content = False
@@ -2253,7 +2268,7 @@ tasks = []
 
 # Pass to get footnote definitions
 metadata_linenumber=0
-for line in after_metadata:
+for line in after_metadata_and_css:
     line = line.rstrip()
     if footnoteDefinitionRegex.match(line):
         m = footnoteDefinitionRegex.match(line)
@@ -2263,12 +2278,12 @@ for line in after_metadata:
         footnoteDefinitions.append([fnRef,fnText])
         footnoteReferences.append(fnRef)
         
-        after_metadata[metadata_linenumber] = "<ignoreme>"
+        after_metadata_and_css[metadata_linenumber] = "<ignoreme>"
     metadata_linenumber +=1
 
 # Main pass over the input file, now that footnote
 # references have been gathered
-for line in after_metadata:
+for line in after_metadata_and_css:
     line = line.rstrip()
     line = line.replace("\t", "    ")
     
