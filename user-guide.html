@@ -1159,8 +1159,8 @@ THE SOFTWARE.
 <tbody>
 <tr>
 <td align="left">1.1</td>
-<td align="left">22 October 2020</td>
-<td align="left">Introduce Template as a better replacement for Master - which still works. Add German characters. Better template file searching.</td>
+<td align="left">24 October 2020</td>
+<td align="left">Introduce Template as a better replacement for Master - which still works. Add German characters. Better template file searching. Escape underscore.</td>
 </tr>
 <tr>
 <td align="left">1.0</td>
@@ -1533,6 +1533,7 @@ sectionTitleSize: 30
 <li><code>style.emphasis</code> - described in <a href="#associating-a-class-name-with-text-emphasis-with-styleemphasis">Associating A Class Name With Text Emphasis With <code>style.emphasis</code></a>.</li>
 </ul>
 <p><strong>Note:</strong> A fragment of text in a span can&rsquo;t use any other text effect, such as bolding or italics.</p>
+<p>The class name can be specified with double quotes, single quotes, or no quotes at all.</p>
 <p>If you want to be able to process the text using a normal Markdown processor you can code Cascading Style Sheet (CSS) using the HTML <code>&lt;style&gt;</code> element. md2pptx will ignore any HTML after the metadata and before the first real Markdown text. For example:</p>
 <div class="codehilite"><pre>&lt;style&gt;
 .mytest{
@@ -1685,6 +1686,10 @@ sectionTitleSize: 30
 <ul>
 <li><code>\[</code></li>
 <li><code>\]</code></li>
+</ul>
+<p>You can also escape the underscore character:</p>
+<ul>
+<li><code>\_</code></li>
 </ul>
 <h3 id="criticmarkup">CriticMarkup<a class="headerlink" href="#criticmarkup" title="Permanent link"></a></h3>
 <p>md2pptx supports <a href="http://criticmarkup.com/">CriticMarkup</a> for text. To quote from their home page:</p>
