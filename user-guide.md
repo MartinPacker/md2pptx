@@ -153,7 +153,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:--|:---|:-----|
-|1.1|24 October 2020| Introduce Template as a better replacement for Master - which still works. Add German characters. Better template file searching. Escape underscore.|
+|1.1|25 October 2020| Introduce Template as a better replacement for Master - which still works. Add German characters. Better template file searching. Escape underscore. Better handling of continuation onto second and subsequent lines.|
 |1.0|13 October 2020| Python 3&comma; Support input filename as first command line parameter.|
 |0.9|4 September 2020| Footnote slide support|
 |0.8|14 June 2020|`bgcolor` is now `style.bgcolor`. Added `style.fgcolor` and `style.emphasis`.|

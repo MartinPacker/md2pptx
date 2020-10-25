@@ -31,7 +31,7 @@ from lxml import etree
 
 
 md2pptx_level = "1.1"
-md2pptx_date = "24 October, 2020"
+md2pptx_date = "25 October, 2020"
 
 # Following functions are workarounds for python-pptx not having these functions for the font object
 def set_subscript(font):
@@ -1940,7 +1940,7 @@ abbrevDictionary = {}
 
 # Extract metadata
 metadata_lines = []
-after_metadata_and_css = []
+after_metadata_and_HTML = []
 
 in_metadata = True
 in_comment = False
@@ -1985,7 +1985,7 @@ for line in input_file:
 
     else:
         # Line goes to post-metadata array
-        after_metadata_and_css.append(line)
+        after_metadata_and_HTML.append(line)
 
 want_numbers_headings = False
 want_numbers_content = False
@@ -2265,10 +2265,33 @@ notes_text = ""
 slide = None
 tasks = []
 
+# Pass to concatenate lines with continuations
+previous_line="\n"
+lines_after_concatenation = []
+for line in after_metadata_and_HTML:
+    if line == "\n":
+        # This is a blank line so copy it over
+        lines_after_concatenation.append(line)
+    elif previous_line == "\n":
+        # Previous line was blank so copy this one over
+        lines_after_concatenation.append(line)
+    else:
+        # Previous line was not blank and nor is this one so consider concatenation
+        if line.lstrip()[0] not in "*#\|":
+            if previous_line[0:2] != "# ":
+                # Previous line was not Heading Level 1 so concatenate
+                lines_after_concatenation[-1] = lines_after_concatenation[-1].rstrip() + " " + line.lstrip()
+            else:
+                lines_after_concatenation.append(line)
+        else:
+            lines_after_concatenation.append(line)
+    
+    # Store previous line to see if it was H1 or blank
+    previous_line = line
 
 # Pass to get footnote definitions
 metadata_linenumber=0
-for line in after_metadata_and_css:
+for line in lines_after_concatenation:
     line = line.rstrip()
     if footnoteDefinitionRegex.match(line):
         m = footnoteDefinitionRegex.match(line)
@@ -2278,12 +2301,12 @@ for line in after_metadata_and_css:
         footnoteDefinitions.append([fnRef,fnText])
         footnoteReferences.append(fnRef)
         
-        after_metadata_and_css[metadata_linenumber] = "<ignoreme>"
+        lines_after_concatenation[metadata_linenumber] = "<ignoreme>"
     metadata_linenumber +=1
 
 # Main pass over the input file, now that footnote
 # references have been gathered
-for line in after_metadata_and_css:
+for line in lines_after_concatenation:
     line = line.rstrip()
     line = line.replace("\t", "    ")
     
