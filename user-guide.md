@@ -17,6 +17,7 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 	* [Presentation Section Slides](#presentation-section-slides)
 	* [Bullet Slides](#bullet-slides)
 	* [Graphics Slides](#graphics-slides)
+		* [Graphics File References](#graphics-file-references)
 	* [Table Slides](#table-slides)
 		* [Special Case: Two Graphics Side By Side](#special-case-two-graphics-side-by-side)
 		* [Special Case: Two By Two Grid Of Graphics](#special-case-two-by-two-grid-of-graphics)
@@ -153,9 +154,10 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:--|:---|:-----|
-|1.1|25 October 2020| Introduce Template as a better replacement for Master - which still works. Add German characters. Better template file searching. Escape underscore. Better handling of continuation onto second and subsequent lines.|
-|1.0|13 October 2020| Python 3&comma; Support input filename as first command line parameter.|
-|0.9|4 September 2020| Footnote slide support|
+|1.2|1 November 2020|Support URLs for graphics.|
+|1.1|25 October 2020|Introduce Template as a better replacement for Master - which still works. Add German characters. Better template file searching. Escape underscore. Better handling of continuation onto second and subsequent lines.|
+|1.0|13 October 2020|Python 3&comma; Support input filename as first command line parameter.|
+|0.9|4 September 2020|Footnote slide support|
 |0.8|14 June 2020|`bgcolor` is now `style.bgcolor`. Added `style.fgcolor` and `style.emphasis`.|
 |0.7.3|24 May 2020|Allow background colouring via `span` elements|
 |0.7.2|14 April 2020| Support three graphics on a slide. Added `&equals;` entity reference. Added `tableMargin`.|
@@ -276,6 +278,27 @@ Don't code anything inside the square brackets.
 
 **HINT:** If you want two graphics side by side use a single-row table, described [here](#special-case-two-graphics-side-by-side). If you want two graphics one above the other use a two-row, single-column table, described [here](#special-case-one-graphic-above-another).
 
+#### Graphics File References
+
+md2pptx supports graphics references in three different formats:
+
+* A local file reference - `![](~/Documents/Customers/XYZCO/sysplexes.png)`
+* A HTTP(S) reference - `![](http://www.anyfirm.co/banner.jpeg)`
+* A `data:` URI reference - `![](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==)`
+
+The `data:` URI example actually works! Try it.
+
+**Note:** Scalable Vector Graphics (SVG) is not supported - as PowerPoint doesn't support it (and nor does python-pptx).
+
+For cases other than the local file, the reference - when displayed by md2pptx - is shortened to show the beginning and the end of the reference. This is to make it easy to recognise if you've accidentally repeated the reference. Here is an example:
+
+```
+Slides:
+=======
+
+   1     Test Title                                           --> data:image/png;base64,/9j.../Nka02WcDC6hCtKgQhCAP/9k=
+```
+
 ### Table Slides
 
 You can create a table slide using Markdown's table format.
@@ -312,6 +335,8 @@ A table won't be created in this case.
 
 Don't code any headings or more than one row.
 
+For the types of graphics supported see [Graphics File References](#graphics-file-references).
+
 #### Special Case: Two By Two Grid Of Graphics
 
 The best Markdown fit for four graphics on a slide is a two row table with two pairs of cells. md2pptx will "special case" such a table.
@@ -326,6 +351,8 @@ A table won't be created in this case.
 Don't code any headings or more than two rows.
 
 To achieve the best result some margins around the graphics are reduced.
+
+For the types of graphics supported see [Graphics File References](#graphics-file-references).
 
 #### Special Case: Three Graphics On A Slide
 
@@ -363,6 +390,8 @@ You can also force left alignment or right alignment of the sole graphic in a ro
 
 will align the sole top-row graphic to the left.
 
+For the types of graphics supported see [Graphics File References](#graphics-file-references).
+
 #### Special Case: One Graphic Above Another
 
 The best Markdown fit for two graphics, on above the other, on a slide is a two row table with a single cell in each row. md2pptx will "special case" such a table.
@@ -375,6 +404,8 @@ If you code something like this the two graphics will be placed in two rows of o
 A table won't be created in this case.
 
 Don't code any headings or more than two rows.
+
+For the types of graphics supported see [Graphics File References](#graphics-file-references).
 
 ### Code Slides
 
