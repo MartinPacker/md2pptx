@@ -1008,7 +1008,10 @@ body .markdown-body
 <li><a href="#presentation-title-slides">Presentation Title Slides</a></li>
 <li><a href="#presentation-section-slides">Presentation Section Slides</a></li>
 <li><a href="#bullet-slides">Bullet Slides</a></li>
-<li><a href="#graphics-slides">Graphics Slides</a></li>
+<li><a href="#graphics-slides">Graphics Slides</a><ul>
+<li><a href="#graphics-file-references">Graphics File References</a></li>
+</ul>
+</li>
 <li><a href="#table-slides">Table Slides</a><ul>
 <li><a href="#special-case-two-graphics-side-by-side">Special Case: Two Graphics Side By Side</a></li>
 <li><a href="#special-case-two-by-two-grid-of-graphics">Special Case: Two By Two Grid Of Graphics</a></li>
@@ -1157,6 +1160,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">1.2</td>
+<td align="left">1 November 2020</td>
+<td align="left">Support URLs for graphics.</td>
+</tr>
 <tr>
 <td align="left">1.1</td>
 <td align="left">25 October 2020</td>
@@ -1344,6 +1352,22 @@ sectionTitleSize: 30
 <p>The graphic will be scaled to sensibly fill the slide area.</p>
 <p>Don&rsquo;t code anything inside the square brackets.</p>
 <p><strong>HINT:</strong> If you want two graphics side by side use a single-row table, described <a href="#special-case-two-graphics-side-by-side">here</a>. If you want two graphics one above the other use a two-row, single-column table, described <a href="#special-case-one-graphic-above-another">here</a>.</p>
+<h4 id="graphics-file-references">Graphics File References<a class="headerlink" href="#graphics-file-references" title="Permanent link"></a></h4>
+<p>md2pptx supports graphics references in three different formats:</p>
+<ul>
+<li>A local file reference - <code>![](~/Documents/Customers/XYZCO/sysplexes.png)</code></li>
+<li>A HTTP(S) reference - <code>![](http://www.anyfirm.co/banner.jpeg)</code></li>
+<li>A <code>data:</code> URI reference - <code>![](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==)</code></li>
+</ul>
+<p>The <code>data:</code> URI example actually works! Try it.</p>
+<p><strong>Note:</strong> Scalable Vector Graphics (SVG) is not supported - as PowerPoint doesn&rsquo;t support it (and nor does python-pptx).</p>
+<p>For cases other than the local file, the reference - when displayed by md2pptx - is shortened to show the beginning and the end of the reference. This is to make it easy to recognise if you&rsquo;ve accidentally repeated the reference. Here is an example:</p>
+<div class="codehilite"><pre>Slides:
+=======
+
+   1     Test Title                                           --&gt; data:image/png;base64,/9j.../Nka02WcDC6hCtKgQhCAP/9k=
+</pre></div>
+
 <h3 id="table-slides">Table Slides<a class="headerlink" href="#table-slides" title="Permanent link"></a></h3>
 <p>You can create a table slide using Markdown&rsquo;s table format.</p>
 <p>Code a title with a heading level 3. Then code a table. Here is a simple example:</p>
@@ -1373,6 +1397,7 @@ sectionTitleSize: 30
 
 <p>A table won&rsquo;t be created in this case.</p>
 <p>Don&rsquo;t code any headings or more than one row.</p>
+<p>For the types of graphics supported see <a href="#graphics-file-references">Graphics File References</a>.</p>
 <h4 id="special-case-two-by-two-grid-of-graphics">Special Case: Two By Two Grid Of Graphics<a class="headerlink" href="#special-case-two-by-two-grid-of-graphics" title="Permanent link"></a></h4>
 <p>The best Markdown fit for four graphics on a slide is a two row table with two pairs of cells. md2pptx will &ldquo;special case&rdquo; such a table.</p>
 <p>If you code something like this the four graphics will be placed in two rows of two:</p>
@@ -1384,6 +1409,7 @@ sectionTitleSize: 30
 <p>A table won&rsquo;t be created in this case.</p>
 <p>Don&rsquo;t code any headings or more than two rows.</p>
 <p>To achieve the best result some margins around the graphics are reduced.</p>
+<p>For the types of graphics supported see <a href="#graphics-file-references">Graphics File References</a>.</p>
 <h4 id="special-case-three-graphics-on-a-slide">Special Case: Three Graphics On A Slide<a class="headerlink" href="#special-case-three-graphics-on-a-slide" title="Permanent link"></a></h4>
 <p>The best Markdown fit for three graphics on a slide is a two row table&colon;</p>
 <ul>
@@ -1415,6 +1441,7 @@ sectionTitleSize: 30
 
 
 <p>will align the sole top-row graphic to the left.</p>
+<p>For the types of graphics supported see <a href="#graphics-file-references">Graphics File References</a>.</p>
 <h4 id="special-case-one-graphic-above-another">Special Case: One Graphic Above Another<a class="headerlink" href="#special-case-one-graphic-above-another" title="Permanent link"></a></h4>
 <p>The best Markdown fit for two graphics, on above the other, on a slide is a two row table with a single cell in each row. md2pptx will &ldquo;special case&rdquo; such a table.</p>
 <p>If you code something like this the two graphics will be placed in two rows of one:</p>
@@ -1425,6 +1452,7 @@ sectionTitleSize: 30
 
 <p>A table won&rsquo;t be created in this case.</p>
 <p>Don&rsquo;t code any headings or more than two rows.</p>
+<p>For the types of graphics supported see <a href="#graphics-file-references">Graphics File References</a>.</p>
 <h3 id="code-slides">Code Slides<a class="headerlink" href="#code-slides" title="Permanent link"></a></h3>
 <p>You can create a slide where the body is in a monospace font, without bullets.</p>
 <p>The heading for the slide is introduced with heading level 3 - <code>###</code>.</p>

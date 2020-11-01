@@ -25,13 +25,15 @@ import datetime
 import html.parser
 from pptx.oxml.xmlchemy import OxmlElement
 from pathlib import Path
+import urllib.request
+import tempfile
 
 # import xml.etree
 from lxml import etree
 
 
-md2pptx_level = "1.1"
-md2pptx_date = "25 October, 2020"
+md2pptx_level = "1.2"
+md2pptx_date = "1 November, 2020"
 
 # Following functions are workarounds for python-pptx not having these functions for the font object
 def set_subscript(font):
@@ -71,13 +73,19 @@ def set_highlight(run, color):
 
     return run
 
+
 def removeBullet(paragraph):
     pPr = paragraph._p.get_or_add_pPr()
-    pPr.insert(0, etree.Element("{http://schemas.openxmlformats.org/drawingml/2006/main}buNone"))
+    pPr.insert(
+        0,
+        etree.Element("{http://schemas.openxmlformats.org/drawingml/2006/main}buNone"),
+    )
+
 
 def removeBullets(textFrame):
     for p in textFrame.paragraphs:
         removeBullet(p)
+
 
 def get_image_size(fname):
     """Determine the image type of fhandle and return its size.
@@ -86,7 +94,7 @@ def get_image_size(fname):
         with open(fname, "rb") as fhandle:
             head = fhandle.read(24)
             if len(head) != 24:
-                return
+                return -1, -1
             if imghdr.what(fname) == "png":
                 check = struct.unpack(">i", head[4:8])[0]
                 if check != 0x0D0A1A0A:
@@ -213,7 +221,7 @@ def parseText(text):
 
     # Replace any span ends with char 241
     text2 = text2.replace("</span>", chr(241))
-    
+
     # Replace any abbreviation starts with char 242
     text2 = text2.replace("<abbr title=", chr(242))
 
@@ -462,7 +470,7 @@ def parseText(text):
                 fragment = fragment[1:] + chr(246)
             elif state == "fnref":
                 # This terminates a footnote reference
-                textArray.append([state,fragment])
+                textArray.append([state, fragment])
                 state = "N"
                 fragment = ""
             else:
@@ -511,11 +519,18 @@ def parseText(text):
             splitting = fragment.split(">")
             spanText = splitting[1]
             className = splitting[0].strip().strip("'").strip('"')
-            if (className in bgcolors) | (className in fgcolors) | (className in emphases):
+            if (
+                (className in bgcolors)
+                | (className in fgcolors)
+                | (className in emphases)
+            ):
                 textArray.append(["Span", [className, spanText]])
                 fragment = ""
             else:
-                print(className + " is not defined. Ignoring reference to it in <span> element.")
+                print(
+                    className
+                    + " is not defined. Ignoring reference to it in <span> element."
+                )
                 fragment = spanText
         elif ord(c) == 238:
             if fragment != "":
@@ -535,13 +550,13 @@ def parseText(text):
 
 def addFormattedText(p, text):
     parsedText = parseText(text)
-    
+
     # Replace chr(237) with > in each Fragment
     for f in range(len(parsedText)):
-       if parsedText[f][0] == "Span":
-           parsedText[f][1][1] = parsedText[f][1][1].replace(chr(237),">")
-       else:
-           parsedText[f][-1] = parsedText[f][-1].replace(chr(237),">")
+        if parsedText[f][0] == "Span":
+            parsedText[f][1][1] = parsedText[f][1][1].replace(chr(237), ">")
+        else:
+            parsedText[f][-1] = parsedText[f][-1].replace(chr(237), ">")
 
     # Prime flattened Text
     flattenedText = ""
@@ -570,7 +585,7 @@ def addFormattedText(p, text):
             subfragment = subfragment.replace("&#x23;", "#")
 
             run = p.add_run()
-            if fragType not in ["Link","fnref"]:
+            if fragType not in ["Link", "fnref"]:
                 run.text = subfragment
 
             if fragType == "I":
@@ -589,7 +604,7 @@ def addFormattedText(p, text):
                     run.text = "[" + str(footnoteNumber + 1) + "]"
                 else:
                     run.text = "[?]"
-                    print (   "Error: Footnote reference '" + fnref + "' unresolved.")
+                    print("Error: Footnote reference '" + fnref + "' unresolved.")
                 linkText = "!"
                 fragment = ""
 
@@ -600,15 +615,15 @@ def addFormattedText(p, text):
                     font = run.font
                     font.color.rgb = RGBColor.from_string(fgcolors[className])
                 if className in emphases:
-                    if ' bold ' in ' ' + emphases[className] + ' ':
+                    if " bold " in " " + emphases[className] + " ":
                         font.bold = True
                     else:
                         font.bold = False
-                    if ' italic ' in ' ' + emphases[className] + ' ':
+                    if " italic " in " " + emphases[className] + " ":
                         font.italic = True
                     else:
                         font.italic = False
-                    if ' underline ' in ' ' + emphases[className] + ' ':
+                    if " underline " in " " + emphases[className] + " ":
                         font.underline = True
                     else:
                         font.underline = False
@@ -798,7 +813,38 @@ def sectionSlide(presentation, slideNumber, titleText, subtitleText):
     return slide
 
 
+def handleWhateverGraphicType(graphicFilename):
+    # Handles both physical file and URI file types
+    if graphicFilename.find(":"):
+        # Is a URI - so we have to retrieve it and store it in a temporary file
+
+        # Massage the URI into a printable filename
+        if len(graphicFilename) > 50:
+            printableGraphicFilename = (
+                graphicFilename[:25] + "..." + graphicFilename[-25:]
+            )
+
+        # Retrieve the data
+        operUrl = urllib.request.urlopen(graphicFilename)
+        data = operUrl.read()
+
+        # Store in a temporary file
+        graphicFile = tempfile.NamedTemporaryFile(delete=False)
+        graphicFile.write(data)
+
+        # Retrieve the temporary file name
+        graphicFilename = graphicFile.name
+    else:
+        # Is a physical file
+        printableGraphicFilename = graphicFilename
+
+    return graphicFilename, printableGraphicFilename
+
+
 def graphicSlide(presentation, slideNumber, titleText, graphicFilename):
+    graphicFilename, printableGraphicFilename = handleWhateverGraphicType(
+        graphicFilename
+    )
     if titleText != "":
         slide = presentation.slides.add_slide(
             presentation.slide_layouts[titleOnlyLayout]
@@ -814,7 +860,7 @@ def graphicSlide(presentation, slideNumber, titleText, graphicFilename):
             + "     "
             + flattenedTitle.ljust(50)
             + "   --> "
-            + graphicFilename
+            + printableGraphicFilename
         )
 
         # Figure out graphic height on slide
@@ -825,7 +871,7 @@ def graphicSlide(presentation, slideNumber, titleText, graphicFilename):
             + "        "
             + " ".ljust(50)
             + "--> "
-            + graphicFilename
+            + printableGraphicFilename
         )
 
         slide = presentation.slides.add_slide(presentation.slide_layouts[blankLayout])
@@ -842,7 +888,7 @@ def graphicSlide(presentation, slideNumber, titleText, graphicFilename):
     # Get image dimensions
     imgWidth, imgHeight = get_image_size(graphicFilename)
     if imgWidth == -1:
-        print("Missing image file: " + graphicFilename)
+        print("Missing image file: " + printableGraphicFilename)
         return slide
 
     heightIfWidthUsed = maxPicWidth * imgHeight / imgWidth
@@ -1163,7 +1209,7 @@ def tableSlide(presentation, slideNumber, titleText, table):
         if gridRows == 1:
             gridColumns = len(table[0])
         else:
-            gridColumns = max(len(table[0]),len(table[1]))
+            gridColumns = max(len(table[0]), len(table[1]))
         isThreeUp = False
         topGraphicCount = 0
 
@@ -1173,6 +1219,10 @@ def tableSlide(presentation, slideNumber, titleText, table):
             topLeftGraphicMatch = graphicRegex.match(topLeftSide)
             topLeftGraphicTitle = topLeftGraphicMatch.group(1)
             topLeftGraphicFilename = topLeftGraphicMatch.group(2)
+            (
+                topLeftGraphicFilename,
+                printableTopLeftGraphicFilename,
+            ) = handleWhateverGraphicType(topLeftGraphicFilename)
             topLeftHTML = ""
             topGraphicCount += 1
         else:
@@ -1189,6 +1239,10 @@ def tableSlide(presentation, slideNumber, titleText, table):
                 topRightGraphicMatch = graphicRegex.match(topRightSide)
                 topRightGraphicTitle = topRightGraphicMatch.group(1)
                 topRightGraphicFilename = topRightGraphicMatch.group(2)
+                (
+                    topRightGraphicFilename,
+                    printableTopRightGraphicFilename,
+                ) = handleWhateverGraphicType(topRightGraphicFilename)
                 topRightHTML = ""
                 topGraphicCount += 1
             else:
@@ -1210,8 +1264,12 @@ def tableSlide(presentation, slideNumber, titleText, table):
                 bottomLeftGraphicMatch = graphicRegex.match(bottomLeftSide)
                 bottomLeftGraphicTitle = bottomLeftGraphicMatch.group(1)
                 bottomLeftGraphicFilename = bottomLeftGraphicMatch.group(2)
+                (
+                    bottomLeftGraphicFilename,
+                    printableBottomLeftGraphicFilename,
+                ) = handleWhateverGraphicType(bottomLeftGraphicFilename)
                 bottomLeftHTML = ""
-                bottomGraphicCount +=1
+                bottomGraphicCount += 1
             else:
                 bottomLeftGraphicFilename = ""
                 bottomLeftHTML = bottomLeftSide
@@ -1230,8 +1288,12 @@ def tableSlide(presentation, slideNumber, titleText, table):
                         bottomRightGraphicMatch = graphicRegex.match(bottomRightSide)
                         bottomRightGraphicTitle = bottomRightGraphicMatch.group(1)
                         bottomRightGraphicFilename = bottomRightGraphicMatch.group(2)
+                        (
+                            bottomRightGraphicFilename,
+                            printableBottomRightGraphicFilename,
+                        ) = handleWhateverGraphicType(bottomRightGraphicFilename)
                         bottomRightHTML = ""
-                        bottomGraphicCount +=1
+                        bottomGraphicCount += 1
                     else:
                         bottomRightGraphicFilename = ""
                         bottomRightHTML = bottomRightSide
@@ -1255,9 +1317,9 @@ def tableSlide(presentation, slideNumber, titleText, table):
                 + "     "
                 + flattenedTitle.ljust(50)
                 + "   --> "
-                + topLeftGraphicFilename.ljust(30)
+                + printableTopLeftGraphicFilename.ljust(30)
                 + " , "
-                + topRightGraphicFilename
+                + printableTopRightGraphicFilename
             )
         else:
             # Doing 2 row, single column graphics slide
@@ -1266,7 +1328,7 @@ def tableSlide(presentation, slideNumber, titleText, table):
                 + "     "
                 + flattenedTitle.ljust(50)
                 + "   --> "
-                + topLeftGraphicFilename.ljust(30)
+                + printableTopLeftGraphicFilename.ljust(30)
             )
 
         if gridRows == 2:
@@ -1277,9 +1339,9 @@ def tableSlide(presentation, slideNumber, titleText, table):
                     + "     "
                     + " ".ljust(50)
                     + "   --> "
-                    + bottomLeftGraphicFilename.ljust(30)
+                    + printableBottomLeftGraphicFilename.ljust(30)
                     + " , "
-                    + bottomRightGraphicFilename
+                    + printableBottomRightGraphicFilename
                 )
             else:
                 print(
@@ -1287,7 +1349,7 @@ def tableSlide(presentation, slideNumber, titleText, table):
                     + "     "
                     + " ".ljust(50)
                     + "   --> "
-                    + bottomLeftGraphicFilename.ljust(30)
+                    + printableBottomLeftGraphicFilename.ljust(30)
                 )
 
         # Get top left image dimensions
@@ -1295,9 +1357,12 @@ def tableSlide(presentation, slideNumber, titleText, table):
             topLeftImgWidth, topLeftImgHeight = get_image_size(topLeftGraphicFilename)
             if topLeftImgWidth == -1:
                 if gridRows == 2:
-                    print("Missing top left image file: " + topLeftGraphicFilename)
+                    print(
+                        "Missing top left image file: "
+                        + printableTopLeftGraphicFilename
+                    )
                 else:
-                    print("Missing left image file: " + topLeftGraphicFilename)
+                    print("Missing left image file: " + printableTopLeftGraphicFilename)
 
                 return slide
 
@@ -1309,9 +1374,15 @@ def tableSlide(presentation, slideNumber, titleText, table):
                 )
                 if topRightImgWidth == -1:
                     if gridRows == 2:
-                        print("Missing top right image file: " + topRightGraphicFilename)
+                        print(
+                            "Missing top right image file: "
+                            + printableTopRightGraphicFilename
+                        )
                     else:
-                        print("Missing right image file: " + topRightGraphicFilename)
+                        print(
+                            "Missing right image file: "
+                            + printableTopRightGraphicFilename
+                        )
 
                     return slide
 
@@ -1322,7 +1393,10 @@ def tableSlide(presentation, slideNumber, titleText, table):
                     bottomLeftGraphicFilename
                 )
                 if bottomLeftImgWidth == -1:
-                    print("Missing bottom left image file: " + bottomLeftGraphicFilename)
+                    print(
+                        "Missing bottom left image file: "
+                        + printableBottomLeftGraphicFilename
+                    )
                     return slide
 
             if gridColumns == 2:
@@ -1338,7 +1412,7 @@ def tableSlide(presentation, slideNumber, titleText, table):
                         if bottomRightImgWidth == -1:
                             print(
                                 "Missing bottom right image file: "
-                                + bottomRightGraphicFilename
+                                + printableBottomRightGraphicFilename
                             )
                             return slide
 
@@ -1360,7 +1434,7 @@ def tableSlide(presentation, slideNumber, titleText, table):
             maxPicWidth = presentation.slide_width - marginBase * 2
 
         # Top Left Picture
-        if topLeftGraphicFilename !="":
+        if topLeftGraphicFilename != "":
             topLeftHeightIfWidthUsed = maxPicWidth * topLeftImgHeight / topLeftImgWidth
             topLeftWidthIfHeightUsed = maxPicHeight * topLeftImgWidth / topLeftImgHeight
 
@@ -1392,7 +1466,9 @@ def tableSlide(presentation, slideNumber, titleText, table):
                     topLeftPicX = midSlideX - topLeftPicWidth / 2
 
             # Calculate vertical start
-            topLeftPicY = titleBottom + marginBase + (maxPicHeight - topLeftPicHeight) / 2
+            topLeftPicY = (
+                titleBottom + marginBase + (maxPicHeight - topLeftPicHeight) / 2
+            )
             if gridRows == 2:
                 topLeftPicY -= Inches(0.2)
 
@@ -1421,7 +1497,10 @@ def tableSlide(presentation, slideNumber, titleText, table):
 
                     # Calculate horizontal start
                     topRightPicX = (
-                        presentation.slide_width + midSlideX - topRightPicWidth - marginBase
+                        presentation.slide_width
+                        + midSlideX
+                        - topRightPicWidth
+                        - marginBase
                     ) / 2
                 else:
                     # Use the width to scale
@@ -1430,7 +1509,10 @@ def tableSlide(presentation, slideNumber, titleText, table):
 
                     # Calculate horizontal start
                     topRightPicX = (
-                        presentation.slide_width + midSlideX - topRightPicWidth - marginBase
+                        presentation.slide_width
+                        + midSlideX
+                        - topRightPicWidth
+                        - marginBase
                     ) / 2
 
                 # Calculate vertical start
@@ -1465,9 +1547,10 @@ def tableSlide(presentation, slideNumber, titleText, table):
                     bottomLeftPicHeight = maxPicHeight
 
                     # Calculate horizontal start
-                    if (gridColumns == 2) & (bottomRightFilename != ""):
+                    if (gridColumns == 2) & (bottomRightGraphicFilename != ""):
                         bottomLeftPicX = (
-                            marginBase + (midSlideX - marginBase - bottomLeftPicWidth) / 2
+                            marginBase
+                            + (midSlideX - marginBase - bottomLeftPicWidth) / 2
                         )
                     else:
                         bottomLeftPicX = midSlideX - bottomLeftPicWidth / 2
@@ -1538,7 +1621,9 @@ def tableSlide(presentation, slideNumber, titleText, table):
 
                     # Calculate vertical start
                     bottomRightPicY = (
-                        titleBottom + marginBase + (maxPicHeight + bottomRightPicHeight) / 2
+                        titleBottom
+                        + marginBase
+                        + (maxPicHeight + bottomRightPicHeight) / 2
                     )
 
                     if gridRows == 2:
@@ -1834,6 +1919,7 @@ def createGlossarySlides(prs, slideNumber, abbrevDictionary):
     slide = tableSlide(prs, slideNumber, title, table_rows)
     slideNumber += 1
 
+
 def createFootnoteSlides(prs, slideNumber, footnoteDefinitions):
     footnoteNumber = 0
     footnotesSlideNumber = 0
@@ -1854,16 +1940,17 @@ def createFootnoteSlides(prs, slideNumber, footnoteDefinitions):
                     title = footnotesTitle
 
                 slide = contentSlide(prs, slideNumber, title, "", bullets)
-                
+
                 # Turn off bulleting
                 removeBullets(findBodyShape(slide).text_frame)
-
 
                 slideNumber += 1
             bullets = []
             old_sNum = 0
 
-        bullets.append([1,str(footnoteNumber + 1) + ". " + footnoteDefinitions[footnoteNumber][1]])
+        bullets.append(
+            [1, str(footnoteNumber + 1) + ". " + footnoteDefinitions[footnoteNumber][1]]
+        )
 
         footnoteNumber += 1
 
@@ -1877,10 +1964,10 @@ def createFootnoteSlides(prs, slideNumber, footnoteDefinitions):
         title = footnotesTitle
 
     slide = contentSlide(prs, slideNumber, title, "", bullets)
-    
+
     # Turn off bulleting
     removeBullets(findBodyShape(slide).text_frame)
-       
+
     slideNumber += 1
 
 
@@ -1899,13 +1986,13 @@ if len(sys.argv) > 2:
     # Have input file as well as output file
     input_filename = sys.argv[1]
     output_filename = sys.argv[2]
-    
+
     if Path(input_filename).exists():
         input_path = Path(input_filename)
         with input_path.open() as file:
             input_file = file.readlines()
     else:
-        print('Input file specified but does not exist. Terminating.')
+        print("Input file specified but does not exist. Terminating.")
 elif len(sys.argv) == 1:
     print("No parameters. Terminating")
     sys.exit()
@@ -2230,7 +2317,9 @@ if slideTemplateFile != "":
         script_path = os.path.dirname(__file__)
         slideTemplateFile = script_path + os.sep + slideTemplateFile
         if not Path(slideTemplateFile).exists():
-            print(f"\nTemplate file {originalSlideTemplateFile} does not exist. Terminating.")
+            print(
+                f"\nTemplate file {originalSlideTemplateFile} does not exist. Terminating."
+            )
             sys.exit()
 
     print(f"\nUsing {slideTemplateFile} as base for presentation")
@@ -2266,7 +2355,7 @@ slide = None
 tasks = []
 
 # Pass to concatenate lines with continuations
-previous_line="\n"
+previous_line = "\n"
 lines_after_concatenation = []
 for line in after_metadata_and_HTML:
     if line == "\n":
@@ -2280,36 +2369,38 @@ for line in after_metadata_and_HTML:
         if line.lstrip()[0] not in "*#\|":
             if previous_line[0:2] != "# ":
                 # Previous line was not Heading Level 1 so concatenate
-                lines_after_concatenation[-1] = lines_after_concatenation[-1].rstrip() + " " + line.lstrip()
+                lines_after_concatenation[-1] = (
+                    lines_after_concatenation[-1].rstrip() + " " + line.lstrip()
+                )
             else:
                 lines_after_concatenation.append(line)
         else:
             lines_after_concatenation.append(line)
-    
+
     # Store previous line to see if it was H1 or blank
     previous_line = line
 
 # Pass to get footnote definitions
-metadata_linenumber=0
+metadata_linenumber = 0
 for line in lines_after_concatenation:
     line = line.rstrip()
     if footnoteDefinitionRegex.match(line):
         m = footnoteDefinitionRegex.match(line)
 
         fnRef = m.group(1).strip()
-        fnText= m.group(2).strip()
-        footnoteDefinitions.append([fnRef,fnText])
+        fnText = m.group(2).strip()
+        footnoteDefinitions.append([fnRef, fnText])
         footnoteReferences.append(fnRef)
-        
+
         lines_after_concatenation[metadata_linenumber] = "<ignoreme>"
-    metadata_linenumber +=1
+    metadata_linenumber += 1
 
 # Main pass over the input file, now that footnote
 # references have been gathered
 for line in lines_after_concatenation:
     line = line.rstrip()
     line = line.replace("\t", "    ")
-    
+
     if line == "<ignoreme>":
         # Line was taken care of in the previous pass
         continue
@@ -2366,7 +2457,6 @@ for line in lines_after_concatenation:
             done = ""
 
         tasks.append([slideNumber + 1, text, dueDate, tags, done])
-
 
     elif line[:3] == "###":
         # Heading Level 3 - slide
