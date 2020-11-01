@@ -23,10 +23,11 @@ You will probably need to issue the following command from the directory where y
 
   `chmod +x md2pptx`
 
-I would also suggest you start with a presentation that references Martin Master.pptx in the metadata (before the first blank line). Here is a very simple deck that does exactly that.
+I would also suggest you start with a presentation that references Martin Template.pptx in the metadata (before the first blank line). \
+Here is a very simple deck that does exactly that.
 
 ```
-master: Martin Master.pptx
+template: Martin Template.pptx
 
 # This Is A Presentation Title Page
 
