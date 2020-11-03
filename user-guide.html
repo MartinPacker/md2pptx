@@ -1162,8 +1162,8 @@ THE SOFTWARE.
 <tbody>
 <tr>
 <td align="left">1.2</td>
-<td align="left">1 November 2020</td>
-<td align="left">Support URLs for graphics.</td>
+<td align="left">3 November 2020</td>
+<td align="left">Support URLs for graphics. Reworked Processing Summary slide to use a flowed table.</td>
 </tr>
 <tr>
 <td align="left">1.1</td>
@@ -1301,13 +1301,14 @@ sectionTitleSize: 30
 <p>The first slide is special, and an inevitable feature of using the python-pptx library. You will probably want to remove it before publishing.</p>
 <p>Because the first slide has to be there md2pptx uses it to create a processing summary. The processing summary slide shows processing options, the time and date the presentation was created by md2pptx, and metadata.</p>
 <p>Metadata is specified in the first three lines of this sample. In general metadata is the lines before the first blank line. It consists of key/value pairs, with the key separated from the value by a colon.</p>
-<p>In this case the metadata specifies three things:</p>
+<p>In this case the metadata specifies a number of things:</p>
 <ol>
-<li>The Powerpoint file the presentation is based on is &ldquo;Martin Template.pptx&rdquo; - which is provided with md2pptx.</li>
-<li>Each page with a title has a title font 24 pixels high.</li>
-<li>Each presentation section slide has a title font 30 pixels high.</li>
+<li>The Powerpoint file the presentation is based on is &ldquo;hipodz.pptx&rdquo;.</li>
+<li>Each page with a title has a title font 22 points high.</li>
+<li>Each presentation section slide has a title font 30 points high.</li>
+<li>A number of other styling-related specifications.</li>
 </ol>
-<p>All of the above are optional but you will almost certainly want to specify a template. Feel free to copy Martin Template.pptx and make stylistic changes.</p>
+<p>All of the above are optional but you will almost certainly want to specify a template. Feel free to copy Martin Template.pptx - which is included with md2pptx -  and make stylistic changes.</p>
 <p>For more on metadata see <a href="#controlling-the-presentation-with-metadata">Controlling The Presentation With Metadata</a>.</p>
 <p>As you can see the format of each slide is fairly straightforward. How to code slides is described in the following sections.</p>
 <h3 id="presentation-title-slides">Presentation Title Slides<a class="headerlink" href="#presentation-title-slides" title="Permanent link"></a></h3>
@@ -1518,7 +1519,7 @@ sectionTitleSize: 30
 <th align="left">Effect</th>
 <th align="left">HTML Element</th>
 <th align="left">Example</th>
-<th align="left">Produces</th>
+<th align="center">Produces</th>
 </tr>
 </thead>
 <tbody>
@@ -1526,25 +1527,25 @@ sectionTitleSize: 30
 <td align="left">Superscript</td>
 <td align="left"><code>sup</code></td>
 <td align="left"><code>x&lt;sup&gt;2&lt;/sup&gt;</code></td>
-<td align="left">x<sup>2</sup></td>
+<td align="center">x<sup>2</sup></td>
 </tr>
 <tr>
 <td align="left">Subscript</td>
 <td align="left"><code>sub</code></td>
 <td align="left"><code>C&lt;sub&gt;6&lt;/sub&gt;H&lt;sub&gt;12&lt;/sub&gt;O&lt;sub&gt;6&lt;/sub&gt;</code></td>
-<td align="left">C<sub>6</sub>H<sub>12</sub>O<sub>6</sub></td>
+<td align="center">C<sub>6</sub>H<sub>12</sub>O<sub>6</sub></td>
 </tr>
 <tr>
 <td align="left">Underline</td>
 <td align="left"><code>ins</code></td>
 <td align="left"><code>this is &lt;ins&gt;important&lt;/ins&gt;</code></td>
-<td align="left">this is <ins>important</ins></td>
+<td align="center">this is <ins>important</ins></td>
 </tr>
 <tr>
 <td align="left">Strikethrough</td>
 <td align="left"><code>del</code></td>
 <td align="left"><code>this is &lt;del&gt;obsolete&gt;/del&gt;</code></td>
-<td align="left">this is <del>obsolete</del></td>
+<td align="center">this is <del>obsolete</del></td>
 </tr>
 </tbody>
 </table>
@@ -1560,6 +1561,13 @@ sectionTitleSize: 30
 <li><code>style.fgcolor</code> - described in <a href="#associating-a-class-name-with-a-foreground-colour-with-stylefgcolor">Associating A Class Name With A Foreground Colour With <code>style.fgcolor</code></a>.</li>
 <li><code>style.emphasis</code> - described in <a href="#associating-a-class-name-with-text-emphasis-with-styleemphasis">Associating A Class Name With Text Emphasis With <code>style.emphasis</code></a>.</li>
 </ul>
+<p>If you coded metadata</p>
+<div class="codehilite"><pre>style.fgcolor.yellow: FFFF00
+</pre></div>
+
+
+<p>the result would be something like this:</p>
+<p>I would like to highlight <span style="color: #FFFF00">this bit</span> but not <strong>this</strong> bit.</p>
 <p><strong>Note:</strong> A fragment of text in a span can&rsquo;t use any other text effect, such as bolding or italics.</p>
 <p>The class name can be specified with double quotes, single quotes, or no quotes at all.</p>
 <p>If you want to be able to process the text using a normal Markdown processor you can code Cascading Style Sheet (CSS) using the HTML <code>&lt;style&gt;</code> element. md2pptx will ignore any HTML after the metadata and before the first real Markdown text. For example:</p>
@@ -1576,7 +1584,7 @@ sectionTitleSize: 30
 </pre></div>
 
 
-<p>The above uses only the style elements that md2pptx supports with <code>style.</code> metadata. I relies on you coding</p>
+<p>The above uses only the style elements that md2pptx supports with <code>style.</code> metadata. It relies on you coding</p>
 <div class="codehilite"><pre>&lt;span class=&quot;mytest&quot;&gt;Here is some text&lt;/span&gt;
 </pre></div>
 
@@ -1590,9 +1598,9 @@ sectionTitleSize: 30
 <th align="left">Entity Reference</th>
 <th align="left">Character</th>
 <th align="left">Entity Reference</th>
-<th align="left">Character</th>
-<th align="left">Entity Reference</th>
-<th align="left">Character</th>
+<th align="center">Character</th>
+<th align="center">Entity Reference</th>
+<th align="center">Character</th>
 </tr>
 </thead>
 <tbody>
@@ -1600,105 +1608,105 @@ sectionTitleSize: 30
 <td align="left"><code>&amp;lt;</code></td>
 <td align="left">&lt;</td>
 <td align="left"><code>&amp;larr;</code></td>
-<td align="left">&larr;</td>
-<td align="left"><code>&amp;auml;</code></td>
-<td align="left">&auml;</td>
+<td align="center">&larr;</td>
+<td align="center"><code>&amp;auml;</code></td>
+<td align="center">&auml;</td>
 </tr>
 <tr>
 <td align="left"><code>&amp;gt;</code></td>
 <td align="left">&gt;</td>
 <td align="left"><code>&amp;rarr;</code></td>
-<td align="left">&rarr;</td>
-<td align="left"><code>&amp;Auml;</code></td>
-<td align="left">&Auml;</td>
+<td align="center">&rarr;</td>
+<td align="center"><code>&amp;Auml;</code></td>
+<td align="center">&Auml;</td>
 </tr>
 <tr>
 <td align="left"><code>&amp;ge;</code></td>
 <td align="left">&ge;</td>
 <td align="left"><code>&amp;uarr;</code></td>
-<td align="left">&uarr;</td>
-<td align="left"><code>&amp;uuml;</code></td>
-<td align="left">&uuml;</td>
+<td align="center">&uarr;</td>
+<td align="center"><code>&amp;uuml;</code></td>
+<td align="center">&uuml;</td>
 </tr>
 <tr>
 <td align="left"><code>&amp;le;</code></td>
 <td align="left">&le;</td>
 <td align="left"><code>&amp;darr;</code></td>
-<td align="left">&darr;</td>
-<td align="left"><code>&amp;Uuml;</code></td>
-<td align="left">&Uuml;</td>
+<td align="center">&darr;</td>
+<td align="center"><code>&amp;Uuml;</code></td>
+<td align="center">&Uuml;</td>
 </tr>
 <tr>
 <td align="left"><code>&amp;asymp;</code></td>
 <td align="left">&asymp;</td>
 <td align="left"><code>&amp;harr;</code></td>
-<td align="left">&harr;</td>
-<td align="left"><code>&amp;ouml;</code></td>
-<td align="left">&ouml;</td>
+<td align="center">&harr;</td>
+<td align="center"><code>&amp;ouml;</code></td>
+<td align="center">&ouml;</td>
 </tr>
 <tr>
 <td align="left"><code>&amp;Delta;</code></td>
 <td align="left">&Delta;</td>
 <td align="left"><code>&amp;varr;</code></td>
-<td align="left">&varr;</td>
-<td align="left"><code>&amp;Ouml;</code></td>
-<td align="left">&Ouml;</td>
+<td align="center">&varr;</td>
+<td align="center"><code>&amp;Ouml;</code></td>
+<td align="center">&Ouml;</td>
 </tr>
 <tr>
 <td align="left"><code>&amp;delta;</code></td>
 <td align="left">&delta;</td>
 <td align="left"><code>&amp;nearr;</code></td>
-<td align="left">&nearr;</td>
-<td align="left"><code>&amp;szlig;</code></td>
-<td align="left">&szlig;</td>
+<td align="center">&nearr;</td>
+<td align="center"><code>&amp;szlig;</code></td>
+<td align="center">&szlig;</td>
 </tr>
 <tr>
 <td align="left"><code>&amp;sim;</code></td>
 <td align="left">&sim;</td>
 <td align="left"><code>&amp;nwarr;</code></td>
-<td align="left">&nwarr;</td>
-<td align="left"><code>&amp;euro;</code></td>
-<td align="left">&euro;</td>
+<td align="center">&nwarr;</td>
+<td align="center"><code>&amp;euro;</code></td>
+<td align="center">&euro;</td>
 </tr>
 <tr>
 <td align="left"><code>&amp;lowast;</code></td>
 <td align="left">&lowast;</td>
 <td align="left"><code>&amp;searr;</code></td>
-<td align="left">&searr;</td>
-<td align="left"></td>
-<td align="left"></td>
+<td align="center">&searr;</td>
+<td align="center"></td>
+<td align="center"></td>
 </tr>
 <tr>
 <td align="left"><code>&amp;semi;</code></td>
 <td align="left">&semi;</td>
 <td align="left"><code>&amp;swarr;</code></td>
-<td align="left">&swarr;</td>
-<td align="left"></td>
-<td align="left"></td>
+<td align="center">&swarr;</td>
+<td align="center"></td>
+<td align="center"></td>
 </tr>
 <tr>
 <td align="left"><code>&amp;colon;</code></td>
 <td align="left">&colon;</td>
 <td align="left"><code>&amp;lsqb;</code></td>
-<td align="left">&lsqb;</td>
-<td align="left"></td>
-<td align="left"></td>
+<td align="center">&lsqb;</td>
+<td align="center"></td>
+<td align="center"></td>
 </tr>
 <tr>
 <td align="left"><code>&amp;amp;</code></td>
 <td align="left">&amp;</td>
 <td align="left"><code>&amp;rsqb;</code></td>
-<td align="left">&rsqb;</td>
-<td align="left"></td>
-<td align="left"></td>
+<td align="center">&rsqb;</td>
+<td align="center"></td>
+<td align="center"></td>
 </tr>
 <tr>
 <td align="left"><code>&amp;comma;</code></td>
 <td align="left">&comma;</td>
 <td align="left"><code>&amp;infin;</code></td>
-<td align="left">&infin;</td>
-<td align="left"></td>
-<td align="left"></td>
+<td align="center">&infin;</td>
+<td align="center"></td>
+<td align="center"></td>
 </tr>
 </tbody>
 </table>

@@ -152,9 +152,9 @@ To quote from the python-pptx license statement:
 
 ## Change Log
 
-|Level|Date|What|
-|:--|:---|:-----|
-|1.2|1 November 2020|Support URLs for graphics.|
+|Level|Date|What |
+|:-|:--|:----|
+|1.2|3 November 2020|Support URLs for graphics. Reworked Processing Summary slide to use a flowed table.|
 |1.1|25 October 2020|Introduce Template as a better replacement for Master - which still works. Add German characters. Better template file searching. Escape underscore. Better handling of continuation onto second and subsequent lines.|
 |1.0|13 October 2020|Python 3&comma; Support input filename as first command line parameter.|
 |0.9|4 September 2020|Footnote slide support|
@@ -213,13 +213,14 @@ Because the first slide has to be there md2pptx uses it to create a processing s
 
 Metadata is specified in the first three lines of this sample. In general metadata is the lines before the first blank line. It consists of key/value pairs, with the key separated from the value by a colon.
 
-In this case the metadata specifies three things:
+In this case the metadata specifies a number of things:
 
-1. The Powerpoint file the presentation is based on is "Martin Template.pptx" - which is provided with md2pptx.
-1. Each page with a title has a title font 24 pixels high.
-1. Each presentation section slide has a title font 30 pixels high.
+1. The Powerpoint file the presentation is based on is "hipodz.pptx".
+1. Each page with a title has a title font 22 points high.
+1. Each presentation section slide has a title font 30 points high.
+1. A number of other styling-related specifications.
 
-All of the above are optional but you will almost certainly want to specify a template. Feel free to copy Martin Template.pptx and make stylistic changes.
+All of the above are optional but you will almost certainly want to specify a template. Feel free to copy Martin Template.pptx - which is included with md2pptx -  and make stylistic changes.
 
 For more on metadata see [Controlling The Presentation With Metadata](#controlling-the-presentation-with-metadata).
 
@@ -493,7 +494,7 @@ To force a line break code `<br/>`. This, being HTML, is legitimate in Markdown 
 Some other HTML-originated text effects work - as Markdown allows you to embed HTML (elements and attributes):
 
 |Effect|HTML Element|Example|Produces|
-|:--|:---|:-----|:-|
+|:-|:--|:----|:|
 |Superscript|`sup`|`x<sup>2</sup>`|x<sup>2</sup>|
 |Subscript|`sub`|`C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>`|C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>|
 |Underline|`ins`|`this is <ins>important</ins>`|this is <ins>important</ins>|
@@ -510,6 +511,14 @@ In this example the `span` element specifies a `class` attribute. The class name
 * `style.bgcolor.` - described in <a href="#associating-a-class-name-with-a-background-colour-with-stylebgcolor">Associating A Class Name With A Background Colour With <code>style.bgcolor</code></a>.
 * `style.fgcolor` - described in <a href="#associating-a-class-name-with-a-foreground-colour-with-stylefgcolor">Associating A Class Name With A Foreground Colour With <code>style.fgcolor</code></a>.
 * `style.emphasis` - described in <a href="#associating-a-class-name-with-text-emphasis-with-styleemphasis">Associating A Class Name With Text Emphasis With <code>style.emphasis</code></a>.
+
+If you coded metadata
+
+    style.fgcolor.yellow: FFFF00
+
+the result would be something like this:
+
+I would like to highlight <span style="color: #FFFF00">this bit</span> but not **this** bit.
 
 
 **Note:** A fragment of text in a span can't use any other text effect, such as bolding or italics.
@@ -529,7 +538,7 @@ If you want to be able to process the text using a normal Markdown processor you
 	}
 	</style>
 
-The above uses only the style elements that md2pptx supports with `style.` metadata. I relies on you coding
+The above uses only the style elements that md2pptx supports with `style.` metadata. It relies on you coding
 
 	<span class="mytest">Here is some text</span>
 
@@ -541,7 +550,7 @@ md2pptx supports a few [HTML entity references](https://en.wikipedia.org/wiki/Li
 
 
 |Entity Reference|Character|Entity Reference|Character|Entity Reference|Character|
-|:--|:---|:-----|:-|:-|:-|
+|:-|:--|:----|:|:|:|
 |`&lt;`|&lt;|`&larr;`|&larr;|`&auml;`|&auml;|
 |`&gt;`|&gt;|`&rarr;`|&rarr;|`&Auml;`|&Auml;|
 |`&ge;`|&ge;|`&uarr;`|&uarr;|`&uuml;`|&uuml;|
@@ -985,7 +994,7 @@ Don't change the order of the slides in the slide master view and don't delete a
 The following table shows how each slide type is created.
 
 |Slide Type|Origin|Non-Title Content|
-|:--|:---|:-----|
+|:-|:--|:----|
 |Processing Summary|Original slide from Template|Metadata: Second Shape|
 |Presentation Title|Slide Layout 0|Subtitle: Second Shape|
 |Section|Slide Layout 1|Subtitle: Second Shape|
