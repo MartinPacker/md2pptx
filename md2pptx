@@ -33,7 +33,7 @@ from lxml import etree
 
 
 md2pptx_level = "1.2"
-md2pptx_date = "1 November, 2020"
+md2pptx_date = "3 November, 2020"
 
 # Following functions are workarounds for python-pptx not having these functions for the font object
 def set_subscript(font):
@@ -704,6 +704,7 @@ def addFooter(presentation, slideNumber, slide):
 
 
 def processingSummarySlide(presentation, metadata):
+    # Use the first slide in the template presentation as the base
     slide = presentation.slides[0]
 
     # Build "run time" text
@@ -711,7 +712,7 @@ def processingSummarySlide(presentation, metadata):
     runTime = now.strftime("%H:%M").lstrip()
     runDate = now.strftime("%e %B, %G").lstrip()
     runDateTime = "Presentation built: " + runTime + " on " + runDate
-
+    
     # Find title
     title = findSlideTitle(slide)
 
@@ -719,27 +720,77 @@ def processingSummarySlide(presentation, metadata):
     titleBottom = formatTitle(presentation, title, "")
 
     # Add title text into formatted title
-    addFormattedText(title.text_frame.paragraphs[0], banner)
+    addFormattedText(title.text_frame.paragraphs[0], banner + "<br/>" + runDateTime)
     title.text_frame.paragraphs[0].font.size = Pt(pageTitleSize)
 
-    # Get second shape
-    body_shape = findBodyShape(slide)
 
-    body_shape.text = runDateTime
+    # Work out how many pairs of columns we need
+    metadataRows = len(metadata)
+    maxMetadataRowsPerColumn = 15
+    if metadataRows >= 2 * maxMetadataRowsPerColumn:
+        metadataColumnPairs = 3
+    elif metadataRows >= maxMetadataRowsPerColumn:
+        metadataColumnPairs = 2
+    else:
+        metadataColumnPairs = 1
 
-    tf = body_shape.text_frame
+    columns = metadataColumnPairs * 2
+    rows = min(maxMetadataRowsPerColumn, metadataRows)
+    
+    # Figure out table height
+    maxTableHeight = (
+        presentation.slide_height
+        - titleBottom
+        - numbers_content_margin
+        - marginBase
+    )
+    tableHeight = min(maxTableHeight, Inches(0.25) * rows)
 
-    p = tf.add_paragraph()
-    p.level = 0
-    r = p.add_run()
-    r.text = "Metadata:"
+    # Figure out table top
+    tableTop = titleBottom + Inches(0.5)
+
+    # Figure out table width
+    tableWidth = presentation.slide_width - 2 * tableMargin
+
+    # Figure out the width of a single-width column
+    columnWidthUnit = int(tableWidth / (2 * metadataColumnPairs))
+    
+
+    # Create the table with the above number of rows and columns
+    newTable = slide.shapes.add_table(
+        rows, columns, tableMargin, tableTop, tableWidth, tableHeight
+    ).table
+    
+    # Don't want headings
+    newTable.first_row = False
+
+    cols = newTable.columns
+    for cp in range(metadataColumnPairs):
+        cols[2 * cp].width = columnWidthUnit
+        cols[2 * cp + 1].width = columnWidthUnit
+        
+
+    row = 0
+    column = 0
     for item in metadata:
         key, value = item
-        p = tf.add_paragraph()
-        p.level = 1
-        r = p.add_run()
-        r.text = key + ": " + value
-
+        
+        if row == maxMetadataRowsPerColumn:
+            # Move to next column
+            column += 2
+            row = 0
+        newTable.cell(row, column).text = key
+        newTable.cell(row, column + 1).text = value
+        if metadataColumnPairs == 3:
+            newTable.cell(row, column).text_frame.paragraphs[0].font.size = Pt(12)
+            newTable.cell(row, column + 1).text_frame.paragraphs[0].font.size = Pt(12)
+        elif metadataColumnPairs == 2:
+            newTable.cell(row, column).text_frame.paragraphs[0].font.size = Pt(14)
+            newTable.cell(row, column + 1).text_frame.paragraphs[0].font.size = Pt(14)
+        else:
+            newTable.cell(row, column).text_frame.paragraphs[0].font.size = Pt(16)
+            newTable.cell(row, column + 1).text_frame.paragraphs[0].font.size = Pt(16)
+        row +=1
 
 def titleSlide(presentation, slideNumber, titleText, subtitleText):
     slide = presentation.slides.add_slide(presentation.slide_layouts[titleSlideLayout])
@@ -815,7 +866,7 @@ def sectionSlide(presentation, slideNumber, titleText, subtitleText):
 
 def handleWhateverGraphicType(graphicFilename):
     # Handles both physical file and URI file types
-    if graphicFilename.find(":"):
+    if ":" in graphicFilename:
         # Is a URI - so we have to retrieve it and store it in a temporary file
 
         # Massage the URI into a printable filename
@@ -1974,11 +2025,13 @@ def createFootnoteSlides(prs, slideNumber, footnoteDefinitions):
 banner = (
     "md2pptx Markdown To Powerpoint Converter " + md2pptx_level + " " + md2pptx_date
 )
+
 bannerUnderline = ""
 for i in range(len(banner)):
     bannerUnderline = bannerUnderline + "="
 
 print("\n" + banner + "\n" + bannerUnderline)
+print("Open source project: https://github.com/MartinPacker/md2pptx")
 
 input_file = []
 
@@ -2324,14 +2377,10 @@ if slideTemplateFile != "":
 
     print(f"\nUsing {slideTemplateFile} as base for presentation")
 
-print("")
-print("Slides:")
-print("=======")
-print("")
-
 if slideTemplateFile == "":
     # Use default slide deck that comes with python-pptx as base
     prs = Presentation()
+    print("\nNo slide to document metadata on. Continuing without it.")
 else:
     # Use user-specified presentation as base
     prs = Presentation(slideTemplateFile)
@@ -2341,6 +2390,14 @@ else:
     # If there is a slide to use fill it with metadata
     if len(prs.slides) > 0:
         processingSummarySlide(prs, metadata)
+        print("\nWriting processing summary slide with metadata on it.")
+    else:
+        print("\nNo slide to document metadata on. Continuing without it.")
+
+print("")
+print("Slides:")
+print("=======")
+print("")
 
 in_block = False
 in_list = False

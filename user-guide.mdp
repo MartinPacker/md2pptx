@@ -116,7 +116,7 @@ To quote from the python-pptx license statement:
 =colwidth 2 3 5
 =csv
 Level,Date,What
-1.2,1 November 2020,Support URLs for graphics.
+1.2,3 November 2020,Support URLs for graphics. Reworked Processing Summary slide to use a flowed table.
 1.1,25 October 2020,Introduce Template as a better replacement for Master - which still works. Add German characters. Better template file searching. Escape underscore. Better handling of continuation onto second and subsequent lines.
 1.0,13 October 2020,Python 3&comma; Support input filename as first command line parameter.
 0.9,4 September 2020,Footnote slide support
@@ -182,14 +182,15 @@ Metadata is specified in the first three lines of this sample. \
 In general metadata is the lines before the first blank line. \
 It consists of key/value pairs, with the key separated from the value by a colon.
 
-In this case the metadata specifies three things:
+In this case the metadata specifies a number of things:
 
-1. The &pp; file the presentation is based on is "Martin Template.pptx" - which is provided with md2pptx.
-1. Each page with a title has a title font 24 pixels high.
-1. Each presentation section slide has a title font 30 pixels high.
+1. The &pp; file the presentation is based on is "hipodz.pptx".
+1. Each page with a title has a title font 22 points high.
+1. Each presentation section slide has a title font 30 points high.
+1. A number of other styling-related specifications.
 
 All of the above are optional but you will almost certainly want to specify a template. \
-Feel free to copy Martin Template.pptx and make stylistic changes.
+Feel free to copy Martin Template.pptx - which is included with md2pptx -  and make stylistic changes.
 
 For more on metadata see [Controlling The Presentation With Metadata](#controlling-the-presentation-with-metadata).
 
@@ -516,6 +517,14 @@ The class name must match one specified in the metadata using one of
 * `style.fgcolor` - described in <a href="#associating-a-class-name-with-a-foreground-colour-with-stylefgcolor">Associating A Class Name With A Foreground Colour With <code>style.fgcolor</code></a>.
 * `style.emphasis` - described in <a href="#associating-a-class-name-with-text-emphasis-with-styleemphasis">Associating A Class Name With Text Emphasis With <code>style.emphasis</code></a>.
 
+If you coded metadata
+
+    style.fgcolor.yellow: FFFF00
+
+the result would be something like this:
+
+I would like to highlight <span style="color: #FFFF00">this bit</span> but not **this** bit.
+
 
 **Note:** A fragment of text in a span can't use any other text effect, such as bolding or italics.
 
@@ -536,7 +545,7 @@ For example:
 	}
 	</style>
 
-The above uses only the style elements that md2pptx supports with `style.` metadata. I relies on you coding
+The above uses only the style elements that md2pptx supports with `style.` metadata. It relies on you coding
 
 	<span class="mytest">Here is some text</span>
 
