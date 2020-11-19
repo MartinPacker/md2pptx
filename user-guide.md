@@ -57,7 +57,7 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 		* [Specifying Bold And Italic Text Effects With `BoldBold` And `ItalicItalic`](#specifying-bold-and-italic-text-effects-with-boldbold-and-italicitalic)
 		* [Shrinking Tables With `compactTables`](#shrinking-tables-with-compacttables)
 		* [Controlling Task Slide Production With `taskSlides` and `tasksPerSlide`](#controlling-task-slide-production-with-taskslides-and-tasksperslide)
-		* [Controlling Glossary Slide Production With `glossaryTitle`, `glossaryTerm`, `glossaryMeaning`,`glossaryMeaningWidth`, and `glossaryPerPage`](#controlling-glossary-slide-production-with-glossarytitle-glossaryterm-glossarymeaningglossarymeaningwidth-and-glossaryperpage)
+		* [Controlling Glossary Slide Production With `glossaryTitle`, `glossaryTerm`, `glossaryMeaning`,`glossaryMeaningWidth`, and `glossaryTermsPerPage`](#controlling-glossary-slide-production-with-glossarytitle-glossaryterm-glossarymeaningglossarymeaningwidth-and-glossarytermsperpage)
 * [Modifying The Slide Template](#modifying-the-slide-template)
 	* [Basics](#basics)
 	* [Slide Template Sequence](#slide-template-sequence)
@@ -152,8 +152,9 @@ To quote from the python-pptx license statement:
 
 ## Change Log
 
-|Level|Date|What |
-|:-|:--|:----|
+|Level|Date|What|
+|:--|:---|:-----|
+|1.3|19 November 2020|Glossary terms now have tooltips and links to the relevant glossary page.|
 |1.2|3 November 2020|Support URLs for graphics. Reworked Processing Summary slide to use a flowed table.|
 |1.1|25 October 2020|Introduce Template as a better replacement for Master - which still works. Add German characters. Better template file searching. Escape underscore. Better handling of continuation onto second and subsequent lines.|
 |1.0|13 October 2020|Python 3&comma; Support input filename as first command line parameter.|
@@ -494,7 +495,7 @@ To force a line break code `<br/>`. This, being HTML, is legitimate in Markdown 
 Some other HTML-originated text effects work - as Markdown allows you to embed HTML (elements and attributes):
 
 |Effect|HTML Element|Example|Produces|
-|:-|:--|:----|:|
+|:--|:---|:-----|:-|
 |Superscript|`sup`|`x<sup>2</sup>`|x<sup>2</sup>|
 |Subscript|`sub`|`C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>`|C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>|
 |Underline|`ins`|`this is <ins>important</ins>`|this is <ins>important</ins>|
@@ -550,7 +551,7 @@ md2pptx supports a few [HTML entity references](https://en.wikipedia.org/wiki/Li
 
 
 |Entity Reference|Character|Entity Reference|Character|Entity Reference|Character|
-|:-|:--|:----|:|:|:|
+|:--|:---|:-----|:-|:-|:-|
 |`&lt;`|&lt;|`&larr;`|&larr;|`&auml;`|&auml;|
 |`&gt;`|&gt;|`&rarr;`|&rarr;|`&Auml;`|&Auml;|
 |`&ge;`|&ge;|`&uarr;`|&uarr;|`&uuml;`|&uuml;|
@@ -623,18 +624,26 @@ You can use the HTML `abbr` element to generate a glossary entry. For example,
 
 In this example the glossary term is "BBC" and its definition is "British Broadcasting Corporation".
 
-One or more glossary slides will appear at the end of the presentation if any such terms are defined. When you create a glossary entry two things will happen:
+One or more Glossary Table slides will appear at the end of the presentation if any such terms are defined. When you create a glossary entry three things will happen:
 
 * Both the term and its definition will appear in the glossary.
-* Only the term will appear in the slide with the `abbr` element.
+* The term will appear in the slide with the `abbr` element - with the appearance of a hyperlink element, which you can click on to get to the relevant glossary page.
+* If you hover over the term for a second or two the definition of the term will appear as a tooltip.
 
 If you define the term more than once only the first use will be included in the glossary. All uses of the term will appear in the normal slides.
 
-A Glossary Table slide comprises two columns: A narrow column with the terms (or acronyms), and a wider column with their definitions (or meanings).
+Each Glossary Table slide comprises two columns: A narrow column with the terms (or acronyms), and a wider column with their definitions (or meanings).
+
+In Glossary Table slides the definitions are sorted alphabetically, upper case before lower case.
 
 If you use the `abbr` HTML element most markdown processors will treat it as HTML and hovering over the term will reveal the definition.
+However, while md2pptx can cope with e.g. `<br/>` elements in a glossary definition most markdown processors can't.
 
-You can control various aspects of the glossary's appearance using metadata. How to is described [here](#controlling-glossary-slide-production-with-glossarytitle-glossaryterm-glossarymeaningglossarymeaningwidth-and-glossaryperpage).
+You can control various aspects of the glossary's appearance using metadata. How to is described [here](#controlling-glossary-slide-production-with-glossarytitle-glossaryterm-glossarymeaningglossarymeaningwidth-and-glossarytermsperpage).
+
+Because md2pptx's support uses hyperlinks you might want to adjust your template so that taken hyperlinks are the same colour as not-yet-taken ones.
+This is something md2pptx can't do for you.
+You can change these colours under "Themes" in the Slide Master editor.
 
 ## Creating Footnotes
 
@@ -942,7 +951,7 @@ Though you wouldn't normally need to do this, you can control how many tasks app
 
 will limit the numberof tasks on a slide to 10. The default is 20 tasks per slide.
 
-#### Controlling Glossary Slide Production With `glossaryTitle`, `glossaryTerm`, `glossaryMeaning`,`glossaryMeaningWidth`, and `glossaryPerPage`
+#### Controlling Glossary Slide Production With `glossaryTitle`, `glossaryTerm`, `glossaryMeaning`,`glossaryMeaningWidth`, and `glossaryTermsPerPage`
 
 [Creating A Glossary Of Terms](#creating-a-glossary-of-terms) describes how you can use the `abbr` element to generate a glossary of terms.
 
@@ -974,7 +983,7 @@ will cause the width of the second column in the table to be three times that of
 
 Coding
 
-	glossaryPerPage: 10
+	glossaryTermsPerPage: 10
 
 will cause the maximum number of glossary items on a Glossary Slide to be 10. If there are more terms, a second page will be created. And so on. The default is 20.
 
@@ -994,7 +1003,7 @@ Don't change the order of the slides in the slide master view and don't delete a
 The following table shows how each slide type is created.
 
 |Slide Type|Origin|Non-Title Content|
-|:-|:--|:----|
+|:--|:---|:-----|
 |Processing Summary|Original slide from Template|Metadata: Second Shape|
 |Presentation Title|Slide Layout 0|Subtitle: Second Shape|
 |Section|Slide Layout 1|Subtitle: Second Shape|

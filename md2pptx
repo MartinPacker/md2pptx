@@ -32,8 +32,8 @@ import tempfile
 from lxml import etree
 
 
-md2pptx_level = "1.2"
-md2pptx_date = "3 November, 2020"
+md2pptx_level = "1.3"
+md2pptx_date = "19 November, 2020"
 
 # Following functions are workarounds for python-pptx not having these functions for the font object
 def set_subscript(font):
@@ -86,6 +86,43 @@ def removeBullets(textFrame):
     for p in textFrame.paragraphs:
         removeBullet(p)
 
+# Get the slide object the run is in
+def SlideFromRun(run):
+    return run._parent._parent._parent._parent._parent
+
+# Creates a hyperlink to another slide and/or a tooltip - for a
+# text run
+# Note: To get just a tooltip make to_slide be the source slide
+#       so it links to itself.
+def createRunHyperlinkOrTooltip(run, to_slide, tooltipText=""):
+
+    # Get hold of the shape the run is in
+    shape = run._parent._parent._parent
+
+    if to_slide == None:
+        to_slide = SlideFromRun(run)
+    hl = run.hyperlink
+    sca = shape.click_action
+    sca_hl = sca.hyperlink
+
+    # Add a click action to generate an internal hyperlink address
+    sca.target_slide = to_slide
+    
+    
+    # Use that internal hyperlink address for the run
+    hl.address = sca_hl.address
+    
+    # Also clone the hyperlink click action
+    hl._hlinkClick.action = sca_hl._hlink.action
+    if tooltipText != "":
+        hl._hlinkClick.set("tooltip", tooltipText)
+    
+    
+    # Also clone the hyperlink rId
+    hl._hlinkClick.rId = sca_hl._hlink.rId
+    
+    # Delete the shape click action
+    sca.target_slide = None
 
 def get_image_size(fname):
     """Determine the image type of fhandle and return its size.
@@ -508,7 +545,8 @@ def parseText(text):
             dictAbbrev = dictEntry[1]
             dictFull = dictEntry[0].strip().strip("'").strip('"')
             abbrevDictionary[dictAbbrev] = dictFull
-            fragment = dictAbbrev
+            textArray.append(["Gloss", dictAbbrev, dictAbbrev, dictFull])
+            fragment = ""
         elif ord(c) == 240:
             # In span element where we hit the class name
             if fragment != "":
@@ -544,11 +582,12 @@ def parseText(text):
 
     if fragment != "":
         textArray.append([state, fragment])
-
     return textArray
 
-
+# Calls the tokeniser and then handles the fragments it gets back
 def addFormattedText(p, text):
+    # Get back parsed text fragments, along with control information on each
+    # fragment
     parsedText = parseText(text)
 
     # Replace chr(237) with > in each Fragment
@@ -561,7 +600,10 @@ def addFormattedText(p, text):
     # Prime flattened Text
     flattenedText = ""
     for fragment in parsedText:
-        fragType, fragDetail = fragment
+        if fragment[0] == "Gloss":
+            fragType, fragDetail, fragTerm, fragTitle = fragment
+        else:
+            fragType, fragDetail = fragment
 
         # Break into subfragments around a newline
         if fragType == "Span":
@@ -585,8 +627,10 @@ def addFormattedText(p, text):
             subfragment = subfragment.replace("&#x23;", "#")
 
             run = p.add_run()
-            if fragType not in ["Link", "fnref"]:
+            if fragType not in ["Link", "fnref", "Gloss"]:
                 run.text = subfragment
+            elif fragType == "Gloss":
+                run.text = fragTerm
 
             if fragType == "I":
                 font = run.font
@@ -594,6 +638,11 @@ def addFormattedText(p, text):
                     font.italic = True
                 if want_italic_colour == True:
                     font.color.theme_color = italic_colour
+            elif fragType == "Gloss":
+                # Add this run to abbrevRunsDictionary - for Glossary fix ups later
+                if fragTerm not in abbrevRunsDictionary:
+                    abbrevRunsDictionary[fragTerm] = []
+                abbrevRunsDictionary[fragTerm].append(run)
             elif fragType == "fnref":
                 font = run.font
                 font.size = Pt(16)
@@ -1929,16 +1978,17 @@ def createTaskSlides(prs, slideNumber, tasks, titleStem):
 def createGlossarySlides(prs, slideNumber, abbrevDictionary):
     termNumber = 0
     termSlideNumber = 0
+    glossarySlides = []
 
     termCount = len(abbrevDictionary)
 
     for term in sorted(abbrevDictionary.keys()):
-        if termNumber % glossaryPerPage == 0:
+        if termNumber % glossaryTermsPerPage == 0:
             # Is first glossary term in a page
             if termNumber > 0:
                 # Print a "glossary" slide - as we have one to print out
                 termSlideNumber += 1
-                if termCount > glossaryPerPage:
+                if termCount > glossaryTermsPerPage:
                     # More than one glossary page
                     title = glossaryTitle + " - " + str(termSlideNumber)
                 else:
@@ -1946,6 +1996,7 @@ def createGlossarySlides(prs, slideNumber, abbrevDictionary):
                     title = glossaryTerm
 
                 slide = tableSlide(prs, slideNumber, title, table_rows)
+                glossarySlides.append(slide)
                 slideNumber += 1
 
             table_rows = [[glossaryTerm, glossaryMeaning]]
@@ -1960,7 +2011,7 @@ def createGlossarySlides(prs, slideNumber, abbrevDictionary):
 
     # Print a final "glossary" slide
     termSlideNumber += 1
-    if termCount > glossaryPerPage:
+    if termCount > glossaryTermsPerPage:
         # More than one glossary page
         title = glossaryTitle + " - " + str(termSlideNumber)
     else:
@@ -1968,8 +2019,10 @@ def createGlossarySlides(prs, slideNumber, abbrevDictionary):
         title = glossaryTitle
 
     slide = tableSlide(prs, slideNumber, title, table_rows)
+    glossarySlides.append(slide)
     slideNumber += 1
 
+    return slideNumber, glossarySlides
 
 def createFootnoteSlides(prs, slideNumber, footnoteDefinitions):
     footnoteNumber = 0
@@ -2078,6 +2131,9 @@ blankLayout = 6
 # Abbreviation Dictionary
 abbrevDictionary = {}
 
+# Abbreviation Runs Dictionary
+abbrevRunsDictionary = {}
+
 # Extract metadata
 metadata_lines = []
 after_metadata_and_HTML = []
@@ -2155,7 +2211,7 @@ glossaryTitle = "Glossary"
 glossaryTerm = "Term"
 glossaryMeaning = "Meaning"
 glossaryMeaningWidth = 5
-glossaryPerPage = 20
+glossaryTermsPerPage = 20
 footnotesTitle = "Footnotes"
 footnotesPerPage = 20
 
@@ -2346,6 +2402,8 @@ for line in metadata_lines:
         glossaryMeaning = value
     elif name == "glossaryMeaningWidth":
         glossaryMeaningWidth = int(value)
+    elif name == "glossaryTermsPerPage":
+        glossaryTermsPerPage = int(value)
     elif name == "footnotesPerPage":
         footnotesPerPage = int(value)
     elif name == "footnotesTitle":
@@ -2662,7 +2720,7 @@ if len(footnoteDefinitions) > 0:
 
 # Add a dictionary slide - if there were any abbr elements encountered
 if len(abbrevDictionary) > 0:
-    slideNumber = createGlossarySlides(prs, slideNumber, abbrevDictionary)
+    slideNumber, glossarySlides = createGlossarySlides(prs, slideNumber, abbrevDictionary)
 
 # Add final slide - or more than one - with any Taskpaper tasks in
 if (len(tasks) > 0) & (taskSlides != "none"):
@@ -2697,6 +2755,16 @@ if (len(tasks) > 0) & (taskSlides != "none"):
             createTaskSlides(prs, slideNumber, complete, "Completed Tasks")
             createTaskSlides(prs, slideNumber, incomplete, "Incomplete Tasks")
 
+# Fix up any internal hyperlinks
+abbrevNumber = -1
+for abbreviation in sorted(abbrevRunsDictionary.keys()):
+    abbrevNumber += 1
+    runs = abbrevRunsDictionary[abbreviation]
+    for run in runs:
+        # Add tooltip for glossary definition
+        glossarySlideNumber= int(abbrevNumber / glossaryTermsPerPage)
+        createRunHyperlinkOrTooltip(run, glossarySlides[glossarySlideNumber], abbrevDictionary[abbreviation])
+# Write out the finished presentation
 prs.save(output_filename)
 
 sys.exit()

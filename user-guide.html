@@ -1059,7 +1059,7 @@ body .markdown-body
 <li><a href="#specifying-bold-and-italic-text-effects-with-boldbold-and-italicitalic">Specifying Bold And Italic Text Effects With <code>BoldBold</code> And <code>ItalicItalic</code></a></li>
 <li><a href="#shrinking-tables-with-compacttables">Shrinking Tables With <code>compactTables</code></a></li>
 <li><a href="#controlling-task-slide-production-with-taskslides-and-tasksperslide">Controlling Task Slide Production With <code>taskSlides</code> and <code>tasksPerSlide</code></a></li>
-<li><a href="#controlling-glossary-slide-production-with-glossarytitle-glossaryterm-glossarymeaningglossarymeaningwidth-and-glossaryperpage">Controlling Glossary Slide Production With <code>glossaryTitle</code>, <code>glossaryTerm</code>, <code>glossaryMeaning</code>,<code>glossaryMeaningWidth</code>, and <code>glossaryPerPage</code></a></li>
+<li><a href="#controlling-glossary-slide-production-with-glossarytitle-glossaryterm-glossarymeaningglossarymeaningwidth-and-glossarytermsperpage">Controlling Glossary Slide Production With <code>glossaryTitle</code>, <code>glossaryTerm</code>, <code>glossaryMeaning</code>,<code>glossaryMeaningWidth</code>, and <code>glossaryTermsPerPage</code></a></li>
 </ul>
 </li>
 </ul>
@@ -1160,6 +1160,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">1.3</td>
+<td align="left">19 November 2020</td>
+<td align="left">Glossary terms now have tooltips and links to the relevant glossary page.</td>
+</tr>
 <tr>
 <td align="left">1.2</td>
 <td align="left">3 November 2020</td>
@@ -1519,7 +1524,7 @@ sectionTitleSize: 30
 <th align="left">Effect</th>
 <th align="left">HTML Element</th>
 <th align="left">Example</th>
-<th align="center">Produces</th>
+<th align="left">Produces</th>
 </tr>
 </thead>
 <tbody>
@@ -1527,25 +1532,25 @@ sectionTitleSize: 30
 <td align="left">Superscript</td>
 <td align="left"><code>sup</code></td>
 <td align="left"><code>x&lt;sup&gt;2&lt;/sup&gt;</code></td>
-<td align="center">x<sup>2</sup></td>
+<td align="left">x<sup>2</sup></td>
 </tr>
 <tr>
 <td align="left">Subscript</td>
 <td align="left"><code>sub</code></td>
 <td align="left"><code>C&lt;sub&gt;6&lt;/sub&gt;H&lt;sub&gt;12&lt;/sub&gt;O&lt;sub&gt;6&lt;/sub&gt;</code></td>
-<td align="center">C<sub>6</sub>H<sub>12</sub>O<sub>6</sub></td>
+<td align="left">C<sub>6</sub>H<sub>12</sub>O<sub>6</sub></td>
 </tr>
 <tr>
 <td align="left">Underline</td>
 <td align="left"><code>ins</code></td>
 <td align="left"><code>this is &lt;ins&gt;important&lt;/ins&gt;</code></td>
-<td align="center">this is <ins>important</ins></td>
+<td align="left">this is <ins>important</ins></td>
 </tr>
 <tr>
 <td align="left">Strikethrough</td>
 <td align="left"><code>del</code></td>
 <td align="left"><code>this is &lt;del&gt;obsolete&gt;/del&gt;</code></td>
-<td align="center">this is <del>obsolete</del></td>
+<td align="left">this is <del>obsolete</del></td>
 </tr>
 </tbody>
 </table>
@@ -1598,9 +1603,9 @@ sectionTitleSize: 30
 <th align="left">Entity Reference</th>
 <th align="left">Character</th>
 <th align="left">Entity Reference</th>
-<th align="center">Character</th>
-<th align="center">Entity Reference</th>
-<th align="center">Character</th>
+<th align="left">Character</th>
+<th align="left">Entity Reference</th>
+<th align="left">Character</th>
 </tr>
 </thead>
 <tbody>
@@ -1608,105 +1613,105 @@ sectionTitleSize: 30
 <td align="left"><code>&amp;lt;</code></td>
 <td align="left">&lt;</td>
 <td align="left"><code>&amp;larr;</code></td>
-<td align="center">&larr;</td>
-<td align="center"><code>&amp;auml;</code></td>
-<td align="center">&auml;</td>
+<td align="left">&larr;</td>
+<td align="left"><code>&amp;auml;</code></td>
+<td align="left">&auml;</td>
 </tr>
 <tr>
 <td align="left"><code>&amp;gt;</code></td>
 <td align="left">&gt;</td>
 <td align="left"><code>&amp;rarr;</code></td>
-<td align="center">&rarr;</td>
-<td align="center"><code>&amp;Auml;</code></td>
-<td align="center">&Auml;</td>
+<td align="left">&rarr;</td>
+<td align="left"><code>&amp;Auml;</code></td>
+<td align="left">&Auml;</td>
 </tr>
 <tr>
 <td align="left"><code>&amp;ge;</code></td>
 <td align="left">&ge;</td>
 <td align="left"><code>&amp;uarr;</code></td>
-<td align="center">&uarr;</td>
-<td align="center"><code>&amp;uuml;</code></td>
-<td align="center">&uuml;</td>
+<td align="left">&uarr;</td>
+<td align="left"><code>&amp;uuml;</code></td>
+<td align="left">&uuml;</td>
 </tr>
 <tr>
 <td align="left"><code>&amp;le;</code></td>
 <td align="left">&le;</td>
 <td align="left"><code>&amp;darr;</code></td>
-<td align="center">&darr;</td>
-<td align="center"><code>&amp;Uuml;</code></td>
-<td align="center">&Uuml;</td>
+<td align="left">&darr;</td>
+<td align="left"><code>&amp;Uuml;</code></td>
+<td align="left">&Uuml;</td>
 </tr>
 <tr>
 <td align="left"><code>&amp;asymp;</code></td>
 <td align="left">&asymp;</td>
 <td align="left"><code>&amp;harr;</code></td>
-<td align="center">&harr;</td>
-<td align="center"><code>&amp;ouml;</code></td>
-<td align="center">&ouml;</td>
+<td align="left">&harr;</td>
+<td align="left"><code>&amp;ouml;</code></td>
+<td align="left">&ouml;</td>
 </tr>
 <tr>
 <td align="left"><code>&amp;Delta;</code></td>
 <td align="left">&Delta;</td>
 <td align="left"><code>&amp;varr;</code></td>
-<td align="center">&varr;</td>
-<td align="center"><code>&amp;Ouml;</code></td>
-<td align="center">&Ouml;</td>
+<td align="left">&varr;</td>
+<td align="left"><code>&amp;Ouml;</code></td>
+<td align="left">&Ouml;</td>
 </tr>
 <tr>
 <td align="left"><code>&amp;delta;</code></td>
 <td align="left">&delta;</td>
 <td align="left"><code>&amp;nearr;</code></td>
-<td align="center">&nearr;</td>
-<td align="center"><code>&amp;szlig;</code></td>
-<td align="center">&szlig;</td>
+<td align="left">&nearr;</td>
+<td align="left"><code>&amp;szlig;</code></td>
+<td align="left">&szlig;</td>
 </tr>
 <tr>
 <td align="left"><code>&amp;sim;</code></td>
 <td align="left">&sim;</td>
 <td align="left"><code>&amp;nwarr;</code></td>
-<td align="center">&nwarr;</td>
-<td align="center"><code>&amp;euro;</code></td>
-<td align="center">&euro;</td>
+<td align="left">&nwarr;</td>
+<td align="left"><code>&amp;euro;</code></td>
+<td align="left">&euro;</td>
 </tr>
 <tr>
 <td align="left"><code>&amp;lowast;</code></td>
 <td align="left">&lowast;</td>
 <td align="left"><code>&amp;searr;</code></td>
-<td align="center">&searr;</td>
-<td align="center"></td>
-<td align="center"></td>
+<td align="left">&searr;</td>
+<td align="left"></td>
+<td align="left"></td>
 </tr>
 <tr>
 <td align="left"><code>&amp;semi;</code></td>
 <td align="left">&semi;</td>
 <td align="left"><code>&amp;swarr;</code></td>
-<td align="center">&swarr;</td>
-<td align="center"></td>
-<td align="center"></td>
+<td align="left">&swarr;</td>
+<td align="left"></td>
+<td align="left"></td>
 </tr>
 <tr>
 <td align="left"><code>&amp;colon;</code></td>
 <td align="left">&colon;</td>
 <td align="left"><code>&amp;lsqb;</code></td>
-<td align="center">&lsqb;</td>
-<td align="center"></td>
-<td align="center"></td>
+<td align="left">&lsqb;</td>
+<td align="left"></td>
+<td align="left"></td>
 </tr>
 <tr>
 <td align="left"><code>&amp;amp;</code></td>
 <td align="left">&amp;</td>
 <td align="left"><code>&amp;rsqb;</code></td>
-<td align="center">&rsqb;</td>
-<td align="center"></td>
-<td align="center"></td>
+<td align="left">&rsqb;</td>
+<td align="left"></td>
+<td align="left"></td>
 </tr>
 <tr>
 <td align="left"><code>&amp;comma;</code></td>
 <td align="left">&comma;</td>
 <td align="left"><code>&amp;infin;</code></td>
-<td align="center">&infin;</td>
-<td align="center"></td>
-<td align="center"></td>
+<td align="left">&infin;</td>
+<td align="left"></td>
+<td align="left"></td>
 </tr>
 </tbody>
 </table>
@@ -1763,15 +1768,21 @@ sectionTitleSize: 30
 
 
 <p>In this example the glossary term is &ldquo;BBC&rdquo; and its definition is &ldquo;British Broadcasting Corporation&rdquo;.</p>
-<p>One or more glossary slides will appear at the end of the presentation if any such terms are defined. When you create a glossary entry two things will happen:</p>
+<p>One or more Glossary Table slides will appear at the end of the presentation if any such terms are defined. When you create a glossary entry three things will happen:</p>
 <ul>
 <li>Both the term and its definition will appear in the glossary.</li>
-<li>Only the term will appear in the slide with the <code>abbr</code> element.</li>
+<li>The term will appear in the slide with the <code>abbr</code> element - with the appearance of a hyperlink element, which you can click on to get to the relevant glossary page.</li>
+<li>If you hover over the term for a second or two the definition of the term will appear as a tooltip.</li>
 </ul>
 <p>If you define the term more than once only the first use will be included in the glossary. All uses of the term will appear in the normal slides.</p>
-<p>A Glossary Table slide comprises two columns: A narrow column with the terms (or acronyms), and a wider column with their definitions (or meanings).</p>
-<p>If you use the <code>abbr</code> HTML element most markdown processors will treat it as HTML and hovering over the term will reveal the definition.</p>
-<p>You can control various aspects of the glossary&rsquo;s appearance using metadata. How to is described <a href="#controlling-glossary-slide-production-with-glossarytitle-glossaryterm-glossarymeaningglossarymeaningwidth-and-glossaryperpage">here</a>.</p>
+<p>Each Glossary Table slide comprises two columns: A narrow column with the terms (or acronyms), and a wider column with their definitions (or meanings).</p>
+<p>In Glossary Table slides the definitions are sorted alphabetically, upper case before lower case.</p>
+<p>If you use the <code>abbr</code> HTML element most markdown processors will treat it as HTML and hovering over the term will reveal the definition.
+However, while md2pptx can cope with e.g. <code>&lt;br/&gt;</code> elements in a glossary definition most markdown processors can&rsquo;t.</p>
+<p>You can control various aspects of the glossary&rsquo;s appearance using metadata. How to is described <a href="#controlling-glossary-slide-production-with-glossarytitle-glossaryterm-glossarymeaningglossarymeaningwidth-and-glossarytermsperpage">here</a>.</p>
+<p>Because md2pptx&rsquo;s support uses hyperlinks you might want to adjust your template so that taken hyperlinks are the same colour as not-yet-taken ones.
+This is something md2pptx can&rsquo;t do for you.
+You can change these colours under &ldquo;Themes&rdquo; in the Slide Master editor.</p>
 <h2 id="creating-footnotes">Creating Footnotes<a class="headerlink" href="#creating-footnotes" title="Permanent link"></a></h2>
 <p>You can create and reference footnotes.</p>
 <h3 id="creating-a-footnote">Creating A Footnote<a class="headerlink" href="#creating-a-footnote" title="Permanent link"></a></h3>
@@ -2021,7 +2032,7 @@ baseTextDecrement: 1
 
 
 <p>will limit the numberof tasks on a slide to 10. The default is 20 tasks per slide.</p>
-<h4 id="controlling-glossary-slide-production-with-glossarytitle-glossaryterm-glossarymeaningglossarymeaningwidth-and-glossaryperpage">Controlling Glossary Slide Production With <code>glossaryTitle</code>, <code>glossaryTerm</code>, <code>glossaryMeaning</code>,<code>glossaryMeaningWidth</code>, and <code>glossaryPerPage</code><a class="headerlink" href="#controlling-glossary-slide-production-with-glossarytitle-glossaryterm-glossarymeaningglossarymeaningwidth-and-glossaryperpage" title="Permanent link"></a></h4>
+<h4 id="controlling-glossary-slide-production-with-glossarytitle-glossaryterm-glossarymeaningglossarymeaningwidth-and-glossarytermsperpage">Controlling Glossary Slide Production With <code>glossaryTitle</code>, <code>glossaryTerm</code>, <code>glossaryMeaning</code>,<code>glossaryMeaningWidth</code>, and <code>glossaryTermsPerPage</code><a class="headerlink" href="#controlling-glossary-slide-production-with-glossarytitle-glossaryterm-glossarymeaningglossarymeaningwidth-and-glossarytermsperpage" title="Permanent link"></a></h4>
 <p><a href="#creating-a-glossary-of-terms">Creating A Glossary Of Terms</a> describes how you can use the <code>abbr</code> element to generate a glossary of terms.</p>
 <p>You can control various aspects of the appearance of the Glossary Slide(s) using the following metadata items.</p>
 <p>For example, coding</p>
@@ -2049,7 +2060,7 @@ baseTextDecrement: 1
 
 <p>will cause the width of the second column in the table to be three times that of the first column.</p>
 <p>Coding</p>
-<div class="codehilite"><pre>glossaryPerPage: 10
+<div class="codehilite"><pre>glossaryTermsPerPage: 10
 </pre></div>
 
 
