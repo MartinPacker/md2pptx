@@ -33,7 +33,7 @@ from lxml import etree
 
 
 md2pptx_level = "1.3"
-md2pptx_date = "19 November, 2020"
+md2pptx_date = "20 November, 2020"
 
 # Following functions are workarounds for python-pptx not having these functions for the font object
 def set_subscript(font):
@@ -650,7 +650,8 @@ def addFormattedText(p, text):
                 fnref = fragment[1]
                 if fnref in footnoteReferences:
                     footnoteNumber = footnoteReferences.index(fnref)
-                    run.text = "[" + str(footnoteNumber + 1) + "]"
+                    run.text = str(footnoteNumber + 1)
+                    footnoteRunsDictionary[footnoteNumber] = run
                 else:
                     run.text = "[?]"
                     print("Error: Footnote reference '" + fnref + "' unresolved.")
@@ -2027,6 +2028,7 @@ def createGlossarySlides(prs, slideNumber, abbrevDictionary):
 def createFootnoteSlides(prs, slideNumber, footnoteDefinitions):
     footnoteNumber = 0
     footnotesSlideNumber = 0
+    footnoteSlides = []
 
     footnoteCount = len(footnoteDefinitions)
 
@@ -2044,6 +2046,7 @@ def createFootnoteSlides(prs, slideNumber, footnoteDefinitions):
                     title = footnotesTitle
 
                 slide = contentSlide(prs, slideNumber, title, "", bullets)
+                footnoteSlides.append(slide)
 
                 # Turn off bulleting
                 removeBullets(findBodyShape(slide).text_frame)
@@ -2058,21 +2061,24 @@ def createFootnoteSlides(prs, slideNumber, footnoteDefinitions):
 
         footnoteNumber += 1
 
-    # Print a final "glossary" slide
+    # Print a final "footnote" slide
     footnotesSlideNumber += 1
     if footnoteCount > footnotesPerPage:
-        # More than one glossary page
+        # More than one footnotes page
         title = footnotesTitle + " - " + str(footnotesSlideNumber)
     else:
         # Only one glossary page
         title = footnotesTitle
 
     slide = contentSlide(prs, slideNumber, title, "", bullets)
+    footnoteSlides.append(slide)
 
     # Turn off bulleting
     removeBullets(findBodyShape(slide).text_frame)
 
     slideNumber += 1
+    
+    return slideNumber, footnoteSlides
 
 
 banner = (
@@ -2133,6 +2139,9 @@ abbrevDictionary = {}
 
 # Abbreviation Runs Dictionary
 abbrevRunsDictionary = {}
+
+# Footnote runs Dictionary
+footnoteRunsDictionary = {}
 
 # Extract metadata
 metadata_lines = []
@@ -2716,11 +2725,31 @@ if (in_block is True) | (in_code is True) | (in_table is True):
 
 # Add a footnotes slide - if there were any footnote definitions
 if len(footnoteDefinitions) > 0:
-    slideNumber = createFootnoteSlides(prs, slideNumber, footnoteDefinitions)
+    slideNumber,footnoteSlides = createFootnoteSlides(prs, slideNumber, footnoteDefinitions)
+    
+    # Fix up any footnote slide hyperlinks
+    footnoteNumber = -1
+    for footnoteRun in footnoteRunsDictionary.keys():
+        footnoteNumber += 1
+        run = footnoteRunsDictionary[footnoteRun]
+        
+        footnoteSlideNumber = int(footnoteNumber / footnotesPerPage)
+        createRunHyperlinkOrTooltip(run,footnoteSlides[footnoteSlideNumber],"")
+    
 
 # Add a dictionary slide - if there were any abbr elements encountered
 if len(abbrevDictionary) > 0:
     slideNumber, glossarySlides = createGlossarySlides(prs, slideNumber, abbrevDictionary)
+    # Fix up internal glossary hyperlinks
+    abbrevNumber = -1
+    for abbreviation in sorted(abbrevRunsDictionary.keys()):
+        abbrevNumber += 1
+        runs = abbrevRunsDictionary[abbreviation]
+        for run in runs:
+            # Add tooltip for glossary definition
+            glossarySlideNumber= int(abbrevNumber / glossaryTermsPerPage)
+            createRunHyperlinkOrTooltip(run, glossarySlides[glossarySlideNumber], abbrevDictionary[abbreviation])
+
 
 # Add final slide - or more than one - with any Taskpaper tasks in
 if (len(tasks) > 0) & (taskSlides != "none"):
@@ -2755,15 +2784,6 @@ if (len(tasks) > 0) & (taskSlides != "none"):
             createTaskSlides(prs, slideNumber, complete, "Completed Tasks")
             createTaskSlides(prs, slideNumber, incomplete, "Incomplete Tasks")
 
-# Fix up any internal hyperlinks
-abbrevNumber = -1
-for abbreviation in sorted(abbrevRunsDictionary.keys()):
-    abbrevNumber += 1
-    runs = abbrevRunsDictionary[abbreviation]
-    for run in runs:
-        # Add tooltip for glossary definition
-        glossarySlideNumber= int(abbrevNumber / glossaryTermsPerPage)
-        createRunHyperlinkOrTooltip(run, glossarySlides[glossarySlideNumber], abbrevDictionary[abbreviation])
 # Write out the finished presentation
 prs.save(output_filename)
 

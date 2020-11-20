@@ -93,7 +93,7 @@ The author developed a presentation over 10 years in Powerpoint and OpenOffice a
 
 He took the trouble to convert it to Markdown and regenerated it with a very early version of md2pptx. The presentation looks nice again, with consistent formatting.
 
-It was relatively little trouble to convert to Markdown. In fact it took about an hour to convert the 40 page presentation. The consistency gain was automatic.
+It was relatively little trouble to convert to Markdown. In fact it took about an hour to convert the 40 slide presentation. The consistency gain was automatic.
 
 ## How Do You Use md2pptx?
 
@@ -154,7 +154,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:--|:---|:-----|
-|1.3|19 November 2020|Glossary terms now have tooltips and links to the relevant glossary page.|
+|1.3|20 November 2020|Glossary terms now have tooltips and hyperlinks to the relevant Glossary slide. Footnotes have hyperlinks to the relevant Footnotes slide.|
 |1.2|3 November 2020|Support URLs for graphics. Reworked Processing Summary slide to use a flowed table.|
 |1.1|25 October 2020|Introduce Template as a better replacement for Master - which still works. Add German characters. Better template file searching. Escape underscore. Better handling of continuation onto second and subsequent lines.|
 |1.0|13 October 2020|Python 3&comma; Support input filename as first command line parameter.|
@@ -217,7 +217,7 @@ Metadata is specified in the first three lines of this sample. In general metada
 In this case the metadata specifies a number of things:
 
 1. The Powerpoint file the presentation is based on is "hipodz.pptx".
-1. Each page with a title has a title font 22 points high.
+1. Each slide with a title has a title font 22 points high.
 1. Each presentation section slide has a title font 30 points high.
 1. A number of other styling-related specifications.
 
@@ -231,7 +231,7 @@ As you can see the format of each slide is fairly straightforward. How to code s
 
 You code a presentation title slide with a Markdown Heading Level 1:
 
-	# This Is the Presentation Title Page
+	# This Is the Presentation Title Slide
 
 If you type anything in subsequent lines - before a blank line - the text will appear as extra lines in the presentation title. You might use this, for example, to add the presentation authors' details.
 
@@ -627,7 +627,7 @@ In this example the glossary term is "BBC" and its definition is "British Broadc
 One or more Glossary Table slides will appear at the end of the presentation if any such terms are defined. When you create a glossary entry three things will happen:
 
 * Both the term and its definition will appear in the glossary.
-* The term will appear in the slide with the `abbr` element - with the appearance of a hyperlink element, which you can click on to get to the relevant glossary page.
+* The term will appear in the slide with the `abbr` element - with the appearance of a hyperlink element, which you can click on to get to the relevant Glossary slide.
 * If you hover over the term for a second or two the definition of the term will appear as a tooltip.
 
 If you define the term more than once only the first use will be included in the glossary. All uses of the term will appear in the normal slides.
@@ -653,7 +653,7 @@ You can create and reference footnotes.
 
 To define a footnote code `[^name]: ` on a new line. The remainder of the line will be the footnote text.
 
-If you have defined footnotes one or more Footnotes pages will be added to the end of the presentation.
+If you have defined footnotes one or more Footnotes slides will be added to the end of the presentation.
 
 Footnotes are automatically numbered, starting with 1.
 
@@ -661,9 +661,11 @@ Footnotes are automatically numbered, starting with 1.
 
 To refer to a footnote code `[^name]`. The footnote's number (automatically generated) will appear like so:
 
-&nbsp;&nbsp;&nbsp;&nbsp;This is a footnote reference<sup>[4]</sup>.
+&nbsp;&nbsp;&nbsp;&nbsp;This is a footnote reference<sup><u>4</u></sup>.
 
 If the name doesn't match a footnote a question mark will be printed instead of the footnote number.
+
+If you click on a footnote number you will be taken to the appropriate Footnotes slide.
 
 ## Controlling The Presentation With Metadata
 
@@ -691,7 +693,7 @@ Example:
 
 #### Page Title Size - `pageTitleSize`
 
-You can specify the point size of each page that isn't a section divider or title slide. The size is specified in points.
+You can specify the point size of each slide that isn't a section divider or title slide. The size is specified in points.
 
 Example:
 
@@ -701,7 +703,7 @@ The default is 30 points.
 
 #### Section Title Size - `sectionTitleSize`
 
-You can specify the point size of the title text for each page that's a section divider or title slide. The size is specified in points.
+You can specify the point size of the title text for each slide that's a section divider or title slide. The size is specified in points.
 
 Example:
 
@@ -711,7 +713,7 @@ The default is 40 points.
 
 #### Section Subtitle Size - `sectionSubtitleSize`
 
-You can specify the point size of the subtitle text for each page that's a section divider or title slide. The size is specified in points.
+You can specify the point size of the subtitle text for each slide that's a section divider or title slide. The size is specified in points.
 
 The subtitle text is the second and subsequent lines of the title - generally a separate text shape on the slide.
 
@@ -920,7 +922,7 @@ These options were added so that `BoldColour` and `ItalicColour` could just beco
 
 #### Shrinking Tables With `compactTables`
 
-You can reduce the size of a table on the page with `compactTables`. If you specify a value larger than 0 two things will happen:
+You can reduce the size of a table on the slide with `compactTables`. If you specify a value larger than 0 two things will happen:
 
 * The font will use whatever point size you specify.
 * The margins around the text in a cell will be reduced to 0.
@@ -985,7 +987,7 @@ Coding
 
 	glossaryTermsPerPage: 10
 
-will cause the maximum number of glossary items on a Glossary Slide to be 10. If there are more terms, a second page will be created. And so on. The default is 20.
+will cause the maximum number of glossary items on a Glossary slide to be 10. If there are more terms, a second slide will be created. And so on. The default is 20.
 
 
 ## Modifying The Slide Template
