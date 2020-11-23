@@ -1161,6 +1161,11 @@ THE SOFTWARE.
 </thead>
 <tbody>
 <tr>
+<td align="left">1.5</td>
+<td align="left">24 November 2020</td>
+<td align="left">Pictures now can have a tooltip</td>
+</tr>
+<tr>
 <td align="left">1.4</td>
 <td align="left">23 November 2020</td>
 <td align="left">Task slides&rsquo; slide numbers are hyperlinked to the relevant slide</td>
@@ -1361,7 +1366,11 @@ sectionTitleSize: 30
 
 
 <p>The graphic will be scaled to sensibly fill the slide area.</p>
-<p>Don&rsquo;t code anything inside the square brackets.</p>
+<p>If you code a string inside the square brackets it will be used as a tooltip (or screentip, in Powerpoint parlance). In Presentation Mode, when you hover over the graphic the tooltip will be displayed. Here is an example:</p>
+<div class="codehilite"><pre>![Here is a tooltip](graphics/my-graphic.png)
+</pre></div>
+
+
 <p><strong>HINT:</strong> If you want two graphics side by side use a single-row table, described <a href="#special-case-two-graphics-side-by-side">here</a>. If you want two graphics one above the other use a two-row, single-column table, described <a href="#special-case-one-graphic-above-another">here</a>.</p>
 <h4 id="graphics-file-references">Graphics File References<a class="headerlink" href="#graphics-file-references" title="Permanent link"></a></h4>
 <p>md2pptx supports graphics references in three different formats:</p>

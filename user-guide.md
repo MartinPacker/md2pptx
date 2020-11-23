@@ -154,6 +154,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:--|:---|:-----|
+|1.5|24 November 2020|Pictures now can have a tooltip|
 |1.4|23 November 2020|Task slides' slide numbers are hyperlinked to the relevant slide|
 |1.3|20 November 2020|Glossary terms now have tooltips and hyperlinks to the relevant Glossary slide. Footnotes have hyperlinks to the relevant Footnotes slide.|
 |1.2|3 November 2020|Support URLs for graphics. Reworked Processing Summary slide to use a flowed table.|
@@ -277,7 +278,9 @@ As with [bullet slides](#bullet-slides), code the slide title as a heading level
 
 The graphic will be scaled to sensibly fill the slide area.
 
-Don't code anything inside the square brackets.
+If you code a string inside the square brackets it will be used as a tooltip (or screentip, in Powerpoint parlance). In Presentation Mode, when you hover over the graphic the tooltip will be displayed. Here is an example:
+
+	![Here is a tooltip](graphics/my-graphic.png)
 
 **HINT:** If you want two graphics side by side use a single-row table, described [here](#special-case-two-graphics-side-by-side). If you want two graphics one above the other use a two-row, single-column table, described [here](#special-case-one-graphic-above-another).
 

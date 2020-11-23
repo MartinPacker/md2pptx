@@ -32,8 +32,8 @@ import tempfile
 from lxml import etree
 
 
-md2pptx_level = "1.4"
-md2pptx_date = "23 November, 2020"
+md2pptx_level = "1.5"
+md2pptx_date = "24 November, 2020"
 
 # Following functions are workarounds for python-pptx not having these functions for the font object
 def set_subscript(font):
@@ -90,6 +90,10 @@ def removeBullets(textFrame):
 def SlideFromRun(run):
     return run._parent._parent._parent._parent._parent
 
+# Get the slide object the picture is in
+def SlideFromPicture(picture):
+    return picture._parent._parent
+
 # Creates a hyperlink to another slide and/or a tooltip - for a
 # text run
 # Note: To get just a tooltip make to_slide be the source slide
@@ -125,6 +129,19 @@ def createRunHyperlinkOrTooltip(run, to_slide, tooltipText=""):
     
     # Delete the shape click action
     sca.target_slide = None
+
+# Creates a hyperlink to another slide and/or a tooltip - for a
+# picture
+# Note: To get just a tooltip make to_slide be the source slide
+#       so it links to itself.
+def createPictureHyperlinkOrTooltip(picture, to_slide, tooltipText=""):
+    if to_slide == None:
+        to_slide = SlideFromPicture(picture)
+
+    picture.click_action.target_slide = to_slide
+    if tooltipText != "":
+        picture.click_action.hyperlink._hlink.set("tooltip", tooltipText)
+
 
 def get_image_size(fname):
     """Determine the image type of fhandle and return its size.
@@ -944,7 +961,15 @@ def handleWhateverGraphicType(graphicFilename):
     return graphicFilename, printableGraphicFilename
 
 
-def graphicSlide(presentation, slideNumber, titleText, graphicFilename):
+def graphicSlide(presentation, slideNumber, titleText, graphicFilenameTitle):
+    # Split graphic filename/title into filename and flyover text (if any)
+    graphicFilenameTitleParts = graphicFilenameTitle.split("||")
+    graphicFilename = graphicFilenameTitleParts[0]
+    if len(graphicFilenameTitleParts) == 2:
+        flyoverText = graphicFilenameTitleParts[1]
+    else:
+        flyoverText = ""
+    
     graphicFilename, printableGraphicFilename = handleWhateverGraphicType(
         graphicFilename
     )
@@ -1012,6 +1037,10 @@ def graphicSlide(presentation, slideNumber, titleText, graphicFilename):
     picY = titleBottom + marginBase + (maxPicHeight - picHeight) / 2
 
     picture = slide.shapes.add_picture(graphicFilename, picX, picY, picWidth, picHeight)
+
+    # Maybe add tooltip text
+    if flyoverText != "":
+        createPictureHyperlinkOrTooltip(picture, None, flyoverText)
 
     if want_numbers_content is True:
         addFooter(presentation, slideNumber, slide)
@@ -1582,6 +1611,10 @@ def tableSlide(presentation, slideNumber, titleText, table):
                 topLeftPicWidth,
                 topLeftPicHeight,
             )
+            
+            # Maybe create tooltip for top left picture
+            if topLeftGraphicTitle != "":
+                createPictureHyperlinkOrTooltip(topLeftPicture, None, topLeftGraphicTitle)
 
         if gridColumns == 2:
             # Top Right Picture
@@ -1633,6 +1666,11 @@ def tableSlide(presentation, slideNumber, titleText, table):
                     topRightPicWidth,
                     topRightPicHeight,
                 )
+                
+                # Maybe create tooltip for top right picture
+                if topRightGraphicTitle != "":
+                    createPictureHyperlinkOrTooltip(topRightPicture, None, topRightGraphicTitle)
+
         if gridRows == 2:
             # Need second row of pictures
             # Bottom Left Picture
@@ -1685,6 +1723,10 @@ def tableSlide(presentation, slideNumber, titleText, table):
                     bottomLeftPicWidth,
                     bottomLeftPicHeight,
                 )
+
+                # Maybe create tooltip for bottom left picture
+                if bottomLeftGraphicTitle != "":
+                    createPictureHyperlinkOrTooltip(bottomLeftPicture, None, bottomLeftGraphicTitle)
 
             if gridColumns == 2:
                 # Bottom Right Picture
@@ -1740,6 +1782,11 @@ def tableSlide(presentation, slideNumber, titleText, table):
                             bottomRightPicWidth,
                             bottomRightPicHeight,
                         )
+                        
+                        # Maybe create tooltip for bottom right picture
+                        if bottomRightGraphicTitle != "":
+                            createPictureHyperlinkOrTooltip(bottomRightPicture, None, bottomRighGraphicTitle)
+
     else:
         # Normal table slide
 
@@ -2691,7 +2738,7 @@ for line in lines_after_concatenation:
 
         if in_block is True:
             slideNumber, slide = createSlide(
-                prs, slideNumber, slide_title, "", block_type, graphicFilename
+                prs, slideNumber, slide_title, "", block_type, graphicFilename + "||" + graphicTitle
             )
         else:
             slideNumber, slide = createSlide(
