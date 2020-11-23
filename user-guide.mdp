@@ -116,6 +116,7 @@ To quote from the python-pptx license statement:
 =colwidth 2 3 5
 =csv
 Level,Date,What
+1.4,23 November 2020,Task slides' slide numbers are hyperlinked to the relevant slide
 1.3,20 November 2020,Glossary terms now have tooltips and hyperlinks to the relevant Glossary slide. Footnotes have hyperlinks to the relevant Footnotes slide.
 1.2,3 November 2020,Support URLs for graphics. Reworked Processing Summary slide to use a flowed table.
 1.1,25 October 2020,Introduce Template as a better replacement for Master - which still works. Add German characters. Better template file searching. Escape underscore. Better handling of continuation onto second and subsequent lines.
@@ -435,7 +436,8 @@ The task title, any due date, any tags, and any completion information, are adde
 Because of Taskpaper support you can't start a bullet with a `-`. \
 So always start bulleted list items with a `*`.
 
-Tasks on the Tasks slides are shown with the slide number they were coded on.
+Tasks on the Tasks slides are shown with the slide number they were coded on. \
+If you click on the slide number you are taken to the corresponding slide.
 
 Here's a more comprehensive example. Coding
 
@@ -455,7 +457,8 @@ To code a hyperlink in a slide code something like:
 
 	[IBM Website](http://www.ibm.com)
 
-It will be rendered with the text "IBM Website" displayed: [IBM Website](http://www.ibm.com)
+It will be rendered with the text "IBM Website" displayed: [IBM Website](http://www.ibm.com). \
+This only works for **external** references, not internal slide references.
 
 ## HTML Comments
 
