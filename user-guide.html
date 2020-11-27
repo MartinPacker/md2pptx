@@ -1023,7 +1023,11 @@ body .markdown-body
 <li><a href="#task-list-slides">Task List Slides</a></li>
 </ul>
 </li>
-<li><a href="#hyperlinks">Hyperlinks</a></li>
+<li><a href="#hyperlinks">Hyperlinks</a><ul>
+<li><a href="#coding-a-heading-reference-on-a-target-slide">Coding A Heading Reference On A Target Slide</a></li>
+<li><a href="#coding-a-hyperlink-to-another-slide">Coding A Hyperlink To Another Slide</a></li>
+</ul>
+</li>
 <li><a href="#html-comments">HTML Comments</a></li>
 <li><a href="#special-text-formatting">Special Text Formatting</a><ul>
 <li><a href="#using-html-&lt;style&gt;-elements-to-specify-text-colours-and-underlining">Using HTML <code>&lt;style&gt;</code> Elements To Specify Text Colours And Underlining</a></li>
@@ -1162,8 +1166,8 @@ THE SOFTWARE.
 <tbody>
 <tr>
 <td align="left">1.5</td>
-<td align="left">24 November 2020</td>
-<td align="left">Pictures now can have a tooltip</td>
+<td align="left">27 November 2020</td>
+<td align="left">Pictures now can have a tooltip. You can define inter-slide links.</td>
 </tr>
 <tr>
 <td align="left">1.4</td>
@@ -1510,12 +1514,39 @@ sectionTitleSize: 30
 <p>Task slides are paginated: Multiple task slides are created, each with the task slide number appended to the title, if there are more than a certain number of tasks.</p>
 <p>You can control task slide production by specifying <code>taskSlides</code> and <code>tasksPerSlide</code>. See <a href="#controlling-task-slide-production-with-taskslides-and-tasksperslide">Controlling Task Slide Production With <code>taskSlides</code> and <code>tasksPerSlide</code></a>.</p>
 <h2 id="hyperlinks">Hyperlinks<a class="headerlink" href="#hyperlinks" title="Permanent link"></a></h2>
-<p>To code a hyperlink in a slide code something like:</p>
+<p>To code a hyperlink to an <strong>external</strong> URL in a slide code something like:</p>
 <div class="codehilite"><pre>[IBM Website](http://www.ibm.com)
 </pre></div>
 
 
-<p>It will be rendered with the text &ldquo;IBM Website&rdquo; displayed: <a href="http://www.ibm.com">IBM Website</a>. This only works for <strong>external</strong> references, not internal slide references.</p>
+<p>It will be rendered with the text &ldquo;IBM Website&rdquo; displayed: <a href="http://www.ibm.com">IBM Website</a>.
+This above works for <strong>external</strong> references.
+To create an internal slide reference you need to do two things:</p>
+<ol>
+<li>Tag the heading of the target slide with a heading reference (href).</li>
+<li>Code a reference to the target slide using the href.</li>
+</ol>
+<h3 id="coding-a-heading-reference-on-a-target-slide">Coding A Heading Reference On A Target Slide<a class="headerlink" href="#coding-a-heading-reference-on-a-target-slide" title="Permanent link"></a></h3>
+<p>Multimarkdown and md2pptx support the following way of identifying a heading reference (href):</p>
+<div class="codehilite"><pre>### z15 Processor Architecture [z15-arch]
+
+* 12 Cores Per PU Chip
+    * Most of which are enabled
+* 4 PU Chips per drawer
+* 1-5 drawers per machine
+</pre></div>
+
+
+<p>The above is a slide with a title (&ldquo;z15 Processor Architecture&rdquo;). You can link to this slide using the href (&ldquo;z15-arch&rdquo;).</p>
+<h3 id="coding-a-hyperlink-to-another-slide">Coding A Hyperlink To Another Slide<a class="headerlink" href="#coding-a-hyperlink-to-another-slide" title="Permanent link"></a></h3>
+<p>You can refer to the slide in a hyperlink using the href. Here&rsquo;s an example:</p>
+<div class="codehilite"><pre>### Attributes Of A High Performance System
+
+* For how a high performance system is built see [here](#z15-arch)
+</pre></div>
+
+
+<p>The bullet links to the slide with href &ldquo;z15-arch&rdquo;. You click on the word &ldquo;here&rdquo; in a presentation to move to the referred-to slide.</p>
 <h2 id="html-comments">HTML Comments<a class="headerlink" href="#html-comments" title="Permanent link"></a></h2>
 <p>You can use HTML-style comments, ranging over multiple lines.</p>
 <p>Start the first line with <code>&lt;!--</code>.</p>

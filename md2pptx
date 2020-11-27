@@ -33,7 +33,7 @@ from lxml import etree
 
 
 md2pptx_level = "1.5"
-md2pptx_date = "24 November, 2020"
+md2pptx_date = "27 November, 2020"
 
 # Following functions are workarounds for python-pptx not having these functions for the font object
 def set_subscript(font):
@@ -208,6 +208,20 @@ def formatTitle(presentation, title, titleText):
 
     return title.top + title.height
 
+# Parse the string after the e.g. ### for a displayable title and
+# an optional heading reference
+def parseTitleText(titleLineString):
+    # Get rid of any cruft on the line
+    slideTitleWithPossibleHref = titleLineString.strip().rstrip("#").rstrip()
+
+    if slideHrefRegex.match(slideTitleWithPossibleHref):
+        hrefMatch = slideHrefRegex.match(slideTitleWithPossibleHref)
+        slide_title = hrefMatch.group(1)
+        href = hrefMatch.group(2)
+    else:
+        href = ""
+        slide_title =  slideTitleWithPossibleHref
+    return slide_title, href
 
 def parseText(text):
     textArray = []
@@ -742,7 +756,11 @@ def addFormattedText(p, text):
                 linkText = linkArray[0]
                 linkURL = linkArray[1]
                 run.text = linkText
-                if linkURL.startswith("#") is not True:
+                if linkURL.startswith("#"):
+                    # Is an internal Url
+                    linkHref = linkURL[1:].strip()
+                    href_runs[linkHref] = run
+                else:
                     # Not an internal link so create it
                     hlink = run.hyperlink
                     hlink.address = linkURL
@@ -977,6 +995,8 @@ def graphicSlide(presentation, slideNumber, titleText, graphicFilenameTitle):
         slide = presentation.slides.add_slide(
             presentation.slide_layouts[titleOnlyLayout]
         )
+
+        slide_hrefs[href] = slideNumber
 
         # Add title and constrain its size and placement
         title = findSlideTitle(slide)
@@ -2186,6 +2206,7 @@ linkRegex = re.compile("^\[(.+)\]\((.+)\)")
 twoUpRegex = re.compile("^\|(.+?)\|(.+?)\|")
 footnoteDefinitionRegex = re.compile("^\[\^(.+?)]: (.+)")
 spanRegex = re.compile("<span( )*class=")
+slideHrefRegex = re.compile("(.+)\[(.+)\]")
 
 # Slide layout enumeration
 titleSlideLayout = 0
@@ -2539,6 +2560,9 @@ notes_text = ""
 slide = None
 tasks = []
 
+slide_hrefs = {}
+href_runs = {}
+
 # Pass to concatenate lines with continuations
 previous_line = "\n"
 lines_after_concatenation = []
@@ -2646,10 +2670,18 @@ for line in lines_after_concatenation:
     elif line[:3] == "###":
         # Heading Level 3 - slide
         if in_block is True:
+            # Create the previous slide
             slideNumber, slide = createSlide(
                 prs, slideNumber, slide_title, slide_subtitle, block_type, bullets
             )
-        slide_title = line[3:].strip().rstrip("#").rstrip()
+            
+            slide_hrefs[href] = slideNumber
+
+        # Get slide title text and any href
+        slide_title, href = parseTitleText(line[3:])
+        if (href !="") & (href in slide_hrefs.keys()):
+            print(f"Heading Reference redefined: '{href}' for slide {slideNumber}")
+
         in_block = True
         block_type = "content"
         slide_subtitle = ""
@@ -2670,7 +2702,14 @@ for line in lines_after_concatenation:
             slideNumber, slide = createSlide(
                 prs, slideNumber, slide_title, slide_subtitle, block_type, bullets
             )
-        slide_title = line[2:].strip().rstrip("#").rstrip()
+
+        slide_hrefs[href] = slideNumber
+
+        # Get slide title text and any href
+        slide_title, href = parseTitleText(line[2:])
+        if (href !="") & (href in slide_hrefs.keys()):
+            print(f"Heading Reference redefined: '{href}' for slide {slideNumber}")
+
         in_block = True
         block_type = "section"
         slide_subtitle = ""
@@ -2691,7 +2730,14 @@ for line in lines_after_concatenation:
             slideNumber, slide = createSlide(
                 prs, slideNumber, slide_title, slide_subtitle, block_type, bullets
             )
-        slide_title = line[1:].strip().rstrip("#").rstrip()
+
+            slide_hrefs[href] = slideNumber
+
+        # Get slide title text and any href
+        slide_title, href = parseTitleText(line[1:])
+        if (href !="") & (href in slide_hrefs.keys()):
+            print(f"Heading Reference redefined: '{href}' for slide {slideNumber}")
+
         in_block = True
         block_type = "title"
         slide_subtitle = ""
@@ -2777,6 +2823,9 @@ if (in_block is True) | (in_code is True) | (in_table is True):
         prs, slideNumber, slide_title, slide_subtitle, block_type, bullets
     )
 
+    slide_hrefs[href] = slideNumber
+
+
     if (notes_text != "") & (slide != None):
         notes_slide = slide.notes_slide
         text_frame = notes_slide.notes_text_frame
@@ -2845,7 +2894,13 @@ if (len(tasks) > 0) & (taskSlides != "none"):
             createTaskSlides(prs, slideNumber, complete, "Completed Tasks")
             createTaskSlides(prs, slideNumber, incomplete, "Incomplete Tasks")
 
+# Fix up any internal links
+for href in href_runs.keys():
+    run = href_runs[href]
+    createRunHyperlinkOrTooltip(run, prs.slides[slide_hrefs[href]-2+templateSlideCount], "")
+
 # Write out the finished presentation
 prs.save(output_filename)
+
 
 sys.exit()

@@ -26,6 +26,8 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 	* [Code Slides](#code-slides)
 	* [Task List Slides](#task-list-slides)
 * [Hyperlinks](#hyperlinks)
+	* [Coding A Heading Reference On A Target Slide](#coding-a-heading-reference-on-a-target-slide)
+	* [Coding A Hyperlink To Another Slide](#coding-a-hyperlink-to-another-slide)
 * [HTML Comments](#html-comments)
 * [Special Text Formatting](#special-text-formatting)
 	* [Using HTML `<style>` Elements To Specify Text Colours And Underlining](#using-html-<style>-elements-to-specify-text-colours-and-underlining)
@@ -154,7 +156,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:--|:---|:-----|
-|1.5|24 November 2020|Pictures now can have a tooltip|
+|1.5|27 November 2020|Pictures now can have a tooltip. You can define inter-slide links.|
 |1.4|23 November 2020|Task slides' slide numbers are hyperlinked to the relevant slide|
 |1.3|20 November 2020|Glossary terms now have tooltips and hyperlinks to the relevant Glossary slide. Footnotes have hyperlinks to the relevant Footnotes slide.|
 |1.2|3 November 2020|Support URLs for graphics. Reworked Processing Summary slide to use a flowed table.|
@@ -460,11 +462,39 @@ You can control task slide production by specifying `taskSlides` and `tasksPerSl
 
 ## Hyperlinks
 
-To code a hyperlink in a slide code something like:
+To code a hyperlink to an **external** URL in a slide code something like:
 
 	[IBM Website](http://www.ibm.com)
 
-It will be rendered with the text "IBM Website" displayed: [IBM Website](http://www.ibm.com). This only works for **external** references, not internal slide references.
+It will be rendered with the text "IBM Website" displayed: [IBM Website](http://www.ibm.com).
+This above works for **external** references.
+To create an internal slide reference you need to do two things:
+
+1. Tag the heading of the target slide with a heading reference (href).
+2. Code a reference to the target slide using the href.
+
+### Coding A Heading Reference On A Target Slide
+
+Multimarkdown and md2pptx support the following way of identifying a heading reference (href):
+
+    ### z15 Processor Architecture [z15-arch]
+
+    * 12 Cores Per PU Chip
+        * Most of which are enabled
+    * 4 PU Chips per drawer
+    * 1-5 drawers per machine
+
+The above is a slide with a title ("z15 Processor Architecture"). You can link to this slide using the href ("z15-arch").
+
+### Coding A Hyperlink To Another Slide
+
+You can refer to the slide in a hyperlink using the href. Here's an example:
+
+    ### Attributes Of A High Performance System
+
+    * For how a high performance system is built see [here](#z15-arch)
+
+The bullet links to the slide with href "z15-arch". You click on the word "here" in a presentation to move to the referred-to slide.
 
 ## HTML Comments
 
