@@ -89,6 +89,8 @@ The flat file format that md2pptx uses is Markdown. Using Markdown has further a
 
 Every piece of text you use to create a Powerpoint presentation with md2pptx is valid Markdown. While it might not render exactly the same way put through another Markdown processor, it is generally equivalent. This is one of the key aims of md2pptx.
 
+One final advantage of the md2pptx approach is you can generate presentations without using PowerPoint itself. Indeed you can create presentations on machines where PowerPoint won't even run. All you need is to be able to run Python 3 and install python-pptx.
+
 ### A Real World Use Case
 
 The author developed a presentation over 10 years in Powerpoint and OpenOffice and LibreOffice. It became very inconsistent in formatting - fonts, colours, indentations, bullets, etc.. It was a horrible mess.
@@ -156,7 +158,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:--|:---|:-----|
-|1.5|27 November 2020|Pictures now can have a tooltip. You can define inter-slide links.|
+|1.5|5 December 2020|Pictures now can have a tooltip. You can define inter-slide links.|
 |1.4|23 November 2020|Task slides' slide numbers are hyperlinked to the relevant slide|
 |1.3|20 November 2020|Glossary terms now have tooltips and hyperlinks to the relevant Glossary slide. Footnotes have hyperlinks to the relevant Footnotes slide.|
 |1.2|3 November 2020|Support URLs for graphics. Reworked Processing Summary slide to use a flowed table.|
