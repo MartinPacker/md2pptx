@@ -19,6 +19,7 @@ from pptx.enum.text import MSO_AUTO_SIZE, PP_ALIGN
 from pptx.enum.shapes import PP_PLACEHOLDER
 from pptx.enum.shapes import MSO_SHAPE
 from pptx.enum.text import MSO_ANCHOR
+from pptx.enum.action import PP_ACTION
 from pptx.dml.color import RGBColor
 import imghdr, struct
 import datetime
@@ -33,7 +34,7 @@ from lxml import etree
 
 
 md2pptx_level = "1.5"
-md2pptx_date = "27 November, 2020"
+md2pptx_date = "7 December, 2020"
 
 # Following functions are workarounds for python-pptx not having these functions for the font object
 def set_subscript(font):
@@ -136,11 +137,28 @@ def createRunHyperlinkOrTooltip(run, to_slide, tooltipText=""):
 #       so it links to itself.
 def createPictureHyperlinkOrTooltip(picture, to_slide, tooltipText=""):
     if to_slide == None:
+        # If neither a tooltip nor a target slide then return having
+        # done nothing
+        if tooltipText == "":
+            return
+        
+        # Tooltip but no target slide
         to_slide = SlideFromPicture(picture)
 
     picture.click_action.target_slide = to_slide
+    
+    
     if tooltipText != "":
         picture.click_action.hyperlink._hlink.set("tooltip", tooltipText)
+    
+# If a tooltip has been set return it else return an empty string
+def getPictureTooltip(picture):
+    if picture.click_action.hyperlink._hlink != None:
+        # There is a tooltip
+        return picture.click_action.hyperlink._hlink.get("tooltip")
+    else:
+        # There is no tooltip
+        return ""
 
 
 def get_image_size(fname):
@@ -961,6 +979,8 @@ def handleWhateverGraphicType(graphicFilename):
             printableGraphicFilename = (
                 graphicFilename[:25] + "..." + graphicFilename[-25:]
             )
+        else:
+            printableGraphicFilename = graphicFilename
 
         # Retrieve the data
         operUrl = urllib.request.urlopen(graphicFilename)
@@ -980,13 +1000,14 @@ def handleWhateverGraphicType(graphicFilename):
 
 
 def graphicSlide(presentation, slideNumber, titleText, graphicFilenameTitle):
-    # Split graphic filename/title into filename and flyover text (if any)
+    # Split graphic filename/title into filename and flyover text (if any),
+    # and any href (for clickability)
     graphicFilenameTitleParts = graphicFilenameTitle.split("||")
     graphicFilename = graphicFilenameTitleParts[0]
-    if len(graphicFilenameTitleParts) == 2:
-        flyoverText = graphicFilenameTitleParts[1]
-    else:
-        flyoverText = ""
+    flyoverText = graphicFilenameTitleParts[1]
+    graphicHref = graphicFilenameTitleParts[2]
+    if graphicHref == "":
+        graphicHref = "#XYZZY-None"
     
     graphicFilename, printableGraphicFilename = handleWhateverGraphicType(
         graphicFilename
@@ -996,7 +1017,6 @@ def graphicSlide(presentation, slideNumber, titleText, graphicFilenameTitle):
             presentation.slide_layouts[titleOnlyLayout]
         )
 
-        slide_hrefs[href] = slideNumber
 
         # Add title and constrain its size and placement
         title = findSlideTitle(slide)
@@ -1030,6 +1050,8 @@ def graphicSlide(presentation, slideNumber, titleText, graphicFilenameTitle):
         # Figure out graphic height on slide
         maxPicHeight = presentation.slide_height - marginBase * 2.5
 
+    slide_hrefs[href] = slideNumber + 1
+
     # Figure out picture width - with 2 x marginBase margins
     maxPicWidth = presentation.slide_width - marginBase * 4
 
@@ -1059,8 +1081,11 @@ def graphicSlide(presentation, slideNumber, titleText, graphicFilenameTitle):
     picture = slide.shapes.add_picture(graphicFilename, picX, picY, picWidth, picHeight)
 
     # Maybe add tooltip text
-    if flyoverText != "":
-        createPictureHyperlinkOrTooltip(picture, None, flyoverText)
+    clickable_picture_tooltips.append(flyoverText)
+
+    # Maybe add picture to list with clickability hrefs
+    clickable_pictures.append(picture)
+    clickable_picture_Hrefs.append(graphicHref)
 
     if want_numbers_content is True:
         addFooter(presentation, slideNumber, slide)
@@ -1367,10 +1392,20 @@ def tableSlide(presentation, slideNumber, titleText, table):
 
         # Attempt to retrieve filename for left side - top row
         topLeftSide = table[0][0]
-        if graphicRegex.match(topLeftSide):
-            topLeftGraphicMatch = graphicRegex.match(topLeftSide)
-            topLeftGraphicTitle = topLeftGraphicMatch.group(1)
-            topLeftGraphicFilename = topLeftGraphicMatch.group(2)
+        if(graphicRegex.match(topLeftSide) != None) | (clickableGraphicRegex.match(topLeftSide) != None):
+            if clickableGraphicRegex.match(topLeftSide):
+                # Clickable graphic case 
+                clickableGraphicMatch = clickableGraphicRegex.match(topLeftSide)
+                topLeftGraphicTitle=clickableGraphicMatch.group(1)
+                topLeftGraphicFilename=clickableGraphicMatch.group(2)
+                topLeftGraphicHref=clickableGraphicMatch.group(3)
+            else:    
+                # Graphic
+                topLeftGraphicMatch = graphicRegex.match(topLeftSide)
+                topLeftGraphicTitle = topLeftGraphicMatch.group(1)
+                topLeftGraphicFilename = topLeftGraphicMatch.group(2)
+                topLeftGraphicHref = ""
+
             (
                 topLeftGraphicFilename,
                 printableTopLeftGraphicFilename,
@@ -1387,10 +1422,20 @@ def tableSlide(presentation, slideNumber, titleText, table):
                 topRightSide = table[0][1]
             else:
                 topRightSide = ""
-            if graphicRegex.match(topRightSide):
-                topRightGraphicMatch = graphicRegex.match(topRightSide)
-                topRightGraphicTitle = topRightGraphicMatch.group(1)
-                topRightGraphicFilename = topRightGraphicMatch.group(2)
+            if(graphicRegex.match(topRightSide) != None) | (clickableGraphicRegex.match(topRightSide) != None):
+                if clickableGraphicRegex.match(topRightSide):
+                    # Clickable graphic case 
+                    clickableGraphicMatch = clickableGraphicRegex.match(topRightSide)
+                    topRightGraphicTitle=clickableGraphicMatch.group(1)
+                    topRightGraphicFilename=clickableGraphicMatch.group(2)
+                    topRightGraphicHref=clickableGraphicMatch.group(3)
+                else:    
+                    # Graphic
+                    topRightGraphicMatch = graphicRegex.match(topRightSide)
+                    topRightGraphicTitle = topRightGraphicMatch.group(1)
+                    topRightGraphicFilename = topRightGraphicMatch.group(2)
+                    topRightGraphicHref = ""
+
                 (
                     topRightGraphicFilename,
                     printableTopRightGraphicFilename,
@@ -1412,10 +1457,20 @@ def tableSlide(presentation, slideNumber, titleText, table):
             # Attempt to retrieve filename for left side - bottom row
             bottomGraphicCount = 0
             bottomLeftSide = table[1][0]
-            if graphicRegex.match(bottomLeftSide):
-                bottomLeftGraphicMatch = graphicRegex.match(bottomLeftSide)
-                bottomLeftGraphicTitle = bottomLeftGraphicMatch.group(1)
-                bottomLeftGraphicFilename = bottomLeftGraphicMatch.group(2)
+            if(graphicRegex.match(bottomLeftSide) != None) | (clickableGraphicRegex.match(bottomLeftSide) != None):
+                if clickableGraphicRegex.match(bottomLeftSide):
+                    # Clickable graphic case 
+                    clickableGraphicMatch = clickableGraphicRegex.match(bottomLeftSide)
+                    bottomLeftGraphicTitle=clickableGraphicMatch.group(1)
+                    bottomLeftGraphicFilename=clickableGraphicMatch.group(2)
+                    bottomLeftGraphicHref=clickableGraphicMatch.group(3)
+                else:    
+                    # Graphic
+                    bottomLeftGraphicMatch = graphicRegex.match(bottomLeftSide)
+                    bottomLeftGraphicTitle = bottomLeftGraphicMatch.group(1)
+                    bottomLeftGraphicFilename = bottomLeftGraphicMatch.group(2)
+                    bottomLeftGraphicHref = ""
+
                 (
                     bottomLeftGraphicFilename,
                     printableBottomLeftGraphicFilename,
@@ -1436,10 +1491,20 @@ def tableSlide(presentation, slideNumber, titleText, table):
                     # There is a bottom right so this is "4-up", though one or OTHER_MEMBERS
                     # bottom cells might be empty
                     bottomRightSide = table[1][1]
-                    if graphicRegex.match(bottomRightSide):
-                        bottomRightGraphicMatch = graphicRegex.match(bottomRightSide)
-                        bottomRightGraphicTitle = bottomRightGraphicMatch.group(1)
-                        bottomRightGraphicFilename = bottomRightGraphicMatch.group(2)
+                    if(graphicRegex.match(bottomRightSide) != None) | (clickableGraphicRegex.match(bottomRightSide) != None):
+                        if clickableGraphicRegex.match(bottomRightSide):
+                            # Clickable graphic case 
+                            clickableGraphicMatch = clickableGraphicRegex.match(bottomRightSide)
+                            bottomRightGraphicTitle=clickableGraphicMatch.group(1)
+                            bottomRightGraphicFilename=clickableGraphicMatch.group(2)
+                            bottomRightGraphicHref=clickableGraphicMatch.group(3)
+                        else:    
+                            # Graphic
+                            bottomRightGraphicMatch = graphicRegex.match(bottomRightSide)
+                            bottomRightGraphicTitle = bottomRightGraphicMatch.group(1)
+                            bottomRightGraphicFilename = bottomRightGraphicMatch.group(2)
+                            bottomRightGraphicHref = ""
+
                         (
                             bottomRightGraphicFilename,
                             printableBottomRightGraphicFilename,
@@ -1632,9 +1697,16 @@ def tableSlide(presentation, slideNumber, titleText, table):
                 topLeftPicHeight,
             )
             
-            # Maybe create tooltip for top left picture
-            if topLeftGraphicTitle != "":
-                createPictureHyperlinkOrTooltip(topLeftPicture, None, topLeftGraphicTitle)
+            # Maybe add tooltip text
+            clickable_picture_tooltips.append(topLeftGraphicTitle)
+
+            # Maybe add picture to list with clickability hrefs
+            clickable_pictures.append(topLeftPicture)
+
+            if topLeftGraphicHref == "":
+                topLeftGraphicHref = "#XYZZY-None"
+
+            clickable_picture_Hrefs.append(topLeftGraphicHref)
 
         if gridColumns == 2:
             # Top Right Picture
@@ -1687,9 +1759,15 @@ def tableSlide(presentation, slideNumber, titleText, table):
                     topRightPicHeight,
                 )
                 
-                # Maybe create tooltip for top right picture
-                if topRightGraphicTitle != "":
-                    createPictureHyperlinkOrTooltip(topRightPicture, None, topRightGraphicTitle)
+                # Maybe add tooltip text
+                clickable_picture_tooltips.append(topRightGraphicTitle)
+
+                if topRightGraphicHref == "":
+                    topRightGraphicHref = "#XYZZY-None"
+
+                # Maybe add picture to list with clickability hrefs
+                clickable_pictures.append(topRightPicture)
+                clickable_picture_Hrefs.append(topRightGraphicHref)
 
         if gridRows == 2:
             # Need second row of pictures
@@ -1744,9 +1822,16 @@ def tableSlide(presentation, slideNumber, titleText, table):
                     bottomLeftPicHeight,
                 )
 
-                # Maybe create tooltip for bottom left picture
-                if bottomLeftGraphicTitle != "":
-                    createPictureHyperlinkOrTooltip(bottomLeftPicture, None, bottomLeftGraphicTitle)
+                # Maybe add tooltip text
+                clickable_picture_tooltips.append(bottomLeftGraphicTitle)
+
+                # Maybe add picture to list with clickability hrefs
+                clickable_pictures.append(bottomLeftPicture)
+
+                if bottomLeftGraphicHref == "":
+                    bottomLeftGraphicHref = "#XYZZY-None"
+
+                clickable_picture_Hrefs.append(bottomLeftGraphicHref)
 
             if gridColumns == 2:
                 # Bottom Right Picture
@@ -1803,9 +1888,17 @@ def tableSlide(presentation, slideNumber, titleText, table):
                             bottomRightPicHeight,
                         )
                         
-                        # Maybe create tooltip for bottom right picture
-                        if bottomRightGraphicTitle != "":
-                            createPictureHyperlinkOrTooltip(bottomRightPicture, None, bottomRighGraphicTitle)
+                        # Maybe add tooltip text
+                        clickable_picture_tooltips.append(bottomRightGraphicTitle)
+
+                        # Maybe add picture to list with clickability hrefs
+                        clickable_pictures.append(bottomRightPicture)
+
+                        if bottomRightGraphicHref == "":
+                            bottomRightGraphicHref = "#XYZZY-None"
+
+                        clickable_picture_Hrefs.append(bottomRightGraphicHref)
+
 
     else:
         # Normal table slide
@@ -2202,6 +2295,7 @@ slideNumber = 1
 bulletRegex = re.compile("^(\s)*\*(.*)")
 metadataRegex = re.compile("^(.+):(.+)")
 graphicRegex = re.compile("^!\[(.*)\]\((.+)\)")
+clickableGraphicRegex = re.compile("^\[!\[(.*)\]\((.+)\)\]\((.+)\)")
 linkRegex = re.compile("^\[(.+)\]\((.+)\)")
 twoUpRegex = re.compile("^\|(.+?)\|(.+?)\|")
 footnoteDefinitionRegex = re.compile("^\[\^(.+?)]: (.+)")
@@ -2563,6 +2657,10 @@ tasks = []
 slide_hrefs = {}
 href_runs = {}
 
+clickable_pictures = []
+clickable_picture_Hrefs = []
+clickable_picture_tooltips = []
+
 # Pass to concatenate lines with continuations
 previous_line = "\n"
 lines_after_concatenation = []
@@ -2769,26 +2867,40 @@ for line in lines_after_concatenation:
         # Remove first element
         table_row.pop(0)
 
-        # Remove last element
-        table_row.pop()
+        # Remove last element - if blank
+        if cell == "":
+            table_row.pop()
 
         # Add clean table row (list of cells) to saved table rows
         table_rows.append(table_row)
 
-    elif graphicRegex.match(line):
-        # Graphic
-        graphicMatch = graphicRegex.match(line)
-        graphicTitle = graphicMatch.group(1)
-        graphicFilename = graphicMatch.group(2)
+    elif (graphicRegex.match(line) != None) | (clickableGraphicRegex.match(line) != None):
+        if clickableGraphicRegex.match(line):
+            # Clickable graphic case 
+            clickableGraphicMatch = clickableGraphicRegex.match(line)
+            graphicTitle=clickableGraphicMatch.group(1)
+            graphicFilename=clickableGraphicMatch.group(2)
+            graphicHref=clickableGraphicMatch.group(3)
+        else:    
+            # Graphic
+            graphicMatch = graphicRegex.match(line)
+            graphicTitle = graphicMatch.group(1)
+            graphicFilename = graphicMatch.group(2)
+            graphicHref = ""
         block_type = "graphic"
 
         if in_block is True:
+            graphicInfo = graphicFilename + "||" + graphicTitle
+            graphicInfo = graphicInfo + "||" + graphicHref
+
             slideNumber, slide = createSlide(
-                prs, slideNumber, slide_title, "", block_type, graphicFilename + "||" + graphicTitle
+                prs, slideNumber, slide_title, "", block_type, graphicInfo
             )
         else:
+            graphicInfo = graphicFilename + "||" + "||" + graphicHref
+
             slideNumber, slide = createSlide(
-                prs, slideNumber, graphicTitle, "", block_type, graphicFilename
+                prs, slideNumber, graphicTitle, "", block_type, graphicInfo
             )
 
         slide_title = ""
@@ -2803,7 +2915,6 @@ for line in lines_after_concatenation:
             text_frame.text = notes_text
 
         notes_text = ""
-
     elif bulletRegex.match(line):
         # Bulleted list
         bulletPos = line.index("*") + 1
@@ -2897,10 +3008,25 @@ if (len(tasks) > 0) & (taskSlides != "none"):
 # Fix up any internal links
 for href in href_runs.keys():
     run = href_runs[href]
-    createRunHyperlinkOrTooltip(run, prs.slides[slide_hrefs[href]-2+templateSlideCount], "")
+    createRunHyperlinkOrTooltip(run, prs.slides[slide_hrefs[href] - 2 + templateSlideCount], "")
+
+clickable_picture_count = len(clickable_pictures)
+for p in range(clickable_picture_count):
+    picture = clickable_pictures[p]
+    href = clickable_picture_Hrefs[p]
+    tooltip = clickable_picture_tooltips[p]
+
+    # Internal Link
+    if href == "#XYZZY-None":
+        target_slide = None
+    else:
+        internalHref = href[1:]
+        target_slide = prs.slides[slide_hrefs[internalHref] - 2 + templateSlideCount]
+    createPictureHyperlinkOrTooltip(picture, target_slide, tooltip)
 
 # Write out the finished presentation
 prs.save(output_filename)
 
 
 sys.exit()
+
