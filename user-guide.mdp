@@ -120,7 +120,7 @@ To quote from the python-pptx license statement:
 =colwidth 2 3 5
 =csv
 Level,Date,What
-1.5,5 December 2020,Pictures now can have a tooltip. You can define inter-slide links.
+1.5,7 December 2020,Pictures now can have a tooltip. You can define inter-slide links on both pictures and runs of text. You can omit the final `|` of a table line.
 1.4,23 November 2020,Task slides' slide numbers are hyperlinked to the relevant slide
 1.3,20 November 2020,Glossary terms now have tooltips and hyperlinks to the relevant Glossary slide. Footnotes have hyperlinks to the relevant Footnotes slide.
 1.2,3 November 2020,Support URLs for graphics. Reworked Processing Summary slide to use a flowed table.
@@ -268,6 +268,28 @@ Here is an example:
 **HINT:** If you want two graphics side by side use a single-row table, described [here](#special-case-two-graphics-side-by-side). \
 If you want two graphics one above the other use a two-row, single-column table, described [here](#special-case-one-graphic-above-another).
 
+#### Clickable Pictures
+
+You can make a picture clickable, with an optional tooltip. \
+This means you can click on a picture in slideshow mode to go to another slide. \
+The tooltip is shown in slideshow mode when your mouse hovers over the picture.
+
+Here's an example, showing both a tooltip and a clickable link.
+
+    [![Foo Fighters Sonic Highways](https://upload.wikimedia.org/wikipedia/en/6/67/Foo_Fighters_8LP_Sonic_Highways.jpg)](#sonic-highways)
+
+Here the image reference is embedded in the clickable link:
+
+* The tooltip text is `Foo Fighters Sonic Highways`.
+* The picture's source is `https://upload.wikimedia.org/wikipedia/en/6/67/Foo_Fighters_8LP_Sonic_Highways.jpg`
+* The target slide has the heading reference `sonic-highways`.
+
+To create a hyperlink to a slide with heading reference code something like this as the title of that slide:
+
+    ### My Slide’s Title [sonic-highways]
+    
+See [Hyperlinks](#hyperlinks) for more on creating hyperlinks.
+
 #### Graphics File References
 
 md2pptx supports graphics references in three different formats:
@@ -320,6 +342,9 @@ Each cell can consist of text, which will wrap as necessary. \
 You can't embed images in a table slide. \
 But see [here](#special-case-two-graphics-side-by-side) and [here](#special-case-two-by-two-grid-of-graphics).
 
+As a convenience, you can omit the final `|` on a line. \
+While this isn't strictly Markdown compliant this might be helpful.
+
 #### Special Case: Two Graphics Side By Side
 
 The best &md; fit for two graphics side by side is a single row table with two cells. \
@@ -334,6 +359,10 @@ A table won't be created in this case.
 Don't code any headings or more than one row.
 
 For the types of graphics supported see [Graphics File References](#graphics-file-references).
+
+For how to make such graphics clickable or have a tooltip see [Clickable Pictures](#clickable-pictures).
+
+**Note:** Regular Markdown processors don't support pictures in tables; They render the `|` characters literally.
 
 #### Special Case: Two By Two Grid Of Graphics
 
@@ -352,6 +381,10 @@ Don't code any headings or more than two rows.
 To achieve the best result some margins around the graphics are reduced.
 
 For the types of graphics supported see [Graphics File References](#graphics-file-references).
+
+For how to make such graphics clickable or have a tooltip see [Clickable Pictures](#clickable-pictures).
+
+**Note:** Regular Markdown processors don't support pictures in tables; They render the `|` characters literally.
 
 #### Special Case: Three Graphics On A Slide
 
@@ -391,6 +424,10 @@ will align the sole top-row graphic to the left.
 
 For the types of graphics supported see [Graphics File References](#graphics-file-references).
 
+For how to make such graphics clickable or have a tooltip see [Clickable Pictures](#clickable-pictures).
+
+**Note:** Regular Markdown processors don't support pictures in tables; They render the `|` characters literally.
+
 #### Special Case: One Graphic Above Another
 
 The best &md; fit for two graphics, on above the other, on a slide is a two row table with a single cell in each row. \
@@ -406,6 +443,10 @@ A table won't be created in this case.
 Don't code any headings or more than two rows.
 
 For the types of graphics supported see [Graphics File References](#graphics-file-references).
+
+For how to make such graphics clickable or have a tooltip see [Clickable Pictures](#clickable-pictures).
+
+**Note:** Regular Markdown processors don't support pictures in tables; They render the `|` characters literally.
 
 ### Code Slides
 
@@ -498,8 +539,8 @@ Here's an example:
     
     * For how a high performance system is built see [here](#z15-arch)
 
-The bullet links to the slide with href "z15-arch". \
-You click on the word "here" in a presentation to move to the referred-to slide.
+* The bullet links to the slide with href `z15-arch`.
+* You click on the word `here` in a presentation to move to the referred-to slide.
 
 ## HTML Comments
 
