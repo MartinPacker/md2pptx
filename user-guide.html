@@ -1020,6 +1020,7 @@ body .markdown-body
 <li><a href="#special-case-one-graphic-above-another">Special Case: One Graphic Above Another</a></li>
 </ul>
 </li>
+<li><a href="#card-slides">Card Slides</a></li>
 <li><a href="#code-slides">Code Slides</a></li>
 <li><a href="#task-list-slides">Task List Slides</a></li>
 </ul>
@@ -1065,6 +1066,11 @@ body .markdown-body
 <li><a href="#shrinking-tables-with-compacttables">Shrinking Tables With <code>compactTables</code></a></li>
 <li><a href="#controlling-task-slide-production-with-taskslides-and-tasksperslide">Controlling Task Slide Production With <code>taskSlides</code> and <code>tasksPerSlide</code></a></li>
 <li><a href="#controlling-glossary-slide-production-with-glossarytitle-glossaryterm-glossarymeaningglossarymeaningwidth-and-glossarytermsperpage">Controlling Glossary Slide Production With <code>glossaryTitle</code>, <code>glossaryTerm</code>, <code>glossaryMeaning</code>,<code>glossaryMeaningWidth</code>, and <code>glossaryTermsPerPage</code></a></li>
+<li><a href="#card-background-colour-cardcolour">Card Background Colour - <code>CardColour</code></a></li>
+<li><a href="#card-border-colour-cardbordercolour">Card Border Colour - <code>CardBorderColour</code></a></li>
+<li><a href="#card-border-width-cardborderwidth">Card Border Width - <code>CardBorderWidth</code></a></li>
+<li><a href="#card-title-size-cardtitlesize">Card Title Size - <code>CardTitleSize</code></a></li>
+<li><a href="#card-shadow-cardshadow">Card Shadow - <code>CardShadow</code></a></li>
 </ul>
 </li>
 </ul>
@@ -1166,6 +1172,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">1.6</td>
+<td align="left">22 December 2020</td>
+<td align="left">Added Card Slide support. Metadata keys are now case-insensitive.</td>
+</tr>
 <tr>
 <td align="left">1.5</td>
 <td align="left">7 December 2020</td>
@@ -1364,7 +1375,7 @@ sectionTitleSize: 30
 <p>To nest bullets use a tab character or 4 spaces to indent the sub-bullets. md2pptx doesn&rsquo;t have a limit on the level of nesting but Powerpoint probably does.</p>
 <p>Terminate the bulleted list slide with a blank line.</p>
 <h3 id="graphics-slides">Graphics Slides<a class="headerlink" href="#graphics-slides" title="Permanent link"></a></h3>
-<p>As with <a href="#bullet-slides">bullet slides</a>, code the slide title as a heading level 3. Specify the graphic to embed with the standard Markdown image reference:</p>
+<p>As with <a href="#bullet-slides">bullet slides</a>, code the slide title as a Markdown Heading Level 3. Specify the graphic to embed with the standard Markdown image reference:</p>
 <div class="codehilite"><pre>### A Graphic Slide
 
 ![](graphics/my-graphic.png)
@@ -1415,7 +1426,7 @@ sectionTitleSize: 30
 
 <h3 id="table-slides">Table Slides<a class="headerlink" href="#table-slides" title="Permanent link"></a></h3>
 <p>You can create a table slide using Markdown&rsquo;s table format.</p>
-<p>Code a title with a heading level 3. Then code a table. Here is a simple example:</p>
+<p>Code a title with a Markdown Heading Level 3. Then code a table. Here is a simple example of a table:</p>
 <div class="codehilite"><pre>|Left Heading|Centre Heading|Right Heading|
 |:----|:-:|--:|
 |Alpha|Bravo|1|
@@ -1507,6 +1518,22 @@ sectionTitleSize: 30
 <p>For the types of graphics supported see <a href="#graphics-file-references">Graphics File References</a>.</p>
 <p>For how to make such graphics clickable or have a tooltip see <a href="#clickable-pictures">Clickable Pictures</a>.</p>
 <p><strong>Note:</strong> Regular Markdown processors don&rsquo;t support pictures in tables; They render the <code>|</code> characters literally.</p>
+<h3 id="card-slides">Card Slides<a class="headerlink" href="#card-slides" title="Permanent link"></a></h3>
+<p>A card slide contains side-by-side panels - or cards. Each card has a title and, below that, the contents are defined using the same syntax as in <a href="#bullet-slides">Bullet Slides</a>. In fact this slide type is derivative of the Bullet Slide type.</p>
+<p>A card slide can look something like this:</p>
+<p><img alt="" src="/Users/martinpacker/md2pptx/CardSlide.png" /></p>
+<p>The key features of this slide are:</p>
+<ul>
+<li>A title, coded with Markdown Heading Level 3 syntax (<code>###</code>).</li>
+<li>An optional panel above the cards, coded using <a href="#bullet-slides">Bullet Slides</a> syntax.</li>
+<li>A sequence of cards, coded one after the other but displayed side by side:<ul>
+<li>The title is coded using Markdown Heading Level 4 syntax (<code>####</code>).</li>
+<li>The body of the card is coded using <a href="#bullet-slides">Bullet Slides</a> syntax.</li>
+</ul>
+</li>
+</ul>
+<p>The width of each card is calculated depending on the number of cards. In this example the horizontal space is divided equally between the 4 cards.</p>
+<p>In the above example there has been a small amount of tweaking of the format, using metadata. You can control the exact format using <a href="#cardcolour">CardColour</a>, <a href="#cardbordercolour">CardBorderColour</a>, <a href="#cardborderwidth">CardBorderWidth</a>, <a href="#cardtitlesize">CardTitleSize</a>, and <a href="#cardshadow">CardShadow</a>.</p>
 <h3 id="code-slides">Code Slides<a class="headerlink" href="#code-slides" title="Permanent link"></a></h3>
 <p>You can create a slide where the body is in a monospace font, without bullets.</p>
 <p>The heading for the slide is introduced with heading level 3 - <code>###</code>.</p>
@@ -1875,8 +1902,9 @@ You can change these colours under &ldquo;Themes&rdquo; in the Slide Master edit
 <h2 id="controlling-the-presentation-with-metadata">Controlling The Presentation With Metadata<a class="headerlink" href="#controlling-the-presentation-with-metadata" title="Permanent link"></a></h2>
 <p>You can control some aspects of md2pptx&rsquo;s processing using metadata.</p>
 <h3 id="specifying-metadata">Specifying Metadata<a class="headerlink" href="#specifying-metadata" title="Permanent link"></a></h3>
-<p>You specify metadata in the lines before the first blank line. It consists of key/value pairs, with the key separated from the value by a colon.</p>
-<p>While some Markdown processors handle metadata, most ignore it. Conversely, while md2pptx will print <strong>all</strong> the metadata it encounters on the first slide, it will practically ignore metadata it doesn&rsquo;t understand.</p>
+<p>You specify metadata in the lines before the first blank line. It consists of key/value pairs, with the key separated from the value by a colon.
+Keys are case insensitive. In this User Guide they are capitalised to aid comprehension. For example, <code>baseTextDecrement</code> is treated the same as <code>basetextdecrement</code>.</p>
+<p>While some Markdown processors handle metadata, most ignore it. Conversely, while md2pptx will print <strong>all</strong> the metadata it encounters on the first slide (if the template presentation contains at least 1 slide), it will practically ignore metadata it doesn&rsquo;t understand.</p>
 <h3 id="metadata-keys">Metadata Keys<a class="headerlink" href="#metadata-keys" title="Permanent link"></a></h3>
 <p>The following sections describe each of the metadata keys.</p>
 <h4 id="slide-numbers-numbers">Slide Numbers - <code>numbers</code><a class="headerlink" href="#slide-numbers-numbers" title="Permanent link"></a></h4>
@@ -2144,6 +2172,41 @@ baseTextDecrement: 1
 
 
 <p>will cause the maximum number of glossary items on a Glossary slide to be 10. If there are more terms, a second slide will be created. And so on. The default is 20.</p>
+<h4 id="card-background-colour-cardcolour">Card Background Colour - <code>CardColour</code><a class="headerlink" href="#card-background-colour-cardcolour" title="Permanent link"></a></h4>
+<p>You can specify which of the theme colours to use for the background of each card in a <a href="#card-slides">Card Slide</a> - using <code>CardColour</code> (or <code>CardColor</code>). For example:</p>
+<div class="codehilite"><pre>CardColour: BACKGROUND 2
+</pre></div>
+
+
+<p>If you don&rsquo;t specify this the default text box background colour - from the template - will be used.</p>
+<h4 id="card-border-colour-cardbordercolour">Card Border Colour - <code>CardBorderColour</code><a class="headerlink" href="#card-border-colour-cardbordercolour" title="Permanent link"></a></h4>
+<p>You can specify which of the theme colours to use for the border of each card in a <a href="#card-slides">Card Slide</a> - using <code>CardBorderColour</code> (or <code>CardBorderColor</code>).For example:</p>
+<div class="codehilite"><pre>CardBorderColour: TEXT 1
+</pre></div>
+
+
+<p>If you don&rsquo;t specify this the cards won&rsquo;t have a border.</p>
+<h4 id="card-border-width-cardborderwidth">Card Border Width - <code>CardBorderWidth</code><a class="headerlink" href="#card-border-width-cardborderwidth" title="Permanent link"></a></h4>
+<p>You can specify the thickness of the border (in points) of each card in a <a href="#card-slides">Card Slide</a> - using <code>CardBorderWidth</code>. For example:</p>
+<div class="codehilite"><pre>CardBorderWidth: 1
+</pre></div>
+
+
+<p>If you don&rsquo;t specify this the cards will use the default text box border width - from the template.</p>
+<h4 id="card-title-size-cardtitlesize">Card Title Size - <code>CardTitleSize</code><a class="headerlink" href="#card-title-size-cardtitlesize" title="Permanent link"></a></h4>
+<p>You can specify the size of the font (in points) for the cards&rsquo; title - using <code>CardTitleSize</code>. For example:</p>
+<div class="codehilite"><pre>CardTitleSize: 15
+</pre></div>
+
+
+<p>If you don&rsquo;t specify this the card titles will be 2/3 the size of the slide&rsquo;s title.</p>
+<h4 id="card-shadow-cardshadow">Card Shadow - <code>CardShadow</code><a class="headerlink" href="#card-shadow-cardshadow" title="Permanent link"></a></h4>
+<p>You can specify whether a card has a shadow - using <code>CardShadow</code>. For example:</p>
+<div class="codehilite"><pre>CardShadow: yes
+</pre></div>
+
+
+<p>If you don&rsquo;t specify this the cards won&rsquo;t have a shadow - unless the default text box style is to have a shadow.</p>
 <h2 id="modifying-the-slide-template">Modifying The Slide Template<a class="headerlink" href="#modifying-the-slide-template" title="Permanent link"></a></h2>
 <p>The included template presentation - Martin Template.pptx - is what the author tested with and gives good results. However, you probably want to develop your own template from it.</p>
 <p>This section is a basic introduction to the rules of the game for doing so.</p>

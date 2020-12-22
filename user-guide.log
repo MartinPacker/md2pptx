@@ -5,8 +5,8 @@ mdpre Markdown Preprocessor v0.4.6 (19 October, 2020)
 Def mdpre_date = 19 October, 2020
 Def mdpre_level = 0.4.6
 Def userid = martinpacker
-Def time = 21&colon;21
-Def date = 7 December&comma; 2020
+Def time = 11&colon;14
+Def date = 22 December&comma; 2020
 Def TOC = Table Of Contents
 Def md = Markdown
 Def pp = Powerpoint
@@ -33,6 +33,7 @@ CSV Stop
 ..... ..... .....  Special Case: Two By Two Grid Of Graphics
 ..... ..... .....  Special Case: Three Graphics On A Slide
 ..... ..... .....  Special Case: One Graphic Above Another
+..... .....  Card Slides
 ..... .....  Code Slides
 ..... .....  Task List Slides
 .....  Hyperlinks
@@ -74,6 +75,11 @@ CSV Stop
 ..... ..... .....  Shrinking Tables With `compactTables`
 ..... ..... .....  Controlling Task Slide Production With `taskSlides` and `tasksPerSlide`
 ..... ..... .....  Controlling Glossary Slide Production With `glossaryTitle`, `glossaryTerm`, `glossaryMeaning`,`glossaryMeaningWidth`, and `glossaryTermsPerPage`
+..... ..... .....  Card Background Colour - `CardColour`
+..... ..... .....  Card Border Colour - `CardBorderColour`
+..... ..... .....  Card Border Width - `CardBorderWidth`
+..... ..... .....  Card Title Size - `CardTitleSize`
+..... ..... .....   Card Shadow - `CardShadow`
 .....  Modifying The Slide Template
 ..... .....  Basics
 ..... .....  Slide Template Sequence

@@ -24,6 +24,7 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 		* [Special Case: Two By Two Grid Of Graphics](#special-case-two-by-two-grid-of-graphics)
 		* [Special Case: Three Graphics On A Slide](#special-case-three-graphics-on-a-slide)
 		* [Special Case: One Graphic Above Another](#special-case-one-graphic-above-another)
+	* [Card Slides](#card-slides)
 	* [Code Slides](#code-slides)
 	* [Task List Slides](#task-list-slides)
 * [Hyperlinks](#hyperlinks)
@@ -61,6 +62,11 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 		* [Shrinking Tables With `compactTables`](#shrinking-tables-with-compacttables)
 		* [Controlling Task Slide Production With `taskSlides` and `tasksPerSlide`](#controlling-task-slide-production-with-taskslides-and-tasksperslide)
 		* [Controlling Glossary Slide Production With `glossaryTitle`, `glossaryTerm`, `glossaryMeaning`,`glossaryMeaningWidth`, and `glossaryTermsPerPage`](#controlling-glossary-slide-production-with-glossarytitle-glossaryterm-glossarymeaningglossarymeaningwidth-and-glossarytermsperpage)
+		* [Card Background Colour - `CardColour`](#card-background-colour-cardcolour)
+		* [Card Border Colour - `CardBorderColour`](#card-border-colour-cardbordercolour)
+		* [Card Border Width - `CardBorderWidth`](#card-border-width-cardborderwidth)
+		* [Card Title Size - `CardTitleSize`](#card-title-size-cardtitlesize)
+		* [Card Shadow - `CardShadow`](#card-shadow-cardshadow)
 * [Modifying The Slide Template](#modifying-the-slide-template)
 	* [Basics](#basics)
 	* [Slide Template Sequence](#slide-template-sequence)
@@ -159,6 +165,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:--|:---|:-----|
+|1.6|22 December 2020|Added Card Slide support. Metadata keys are now case-insensitive.|
 |1.5|7 December 2020|Pictures now can have a tooltip. You can define inter-slide links on both pictures and runs of text. You can omit the final `|` of a table line.|
 |1.4|23 November 2020|Task slides' slide numbers are hyperlinked to the relevant slide|
 |1.3|20 November 2020|Glossary terms now have tooltips and hyperlinks to the relevant Glossary slide. Footnotes have hyperlinks to the relevant Footnotes slide.|
@@ -275,7 +282,7 @@ Terminate the bulleted list slide with a blank line.
 
 ### Graphics Slides
 
-As with [bullet slides](#bullet-slides), code the slide title as a heading level 3. Specify the graphic to embed with the standard Markdown image reference:
+As with [bullet slides](#bullet-slides), code the slide title as a Markdown Heading Level 3. Specify the graphic to embed with the standard Markdown image reference:
 
 	### A Graphic Slide
 
@@ -334,7 +341,7 @@ Slides:
 
 You can create a table slide using Markdown's table format.
 
-Code a title with a heading level 3. Then code a table. Here is a simple example:
+Code a title with a Markdown Heading Level 3. Then code a table. Here is a simple example of a table:
 
 	|Left Heading|Centre Heading|Right Heading|
 	|:----|:-:|--:|
@@ -455,6 +462,26 @@ For the types of graphics supported see [Graphics File References](#graphics-fil
 For how to make such graphics clickable or have a tooltip see [Clickable Pictures](#clickable-pictures).
 
 **Note:** Regular Markdown processors don't support pictures in tables; They render the `|` characters literally.
+
+### Card Slides
+
+A card slide contains side-by-side panels - or cards. Each card has a title and, below that, the contents are defined using the same syntax as in [Bullet Slides](#bullet-slides). In fact this slide type is derivative of the Bullet Slide type.
+
+A card slide can look something like this:
+
+![](CardSlide.png)
+
+The key features of this slide are:
+
+* A title, coded with Markdown Heading Level 3 syntax (`###`).
+* An optional panel above the cards, coded using [Bullet Slides](#bullet-slides) syntax.
+* A sequence of cards, coded one after the other but displayed side by side:
+    * The title is coded using Markdown Heading Level 4 syntax (`####`).
+    * The body of the card is coded using [Bullet Slides](#bullet-slides) syntax.
+
+The width of each card is calculated depending on the number of cards. In this example the horizontal space is divided equally between the 4 cards.
+
+In the above example there has been a small amount of tweaking of the format, using metadata. You can control the exact format using [CardColour](#cardcolour), [CardBorderColour](#cardbordercolour), [CardBorderWidth](#cardborderwidth), [CardTitleSize](#cardtitlesize), and [CardShadow](#cardshadow).
 
 ### Code Slides
 
@@ -750,8 +777,9 @@ You can control some aspects of md2pptx's processing using metadata.
 ### Specifying Metadata
 
 You specify metadata in the lines before the first blank line. It consists of key/value pairs, with the key separated from the value by a colon.
+Keys are case insensitive. In this User Guide they are capitalised to aid comprehension. For example, `baseTextDecrement` is treated the same as `basetextdecrement`.
 
-While some Markdown processors handle metadata, most ignore it. Conversely, while md2pptx will print **all** the metadata it encounters on the first slide, it will practically ignore metadata it doesn't understand.
+While some Markdown processors handle metadata, most ignore it. Conversely, while md2pptx will print **all** the metadata it encounters on the first slide (if the template presentation contains at least 1 slide), it will practically ignore metadata it doesn't understand.
 
 ### Metadata Keys
 
@@ -1065,6 +1093,45 @@ Coding
 
 will cause the maximum number of glossary items on a Glossary slide to be 10. If there are more terms, a second slide will be created. And so on. The default is 20.
 
+#### Card Background Colour - `CardColour`
+
+You can specify which of the theme colours to use for the background of each card in a [Card Slide](#card-slides) - using `CardColour` (or `CardColor`). For example:
+
+    CardColour: BACKGROUND 2
+
+If you don't specify this the default text box background colour - from the template - will be used.
+
+#### Card Border Colour - `CardBorderColour`
+
+You can specify which of the theme colours to use for the border of each card in a [Card Slide](#card-slides) - using `CardBorderColour` (or `CardBorderColor`).For example:
+
+    CardBorderColour: TEXT 1
+
+If you don't specify this the cards won't have a border.
+
+#### Card Border Width - `CardBorderWidth`
+
+You can specify the thickness of the border (in points) of each card in a [Card Slide](#card-slides) - using `CardBorderWidth`. For example:
+
+    CardBorderWidth: 1
+
+If you don't specify this the cards will use the default text box border width - from the template.
+
+#### Card Title Size - `CardTitleSize`
+
+You can specify the size of the font (in points) for the cards' title - using `CardTitleSize`. For example:
+
+    CardTitleSize: 15
+
+If you don't specify this the card titles will be 2/3 the size of the slide's title.
+
+####  Card Shadow - `CardShadow`
+
+You can specify whether a card has a shadow - using `CardShadow`. For example:
+
+    CardShadow: yes
+
+If you don't specify this the cards won't have a shadow - unless the default text box style is to have a shadow.
 
 ## Modifying The Slide Template
 
