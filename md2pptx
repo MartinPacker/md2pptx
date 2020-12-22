@@ -28,13 +28,94 @@ from pptx.oxml.xmlchemy import OxmlElement
 from pathlib import Path
 import urllib.request
 import tempfile
+import copy
 
 # import xml.etree
 from lxml import etree
 
 
-md2pptx_level = "1.5"
-md2pptx_date = "7 December, 2020"
+md2pptx_level = "1.6"
+md2pptx_date = "22 December, 2020"
+
+# Add a drop shadow to a shape
+def createShadow(shape):
+    spPr = shape.fill._xPr
+
+    el = OxmlElement("a:effectLst")
+    spPr.append(el)
+
+    outerShdw = OxmlElement("a:outerShdw")
+    outerShdw.set("algn","tl")
+    outerShdw.set("algn","tl")
+    outerShdw.set("blurRad","50800")
+    outerShdw.set("dir","2700000")
+    outerShdw.set("dist","127000")
+    outerShdw.set("rotWithShape","0")
+
+    el.append(outerShdw)
+
+    prstClr = OxmlElement("a:prstClr")
+    prstClr.set("val","black")
+
+    outerShdw.append(prstClr)
+
+    alpha = OxmlElement("a:alpha")
+    alpha.set("val","40000")
+
+    prstClr.append(alpha)
+
+# Clone a shape in a slide and return the new shape.
+# (This is a deep copy so the new shape will have the same
+# eg bullet style as the source shape)
+def addClonedShape(slide,shape1):
+    # Clone the element for the shape
+    el1=shape1.element
+    el2=copy.deepcopy(el1)
+
+    # Insert the cloned element into the shape tree
+    slide.shapes._spTree.insert_element_before(el2, 'p:extLst')
+    
+    # Return the shape associated with this new element
+    return slide.shapes[-1]
+
+def parseThemeColour(value):
+        value2 = value.upper()
+        if value2 == "NONE":
+            return MSO_THEME_COLOR.NOT_THEME_COLOR
+        elif value2 == "ACCENT 1":
+            return MSO_THEME_COLOR.ACCENT_1
+        elif value2 == "ACCENT 2":
+            return MSO_THEME_COLOR.ACCENT_2
+        elif value2 == "ACCENT 3":
+            return MSO_THEME_COLOR.ACCENT_3
+        elif value2 == "ACCENT 4":
+            return MSO_THEME_COLOR.ACCENT_4
+        elif value2 == "ACCENT 5":
+            return MSO_THEME_COLOR.ACCENT_5
+        elif value2 == "ACCENT 6":
+            return MSO_THEME_COLOR.ACCENT_6
+        elif value2 == "BACKGROUND 1":
+            return MSO_THEME_COLOR.BACKGROUND_1
+        elif value2 == "BACKGROUND 2":
+            return MSO_THEME_COLOR.BACKGROUND_2
+        elif value2 == "DARK 1":
+            return MSO_THEME_COLOR.DARK_1
+        elif value2 == "DARK 2":
+            return MSO_THEME_COLOR.DARK_2
+        elif value2 == "FOLLOWED HYPERLINK":
+            return MSO_THEME_COLOR.FOLLOWED_HYPERLINK
+        elif value2 == "HYPERLINK":
+            return MSO_THEME_COLOR.HYPERLINK
+        elif value2 == "LIGHT 1":
+            return MSO_THEME_COLOR.LIGHT_1
+        elif value2 == "LIGHT 2":
+            return MSO_THEME_COLOR.LIGHT_2
+        elif value2 == "TEXT 1":
+            return MSO_THEME_COLOR.TEXT_1
+        elif value2 == "TEXT 2":
+            return MSO_THEME_COLOR.TEXT_2
+        elif value2 == "MIXED":
+            return MSO_THEME_COLOR.MIXED
 
 # Following functions are workarounds for python-pptx not having these functions for the font object
 def set_subscript(font):
@@ -199,6 +280,33 @@ def get_image_size(fname):
     except EnvironmentError:
         return -1, -1
 
+# Takes a list of bullets and applies it to a text shape
+def populateTextBlock(shape, bullets):
+    tf = shape.text_frame
+
+    bulletNumber = 0
+    for bullet in bullets:
+        para0 = tf.paragraphs[0]
+
+        if bulletNumber == 0:
+            # Don't need to create paragraph
+            p = para0
+        else:
+            # We need a new paragraph
+            p = tf.add_paragraph()
+
+        # Set the paragraph's level
+        p.level = int(bullet[0] - 1)
+
+        # Set the paragraph's font size, adjusted for level, if necessary
+        if baseTextSize > 0:
+            p.font.size = Pt(baseTextSize - p.level * baseTextDecrement)
+
+        addFormattedText(p, bullet[1])
+
+        bulletNumber = bulletNumber + 1
+
+    tf.auto_size = MSO_AUTO_SIZE.TEXT_TO_FIT_SHAPE
 
 def findSlideTitle(slide):
     if slide.shapes.title == None:
@@ -828,7 +936,6 @@ def processingSummarySlide(presentation, metadata):
     addFormattedText(title.text_frame.paragraphs[0], banner + "<br/>" + runDateTime)
     title.text_frame.paragraphs[0].font.size = Pt(pageTitleSize)
 
-
     # Work out how many pairs of columns we need
     metadataRows = len(metadata)
     maxMetadataRowsPerColumn = 15
@@ -1222,42 +1329,124 @@ def contentSlide(presentation, slideNumber, titleText, subtitleText, bullets):
 
     print(str(slideNumber).rjust(4) + "     " + flattenedTitle)
 
+    # Calculate the space the buckets text shape and/or cards can occupy
+    content_height = presentation.slide_height - Inches(1.0) - titleBottom
+    
+    # Calculate the width the content should be on the slide
+    content_width = presentation.slide_width - Inches(1.0)
+
     # Added bulleted list
-    body_shape = findBodyShape(slide)
+    bullets_shape = findBodyShape(slide)
 
-    tf = body_shape.text_frame
+    bullet_count = len(bullets)
+    if in_card:
+        # Create shapes for card titles and the cards' bullets
+        card_shapes = []
+        cardTitle_shapes=[]
+        card_count = len(cards)
+        
+        for c in range(card_count):
+            # Card title modeled on slide title - but smaller
+            cardTitle_shape = addClonedShape(slide, title)
+            
+            cardTitle_shapes.append(cardTitle_shape)
+            
+            # Clear text from cloned title and add in the title text
+            cardTitle_shape.text_frame.paragraphs[0].text = ""
+            addFormattedText(cardTitle_shape.text_frame.paragraphs[0], cards[c][0])
+            
+            # Set card title font size
+            if want_card_title_size:
+                cardTitle_shape.text_frame.paragraphs[0].font.size = Pt(cardTitleFontSize)
+            else:
+                cardTitle_shape.text_frame.paragraphs[0].font.size = Pt(pageTitleSize * 2 / 3)
 
-    body_shape.top = titleBottom + Inches(0.5)
-    body_shape.left = Inches(0.5)
-    body_shape.width = presentation.slide_width - Inches(1.0)
-    body_shape.height = presentation.slide_height - Inches(1.0) - titleBottom
+            # Titles are centred
+            cardTitle_shape.text_frame.paragraphs[0].alignment = PP_ALIGN.CENTER
 
-    bulletNumber = 0
-    for bullet in bullets:
-        if bulletNumber == 0:
-            para0 = tf.paragraphs[0]
+            
+            # Card shape modeled on bulleted list
+            if (bullet_count > 0) | (c > 0): 
+                card_shape = addClonedShape(slide, bullets_shape)
+            else:
+                # Co-opt bullets shape as first card shape
+                card_shape = bullets_shape
+            card_shapes.append(card_shape)
+            
+            # Fill in card's background
+            if want_card_colour:
+                fill = card_shape.fill
+                fill.solid()
+                fill.fore_color.theme_color = card_colour
+        
+        card_width = (content_width - Inches(0.25) * (card_count - 1))/ card_count
+    else:
+        card_count = 0
 
-            # Set the font size - if not default
-            if baseTextSize > 0:
-                para0.font.size = Pt(baseTextSize)
+    bullets_shape.top = titleBottom + Inches(0.25)
+    bullets_shape.left = Inches(0.5)
+    bullets_shape.width = content_width
+    
+    # Adjust bullets shape height - and calculate verticals for any cards
+    if in_card:
+        # Will be doing cards
+        cardTitle_height = Inches(0.33)
 
-            addFormattedText(para0, bullet[1])
+        if bullet_count >0 :
+            # Bullets shape vertically shortened
+            bullets_shape.height = int(content_height * 1 / 5)
+        
+            # Card title top
+            cardTitle_top = bullets_shape.height + titleBottom +Inches(0.25 + 0.5)
+            cardTitle_height = Inches(0.33)
+        
+            # Card top and height
+            card_top = cardTitle_top + cardTitle_height
+            card_height = presentation.slide_height - cardTitle_top - Inches(0.33 + 0.25)
         else:
-            # We need a new paragraph
-            p = tf.add_paragraph()
+            # No bullets so cards and their titles occupy whole height
 
-            # Set the paragraph's level
-            p.level = int(bullet[0] - 1)
+            # Card title top
+            cardTitle_top =  + titleBottom +Inches(0.25)
+        
+            # Card top and height
+            card_top = cardTitle_top + cardTitle_height
+            card_height = presentation.slide_height - cardTitle_top - Inches(0.33 + 0.25)
+    else:
+        bullets_shape.height = content_height
+    
+    bullets_shape.bottom = bullets_shape.top + bullets_shape.height
 
-            # Set the paragraph's font size, adjusted for level, if necessary
-            if baseTextSize > 0:
-                p.font.size = Pt(baseTextSize - p.level * baseTextDecrement)
+    populateTextBlock(bullets_shape, bullets)
 
-            addFormattedText(p, bullet[1])
+    if in_card:
+        for c in range(card_count):
+            # Position card title
+            cardTitle_shape = cardTitle_shapes[c]
+            cardTitle_shape.top = cardTitle_top
+            cardTitle_shape.left = int(Inches(0.5) + c * (card_width + Inches(0.25)))
+            cardTitle_shape.width = int(card_width)
+            
+            # Position card
+            card_shape = card_shapes[c]
+            card_shape.top = card_top
+            card_shape.left = int(Inches(0.5) + c * (card_width + Inches(0.25)))
+            card_shape.width = int(card_width)
+            card_shape.height = int(card_height)
+            
+            if len(cards[c]) > 1:
+                populateTextBlock(card_shape, cards[c][1])
 
-        bulletNumber = bulletNumber + 1
+            lf=card_shape.line
+            
+            if want_card_border_colour:
+                lf.color.theme_color = card_border_colour
 
-    tf.auto_size = MSO_AUTO_SIZE.TEXT_TO_FIT_SHAPE
+            if want_card_border_width:
+                lf.width = Pt(card_border_width)
+            
+            if want_card_shadow:
+                createShadow(card_shape)
 
     if want_numbers_content is True:
         addFooter(presentation, slideNumber, slide)
@@ -2385,6 +2574,12 @@ want_bold_bold = True
 want_italic_colour = False
 want_italic_italic = True
 
+want_card_colour = False
+want_card_border_colour = False
+want_card_border_width = False
+want_card_title_size = False
+want_card_shadow = False
+
 compactTables = 0
 abstractTitle = ""
 
@@ -2437,16 +2632,20 @@ for line in metadata_lines:
     value = matchInfo.group(2).strip()
     metadata.append([name, value])
 
+    # Print name as it was typed
     print(name.ljust(40) + " " + value)
+    
+    # Lower case name for checking
+    name = name.lower()
 
     if name == "numbers":
-        if value == "yes":
+        if value.lower() == "yes":
             # Want slide numbers everywhere
             want_numbers_headings = True
             numbers_headings_margin = numbers_height
             want_numbers_content = True
             numbers_content_margin = numbers_height
-        elif value == "content":
+        elif value.lower() == "content":
             # Want slide numbers on content slides but not headings & sections
             want_numbers_headings = False
             want_numbers_content = True
@@ -2456,141 +2655,80 @@ for line in metadata_lines:
             # (Can code any other value, including 'no' or omit this metadata type)
             want_numbers_headings = False
             want_numbers_content = False
-    elif name == "pageTitleSize":
-        pageTitleSize = int(value)
-    elif name == "baseTextSize":
-        baseTextSize = int(value)
-    elif name == "baseTextDecrement":
-        baseTextDecrement = int(value)
-    elif name == "sectionTitleSize":
-        sectionTitleSize = int(value)
-    elif name == "sectionSubtitleSize":
-        sectionSubtitleSize = int(value)
-    elif name == "template":
+    elif name == "pagetitlesize":
+        pageTitleSize = float(value)
+    elif name == "basetextsize":
+        baseTextSize = float(value)
+    elif name == "basetextdecrement":
+        baseTextDecrement = float(value)
+    elif name == "sectiontitlesize":
+        sectionTitleSize = float(value)
+    elif name == "sectionsubtitlesize":
+        sectionSubtitleSize = float(value)
+    elif (name == "template") | (name == "master"):
         if value == "Martin Master.pptx":
             slideTemplateFile = "Martin Template.pptx"
         else:
             slideTemplateFile = value
-    elif name == "master":
-        if value == "Martin Master.pptx":
-            slideTemplateFile = "Martin Template.pptx"
-        else:
-            slideTemplateFile = value
-    elif name == "monoFont":
+    elif name == "monofont":
         monoFont = value
-    elif name == "marginBase":
+    elif name == "marginbase":
         marginBase = Inches(float(value))
-    elif name == "tableMargin":
+    elif name == "tablemargin":
         tableMargin = Inches(float(value))
-    elif name == "tocStyle":
+    elif name == "tocstyle":
         tocStyle = value
-    elif name == "tocTitle":
+    elif name == "toctitle":
         tocTitle = value
-    elif name == "abstractTitle":
+    elif name == "abstracttitle":
         abstractTitle = value
-    elif name == "BoldBold":
-        if value == "no":
+    elif name == "boldbold":
+        if value.lower() == "no":
             want_bold_bold = False
-    elif name == "compactTables":
-        compactTables = int(value)
-    elif (name == "BoldColour") | (name == "BoldColor"):
+    elif name == "compacttables":
+        compactTables = float(value)
+    elif (name == "boldcolour") | (name == "boldcolour"):
         want_bold_colour = True
-        value2 = value.upper()
-        if value2 == "NONE":
-            bold_colour = MSO_THEME_COLOR.NOT_THEME_COLOR
-        elif value2 == "ACCENT 1":
-            bold_colour = MSO_THEME_COLOR.ACCENT_1
-        elif value2 == "ACCENT 2":
-            bold_colour = MSO_THEME_COLOR.ACCENT_2
-        elif value2 == "ACCENT 3":
-            bold_colour = MSO_THEME_COLOR.ACCENT_3
-        elif value2 == "ACCENT 4":
-            bold_colour = MSO_THEME_COLOR.ACCENT_4
-        elif value2 == "ACCENT 5":
-            bold_colour = MSO_THEME_COLOR.ACCENT_5
-        elif value2 == "ACCENT 6":
-            bold_colour = MSO_THEME_COLOR.ACCENT_6
-        elif value2 == "BACKGROUND 1":
-            bold_colour = MSO_THEME_COLOR.BACKGROUND_1
-        elif value2 == "BACKGROUND 2":
-            bold_colour = MSO_THEME_COLOR.BACKGROUND_2
-        elif value2 == "DARK 1":
-            bold_colour = MSO_THEME_COLOR.DARK_1
-        elif value2 == "DARK 2":
-            bold_colour = MSO_THEME_COLOR.DARK_2
-        elif value2 == "FOLLOWED HYPERLINK":
-            bold_colour = MSO_THEME_COLOR.FOLLOWED_HYPERLINK
-        elif value2 == "HYPERLINK":
-            bold_colour = MSO_THEME_COLOR.HYPERLINK
-        elif value2 == "LIGHT 1":
-            bold_colour = MSO_THEME_COLOR.LIGHT_1
-        elif value2 == "LIGHT 2":
-            bold_colour = MSO_THEME_COLOR.LIGHT_2
-        elif value2 == "TEXT 1":
-            bold_colour = MSO_THEME_COLOR.TEXT_1
-        elif value2 == "TEXT 2":
-            bold_colour = MSO_THEME_COLOR.TEXT_2
-        elif value2 == "MIXED":
-            bold_colour = MSO_THEME_COLOR.MIXED
-    elif name == "ItalicItalic":
+        bold_colour=parseThemeColour(value)
+    elif name == "italicitalic":
         if value == "no":
             want_italic_italic = False
-    elif (name == "ItalicColour") | (name == "ItalicColor"):
+    elif (name == "italiccolour") | (name == "italiccolor"):
         want_italic_colour = True
-        value2 = value.upper()
-        if value2 == "NONE":
-            italic_colour = MSO_THEME_COLOR.NOT_THEME_COLOR
-        elif value2 == "ACCENT 1":
-            italic_colour = MSO_THEME_COLOR.ACCENT_1
-        elif value2 == "ACCENT 2":
-            italic_colour = MSO_THEME_COLOR.ACCENT_2
-        elif value2 == "ACCENT 3":
-            italic_colour = MSO_THEME_COLOR.ACCENT_3
-        elif value2 == "ACCENT 4":
-            italic_colour = MSO_THEME_COLOR.ACCENT_4
-        elif value2 == "ACCENT 5":
-            italic_colour = MSO_THEME_COLOR.ACCENT_5
-        elif value2 == "ACCENT 6":
-            italic_colour = MSO_THEME_COLOR.ACCENT_6
-        elif value2 == "BACKGROUND 1":
-            italic_colour = MSO_THEME_COLOR.BACKGROUND_1
-        elif value2 == "BACKGROUND 2":
-            italic_colour = MSO_THEME_COLOR.BACKGROUND_2
-        elif value2 == "DARK 1":
-            italic_colour = MSO_THEME_COLOR.DARK_1
-        elif value2 == "DARK 2":
-            italic_colour = MSO_THEME_COLOR.DARK_2
-        elif value2 == "FOLLOWED HYPERLINK":
-            italic_colour = MSO_THEME_COLOR.FOLLOWED_HYPERLINK
-        elif value2 == "HYPERLINK":
-            italic_colour = MSO_THEME_COLOR.HYPERLINK
-        elif value2 == "LIGHT 1":
-            italic_colour = MSO_THEME_COLOR.LIGHT_1
-        elif value2 == "LIGHT 2":
-            italic_colour = MSO_THEME_COLOR.LIGHT_2
-        elif value2 == "TEXT 1":
-            italic_colour = MSO_THEME_COLOR.TEXT_1
-        elif value2 == "TEXT 2":
-            italic_colour = MSO_THEME_COLOR.TEXT_2
-        elif value2 == "MIXED":
-            italic_colour = MSO_THEME_COLOR.MIXED
-    elif name == "taskSlides":
+        italic_colour = parseThemeColour(value)
+    elif (name == "cardcolour") | (name == "cardcolor"):
+        want_card_colour = True
+        card_colour = parseThemeColour(value)
+    elif (name == "cardbordercolour") | (name == "cardbordercolor"):
+        want_card_border_colour = True
+        card_border_colour = parseThemeColour(value)
+        print(card_border_colour)
+    elif name == "cardborderwidth":
+        want_card_border_width = True
+        card_border_width = float(value)
+    elif name == "cardtitlesize":
+        want_card_title_size = True
+        cardTitleFontSize = float(value)
+    elif name == "cardshadow":
+        if value.lower() == "yes":
+            want_card_shadow = True
+    elif name == "taskslides":
         taskSlides = value
-    elif name == "tasksPerPage":
+    elif name == "tasksperpage":
         tasksPerPage = int(value)
-    elif name == "glossaryTitle":
+    elif name == "glossarytitle":
         glossaryTitle = value
-    elif name == "glossaryTerm":
+    elif name == "glossaryterm":
         glossaryTerm = value
-    elif name == "glossaryMeaning":
+    elif name == "glossarymeaning":
         glossaryMeaning = value
-    elif name == "glossaryMeaningWidth":
+    elif name == "glossarymeaningwidth":
         glossaryMeaningWidth = int(value)
-    elif name == "glossaryTermsPerPage":
+    elif name == "glossarytermsperpage":
         glossaryTermsPerPage = int(value)
-    elif name == "footnotesPerPage":
+    elif name == "footnotesperpage":
         footnotesPerPage = int(value)
-    elif name == "footnotesTitle":
+    elif name == "footnotestitle":
         footnotesTitle = value
     elif name.startswith("style.bgcolor."):
         spanClass = name[14:]
@@ -2645,6 +2783,8 @@ print("")
 in_block = False
 in_list = False
 in_table = False
+in_card = False
+
 block_type = ""
 slide_title = ""
 slide_subtitle = ""
@@ -2765,6 +2905,20 @@ for line in lines_after_concatenation:
 
         tasks.append([slideNumber + 1, text, dueDate, tags, done])
 
+    elif line[:4] == "####":
+        # Heading Level 4 - card on an existing slide
+        in_card = True
+
+        # Get card title text and any href
+        cardName, href = parseTitleText(line[4:])
+        if (href !="") & (href in slide_hrefs.keys()):
+            print(f"Heading Reference redefined: '{href}' for slide {slideNumber}")
+        
+        # Create information about a card_title
+        cardBullets = []
+        cards.append([cardName])
+
+
     elif line[:3] == "###":
         # Heading Level 3 - slide
         if in_block is True:
@@ -2786,6 +2940,8 @@ for line in lines_after_concatenation:
         bullets = []
         in_list = False
         in_table = False
+        in_card = False
+        cards = []
 
         if (notes_text != "") & (slide != None):
             notes_slide = slide.notes_slide
@@ -2814,6 +2970,7 @@ for line in lines_after_concatenation:
         bullets = []
         in_list = False
         in_table = False
+        in_card = False
 
         if (notes_text != "") & (slide != None):
             notes_slide = slide.notes_slide
@@ -2842,6 +2999,7 @@ for line in lines_after_concatenation:
         bullets = []
         in_list = False
         in_table = False
+        in_card = False
 
         if (notes_text != "") & (slide != None):
             notes_slide = slide.notes_slide
@@ -2857,6 +3015,7 @@ for line in lines_after_concatenation:
             table_rows = []
             in_table = True
             in_list = False
+            in_card = False
 
         # Create a table row - but with (maybe empty) junk before and after
         words = line.split("|")
@@ -2920,7 +3079,15 @@ for line in lines_after_concatenation:
         bulletPos = line.index("*") + 1
         bulletLine = line[bulletPos:].lstrip()
         bulletLevel = (bulletPos + 1) / 2
-        bullets.append([bulletLevel, bulletLine])
+        if in_card:
+            cardBullets.append([bulletLevel, bulletLine])
+            cardsLength = len(cards)
+            if len(cards[cardsLength - 1]) == 1:
+                cards[cardsLength - 1].append(cardBullets)
+            else:
+                cards[cardsLength - 1][1] = cardBullets
+        else:
+            bullets.append([bulletLevel, bulletLine])
         in_list = True
         in_table = False
     else:
