@@ -163,8 +163,10 @@ To quote from the python-pptx license statement:
 
 ## Change Log
 
+[2, 3, 5]
 |Level|Date|What|
 |:--|:---|:-----|
+|1.6.1|29 December 2020|Added `<a id=` as an alternative hyperlink anchor.|
 |1.6|22 December 2020|Added Card Slide support. Metadata keys are now case-insensitive.|
 |1.5|7 December 2020|Pictures now can have a tooltip. You can define inter-slide links on both pictures and runs of text. You can omit the final `|` of a table line.|
 |1.4|23 November 2020|Task slides' slide numbers are hyperlinked to the relevant slide|
@@ -193,6 +195,7 @@ To quote from the python-pptx license statement:
 |0.1|1 April 2018|Initial Prototype|
 
 ## Creating Slides
+<a id="creating-slides"></a>
 
 Let's start with a simple example. Consider the following text.
 
@@ -242,6 +245,7 @@ For more on metadata see [Controlling The Presentation With Metadata](#controlli
 As you can see the format of each slide is fairly straightforward. How to code slides is described in the following sections.
 
 ### Presentation Title Slides
+<a id="presentation-title-slides"></a>
 
 You code a presentation title slide with a Markdown Heading Level 1:
 
@@ -258,6 +262,7 @@ You code a presentation section slide with a Markdown Heading Level 2:
 You can code multiple lines, as with [Presentation Title slides](#presentation-title-slides).
 
 ### Bullet Slides
+<a id="bullet-slides"></a>
 
 Bullet slides use Markdown bulleted lists, which can be nested. This example shows two levels of nesting.
 
@@ -281,6 +286,7 @@ To nest bullets use a tab character or 4 spaces to indent the sub-bullets. md2pp
 Terminate the bulleted list slide with a blank line.
 
 ### Graphics Slides
+<a id="graphics-slides"></a>
 
 As with [bullet slides](#bullet-slides), code the slide title as a Markdown Heading Level 3. Specify the graphic to embed with the standard Markdown image reference:
 
@@ -297,6 +303,7 @@ If you code a string inside the square brackets it will be used as a tooltip (or
 **HINT:** If you want two graphics side by side use a single-row table, described [here](#special-case-two-graphics-side-by-side). If you want two graphics one above the other use a two-row, single-column table, described [here](#special-case-one-graphic-above-another).
 
 #### Clickable Pictures
+<a id="clickable-pictures"></a>
 
 You can make a picture clickable, with an optional tooltip. This means you can click on a picture in slideshow mode to go to another slide. The tooltip is shown in slideshow mode when your mouse hovers over the picture.
 
@@ -317,6 +324,7 @@ To create a hyperlink to a slide with heading reference code something like this
 See [Hyperlinks](#hyperlinks) for more on creating hyperlinks.
 
 #### Graphics File References
+<a id="graphics-file-references"></a>
 
 md2pptx supports graphics references in three different formats:
 
@@ -338,6 +346,7 @@ Slides:
 ```
 
 ### Table Slides
+<a id="table-slides"></a>
 
 You can create a table slide using Markdown's table format.
 
@@ -364,6 +373,7 @@ Each cell can consist of text, which will wrap as necessary. You can't embed ima
 As a convenience, you can omit the final `|` on a line. While this isn't strictly Markdown compliant this might be helpful.
 
 #### Special Case: Two Graphics Side By Side
+<a id="special-case-two-graphics-side-by-side"></a>
 
 The best Markdown fit for two graphics side by side is a single row table with two cells. md2pptx will "special case" such a table.
 
@@ -382,6 +392,7 @@ For how to make such graphics clickable or have a tooltip see [Clickable Picture
 **Note:** Regular Markdown processors don't support pictures in tables; They render the `|` characters literally.
 
 #### Special Case: Two By Two Grid Of Graphics
+<a id="special-case-two-by-two-grid-of-graphics"></a>
 
 The best Markdown fit for four graphics on a slide is a two row table with two pairs of cells. md2pptx will "special case" such a table.
 
@@ -403,6 +414,8 @@ For how to make such graphics clickable or have a tooltip see [Clickable Picture
 **Note:** Regular Markdown processors don't support pictures in tables; They render the `|` characters literally.
 
 #### Special Case: Three Graphics On A Slide
+<a id="special-case-three-graphics-on-a-slide"></a>
+
 
 The best Markdown fit for three graphics on a slide is a two row table&colon;
 
@@ -445,6 +458,8 @@ For how to make such graphics clickable or have a tooltip see [Clickable Picture
 **Note:** Regular Markdown processors don't support pictures in tables; They render the `|` characters literally.
 
 #### Special Case: One Graphic Above Another
+<a id="special-case-one-graphic-above-another"></a>
+
 
 The best Markdown fit for two graphics, on above the other, on a slide is a two row table with a single cell in each row. md2pptx will "special case" such a table.
 
@@ -464,6 +479,7 @@ For how to make such graphics clickable or have a tooltip see [Clickable Picture
 **Note:** Regular Markdown processors don't support pictures in tables; They render the `|` characters literally.
 
 ### Card Slides
+<a id="card-slides"></a>
 
 A card slide contains side-by-side panels - or cards. Each card has a title and, below that, the contents are defined using the same syntax as in [Bullet Slides](#bullet-slides). In fact this slide type is derivative of the Bullet Slide type.
 
@@ -484,6 +500,7 @@ The width of each card is calculated depending on the number of cards. In this e
 In the above example there has been a small amount of tweaking of the format, using metadata. You can control the exact format using [CardColour](#cardcolour), [CardBorderColour](#cardbordercolour), [CardBorderWidth](#cardborderwidth), [CardTitleSize](#cardtitlesize), and [CardShadow](#cardshadow).
 
 ### Code Slides
+<a id="code-slides"></a>
 
 You can create a slide where the body is in a monospace font, without bullets.
 
@@ -498,6 +515,7 @@ Each line of the code fragment - to be displayed in a monospace font - is indent
 
 
 ### Task List Slides
+<a id="task-list-slides"></a>
 
 You can create tasks in a subset of the [Taskpaper](https://support.omnigroup.com/omnifocus-taskpaper-reference/) format by coding a line that starts with a `-`:
 
@@ -529,6 +547,7 @@ Task slides are paginated: Multiple task slides are created, each with the task 
 You can control task slide production by specifying `taskSlides` and `tasksPerSlide`. See [Controlling Task Slide Production With `taskSlides` and `tasksPerSlide`](#controlling-task-slide-production-with-taskslides-and-tasksperslide).
 
 ## Hyperlinks
+<a id="hyperlinks"></a>
 
 To code a hyperlink to an **external** URL in a slide code something like:
 
@@ -542,6 +561,7 @@ To create an internal slide reference you need to do two things:
 2. Code a reference to the target slide using the href.
 
 ### Coding A Heading Reference On A Target Slide
+<a id="coding-a-heading-reference-on-a-target-slide"></a>
 
 Multimarkdown and md2pptx support the following way of identifying a heading reference (href):
 
@@ -554,7 +574,20 @@ Multimarkdown and md2pptx support the following way of identifying a heading ref
 
 The above is a slide with a title ("z15 Processor Architecture"). You can link to this slide using the href ("z15-arch").
 
+An alternative method of specifying a target is like this:
+
+    ### z15 Processor Architecture
+    <a id="z15-arch"></a>
+
+    * 12 Cores Per PU Chip
+        * Most of which are enabled
+    * 4 PU Chips per drawer
+    * 1-5 drawers per machine
+
+This method is provided because it is the only reliable within-a-document hyperlink target syntax that both GitHub and other Markdown processors support.
+
 ### Coding A Hyperlink To Another Slide
+<a id="coding-a-hyperlink-to-another-slide"></a>
 
 You can refer to the slide in a hyperlink using the href. Here's an example:
 
@@ -566,6 +599,7 @@ You can refer to the slide in a hyperlink using the href. Here's an example:
 * You click on the word `here` in a presentation to move to the referred-to slide.
 
 ## HTML Comments
+<a id="html-comments"></a>
 
 You can use HTML-style comments, ranging over multiple lines.
 
@@ -578,6 +612,7 @@ md2pptx will throw away HTML comments, rather than adding them to the output fil
 **NOTE:** Other Markdown processors will copy the comment into the output file. Put nothing in the comments that is sensitive.
 
 ## Special Text Formatting
+<a id="special-text-formatting"></a>
 
 Markdown and md2pptx allow additional ways of formatting text. The syntax md2pptx supports is a subset of what many Markdown processors allow.
 
@@ -605,6 +640,7 @@ Some other HTML-originated text effects work - as Markdown allows you to embed H
 |Strikethrough|`del`|`this is <del>obsolete>/del>`|this is <del>obsolete</del>|
 
 ### Using HTML `<style>` Elements To Specify Text Colours And Underlining
+<a id="using-html-style-elements-to-specify-text-colours-and-underlining"></a>
 
 You can set the background or foreground colour of a piece of text. To do this use the `<span>` HTML element. Here is an example:
 
@@ -649,6 +685,7 @@ The above uses only the style elements that md2pptx supports with `style.` metad
 for example - as it uses the class `mytest`.
 
 ### HTML Entity References
+<a id="html-entity-references"></a>
 
 md2pptx supports a few [HTML entity references](https://en.wikipedia.org/wiki/List_of_XML_and_HTML_character_entity_references)&colon;
 
@@ -670,6 +707,7 @@ md2pptx supports a few [HTML entity references](https://en.wikipedia.org/wiki/Li
 |`&comma;`|&comma;|`&infin;`|&infin;|
 
 ### Numeric Character References
+<a id="numeric-character-references"></a>
 
 md2pptx supports a few [HTML numeric character references](https://en.wikipedia.org/wiki/Numeric_character_reference)&colon;
 
@@ -679,6 +717,7 @@ md2pptx supports a few [HTML numeric character references](https://en.wikipedia.
 (Some emoji work. For example you can paste 🦖 in to the source.)
 
 ###  Escaped Characters
+<a id="escaped-characters"></a>
 
 md2pptx supports a few escaped characters. Of most interest are the two square bracket characters:
 
@@ -690,6 +729,7 @@ You can also escape the underscore character:
 * `\_`
 
 ### CriticMarkup
+<a id="criticmarkup"></a>
 
 md2pptx supports [CriticMarkup](http://criticmarkup.com/) for text. To quote from their home page:
 
@@ -720,6 +760,7 @@ md2pptx supports all five markup elements. In common with other CriticMarkup pro
 In the above examples the deletions, insertions, replacements etc don't actually happen; They are just marked. Editing tools are needed to actually perform these actions, once the reviewer's comments have been accepted.
 
 ## Creating A Glossary Of Terms
+<a id="creating-a-glossary-of-terms"></a>
 
 You can use the HTML `abbr` element to generate a glossary entry. For example,
 
@@ -749,10 +790,12 @@ This is something md2pptx can't do for you.
 You can change these colours under "Themes" in the Slide Master editor.
 
 ## Creating Footnotes
+<a id="creating-footnotes"></a>
 
 You can create and reference footnotes.
 
 ### Creating A Footnote
+<a id="creating-a-footnote"></a>
 
 To define a footnote code `[^name]: ` on a new line. The remainder of the line will be the footnote text.
 
@@ -761,6 +804,7 @@ If you have defined footnotes one or more Footnotes slides will be added to the 
 Footnotes are automatically numbered, starting with 1.
 
 ### Referring To A Footnote
+<a id="referring-to-a-footnote"></a>
 
 To refer to a footnote code `[^name]`. The footnote's number (automatically generated) will appear like so:
 
@@ -771,10 +815,12 @@ If the name doesn't match a footnote a question mark will be printed instead of 
 If you click on a footnote number you will be taken to the appropriate Footnotes slide.
 
 ## Controlling The Presentation With Metadata
+<a id="controlling-the-presentation-with-metadata"></a>
 
 You can control some aspects of md2pptx's processing using metadata.
 
 ### Specifying Metadata
+<a id="specifying-metadata"></a>
 
 You specify metadata in the lines before the first blank line. It consists of key/value pairs, with the key separated from the value by a colon.
 Keys are case insensitive. In this User Guide they are capitalised to aid comprehension. For example, `baseTextDecrement` is treated the same as `basetextdecrement`.
@@ -782,10 +828,12 @@ Keys are case insensitive. In this User Guide they are capitalised to aid compre
 While some Markdown processors handle metadata, most ignore it. Conversely, while md2pptx will print **all** the metadata it encounters on the first slide (if the template presentation contains at least 1 slide), it will practically ignore metadata it doesn't understand.
 
 ### Metadata Keys
+<a id="metadata-keys"></a>
 
 The following sections describe each of the metadata keys.
 
 #### Slide Numbers - `numbers`
+<a id="slide-numbers-numbers"></a>
 
 md2pptx can add slide numbers. These are generated by md2pptx itself (or hardcoded) and are not the same as ones you can turn on in a footer.
 
@@ -796,6 +844,7 @@ Example:
 	numbers: yes
 
 #### Page Title Size - `pageTitleSize`
+<a id="page-title-size-pagetitlesize"></a>
 
 You can specify the point size of each slide that isn't a section divider or title slide. The size is specified in points.
 
@@ -806,6 +855,7 @@ Example:
 The default is 30 points.
 
 #### Section Title Size - `sectionTitleSize`
+<a id="section-title-size-sectiontitlesize"></a>
 
 You can specify the point size of the title text for each slide that's a section divider or title slide. The size is specified in points.
 
@@ -816,6 +866,7 @@ Example:
 The default is 40 points.
 
 #### Section Subtitle Size - `sectionSubtitleSize`
+<a id="section-subtitle-size-sectionsubtitlesize"></a>
 
 You can specify the point size of the subtitle text for each slide that's a section divider or title slide. The size is specified in points.
 
@@ -828,6 +879,7 @@ Example:
 The default is 28 points.
 
 #### Monospace Font - `monoFont`
+<a id="monospace-font-monofont"></a>
 
 You can specify which font to use for monospaced text - such as on [code slides](#code-slides).
 
@@ -838,6 +890,7 @@ Example:
 The default is Courier.
 
 #### Margin size - `marginBase` and `tableMargin`
+<a id="margin-size-marginbase-and-tablemargin"></a>
 
 You can increase or decrease the margin around things - in decimal fractions of an inch.
 
@@ -851,6 +904,7 @@ Example:
 The default is 0.2 (inches).
 
 #### Associating A Class Name with A Background Colour With `style.bgcolor`
+<a id="associating-a-class-name-with-a-background-color-with-style-bgcolor"></a>
 
 You can use HTML `<span>` elements to set the background colour, as described in <a href="#using-html-ltstylegt-elements-to-specify-text-colours-and-underlining">Using HTML &lt;style&gt; Elements To Specify Text Colours And Underlining</a>.
 
@@ -867,6 +921,7 @@ In this example the class "yellow" is associated with a background colour, defin
 which is in fact yellow.
 
 #### Associating A Class Name with A Foreground Colour With `style.fgcolor`
+<a id="associating-a-class-name-with-a-foreground-color-with-style-fgcolor"></a>
 
 You can use HTML `<span>` elements to set the foreground colour, as described in <a href="#using-html-ltstylegt-elements-to-specify-text-colours-and-underlining">Using HTML &lt;style&gt; Elements To Specify Text Colours And Underlining</a>.
 
@@ -883,6 +938,7 @@ In this example the class "red" is associated with a foreground colour, defined 
 which is in fact red.
 
 #### Associating A Class Name With Text Emphasis With `style.emphasis`
+<a id="associating-a-class-name-with-text-emphasis-with-style-emphasis"></a>
 
 You can use HTML `<span>` elements to bold text, make it italic, or underline it - as described in <a href="#using-html-ltstylegt-elements-to-specify-text-colours-and-underlining">Using HTML &lt;style&gt; Elements To Specify Text Colours And Underlining</a>.
 
@@ -897,6 +953,7 @@ You can also use `italic`.
 As the example shows, separate the emphasis attributes with a space.
 
 #### Template Presentation - `template`
+<a id="template-presentation-template"></a>
 
 You can specify a different template file to create the presentation from than the one supplied with python-pptx. The one supplied with md2pptx is a very good one to work from:
 
@@ -912,6 +969,7 @@ Templates are searched for in the following sequence:
 2. In the md2pptx installation directory.
 
 #### "Chevron Style" Table Of Contents - `tocStyle` And `tocTitle`
+<a id="chevron-style-table-of-contents-tocstyle-and-toctitle"></a>
 
 If you have a Table Of Contents slide - with each section title listed as a top level bullet you can create a "Chevron Style" Table Of Contents slide. It will look something like this:
 
@@ -937,6 +995,7 @@ Here the section is highlighted by removing the background.
 * Ensure the section slides' titles are unique. Otherwise more than one chevron will be highlighted on the relevant section slide.
 
 #### Specifying An Abstract Slide With `abstractTitle`
+<a id="specifying-an-abstract-slide-with-abstracttitle"></a>
 
 You can arrange for a single-level bulleted list slide to be formatted specially - as an abstract.
 
@@ -949,6 +1008,7 @@ To indicate an abstract slide code
 Any slide with the title matching the value of abstractTitle will be rendered as an abstract slide.
 
 #### Specifying Text Size With `baseTextSize` And `baseTextDecrement`
+<a id="specifying-text-size-with-basetextsize-and-basetextdecrement"></a>
 
 You can control the size of text - in table slides, code slides, and bulleted list slides - with two metadata tags: `baseTextSize` And `baseTextDecrement`.
 If you don't specify `baseTextSize` the base presentation's font sizes are used.
@@ -971,6 +1031,7 @@ If you just coded
 the top-level bullet uses a 20 point font, the next level down a 18 point font, and so on.
 
 #### Specifying Bold And Italic Text Colour With `BoldColour` And `ItalicColour`
+<a id="specifying-bold-and-italic-text-colour-with-boldcolour-and-italiccolour"></a>
 
 You can modify how md2pptx formats bold and italic colours:
 
@@ -1009,6 +1070,7 @@ As you can probably guess, these are standard values for python-pptx and, ultima
 **Note:** For the values you can use any capitalisation you like (or none). e.g. `ItalicColor: dark 1`.
 
 #### Specifying Bold And Italic Text Effects With `BoldBold` And `ItalicItalic`
+<a id="specifying-bold-and-italic-text-effects-with-boldbold-and-italicitalic"></a>
 
 You can modify how md2pptx formats bold and italic text.
 
@@ -1025,6 +1087,7 @@ The default for both of these is, of course, `yes` so that bold text is bold and
 These options were added so that `BoldColour` and `ItalicColour` could just become colour effects. See [here](#specifying-bold-and-italic-text-colour-with-boldcolour-and-italiccolour).
 
 #### Shrinking Tables With `compactTables`
+<a id="shrinking-tables-with-compacttables"></a>
 
 You can reduce the size of a table on the slide with `compactTables`. If you specify a value larger than 0 two things will happen:
 
@@ -1036,6 +1099,7 @@ For example, to remove the margins and reduce the font size to 16pt code
     compactTables: 16
 
 #### Controlling Task Slide Production With `taskSlides` and `tasksPerSlide`
+<a id="controlling-task-slide-production-with-taskslides-and-tasksperslide"></a>
 
 Before unleashing your presentation on the world you probably want to remove the Task List slides from it. You can control what tasks are shown, if any, with `taskSlides`. It can take four different values:
 
@@ -1058,6 +1122,7 @@ Though you wouldn't normally need to do this, you can control how many tasks app
 will limit the numberof tasks on a slide to 10. The default is 20 tasks per slide.
 
 #### Controlling Glossary Slide Production With `glossaryTitle`, `glossaryTerm`, `glossaryMeaning`,`glossaryMeaningWidth`, and `glossaryTermsPerPage`
+<a id="controlling-glossary-slide-production-with=glossarytitle-glossaryterm-glossarymeaning-glossarymeaningwidth-and-glossarytermsperpage"></a>
 
 [Creating A Glossary Of Terms](#creating-a-glossary-of-terms) describes how you can use the `abbr` element to generate a glossary of terms.
 
@@ -1094,6 +1159,7 @@ Coding
 will cause the maximum number of glossary items on a Glossary slide to be 10. If there are more terms, a second slide will be created. And so on. The default is 20.
 
 #### Card Background Colour - `CardColour`
+<a id="card-background-colour-cardcolour"></a>
 
 You can specify which of the theme colours to use for the background of each card in a [Card Slide](#card-slides) - using `CardColour` (or `CardColor`). For example:
 
@@ -1102,6 +1168,7 @@ You can specify which of the theme colours to use for the background of each car
 If you don't specify this the default text box background colour - from the template - will be used.
 
 #### Card Border Colour - `CardBorderColour`
+<a id="card-border-colour-cardbordercolour"></a>
 
 You can specify which of the theme colours to use for the border of each card in a [Card Slide](#card-slides) - using `CardBorderColour` (or `CardBorderColor`).For example:
 
@@ -1110,6 +1177,7 @@ You can specify which of the theme colours to use for the border of each card in
 If you don't specify this the cards won't have a border.
 
 #### Card Border Width - `CardBorderWidth`
+<a id="card-border-width-cardborderwidth"></a>
 
 You can specify the thickness of the border (in points) of each card in a [Card Slide](#card-slides) - using `CardBorderWidth`. For example:
 
@@ -1118,6 +1186,7 @@ You can specify the thickness of the border (in points) of each card in a [Card 
 If you don't specify this the cards will use the default text box border width - from the template.
 
 #### Card Title Size - `CardTitleSize`
+<a id="card-title-size-cardtitlesize"></a>
 
 You can specify the size of the font (in points) for the cards' title - using `CardTitleSize`. For example:
 
@@ -1126,6 +1195,7 @@ You can specify the size of the font (in points) for the cards' title - using `C
 If you don't specify this the card titles will be 2/3 the size of the slide's title.
 
 ####  Card Shadow - `CardShadow`
+<a id="card-shadow-cardshadow"></a>
 
 You can specify whether a card has a shadow - using `CardShadow`. For example:
 
@@ -1134,16 +1204,19 @@ You can specify whether a card has a shadow - using `CardShadow`. For example:
 If you don't specify this the cards won't have a shadow - unless the default text box style is to have a shadow.
 
 ## Modifying The Slide Template
+<a id="modifying-the-slide-template"></a>
 
 The included template presentation - Martin Template.pptx - is what the author tested with and gives good results. However, you probably want to develop your own template from it.
 
 This section is a basic introduction to the rules of the game for doing so.
 
 ### Basics
+<a id="basics"></a>
 
 Don't change the order of the slides in the slide master view and don't delete any elements. It's probably also not useful to add elements. Take care with moving and resizing elements; It's probably best to experiment to see what effects you get.
 
 ### Slide Template Sequence
+<a id="slide-template-sequence"></a>
 
 The following table shows how each slide type is created.
 

@@ -1163,148 +1163,38 @@ THE SOFTWARE.
 
 
 <h2 id="change-log">Change Log<a class="headerlink" href="#change-log" title="Permanent link"></a></h2>
-<table>
-<thead>
-<tr>
-<th align="left">Level</th>
-<th align="left">Date</th>
-<th align="left">What</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="left">1.6</td>
-<td align="left">22 December 2020</td>
-<td align="left">Added Card Slide support. Metadata keys are now case-insensitive.</td>
-</tr>
-<tr>
-<td align="left">1.5</td>
-<td align="left">7 December 2020</td>
-<td align="left">Pictures now can have a tooltip. You can define inter-slide links on both pictures and runs of text. You can omit the final <code>|</code> of a table line.</td>
-</tr>
-<tr>
-<td align="left">1.4</td>
-<td align="left">23 November 2020</td>
-<td align="left">Task slides&rsquo; slide numbers are hyperlinked to the relevant slide</td>
-</tr>
-<tr>
-<td align="left">1.3</td>
-<td align="left">20 November 2020</td>
-<td align="left">Glossary terms now have tooltips and hyperlinks to the relevant Glossary slide. Footnotes have hyperlinks to the relevant Footnotes slide.</td>
-</tr>
-<tr>
-<td align="left">1.2</td>
-<td align="left">3 November 2020</td>
-<td align="left">Support URLs for graphics. Reworked Processing Summary slide to use a flowed table.</td>
-</tr>
-<tr>
-<td align="left">1.1</td>
-<td align="left">25 October 2020</td>
-<td align="left">Introduce Template as a better replacement for Master - which still works. Add German characters. Better template file searching. Escape underscore. Better handling of continuation onto second and subsequent lines.</td>
-</tr>
-<tr>
-<td align="left">1.0</td>
-<td align="left">13 October 2020</td>
-<td align="left">Python 3&comma; Support input filename as first command line parameter.</td>
-</tr>
-<tr>
-<td align="left">0.9</td>
-<td align="left">4 September 2020</td>
-<td align="left">Footnote slide support</td>
-</tr>
-<tr>
-<td align="left">0.8</td>
-<td align="left">14 June 2020</td>
-<td align="left"><code>bgcolor</code> is now <code>style.bgcolor</code>. Added <code>style.fgcolor</code> and <code>style.emphasis</code>.</td>
-</tr>
-<tr>
-<td align="left">0.7.3</td>
-<td align="left">24 May 2020</td>
-<td align="left">Allow background colouring via <code>span</code> elements</td>
-</tr>
-<tr>
-<td align="left">0.7.2</td>
-<td align="left">14 April 2020</td>
-<td align="left">Support three graphics on a slide. Added <code>&amp;equals;</code> entity reference. Added <code>tableMargin</code>.</td>
-</tr>
-<tr>
-<td align="left">0.7.1</td>
-<td align="left">14 November 2019</td>
-<td align="left">Make slide titles longer. Fixed formatting issue with one-graphic-above-another table slide.</td>
-</tr>
-<tr>
-<td align="left">0.7</td>
-<td align="left">3 November 2019</td>
-<td align="left">Support <code>abbr</code> element as a glossary item. Each distinct term leads to a glossary slide entry at the back of the presentation.</td>
-</tr>
-<tr>
-<td align="left">0.6</td>
-<td align="left">8 October 2019</td>
-<td align="left">Support vertical pair of graphics in a table<br/>Fixed some issues with Markdown-syntax hyperlinks<br/>Support escaped square brackets <code>\[</code> and <code>\]</code>&comma;<code>&amp;lsqb;</code> and <code>&amp;rsqb;</code> being newly-supported alternatives</td>
-</tr>
-<tr>
-<td align="left">0.5</td>
-<td align="left">12 May 2019</td>
-<td align="left">CriticMarkup support</td>
-</tr>
-<tr>
-<td align="left">0.4.5</td>
-<td align="left">5 May 2019</td>
-<td align="left">Some numeric character references</td>
-</tr>
-<tr>
-<td align="left">0.4.4</td>
-<td align="left">6 March 2019</td>
-<td align="left">Processing summary slide shows build date and time</td>
-</tr>
-<tr>
-<td align="left">0.4.3</td>
-<td align="left">20 January 2019</td>
-<td align="left">Support a few HTML entity references - punctuation and arrows.<br/>Support split task slide sets - completed and incomplete.<br/>Task tags are sorted.</td>
-</tr>
-<tr>
-<td align="left">0.4.2</td>
-<td align="left">13 January 2019</td>
-<td align="left">Tasks slide set controllable with metadata <code>taskSlides</code> and <code>tasksPerSlide</code></td>
-</tr>
-<tr>
-<td align="left">0.4.1</td>
-<td align="left">9 January 2019</td>
-<td align="left">Enhanced Taskpaper support with <code>@due</code>&comma; <code>@tags</code>&comma; and <code>@done</code>&comma; and reworked as a series of table slides.</td>
-</tr>
-<tr>
-<td align="left">0.4</td>
-<td align="left">7 January 2019</td>
-<td align="left">Support shrinking of table cell font and margins.<br/>Added two-to-by-two grid of graphics on a slide.</td>
-</tr>
-<tr>
-<td align="left">0.3.2</td>
-<td align="left">3 January 2019</td>
-<td align="left">Support \# as a literal octothorpe/hash/pound.<br/>Tidied up reporting.<br/>Added superscript, subscript, strikethrough, and underline text effects.</td>
-</tr>
-<tr>
-<td align="left">0.3.1</td>
-<td align="left">3 November 2018</td>
-<td align="left">Fixed support for <code>&lt;br/&gt;</code> so it won&rsquo;t create a bullet on the new line.</td>
-</tr>
-<tr>
-<td align="left">0.3</td>
-<td align="left">22 October 2018</td>
-<td align="left">Added customisation for bold and italic text</td>
-</tr>
-<tr>
-<td align="left">0.2</td>
-<td align="left">3 September 2018</td>
-<td align="left">Added ways of controlling bullet sizes</td>
-</tr>
-<tr>
-<td align="left">0.1</td>
-<td align="left">1 April 2018</td>
-<td align="left">Initial Prototype</td>
-</tr>
-</tbody>
-</table>
+<p>[2, 3, 5]
+|Level|Date|What|
+|:&ndash;|:&mdash;|:-----|
+|1.6.1|29 December 2020|Added <code>&lt;a id=</code> as an alternative hyperlink anchor.|
+|1.6|22 December 2020|Added Card Slide support. Metadata keys are now case-insensitive.|
+|1.5|7 December 2020|Pictures now can have a tooltip. You can define inter-slide links on both pictures and runs of text. You can omit the final <code>|</code> of a table line.|
+|1.4|23 November 2020|Task slides&rsquo; slide numbers are hyperlinked to the relevant slide|
+|1.3|20 November 2020|Glossary terms now have tooltips and hyperlinks to the relevant Glossary slide. Footnotes have hyperlinks to the relevant Footnotes slide.|
+|1.2|3 November 2020|Support URLs for graphics. Reworked Processing Summary slide to use a flowed table.|
+|1.1|25 October 2020|Introduce Template as a better replacement for Master - which still works. Add German characters. Better template file searching. Escape underscore. Better handling of continuation onto second and subsequent lines.|
+|1.0|13 October 2020|Python 3&comma; Support input filename as first command line parameter.|
+|0.9|4 September 2020|Footnote slide support|
+|0.8|14 June 2020|<code>bgcolor</code> is now <code>style.bgcolor</code>. Added <code>style.fgcolor</code> and <code>style.emphasis</code>.|
+|0.7.3|24 May 2020|Allow background colouring via <code>span</code> elements|
+|0.7.2|14 April 2020| Support three graphics on a slide. Added <code>&amp;equals;</code> entity reference. Added <code>tableMargin</code>.|
+|0.7.1|14 November 2019| Make slide titles longer. Fixed formatting issue with one-graphic-above-another table slide.|
+|0.7|3 November 2019|Support <code>abbr</code> element as a glossary item. Each distinct term leads to a glossary slide entry at the back of the presentation.|
+|0.6|8 October 2019|Support vertical pair of graphics in a table<br/>Fixed some issues with Markdown-syntax hyperlinks<br/>Support escaped square brackets <code>\[</code> and <code>\]</code>&comma;<code>&amp;lsqb;</code> and <code>&amp;rsqb;</code> being newly-supported alternatives|
+|0.5|12 May 2019|CriticMarkup support|
+|0.4.5|5 May 2019|Some numeric character references|
+|0.4.4|6 March 2019|Processing summary slide shows build date and time|
+|0.4.3|20 January 2019|Support a few HTML entity references - punctuation and arrows.<br/>Support split task slide sets - completed and incomplete.<br/>Task tags are sorted.|
+|0.4.2|13 January 2019|Tasks slide set controllable with metadata <code>taskSlides</code> and <code>tasksPerSlide</code>|
+|0.4.1|9 January 2019|Enhanced Taskpaper support with <code>@due</code>&comma; <code>@tags</code>&comma; and <code>@done</code>&comma; and reworked as a series of table slides.|
+|0.4|7 January 2019|Support shrinking of table cell font and margins.<br/>Added two-to-by-two grid of graphics on a slide.|
+|0.3.2|3 January 2019|Support \# as a literal octothorpe/hash/pound.<br/>Tidied up reporting.<br/>Added superscript, subscript, strikethrough, and underline text effects.|
+|0.3.1|3 November 2018|Fixed support for <code>&lt;br/&gt;</code> so it won&rsquo;t create a bullet on the new line.|
+|0.3|22 October 2018|Added customisation for bold and italic text|
+|0.2|3 September 2018|Added ways of controlling bullet sizes|
+|0.1|1 April 2018|Initial Prototype|</p>
 <h2 id="creating-slides">Creating Slides<a class="headerlink" href="#creating-slides" title="Permanent link"></a></h2>
+<p><a id="creating-slides"></a></p>
 <p>Let&rsquo;s start with a simple example. Consider the following text.</p>
 <div class="codehilite"><pre>template: Martin Template.pptx
 pageTitleSize: 24
@@ -1344,6 +1234,7 @@ sectionTitleSize: 30
 <p>For more on metadata see <a href="#controlling-the-presentation-with-metadata">Controlling The Presentation With Metadata</a>.</p>
 <p>As you can see the format of each slide is fairly straightforward. How to code slides is described in the following sections.</p>
 <h3 id="presentation-title-slides">Presentation Title Slides<a class="headerlink" href="#presentation-title-slides" title="Permanent link"></a></h3>
+<p><a id="presentation-title-slides"></a></p>
 <p>You code a presentation title slide with a Markdown Heading Level 1:</p>
 <div class="codehilite"><pre># This Is the Presentation Title Slide
 </pre></div>
@@ -1358,6 +1249,7 @@ sectionTitleSize: 30
 
 <p>You can code multiple lines, as with <a href="#presentation-title-slides">Presentation Title slides</a>.</p>
 <h3 id="bullet-slides">Bullet Slides<a class="headerlink" href="#bullet-slides" title="Permanent link"></a></h3>
+<p><a id="bullet-slides"></a></p>
 <p>Bullet slides use Markdown bulleted lists, which can be nested. This example shows two levels of nesting.</p>
 <p>The title of the slide is defined by coding a Markdown Heading Level 3.</p>
 <div class="codehilite"><pre>### This Is A Bullet Slide
@@ -1375,6 +1267,7 @@ sectionTitleSize: 30
 <p>To nest bullets use a tab character or 4 spaces to indent the sub-bullets. md2pptx doesn&rsquo;t have a limit on the level of nesting but Powerpoint probably does.</p>
 <p>Terminate the bulleted list slide with a blank line.</p>
 <h3 id="graphics-slides">Graphics Slides<a class="headerlink" href="#graphics-slides" title="Permanent link"></a></h3>
+<p><a id="graphics-slides"></a></p>
 <p>As with <a href="#bullet-slides">bullet slides</a>, code the slide title as a Markdown Heading Level 3. Specify the graphic to embed with the standard Markdown image reference:</p>
 <div class="codehilite"><pre>### A Graphic Slide
 
@@ -1390,6 +1283,7 @@ sectionTitleSize: 30
 
 <p><strong>HINT:</strong> If you want two graphics side by side use a single-row table, described <a href="#special-case-two-graphics-side-by-side">here</a>. If you want two graphics one above the other use a two-row, single-column table, described <a href="#special-case-one-graphic-above-another">here</a>.</p>
 <h4 id="clickable-pictures">Clickable Pictures<a class="headerlink" href="#clickable-pictures" title="Permanent link"></a></h4>
+<p><a id="clickable-pictures"></a></p>
 <p>You can make a picture clickable, with an optional tooltip. This means you can click on a picture in slideshow mode to go to another slide. The tooltip is shown in slideshow mode when your mouse hovers over the picture.</p>
 <p>Here&rsquo;s an example, showing both a tooltip and a clickable link.</p>
 <div class="codehilite"><pre>[![Foo Fighters Sonic Highways](https://upload.wikimedia.org/wikipedia/en/6/67/Foo_Fighters_8LP_Sonic_Highways.jpg)](#sonic-highways)
@@ -1409,6 +1303,7 @@ sectionTitleSize: 30
 
 <p>See <a href="#hyperlinks">Hyperlinks</a> for more on creating hyperlinks.</p>
 <h4 id="graphics-file-references">Graphics File References<a class="headerlink" href="#graphics-file-references" title="Permanent link"></a></h4>
+<p><a id="graphics-file-references"></a></p>
 <p>md2pptx supports graphics references in three different formats:</p>
 <ul>
 <li>A local file reference - <code>![](~/Documents/Customers/XYZCO/sysplexes.png)</code></li>
@@ -1425,6 +1320,7 @@ sectionTitleSize: 30
 </pre></div>
 
 <h3 id="table-slides">Table Slides<a class="headerlink" href="#table-slides" title="Permanent link"></a></h3>
+<p><a id="table-slides"></a></p>
 <p>You can create a table slide using Markdown&rsquo;s table format.</p>
 <p>Code a title with a Markdown Heading Level 3. Then code a table. Here is a simple example of a table:</p>
 <div class="codehilite"><pre>|Left Heading|Centre Heading|Right Heading|
@@ -1446,6 +1342,7 @@ sectionTitleSize: 30
 <p>Each cell can consist of text, which will wrap as necessary. You can&rsquo;t embed images in a table slide. But see <a href="#special-case-two-graphics-side-by-side">here</a> and <a href="#special-case-two-by-two-grid-of-graphics">here</a>.</p>
 <p>As a convenience, you can omit the final <code>|</code> on a line. While this isn&rsquo;t strictly Markdown compliant this might be helpful.</p>
 <h4 id="special-case-two-graphics-side-by-side">Special Case: Two Graphics Side By Side<a class="headerlink" href="#special-case-two-graphics-side-by-side" title="Permanent link"></a></h4>
+<p><a id="special-case-two-graphics-side-by-side"></a></p>
 <p>The best Markdown fit for two graphics side by side is a single row table with two cells. md2pptx will &ldquo;special case&rdquo; such a table.</p>
 <p>If you code something like this the two graphics will be placed next to each other:</p>
 <div class="codehilite"><pre>|![](left-graphic.png)|![](right-graphic.png)|
@@ -1458,6 +1355,7 @@ sectionTitleSize: 30
 <p>For how to make such graphics clickable or have a tooltip see <a href="#clickable-pictures">Clickable Pictures</a>.</p>
 <p><strong>Note:</strong> Regular Markdown processors don&rsquo;t support pictures in tables; They render the <code>|</code> characters literally.</p>
 <h4 id="special-case-two-by-two-grid-of-graphics">Special Case: Two By Two Grid Of Graphics<a class="headerlink" href="#special-case-two-by-two-grid-of-graphics" title="Permanent link"></a></h4>
+<p><a id="special-case-two-by-two-grid-of-graphics"></a></p>
 <p>The best Markdown fit for four graphics on a slide is a two row table with two pairs of cells. md2pptx will &ldquo;special case&rdquo; such a table.</p>
 <p>If you code something like this the four graphics will be placed in two rows of two:</p>
 <div class="codehilite"><pre>|![](top-left-graphic.png)|![](top-right-graphic.png)|
@@ -1472,6 +1370,7 @@ sectionTitleSize: 30
 <p>For how to make such graphics clickable or have a tooltip see <a href="#clickable-pictures">Clickable Pictures</a>.</p>
 <p><strong>Note:</strong> Regular Markdown processors don&rsquo;t support pictures in tables; They render the <code>|</code> characters literally.</p>
 <h4 id="special-case-three-graphics-on-a-slide">Special Case: Three Graphics On A Slide<a class="headerlink" href="#special-case-three-graphics-on-a-slide" title="Permanent link"></a></h4>
+<p><a id="special-case-three-graphics-on-a-slide"></a></p>
 <p>The best Markdown fit for three graphics on a slide is a two row table&colon;</p>
 <ul>
 <li>The first row has two graphics.</li>
@@ -1506,6 +1405,7 @@ sectionTitleSize: 30
 <p>For how to make such graphics clickable or have a tooltip see <a href="#clickable-pictures">Clickable Pictures</a>.</p>
 <p><strong>Note:</strong> Regular Markdown processors don&rsquo;t support pictures in tables; They render the <code>|</code> characters literally.</p>
 <h4 id="special-case-one-graphic-above-another">Special Case: One Graphic Above Another<a class="headerlink" href="#special-case-one-graphic-above-another" title="Permanent link"></a></h4>
+<p><a id="special-case-one-graphic-above-another"></a></p>
 <p>The best Markdown fit for two graphics, on above the other, on a slide is a two row table with a single cell in each row. md2pptx will &ldquo;special case&rdquo; such a table.</p>
 <p>If you code something like this the two graphics will be placed in two rows of one:</p>
 <div class="codehilite"><pre>|![](top-graphic.png)|
@@ -1519,6 +1419,7 @@ sectionTitleSize: 30
 <p>For how to make such graphics clickable or have a tooltip see <a href="#clickable-pictures">Clickable Pictures</a>.</p>
 <p><strong>Note:</strong> Regular Markdown processors don&rsquo;t support pictures in tables; They render the <code>|</code> characters literally.</p>
 <h3 id="card-slides">Card Slides<a class="headerlink" href="#card-slides" title="Permanent link"></a></h3>
+<p><a id="card-slides"></a></p>
 <p>A card slide contains side-by-side panels - or cards. Each card has a title and, below that, the contents are defined using the same syntax as in <a href="#bullet-slides">Bullet Slides</a>. In fact this slide type is derivative of the Bullet Slide type.</p>
 <p>A card slide can look something like this:</p>
 <p><img alt="" src="/Users/martinpacker/md2pptx/CardSlide.png" /></p>
@@ -1535,6 +1436,7 @@ sectionTitleSize: 30
 <p>The width of each card is calculated depending on the number of cards. In this example the horizontal space is divided equally between the 4 cards.</p>
 <p>In the above example there has been a small amount of tweaking of the format, using metadata. You can control the exact format using <a href="#cardcolour">CardColour</a>, <a href="#cardbordercolour">CardBorderColour</a>, <a href="#cardborderwidth">CardBorderWidth</a>, <a href="#cardtitlesize">CardTitleSize</a>, and <a href="#cardshadow">CardShadow</a>.</p>
 <h3 id="code-slides">Code Slides<a class="headerlink" href="#code-slides" title="Permanent link"></a></h3>
+<p><a id="code-slides"></a></p>
 <p>You can create a slide where the body is in a monospace font, without bullets.</p>
 <p>The heading for the slide is introduced with heading level 3 - <code>###</code>.</p>
 <p>Each line of the code fragment - to be displayed in a monospace font - is indented with 4 spaces:</p>
@@ -1546,6 +1448,7 @@ sectionTitleSize: 30
 
 
 <h3 id="task-list-slides">Task List Slides<a class="headerlink" href="#task-list-slides" title="Permanent link"></a></h3>
+<p><a id="task-list-slides"></a></p>
 <p>You can create tasks in a subset of the <a href="https://support.omnigroup.com/omnifocus-taskpaper-reference/">Taskpaper</a> format by coding a line that starts with a <code>-</code>:</p>
 <div class="codehilite"><pre>- MARTIN: Complete The User Guide
 </pre></div>
@@ -1571,6 +1474,7 @@ sectionTitleSize: 30
 <p>Task slides are paginated: Multiple task slides are created, each with the task slide number appended to the title, if there are more than a certain number of tasks.</p>
 <p>You can control task slide production by specifying <code>taskSlides</code> and <code>tasksPerSlide</code>. See <a href="#controlling-task-slide-production-with-taskslides-and-tasksperslide">Controlling Task Slide Production With <code>taskSlides</code> and <code>tasksPerSlide</code></a>.</p>
 <h2 id="hyperlinks">Hyperlinks<a class="headerlink" href="#hyperlinks" title="Permanent link"></a></h2>
+<p><a id="hyperlinks"></a></p>
 <p>To code a hyperlink to an <strong>external</strong> URL in a slide code something like:</p>
 <div class="codehilite"><pre>[IBM Website](http://www.ibm.com)
 </pre></div>
@@ -1584,6 +1488,7 @@ To create an internal slide reference you need to do two things:</p>
 <li>Code a reference to the target slide using the href.</li>
 </ol>
 <h3 id="coding-a-heading-reference-on-a-target-slide">Coding A Heading Reference On A Target Slide<a class="headerlink" href="#coding-a-heading-reference-on-a-target-slide" title="Permanent link"></a></h3>
+<p><a id="coding-a-heading-reference-on-a-target-slide"></a></p>
 <p>Multimarkdown and md2pptx support the following way of identifying a heading reference (href):</p>
 <div class="codehilite"><pre>### z15 Processor Architecture [z15-arch]
 
@@ -1595,7 +1500,20 @@ To create an internal slide reference you need to do two things:</p>
 
 
 <p>The above is a slide with a title (&ldquo;z15 Processor Architecture&rdquo;). You can link to this slide using the href (&ldquo;z15-arch&rdquo;).</p>
+<p>An alternative method of specifying a target is like this:</p>
+<div class="codehilite"><pre>### z15 Processor Architecture
+&lt;a id=&quot;z15-arch&quot;&gt;&lt;/a&gt;
+
+* 12 Cores Per PU Chip
+    * Most of which are enabled
+* 4 PU Chips per drawer
+* 1-5 drawers per machine
+</pre></div>
+
+
+<p>This method is provided because it is the only reliable within-a-document hyperlink target syntax that both GitHub and other Markdown processors support.</p>
 <h3 id="coding-a-hyperlink-to-another-slide">Coding A Hyperlink To Another Slide<a class="headerlink" href="#coding-a-hyperlink-to-another-slide" title="Permanent link"></a></h3>
+<p><a id="coding-a-hyperlink-to-another-slide"></a></p>
 <p>You can refer to the slide in a hyperlink using the href. Here&rsquo;s an example:</p>
 <div class="codehilite"><pre>### Attributes Of A High Performance System
 
@@ -1608,12 +1526,14 @@ To create an internal slide reference you need to do two things:</p>
 <li>You click on the word <code>here</code> in a presentation to move to the referred-to slide.</li>
 </ul>
 <h2 id="html-comments">HTML Comments<a class="headerlink" href="#html-comments" title="Permanent link"></a></h2>
+<p><a id="html-comments"></a></p>
 <p>You can use HTML-style comments, ranging over multiple lines.</p>
 <p>Start the first line with <code>&lt;!--</code>.</p>
 <p>End the last line with <code>--&gt;</code>.</p>
 <p>md2pptx will throw away HTML comments, rather than adding them to the output file.</p>
 <p><strong>NOTE:</strong> Other Markdown processors will copy the comment into the output file. Put nothing in the comments that is sensitive.</p>
 <h2 id="special-text-formatting">Special Text Formatting<a class="headerlink" href="#special-text-formatting" title="Permanent link"></a></h2>
+<p><a id="special-text-formatting"></a></p>
 <p>Markdown and md2pptx allow additional ways of formatting text. The syntax md2pptx supports is a subset of what many Markdown processors allow.</p>
 <p>To specify <strong>bold</strong> surround the text with pairs of asterisks - <code>**bold**</code>.</p>
 <p>To specify <em>italics</em> surround the text with single asterisks - <code>*italics*</code>.</p>
@@ -1660,6 +1580,7 @@ To create an internal slide reference you need to do two things:</p>
 </tbody>
 </table>
 <h3 id="using-html-ltstylegt-elements-to-specify-text-colours-and-underlining">Using HTML <code>&lt;style&gt;</code> Elements To Specify Text Colours And Underlining<a class="headerlink" href="#using-html-ltstylegt-elements-to-specify-text-colours-and-underlining" title="Permanent link"></a></h3>
+<p><a id="using-html-style-elements-to-specify-text-colours-and-underlining"></a></p>
 <p>You can set the background or foreground colour of a piece of text. To do this use the <code>&lt;span&gt;</code> HTML element. Here is an example:</p>
 <div class="codehilite"><pre>I would like to highlight &lt;span class=&quot;yellow&quot;&gt;this bit&lt;/span&gt; but not **this** bit.
 </pre></div>
@@ -1701,6 +1622,7 @@ To create an internal slide reference you need to do two things:</p>
 
 <p>for example - as it uses the class <code>mytest</code>.</p>
 <h3 id="html-entity-references">HTML Entity References<a class="headerlink" href="#html-entity-references" title="Permanent link"></a></h3>
+<p><a id="html-entity-references"></a></p>
 <p>md2pptx supports a few <a href="https://en.wikipedia.org/wiki/List_of_XML_and_HTML_character_entity_references">HTML entity references</a>&colon;</p>
 <table>
 <thead>
@@ -1821,6 +1743,7 @@ To create an internal slide reference you need to do two things:</p>
 </tbody>
 </table>
 <h3 id="numeric-character-references">Numeric Character References<a class="headerlink" href="#numeric-character-references" title="Permanent link"></a></h3>
+<p><a id="numeric-character-references"></a></p>
 <p>md2pptx supports a few <a href="https://en.wikipedia.org/wiki/Numeric_character_reference">HTML numeric character references</a>&colon;</p>
 <ul>
 <li>Some like <code>&amp;#223;</code> - with 3 or 4 numeric digits. (This produces the character &lsquo;&#223;&lsquo;).</li>
@@ -1828,6 +1751,7 @@ To create an internal slide reference you need to do two things:</p>
 </ul>
 <p>(Some emoji work. For example you can paste 🦖 in to the source.)</p>
 <h3 id="escaped-characters">Escaped Characters<a class="headerlink" href="#escaped-characters" title="Permanent link"></a></h3>
+<p><a id="escaped-characters"></a></p>
 <p>md2pptx supports a few escaped characters. Of most interest are the two square bracket characters:</p>
 <ul>
 <li><code>\[</code></li>
@@ -1838,6 +1762,7 @@ To create an internal slide reference you need to do two things:</p>
 <li><code>\_</code></li>
 </ul>
 <h3 id="criticmarkup">CriticMarkup<a class="headerlink" href="#criticmarkup" title="Permanent link"></a></h3>
+<p><a id="criticmarkup"></a></p>
 <p>md2pptx supports <a href="http://criticmarkup.com/">CriticMarkup</a> for text. To quote from their home page:</p>
 <blockquote>
 <p>CriticMarkup is a way for authors and editors to track changes to documents in plain text. As with Markdown, small groups of distinctive characters allow you to highlight insertions, deletions, substitutions and comments, all without the overhead of heavy, proprietary office suites.</p>
@@ -1867,6 +1792,7 @@ To create an internal slide reference you need to do two things:</p>
 </ul>
 <p>In the above examples the deletions, insertions, replacements etc don&rsquo;t actually happen; They are just marked. Editing tools are needed to actually perform these actions, once the reviewer&rsquo;s comments have been accepted.</p>
 <h2 id="creating-a-glossary-of-terms">Creating A Glossary Of Terms<a class="headerlink" href="#creating-a-glossary-of-terms" title="Permanent link"></a></h2>
+<p><a id="creating-a-glossary-of-terms"></a></p>
 <p>You can use the HTML <code>abbr</code> element to generate a glossary entry. For example,</p>
 <div class="codehilite"><pre>&lt;abbr title=&#39;British Broadcasting Corporation&#39;&gt;BBC&lt;/abbr&gt;
 </pre></div>
@@ -1889,25 +1815,32 @@ However, while md2pptx can cope with e.g. <code>&lt;br/&gt;</code> elements in a
 This is something md2pptx can&rsquo;t do for you.
 You can change these colours under &ldquo;Themes&rdquo; in the Slide Master editor.</p>
 <h2 id="creating-footnotes">Creating Footnotes<a class="headerlink" href="#creating-footnotes" title="Permanent link"></a></h2>
+<p><a id="creating-footnotes"></a></p>
 <p>You can create and reference footnotes.</p>
 <h3 id="creating-a-footnote">Creating A Footnote<a class="headerlink" href="#creating-a-footnote" title="Permanent link"></a></h3>
+<p><a id="creating-a-footnote"></a></p>
 <p>To define a footnote code <code>[^name]:</code> on a new line. The remainder of the line will be the footnote text.</p>
 <p>If you have defined footnotes one or more Footnotes slides will be added to the end of the presentation.</p>
 <p>Footnotes are automatically numbered, starting with 1.</p>
 <h3 id="referring-to-a-footnote">Referring To A Footnote<a class="headerlink" href="#referring-to-a-footnote" title="Permanent link"></a></h3>
+<p><a id="referring-to-a-footnote"></a></p>
 <p>To refer to a footnote code <code>[^name]</code>. The footnote&rsquo;s number (automatically generated) will appear like so:</p>
 <p>&nbsp;&nbsp;&nbsp;&nbsp;This is a footnote reference<sup><u>4</u></sup>.</p>
 <p>If the name doesn&rsquo;t match a footnote a question mark will be printed instead of the footnote number.</p>
 <p>If you click on a footnote number you will be taken to the appropriate Footnotes slide.</p>
 <h2 id="controlling-the-presentation-with-metadata">Controlling The Presentation With Metadata<a class="headerlink" href="#controlling-the-presentation-with-metadata" title="Permanent link"></a></h2>
+<p><a id="controlling-the-presentation-with-metadata"></a></p>
 <p>You can control some aspects of md2pptx&rsquo;s processing using metadata.</p>
 <h3 id="specifying-metadata">Specifying Metadata<a class="headerlink" href="#specifying-metadata" title="Permanent link"></a></h3>
+<p><a id="specifying-metadata"></a></p>
 <p>You specify metadata in the lines before the first blank line. It consists of key/value pairs, with the key separated from the value by a colon.
 Keys are case insensitive. In this User Guide they are capitalised to aid comprehension. For example, <code>baseTextDecrement</code> is treated the same as <code>basetextdecrement</code>.</p>
 <p>While some Markdown processors handle metadata, most ignore it. Conversely, while md2pptx will print <strong>all</strong> the metadata it encounters on the first slide (if the template presentation contains at least 1 slide), it will practically ignore metadata it doesn&rsquo;t understand.</p>
 <h3 id="metadata-keys">Metadata Keys<a class="headerlink" href="#metadata-keys" title="Permanent link"></a></h3>
+<p><a id="metadata-keys"></a></p>
 <p>The following sections describe each of the metadata keys.</p>
 <h4 id="slide-numbers-numbers">Slide Numbers - <code>numbers</code><a class="headerlink" href="#slide-numbers-numbers" title="Permanent link"></a></h4>
+<p><a id="slide-numbers-numbers"></a></p>
 <p>md2pptx can add slide numbers. These are generated by md2pptx itself (or hardcoded) and are not the same as ones you can turn on in a footer.</p>
 <p>The default value is <code>no</code>. You can turn them on for all slides with <code>yes</code> or non-title slides with <code>content</code>.</p>
 <p>Example:</p>
@@ -1916,6 +1849,7 @@ Keys are case insensitive. In this User Guide they are capitalised to aid compre
 
 
 <h4 id="page-title-size-pagetitlesize">Page Title Size - <code>pageTitleSize</code><a class="headerlink" href="#page-title-size-pagetitlesize" title="Permanent link"></a></h4>
+<p><a id="page-title-size-pagetitlesize"></a></p>
 <p>You can specify the point size of each slide that isn&rsquo;t a section divider or title slide. The size is specified in points.</p>
 <p>Example:</p>
 <div class="codehilite"><pre>pageTitleSize: 24
@@ -1924,6 +1858,7 @@ Keys are case insensitive. In this User Guide they are capitalised to aid compre
 
 <p>The default is 30 points.</p>
 <h4 id="section-title-size-sectiontitlesize">Section Title Size - <code>sectionTitleSize</code><a class="headerlink" href="#section-title-size-sectiontitlesize" title="Permanent link"></a></h4>
+<p><a id="section-title-size-sectiontitlesize"></a></p>
 <p>You can specify the point size of the title text for each slide that&rsquo;s a section divider or title slide. The size is specified in points.</p>
 <p>Example:</p>
 <div class="codehilite"><pre>sectionTitleSize: 42
@@ -1932,6 +1867,7 @@ Keys are case insensitive. In this User Guide they are capitalised to aid compre
 
 <p>The default is 40 points.</p>
 <h4 id="section-subtitle-size-sectionsubtitlesize">Section Subtitle Size - <code>sectionSubtitleSize</code><a class="headerlink" href="#section-subtitle-size-sectionsubtitlesize" title="Permanent link"></a></h4>
+<p><a id="section-subtitle-size-sectionsubtitlesize"></a></p>
 <p>You can specify the point size of the subtitle text for each slide that&rsquo;s a section divider or title slide. The size is specified in points.</p>
 <p>The subtitle text is the second and subsequent lines of the title - generally a separate text shape on the slide.</p>
 <p>Example:</p>
@@ -1941,6 +1877,7 @@ Keys are case insensitive. In this User Guide they are capitalised to aid compre
 
 <p>The default is 28 points.</p>
 <h4 id="monospace-font-monofont">Monospace Font - <code>monoFont</code><a class="headerlink" href="#monospace-font-monofont" title="Permanent link"></a></h4>
+<p><a id="monospace-font-monofont"></a></p>
 <p>You can specify which font to use for monospaced text - such as on <a href="#code-slides">code slides</a>.</p>
 <p>Example:</p>
 <div class="codehilite"><pre>monoFont: Arial
@@ -1949,6 +1886,7 @@ Keys are case insensitive. In this User Guide they are capitalised to aid compre
 
 <p>The default is Courier.</p>
 <h4 id="margin-size-marginbase-and-tablemargin">Margin size - <code>marginBase</code> and <code>tableMargin</code><a class="headerlink" href="#margin-size-marginbase-and-tablemargin" title="Permanent link"></a></h4>
+<p><a id="margin-size-marginbase-and-tablemargin"></a></p>
 <p>You can increase or decrease the margin around things - in decimal fractions of an inch.</p>
 <p>For a table you can specify the left and right margins using <code>tableMargin</code>.
 For everything else use <code>marginBase</code>.</p>
@@ -1959,6 +1897,7 @@ For everything else use <code>marginBase</code>.</p>
 
 <p>The default is 0.2 (inches).</p>
 <h4 id="associating-a-class-name-with-a-background-colour-with-stylebgcolor">Associating A Class Name with A Background Colour With <code>style.bgcolor</code><a class="headerlink" href="#associating-a-class-name-with-a-background-colour-with-stylebgcolor" title="Permanent link"></a></h4>
+<p><a id="associating-a-class-name-with-a-background-color-with-style-bgcolor"></a></p>
 <p>You can use HTML <code>&lt;span&gt;</code> elements to set the background colour, as described in <a href="#using-html-ltstylegt-elements-to-specify-text-colours-and-underlining">Using HTML &lt;style&gt; Elements To Specify Text Colours And Underlining</a>.</p>
 <p>Here is an example:</p>
 <div class="codehilite"><pre>style.bgcolor.yellow: FFFF00
@@ -1973,6 +1912,7 @@ For everything else use <code>marginBase</code>.</p>
 </ul>
 <p>which is in fact yellow.</p>
 <h4 id="associating-a-class-name-with-a-foreground-colour-with-stylefgcolor">Associating A Class Name with A Foreground Colour With <code>style.fgcolor</code><a class="headerlink" href="#associating-a-class-name-with-a-foreground-colour-with-stylefgcolor" title="Permanent link"></a></h4>
+<p><a id="associating-a-class-name-with-a-foreground-color-with-style-fgcolor"></a></p>
 <p>You can use HTML <code>&lt;span&gt;</code> elements to set the foreground colour, as described in <a href="#using-html-ltstylegt-elements-to-specify-text-colours-and-underlining">Using HTML &lt;style&gt; Elements To Specify Text Colours And Underlining</a>.</p>
 <p>Here is an example:</p>
 <div class="codehilite"><pre>style.fgcolor.red: FF0000
@@ -1987,6 +1927,7 @@ For everything else use <code>marginBase</code>.</p>
 </ul>
 <p>which is in fact red.</p>
 <h4 id="associating-a-class-name-with-text-emphasis-with-styleemphasis">Associating A Class Name With Text Emphasis With <code>style.emphasis</code><a class="headerlink" href="#associating-a-class-name-with-text-emphasis-with-styleemphasis" title="Permanent link"></a></h4>
+<p><a id="associating-a-class-name-with-text-emphasis-with-style-emphasis"></a></p>
 <p>You can use HTML <code>&lt;span&gt;</code> elements to bold text, make it italic, or underline it - as described in <a href="#using-html-ltstylegt-elements-to-specify-text-colours-and-underlining">Using HTML &lt;style&gt; Elements To Specify Text Colours And Underlining</a>.</p>
 <p>Here is an example:</p>
 <div class="codehilite"><pre>style.emphasis.important: bold underline
@@ -1997,6 +1938,7 @@ For everything else use <code>marginBase</code>.</p>
 <p>You can also use <code>italic</code>.</p>
 <p>As the example shows, separate the emphasis attributes with a space.</p>
 <h4 id="template-presentation-template">Template Presentation - <code>template</code><a class="headerlink" href="#template-presentation-template" title="Permanent link"></a></h4>
+<p><a id="template-presentation-template"></a></p>
 <p>You can specify a different template file to create the presentation from than the one supplied with python-pptx. The one supplied with md2pptx is a very good one to work from:</p>
 <div class="codehilite"><pre>template: Martin Template.pptx
 </pre></div>
@@ -2010,6 +1952,7 @@ For everything else use <code>marginBase</code>.</p>
 <li>In the md2pptx installation directory.</li>
 </ol>
 <h4 id="chevron-style-table-of-contents-tocstyle-and-toctitle">&ldquo;Chevron Style&rdquo; Table Of Contents - <code>tocStyle</code> And <code>tocTitle</code><a class="headerlink" href="#chevron-style-table-of-contents-tocstyle-and-toctitle" title="Permanent link"></a></h4>
+<p><a id="chevron-style-table-of-contents-tocstyle-and-toctitle"></a></p>
 <p>If you have a Table Of Contents slide - with each section title listed as a top level bullet you can create a &ldquo;Chevron Style&rdquo; Table Of Contents slide. It will look something like this:</p>
 <p><img alt="" src="/Users/martinpacker/md2pptx/chevronTOC.png" /></p>
 <p>If your Table Of Contents slide&rsquo;s title is &ldquo;Topics&rdquo; you need only code</p>
@@ -2031,6 +1974,7 @@ For everything else use <code>marginBase</code>.</p>
 <li>Ensure the section slides&rsquo; titles are unique. Otherwise more than one chevron will be highlighted on the relevant section slide.</li>
 </ul>
 <h4 id="specifying-an-abstract-slide-with-abstracttitle">Specifying An Abstract Slide With <code>abstractTitle</code><a class="headerlink" href="#specifying-an-abstract-slide-with-abstracttitle" title="Permanent link"></a></h4>
+<p><a id="specifying-an-abstract-slide-with-abstracttitle"></a></p>
 <p>You can arrange for a single-level bulleted list slide to be formatted specially - as an abstract.</p>
 <p>Instead of each list item having a bullet, it is treated as a paragraph. This is more appropriate for an abstract slide. (An extra blank paragraph is added between each paragraph - to space it out.)</p>
 <p>To indicate an abstract slide code</p>
@@ -2040,6 +1984,7 @@ For everything else use <code>marginBase</code>.</p>
 
 <p>Any slide with the title matching the value of abstractTitle will be rendered as an abstract slide.</p>
 <h4 id="specifying-text-size-with-basetextsize-and-basetextdecrement">Specifying Text Size With <code>baseTextSize</code> And <code>baseTextDecrement</code><a class="headerlink" href="#specifying-text-size-with-basetextsize-and-basetextdecrement" title="Permanent link"></a></h4>
+<p><a id="specifying-text-size-with-basetextsize-and-basetextdecrement"></a></p>
 <p>You can control the size of text - in table slides, code slides, and bulleted list slides - with two metadata tags: <code>baseTextSize</code> And <code>baseTextDecrement</code>.
 If you don&rsquo;t specify <code>baseTextSize</code> the base presentation&rsquo;s font sizes are used.</p>
 <p>If you specify a <code>baseTextSize</code> value code, tables, and the top-level bullet use this size, which is specified in points.
@@ -2059,6 +2004,7 @@ baseTextDecrement: 1
 
 <p>the top-level bullet uses a 20 point font, the next level down a 18 point font, and so on.</p>
 <h4 id="specifying-bold-and-italic-text-colour-with-boldcolour-and-italiccolour">Specifying Bold And Italic Text Colour With <code>BoldColour</code> And <code>ItalicColour</code><a class="headerlink" href="#specifying-bold-and-italic-text-colour-with-boldcolour-and-italiccolour" title="Permanent link"></a></h4>
+<p><a id="specifying-bold-and-italic-text-colour-with-boldcolour-and-italiccolour"></a></p>
 <p>You can modify how md2pptx formats bold and italic colours:</p>
 <ul>
 <li>To specify the colour of bold text use <code>BoldColour</code> (or <code>BoldColor</code>).</li>
@@ -2094,6 +2040,7 @@ baseTextDecrement: 1
 <p>As you can probably guess, these are standard values for python-pptx and, ultimately, PowerPoint.</p>
 <p><strong>Note:</strong> For the values you can use any capitalisation you like (or none). e.g. <code>ItalicColor: dark 1</code>.</p>
 <h4 id="specifying-bold-and-italic-text-effects-with-boldbold-and-italicitalic">Specifying Bold And Italic Text Effects With <code>BoldBold</code> And <code>ItalicItalic</code><a class="headerlink" href="#specifying-bold-and-italic-text-effects-with-boldbold-and-italicitalic" title="Permanent link"></a></h4>
+<p><a id="specifying-bold-and-italic-text-effects-with-boldbold-and-italicitalic"></a></p>
 <p>You can modify how md2pptx formats bold and italic text.</p>
 <p>If you don&rsquo;t want bold text to actually be bold code</p>
 <div class="codehilite"><pre>BoldBold: no
@@ -2108,6 +2055,7 @@ baseTextDecrement: 1
 <p>The default for both of these is, of course, <code>yes</code> so that bold text is bold and italic text is italic.</p>
 <p>These options were added so that <code>BoldColour</code> and <code>ItalicColour</code> could just become colour effects. See <a href="#specifying-bold-and-italic-text-colour-with-boldcolour-and-italiccolour">here</a>.</p>
 <h4 id="shrinking-tables-with-compacttables">Shrinking Tables With <code>compactTables</code><a class="headerlink" href="#shrinking-tables-with-compacttables" title="Permanent link"></a></h4>
+<p><a id="shrinking-tables-with-compacttables"></a></p>
 <p>You can reduce the size of a table on the slide with <code>compactTables</code>. If you specify a value larger than 0 two things will happen:</p>
 <ul>
 <li>The font will use whatever point size you specify.</li>
@@ -2119,6 +2067,7 @@ baseTextDecrement: 1
 
 
 <h4 id="controlling-task-slide-production-with-taskslides-and-tasksperslide">Controlling Task Slide Production With <code>taskSlides</code> and <code>tasksPerSlide</code><a class="headerlink" href="#controlling-task-slide-production-with-taskslides-and-tasksperslide" title="Permanent link"></a></h4>
+<p><a id="controlling-task-slide-production-with-taskslides-and-tasksperslide"></a></p>
 <p>Before unleashing your presentation on the world you probably want to remove the Task List slides from it. You can control what tasks are shown, if any, with <code>taskSlides</code>. It can take four different values:</p>
 <ul>
 <li><code>all</code> (the default) which shows both complete and incomplete tasks.</li>
@@ -2140,6 +2089,7 @@ baseTextDecrement: 1
 
 <p>will limit the numberof tasks on a slide to 10. The default is 20 tasks per slide.</p>
 <h4 id="controlling-glossary-slide-production-with-glossarytitle-glossaryterm-glossarymeaningglossarymeaningwidth-and-glossarytermsperpage">Controlling Glossary Slide Production With <code>glossaryTitle</code>, <code>glossaryTerm</code>, <code>glossaryMeaning</code>,<code>glossaryMeaningWidth</code>, and <code>glossaryTermsPerPage</code><a class="headerlink" href="#controlling-glossary-slide-production-with-glossarytitle-glossaryterm-glossarymeaningglossarymeaningwidth-and-glossarytermsperpage" title="Permanent link"></a></h4>
+<p><a id="controlling-glossary-slide-production-with=glossarytitle-glossaryterm-glossarymeaning-glossarymeaningwidth-and-glossarytermsperpage"></a></p>
 <p><a href="#creating-a-glossary-of-terms">Creating A Glossary Of Terms</a> describes how you can use the <code>abbr</code> element to generate a glossary of terms.</p>
 <p>You can control various aspects of the appearance of the Glossary Slide(s) using the following metadata items.</p>
 <p>For example, coding</p>
@@ -2173,6 +2123,7 @@ baseTextDecrement: 1
 
 <p>will cause the maximum number of glossary items on a Glossary slide to be 10. If there are more terms, a second slide will be created. And so on. The default is 20.</p>
 <h4 id="card-background-colour-cardcolour">Card Background Colour - <code>CardColour</code><a class="headerlink" href="#card-background-colour-cardcolour" title="Permanent link"></a></h4>
+<p><a id="card-background-colour-cardcolour"></a></p>
 <p>You can specify which of the theme colours to use for the background of each card in a <a href="#card-slides">Card Slide</a> - using <code>CardColour</code> (or <code>CardColor</code>). For example:</p>
 <div class="codehilite"><pre>CardColour: BACKGROUND 2
 </pre></div>
@@ -2180,6 +2131,7 @@ baseTextDecrement: 1
 
 <p>If you don&rsquo;t specify this the default text box background colour - from the template - will be used.</p>
 <h4 id="card-border-colour-cardbordercolour">Card Border Colour - <code>CardBorderColour</code><a class="headerlink" href="#card-border-colour-cardbordercolour" title="Permanent link"></a></h4>
+<p><a id="card-border-colour-cardbordercolour"></a></p>
 <p>You can specify which of the theme colours to use for the border of each card in a <a href="#card-slides">Card Slide</a> - using <code>CardBorderColour</code> (or <code>CardBorderColor</code>).For example:</p>
 <div class="codehilite"><pre>CardBorderColour: TEXT 1
 </pre></div>
@@ -2187,6 +2139,7 @@ baseTextDecrement: 1
 
 <p>If you don&rsquo;t specify this the cards won&rsquo;t have a border.</p>
 <h4 id="card-border-width-cardborderwidth">Card Border Width - <code>CardBorderWidth</code><a class="headerlink" href="#card-border-width-cardborderwidth" title="Permanent link"></a></h4>
+<p><a id="card-border-width-cardborderwidth"></a></p>
 <p>You can specify the thickness of the border (in points) of each card in a <a href="#card-slides">Card Slide</a> - using <code>CardBorderWidth</code>. For example:</p>
 <div class="codehilite"><pre>CardBorderWidth: 1
 </pre></div>
@@ -2194,6 +2147,7 @@ baseTextDecrement: 1
 
 <p>If you don&rsquo;t specify this the cards will use the default text box border width - from the template.</p>
 <h4 id="card-title-size-cardtitlesize">Card Title Size - <code>CardTitleSize</code><a class="headerlink" href="#card-title-size-cardtitlesize" title="Permanent link"></a></h4>
+<p><a id="card-title-size-cardtitlesize"></a></p>
 <p>You can specify the size of the font (in points) for the cards&rsquo; title - using <code>CardTitleSize</code>. For example:</p>
 <div class="codehilite"><pre>CardTitleSize: 15
 </pre></div>
@@ -2201,6 +2155,7 @@ baseTextDecrement: 1
 
 <p>If you don&rsquo;t specify this the card titles will be 2/3 the size of the slide&rsquo;s title.</p>
 <h4 id="card-shadow-cardshadow">Card Shadow - <code>CardShadow</code><a class="headerlink" href="#card-shadow-cardshadow" title="Permanent link"></a></h4>
+<p><a id="card-shadow-cardshadow"></a></p>
 <p>You can specify whether a card has a shadow - using <code>CardShadow</code>. For example:</p>
 <div class="codehilite"><pre>CardShadow: yes
 </pre></div>
@@ -2208,11 +2163,14 @@ baseTextDecrement: 1
 
 <p>If you don&rsquo;t specify this the cards won&rsquo;t have a shadow - unless the default text box style is to have a shadow.</p>
 <h2 id="modifying-the-slide-template">Modifying The Slide Template<a class="headerlink" href="#modifying-the-slide-template" title="Permanent link"></a></h2>
+<p><a id="modifying-the-slide-template"></a></p>
 <p>The included template presentation - Martin Template.pptx - is what the author tested with and gives good results. However, you probably want to develop your own template from it.</p>
 <p>This section is a basic introduction to the rules of the game for doing so.</p>
 <h3 id="basics">Basics<a class="headerlink" href="#basics" title="Permanent link"></a></h3>
+<p><a id="basics"></a></p>
 <p>Don&rsquo;t change the order of the slides in the slide master view and don&rsquo;t delete any elements. It&rsquo;s probably also not useful to add elements. Take care with moving and resizing elements; It&rsquo;s probably best to experiment to see what effects you get.</p>
 <h3 id="slide-template-sequence">Slide Template Sequence<a class="headerlink" href="#slide-template-sequence" title="Permanent link"></a></h3>
+<p><a id="slide-template-sequence"></a></p>
 <p>The following table shows how each slide type is created.</p>
 <table>
 <thead>

@@ -1,12 +1,12 @@
 
-mdpre Markdown Preprocessor v0.4.6 (19 October, 2020)
+mdpre Markdown Preprocessor v0.4.6 (4 November, 2020)
 =====================================================
 - opened <stdout> for writing
-Def mdpre_date = 19 October, 2020
+Def mdpre_date = 4 November, 2020
 Def mdpre_level = 0.4.6
 Def userid = martinpacker
-Def time = 11&colon;14
-Def date = 22 December&comma; 2020
+Def time = 16&colon;19
+Def date = 29 December&comma; 2020
 Def TOC = Table Of Contents
 Def md = Markdown
 Def pp = Powerpoint
