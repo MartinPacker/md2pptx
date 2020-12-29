@@ -34,8 +34,8 @@ import copy
 from lxml import etree
 
 
-md2pptx_level = "1.6"
-md2pptx_date = "22 December, 2020"
+md2pptx_level = "1.6.1"
+md2pptx_date = "29 December, 2020"
 
 # Add a drop shadow to a shape
 def createShadow(shape):
@@ -2490,6 +2490,8 @@ twoUpRegex = re.compile("^\|(.+?)\|(.+?)\|")
 footnoteDefinitionRegex = re.compile("^\[\^(.+?)]: (.+)")
 spanRegex = re.compile("<span( )*class=")
 slideHrefRegex = re.compile("(.+)\[(.+)\]")
+anchorRegex = re.compile("^<a id=[\"\'](.+)[\"\']></a>")
+
 
 # Slide layout enumeration
 titleSlideLayout = 0
@@ -2532,7 +2534,7 @@ for line in input_file:
     elif in_comment is True:
         continue
 
-    elif line.lstrip()[:1] == "<":
+    elif (line.lstrip()[:1] == "<") & (line.lstrip().startswith("<a id=") is False):
         in_HTML = True
         continue
 
@@ -2811,6 +2813,9 @@ for line in after_metadata_and_HTML:
     elif previous_line == "\n":
         # Previous line was blank so copy this one over
         lines_after_concatenation.append(line)
+    elif line.startswith("<a id="):
+        # This is an anchor line so keep it separate
+        lines_after_concatenation.append(line)
     else:
         # Previous line was not blank and nor is this one so consider concatenation
         if line.lstrip()[0] not in "*#\|":
@@ -2904,6 +2909,13 @@ for line in lines_after_concatenation:
             done = ""
 
         tasks.append([slideNumber + 1, text, dueDate, tags, done])
+
+    elif line.startswith("<a id="):
+        # Anchor on whatever slide we're on
+        if anchorRegex.match(line):
+            href = anchorRegex.match(line).group(1)
+            if (href !="") & (href in slide_hrefs.keys()):
+                print(f"Heading Reference redefined: '{href}' for slide {slideNumber}")
 
     elif line[:4] == "####":
         # Heading Level 4 - card on an existing slide
