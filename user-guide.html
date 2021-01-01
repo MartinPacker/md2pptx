@@ -1071,6 +1071,13 @@ body .markdown-body
 <li><a href="#card-border-width-cardborderwidth">Card Border Width - <code>CardBorderWidth</code></a></li>
 <li><a href="#card-title-size-cardtitlesize">Card Title Size - <code>CardTitleSize</code></a></li>
 <li><a href="#card-shadow-cardshadow">Card Shadow - <code>CardShadow</code></a></li>
+<li><a href="#controlling-card-size-with-cardpercent">Controlling Card Size With <code>CardPercent</code></a></li>
+</ul>
+</li>
+<li><a href="#dynamic-metadata">Dynamic Metadata</a><ul>
+<li><a href="#compacttables"><code>CompactTables</code></a></li>
+<li><a href="#cardpercent"><code>CardPercent</code></a></li>
+<li><a href="#pagetitlesize"><code>PageTitleSize</code></a></li>
 </ul>
 </li>
 </ul>
@@ -1163,36 +1170,157 @@ THE SOFTWARE.
 
 
 <h2 id="change-log">Change Log<a class="headerlink" href="#change-log" title="Permanent link"></a></h2>
-<p>[2, 3, 5]
-|Level|Date|What|
-|:&ndash;|:&mdash;|:-----|
-|1.6.1|29 December 2020|Added <code>&lt;a id=</code> as an alternative hyperlink anchor.|
-|1.6|22 December 2020|Added Card Slide support. Metadata keys are now case-insensitive.|
-|1.5|7 December 2020|Pictures now can have a tooltip. You can define inter-slide links on both pictures and runs of text. You can omit the final <code>|</code> of a table line.|
-|1.4|23 November 2020|Task slides&rsquo; slide numbers are hyperlinked to the relevant slide|
-|1.3|20 November 2020|Glossary terms now have tooltips and hyperlinks to the relevant Glossary slide. Footnotes have hyperlinks to the relevant Footnotes slide.|
-|1.2|3 November 2020|Support URLs for graphics. Reworked Processing Summary slide to use a flowed table.|
-|1.1|25 October 2020|Introduce Template as a better replacement for Master - which still works. Add German characters. Better template file searching. Escape underscore. Better handling of continuation onto second and subsequent lines.|
-|1.0|13 October 2020|Python 3&comma; Support input filename as first command line parameter.|
-|0.9|4 September 2020|Footnote slide support|
-|0.8|14 June 2020|<code>bgcolor</code> is now <code>style.bgcolor</code>. Added <code>style.fgcolor</code> and <code>style.emphasis</code>.|
-|0.7.3|24 May 2020|Allow background colouring via <code>span</code> elements|
-|0.7.2|14 April 2020| Support three graphics on a slide. Added <code>&amp;equals;</code> entity reference. Added <code>tableMargin</code>.|
-|0.7.1|14 November 2019| Make slide titles longer. Fixed formatting issue with one-graphic-above-another table slide.|
-|0.7|3 November 2019|Support <code>abbr</code> element as a glossary item. Each distinct term leads to a glossary slide entry at the back of the presentation.|
-|0.6|8 October 2019|Support vertical pair of graphics in a table<br/>Fixed some issues with Markdown-syntax hyperlinks<br/>Support escaped square brackets <code>\[</code> and <code>\]</code>&comma;<code>&amp;lsqb;</code> and <code>&amp;rsqb;</code> being newly-supported alternatives|
-|0.5|12 May 2019|CriticMarkup support|
-|0.4.5|5 May 2019|Some numeric character references|
-|0.4.4|6 March 2019|Processing summary slide shows build date and time|
-|0.4.3|20 January 2019|Support a few HTML entity references - punctuation and arrows.<br/>Support split task slide sets - completed and incomplete.<br/>Task tags are sorted.|
-|0.4.2|13 January 2019|Tasks slide set controllable with metadata <code>taskSlides</code> and <code>tasksPerSlide</code>|
-|0.4.1|9 January 2019|Enhanced Taskpaper support with <code>@due</code>&comma; <code>@tags</code>&comma; and <code>@done</code>&comma; and reworked as a series of table slides.|
-|0.4|7 January 2019|Support shrinking of table cell font and margins.<br/>Added two-to-by-two grid of graphics on a slide.|
-|0.3.2|3 January 2019|Support \# as a literal octothorpe/hash/pound.<br/>Tidied up reporting.<br/>Added superscript, subscript, strikethrough, and underline text effects.|
-|0.3.1|3 November 2018|Fixed support for <code>&lt;br/&gt;</code> so it won&rsquo;t create a bullet on the new line.|
-|0.3|22 October 2018|Added customisation for bold and italic text|
-|0.2|3 September 2018|Added ways of controlling bullet sizes|
-|0.1|1 April 2018|Initial Prototype|</p>
+<table>
+<thead>
+<tr>
+<th align="left">Level</th>
+<th align="left">Date</th>
+<th align="left">What</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">1.6.2</td>
+<td align="left">1 January 2021</td>
+<td align="left">Added 3 slide-level Dynamic Metadata capabilities and <code>cardpercent</code> metadata value.</td>
+</tr>
+<tr>
+<td align="left">1.6.1</td>
+<td align="left">29 December 2020</td>
+<td align="left">Added <code>&lt;a id=</code> as an alternative hyperlink anchor.</td>
+</tr>
+<tr>
+<td align="left">1.6</td>
+<td align="left">22 December 2020</td>
+<td align="left">Added Card Slide support. Metadata keys are now case-insensitive.</td>
+</tr>
+<tr>
+<td align="left">1.5</td>
+<td align="left">7 December 2020</td>
+<td align="left">Pictures now can have a tooltip. You can define inter-slide links on both pictures and runs of text. You can omit the final <code>|</code> of a table line.</td>
+</tr>
+<tr>
+<td align="left">1.4</td>
+<td align="left">23 November 2020</td>
+<td align="left">Task slides&rsquo; slide numbers are hyperlinked to the relevant slide</td>
+</tr>
+<tr>
+<td align="left">1.3</td>
+<td align="left">20 November 2020</td>
+<td align="left">Glossary terms now have tooltips and hyperlinks to the relevant Glossary slide. Footnotes have hyperlinks to the relevant Footnotes slide.</td>
+</tr>
+<tr>
+<td align="left">1.2</td>
+<td align="left">3 November 2020</td>
+<td align="left">Support URLs for graphics. Reworked Processing Summary slide to use a flowed table.</td>
+</tr>
+<tr>
+<td align="left">1.1</td>
+<td align="left">25 October 2020</td>
+<td align="left">Introduce Template as a better replacement for Master - which still works. Add German characters. Better template file searching. Escape underscore. Better handling of continuation onto second and subsequent lines.</td>
+</tr>
+<tr>
+<td align="left">1.0</td>
+<td align="left">13 October 2020</td>
+<td align="left">Python 3&comma; Support input filename as first command line parameter.</td>
+</tr>
+<tr>
+<td align="left">0.9</td>
+<td align="left">4 September 2020</td>
+<td align="left">Footnote slide support</td>
+</tr>
+<tr>
+<td align="left">0.8</td>
+<td align="left">14 June 2020</td>
+<td align="left"><code>bgcolor</code> is now <code>style.bgcolor</code>. Added <code>style.fgcolor</code> and <code>style.emphasis</code>.</td>
+</tr>
+<tr>
+<td align="left">0.7.3</td>
+<td align="left">24 May 2020</td>
+<td align="left">Allow background colouring via <code>span</code> elements</td>
+</tr>
+<tr>
+<td align="left">0.7.2</td>
+<td align="left">14 April 2020</td>
+<td align="left">Support three graphics on a slide. Added <code>&amp;equals;</code> entity reference. Added <code>tableMargin</code>.</td>
+</tr>
+<tr>
+<td align="left">0.7.1</td>
+<td align="left">14 November 2019</td>
+<td align="left">Make slide titles longer. Fixed formatting issue with one-graphic-above-another table slide.</td>
+</tr>
+<tr>
+<td align="left">0.7</td>
+<td align="left">3 November 2019</td>
+<td align="left">Support <code>abbr</code> element as a glossary item. Each distinct term leads to a glossary slide entry at the back of the presentation.</td>
+</tr>
+<tr>
+<td align="left">0.6</td>
+<td align="left">8 October 2019</td>
+<td align="left">Support vertical pair of graphics in a table<br/>Fixed some issues with Markdown-syntax hyperlinks<br/>Support escaped square brackets <code>\[</code> and <code>\]</code>&comma;<code>&amp;lsqb;</code> and <code>&amp;rsqb;</code> being newly-supported alternatives</td>
+</tr>
+<tr>
+<td align="left">0.5</td>
+<td align="left">12 May 2019</td>
+<td align="left">CriticMarkup support</td>
+</tr>
+<tr>
+<td align="left">0.4.5</td>
+<td align="left">5 May 2019</td>
+<td align="left">Some numeric character references</td>
+</tr>
+<tr>
+<td align="left">0.4.4</td>
+<td align="left">6 March 2019</td>
+<td align="left">Processing summary slide shows build date and time</td>
+</tr>
+<tr>
+<td align="left">0.4.3</td>
+<td align="left">20 January 2019</td>
+<td align="left">Support a few HTML entity references - punctuation and arrows.<br/>Support split task slide sets - completed and incomplete.<br/>Task tags are sorted.</td>
+</tr>
+<tr>
+<td align="left">0.4.2</td>
+<td align="left">13 January 2019</td>
+<td align="left">Tasks slide set controllable with metadata <code>taskSlides</code> and <code>tasksPerSlide</code></td>
+</tr>
+<tr>
+<td align="left">0.4.1</td>
+<td align="left">9 January 2019</td>
+<td align="left">Enhanced Taskpaper support with <code>@due</code>&comma; <code>@tags</code>&comma; and <code>@done</code>&comma; and reworked as a series of table slides.</td>
+</tr>
+<tr>
+<td align="left">0.4</td>
+<td align="left">7 January 2019</td>
+<td align="left">Support shrinking of table cell font and margins.<br/>Added two-to-by-two grid of graphics on a slide.</td>
+</tr>
+<tr>
+<td align="left">0.3.2</td>
+<td align="left">3 January 2019</td>
+<td align="left">Support \# as a literal octothorpe/hash/pound.<br/>Tidied up reporting.<br/>Added superscript, subscript, strikethrough, and underline text effects.</td>
+</tr>
+<tr>
+<td align="left">0.3.1</td>
+<td align="left">3 November 2018</td>
+<td align="left">Fixed support for <code>&lt;br/&gt;</code> so it won&rsquo;t create a bullet on the new line.</td>
+</tr>
+<tr>
+<td align="left">0.3</td>
+<td align="left">22 October 2018</td>
+<td align="left">Added customisation for bold and italic text</td>
+</tr>
+<tr>
+<td align="left">0.2</td>
+<td align="left">3 September 2018</td>
+<td align="left">Added ways of controlling bullet sizes</td>
+</tr>
+<tr>
+<td align="left">0.1</td>
+<td align="left">1 April 2018</td>
+<td align="left">Initial Prototype</td>
+</tr>
+</tbody>
+</table>
 <h2 id="creating-slides">Creating Slides<a class="headerlink" href="#creating-slides" title="Permanent link"></a></h2>
 <p><a id="creating-slides"></a></p>
 <p>Let&rsquo;s start with a simple example. Consider the following text.</p>
@@ -1531,6 +1659,7 @@ To create an internal slide reference you need to do two things:</p>
 <p>Start the first line with <code>&lt;!--</code>.</p>
 <p>End the last line with <code>--&gt;</code>.</p>
 <p>md2pptx will throw away HTML comments, rather than adding them to the output file.</p>
+<p>The one exception is the use of <a href="#dynamic-metadata">Dynamic Metadata</a>. md2pptx will honour these.</p>
 <p><strong>NOTE:</strong> Other Markdown processors will copy the comment into the output file. Put nothing in the comments that is sensitive.</p>
 <h2 id="special-text-formatting">Special Text Formatting<a class="headerlink" href="#special-text-formatting" title="Permanent link"></a></h2>
 <p><a id="special-text-formatting"></a></p>
@@ -1857,6 +1986,7 @@ Keys are case insensitive. In this User Guide they are capitalised to aid compre
 
 
 <p>The default is 30 points.</p>
+<p>You can override this value on a slide-by-slide basis with <a href="#pagetitlesize-dynamic">Dynamic PageTitleSize</a>.</p>
 <h4 id="section-title-size-sectiontitlesize">Section Title Size - <code>sectionTitleSize</code><a class="headerlink" href="#section-title-size-sectiontitlesize" title="Permanent link"></a></h4>
 <p><a id="section-title-size-sectiontitlesize"></a></p>
 <p>You can specify the point size of the title text for each slide that&rsquo;s a section divider or title slide. The size is specified in points.</p>
@@ -2066,6 +2196,7 @@ baseTextDecrement: 1
 </pre></div>
 
 
+<p>You can override this value with <a href="#compacttables-dynamic">Dynamic Metadata</a>.</p>
 <h4 id="controlling-task-slide-production-with-taskslides-and-tasksperslide">Controlling Task Slide Production With <code>taskSlides</code> and <code>tasksPerSlide</code><a class="headerlink" href="#controlling-task-slide-production-with-taskslides-and-tasksperslide" title="Permanent link"></a></h4>
 <p><a id="controlling-task-slide-production-with-taskslides-and-tasksperslide"></a></p>
 <p>Before unleashing your presentation on the world you probably want to remove the Task List slides from it. You can control what tasks are shown, if any, with <code>taskSlides</code>. It can take four different values:</p>
@@ -2162,6 +2293,52 @@ baseTextDecrement: 1
 
 
 <p>If you don&rsquo;t specify this the cards won&rsquo;t have a shadow - unless the default text box style is to have a shadow.</p>
+<h4 id="controlling-card-size-with-cardpercent">Controlling Card Size With <code>CardPercent</code><a class="headerlink" href="#controlling-card-size-with-cardpercent" title="Permanent link"></a></h4>
+<p><a id="controlling-card-size-with-cardpercent"></a></p>
+<p>You can control the vertical space used by cards - as a percentage of the content area. The default is 80%.</p>
+<p>Here is an example:</p>
+<div class="codehilite"><pre>CardPercent: 70
+</pre></div>
+
+
+<p>You can override this value on a slide-by-slide basis with <a href="#cardpercent-dynamic">Dynamic CardPercent</a>.</p>
+<h3 id="dynamic-metadata">Dynamic Metadata<a class="headerlink" href="#dynamic-metadata" title="Permanent link"></a></h3>
+<p><a id="dynamic-metadata"></a></p>
+<p>md2pptx can alter some in-effect settings, starting at a particular slide. Straight after the heading code a special form of comment like so:</p>
+<div class="codehilite"><pre>### Origins Of Mainframe, Performance, Topics Podcast
+&lt;!-- md2pptx: compacttables: 14 --&gt;
+</pre></div>
+
+
+<p>The use of <code>md2pptx:</code> in the comment tells md2pptx there is a Dynamic Metadata statement embedded in the comment.</p>
+<p>Here are the values you can specify for the metadata:</p>
+<ul>
+<li><code>pres</code> - revert to the presentations&rsquo;s value (if specified). If, at the beginning of the presentation, you didn&rsquo;t specify a value for this metadata item it will be the md2pptx default that will be in effect.</li>
+<li><code>default</code> - revert to the md2pptx default.</li>
+<li>Any other value - used literally.</li>
+</ul>
+<p><strong>Note:</strong> After tweaking a slide you might well want to revert to your presentation&rsquo;s overall value (or even the md2pptx default).</p>
+<p><a id="compacttables-dynamic"></a></p>
+<h4 id="compacttables"><code>CompactTables</code><a class="headerlink" href="#compacttables" title="Permanent link"></a></h4>
+<p>You can override the presentation <a href="#shrinking-tables-with-compacttables">CompactTables</a> metadata value - perhaps to decrease the font size for a particularly crowded table slide:</p>
+<div class="codehilite"><pre>&lt;!-- md2pptx: compacttables: 12 --&gt;
+</pre></div>
+
+
+<p><a id="cardpercent-dynamic"></a></p>
+<h4 id="cardpercent"><code>CardPercent</code><a class="headerlink" href="#cardpercent" title="Permanent link"></a></h4>
+<p>You can override the presentation <a href="#controlling-card-size-with-cardpercent">CardPercent</a> metadata value - perhaps to allow room for more card content:</p>
+<div class="codehilite"><pre>&lt;!-- md2pptx: cardpercent: 90 --&gt;
+</pre></div>
+
+
+<p><a id="pagetitlesize-dynamic"></a></p>
+<h4 id="pagetitlesize"><code>PageTitleSize</code><a class="headerlink" href="#pagetitlesize" title="Permanent link"></a></h4>
+<p>You can override the presentation <a href="#page-title-size-pagetitlesize">PageTitleSize</a> metadata value - perhaps to allow room for more text in the title of a slide:</p>
+<div class="codehilite"><pre>&lt;!-- md2pptx: pagetitlesize: 16 --&gt;
+</pre></div>
+
+
 <h2 id="modifying-the-slide-template">Modifying The Slide Template<a class="headerlink" href="#modifying-the-slide-template" title="Permanent link"></a></h2>
 <p><a id="modifying-the-slide-template"></a></p>
 <p>The included template presentation - Martin Template.pptx - is what the author tested with and gives good results. However, you probably want to develop your own template from it.</p>

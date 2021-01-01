@@ -67,6 +67,11 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 		* [Card Border Width - `CardBorderWidth`](#card-border-width-cardborderwidth)
 		* [Card Title Size - `CardTitleSize`](#card-title-size-cardtitlesize)
 		* [Card Shadow - `CardShadow`](#card-shadow-cardshadow)
+		* [Controlling Card Size With `CardPercent`](#controlling-card-size-with-cardpercent)
+	* [Dynamic Metadata](#dynamic-metadata)
+		* [`CompactTables`](#compacttables)
+		* [`CardPercent`](#cardpercent)
+		* [`PageTitleSize`](#pagetitlesize)
 * [Modifying The Slide Template](#modifying-the-slide-template)
 	* [Basics](#basics)
 	* [Slide Template Sequence](#slide-template-sequence)
@@ -163,9 +168,9 @@ To quote from the python-pptx license statement:
 
 ## Change Log
 
-[2, 3, 5]
 |Level|Date|What|
-|:--|:---|:-----|
+|:-|:-|:-|
+|1.6.2|1 January 2021|Added 3 slide-level Dynamic Metadata capabilities and `cardpercent` metadata value.|
 |1.6.1|29 December 2020|Added `<a id=` as an alternative hyperlink anchor.|
 |1.6|22 December 2020|Added Card Slide support. Metadata keys are now case-insensitive.|
 |1.5|7 December 2020|Pictures now can have a tooltip. You can define inter-slide links on both pictures and runs of text. You can omit the final `|` of a table line.|
@@ -609,6 +614,8 @@ End the last line with `-->`.
 
 md2pptx will throw away HTML comments, rather than adding them to the output file.
 
+The one exception is the use of [Dynamic Metadata](#dynamic-metadata). md2pptx will honour these.
+
 **NOTE:** Other Markdown processors will copy the comment into the output file. Put nothing in the comments that is sensitive.
 
 ## Special Text Formatting
@@ -633,7 +640,7 @@ To force a line break code `<br/>`. This, being HTML, is legitimate in Markdown 
 Some other HTML-originated text effects work - as Markdown allows you to embed HTML (elements and attributes):
 
 |Effect|HTML Element|Example|Produces|
-|:--|:---|:-----|:-|
+|:-|:-|:-|:-|
 |Superscript|`sup`|`x<sup>2</sup>`|x<sup>2</sup>|
 |Subscript|`sub`|`C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>`|C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>|
 |Underline|`ins`|`this is <ins>important</ins>`|this is <ins>important</ins>|
@@ -691,7 +698,7 @@ md2pptx supports a few [HTML entity references](https://en.wikipedia.org/wiki/Li
 
 
 |Entity Reference|Character|Entity Reference|Character|Entity Reference|Character|
-|:--|:---|:-----|:-|:-|:-|
+|:-|:-|:-|:-|:-|:-|
 |`&lt;`|&lt;|`&larr;`|&larr;|`&auml;`|&auml;|
 |`&gt;`|&gt;|`&rarr;`|&rarr;|`&Auml;`|&Auml;|
 |`&ge;`|&ge;|`&uarr;`|&uarr;|`&uuml;`|&uuml;|
@@ -853,6 +860,8 @@ Example:
 	pageTitleSize: 24
 
 The default is 30 points.
+
+You can override this value on a slide-by-slide basis with [Dynamic PageTitleSize](#pagetitlesize-dynamic).
 
 #### Section Title Size - `sectionTitleSize`
 <a id="section-title-size-sectiontitlesize"></a>
@@ -1098,6 +1107,8 @@ For example, to remove the margins and reduce the font size to 16pt code
 
     compactTables: 16
 
+You can override this value with [Dynamic Metadata](#compacttables-dynamic).
+
 #### Controlling Task Slide Production With `taskSlides` and `tasksPerSlide`
 <a id="controlling-task-slide-production-with-taskslides-and-tasksperslide"></a>
 
@@ -1203,6 +1214,56 @@ You can specify whether a card has a shadow - using `CardShadow`. For example:
 
 If you don't specify this the cards won't have a shadow - unless the default text box style is to have a shadow.
 
+#### Controlling Card Size With `CardPercent`
+<a id="controlling-card-size-with-cardpercent"></a>
+
+You can control the vertical space used by cards - as a percentage of the content area. The default is 80%.
+
+Here is an example:
+
+    CardPercent: 70
+
+You can override this value on a slide-by-slide basis with [Dynamic CardPercent](#cardpercent-dynamic).
+
+### Dynamic Metadata
+<a id="dynamic-metadata"></a>
+
+md2pptx can alter some in-effect settings, starting at a particular slide. Straight after the heading code a special form of comment like so:
+
+    ### Origins Of Mainframe, Performance, Topics Podcast
+    <!-- md2pptx: compacttables: 14 -->
+
+The use of `md2pptx:` in the comment tells md2pptx there is a Dynamic Metadata statement embedded in the comment.
+
+Here are the values you can specify for the metadata:
+
+* `pres` - revert to the presentations's value (if specified). If, at the beginning of the presentation, you didn't specify a value for this metadata item it will be the md2pptx default that will be in effect.
+* `default` - revert to the md2pptx default.
+* Any other value - used literally.
+
+**Note:** After tweaking a slide you might well want to revert to your presentation's overall value (or even the md2pptx default).
+
+<a id="compacttables-dynamic"></a>
+#### `CompactTables`
+
+You can override the presentation [CompactTables](#shrinking-tables-with-compacttables) metadata value - perhaps to decrease the font size for a particularly crowded table slide:
+
+    <!-- md2pptx: compacttables: 12 -->
+
+<a id="cardpercent-dynamic"></a>
+#### `CardPercent`
+
+You can override the presentation [CardPercent](#controlling-card-size-with-cardpercent) metadata value - perhaps to allow room for more card content:
+
+    <!-- md2pptx: cardpercent: 90 -->
+
+<a id="pagetitlesize-dynamic"></a>
+#### `PageTitleSize`
+
+You can override the presentation [PageTitleSize](#page-title-size-pagetitlesize) metadata value - perhaps to allow room for more text in the title of a slide:
+
+    <!-- md2pptx: pagetitlesize: 16 -->
+
 ## Modifying The Slide Template
 <a id="modifying-the-slide-template"></a>
 
@@ -1221,7 +1282,7 @@ Don't change the order of the slides in the slide master view and don't delete a
 The following table shows how each slide type is created.
 
 |Slide Type|Origin|Non-Title Content|
-|:--|:---|:-----|
+|:-|:-|:-|
 |Processing Summary|Original slide from Template|Metadata: Second Shape|
 |Presentation Title|Slide Layout 0|Subtitle: Second Shape|
 |Section|Slide Layout 1|Subtitle: Second Shape|

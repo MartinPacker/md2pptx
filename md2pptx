@@ -34,8 +34,8 @@ import copy
 from lxml import etree
 
 
-md2pptx_level = "1.6.1"
-md2pptx_date = "29 December, 2020"
+md2pptx_level = "1.6.2"
+md2pptx_date = "1 January, 2021"
 
 # Add a drop shadow to a shape
 def createShadow(shape):
@@ -45,77 +45,79 @@ def createShadow(shape):
     spPr.append(el)
 
     outerShdw = OxmlElement("a:outerShdw")
-    outerShdw.set("algn","tl")
-    outerShdw.set("algn","tl")
-    outerShdw.set("blurRad","50800")
-    outerShdw.set("dir","2700000")
-    outerShdw.set("dist","127000")
-    outerShdw.set("rotWithShape","0")
+    outerShdw.set("algn", "tl")
+    outerShdw.set("blurRad", "50800")
+    outerShdw.set("dir", "2700000")
+    outerShdw.set("dist", "127000")
+    outerShdw.set("rotWithShape", "0")
 
     el.append(outerShdw)
 
     prstClr = OxmlElement("a:prstClr")
-    prstClr.set("val","black")
+    prstClr.set("val", "black")
 
     outerShdw.append(prstClr)
 
     alpha = OxmlElement("a:alpha")
-    alpha.set("val","40000")
+    alpha.set("val", "40000")
 
     prstClr.append(alpha)
+
 
 # Clone a shape in a slide and return the new shape.
 # (This is a deep copy so the new shape will have the same
 # eg bullet style as the source shape)
-def addClonedShape(slide,shape1):
+def addClonedShape(slide, shape1):
     # Clone the element for the shape
-    el1=shape1.element
-    el2=copy.deepcopy(el1)
+    el1 = shape1.element
+    el2 = copy.deepcopy(el1)
 
     # Insert the cloned element into the shape tree
-    slide.shapes._spTree.insert_element_before(el2, 'p:extLst')
-    
+    slide.shapes._spTree.insert_element_before(el2, "p:extLst")
+
     # Return the shape associated with this new element
     return slide.shapes[-1]
 
+
 def parseThemeColour(value):
-        value2 = value.upper()
-        if value2 == "NONE":
-            return MSO_THEME_COLOR.NOT_THEME_COLOR
-        elif value2 == "ACCENT 1":
-            return MSO_THEME_COLOR.ACCENT_1
-        elif value2 == "ACCENT 2":
-            return MSO_THEME_COLOR.ACCENT_2
-        elif value2 == "ACCENT 3":
-            return MSO_THEME_COLOR.ACCENT_3
-        elif value2 == "ACCENT 4":
-            return MSO_THEME_COLOR.ACCENT_4
-        elif value2 == "ACCENT 5":
-            return MSO_THEME_COLOR.ACCENT_5
-        elif value2 == "ACCENT 6":
-            return MSO_THEME_COLOR.ACCENT_6
-        elif value2 == "BACKGROUND 1":
-            return MSO_THEME_COLOR.BACKGROUND_1
-        elif value2 == "BACKGROUND 2":
-            return MSO_THEME_COLOR.BACKGROUND_2
-        elif value2 == "DARK 1":
-            return MSO_THEME_COLOR.DARK_1
-        elif value2 == "DARK 2":
-            return MSO_THEME_COLOR.DARK_2
-        elif value2 == "FOLLOWED HYPERLINK":
-            return MSO_THEME_COLOR.FOLLOWED_HYPERLINK
-        elif value2 == "HYPERLINK":
-            return MSO_THEME_COLOR.HYPERLINK
-        elif value2 == "LIGHT 1":
-            return MSO_THEME_COLOR.LIGHT_1
-        elif value2 == "LIGHT 2":
-            return MSO_THEME_COLOR.LIGHT_2
-        elif value2 == "TEXT 1":
-            return MSO_THEME_COLOR.TEXT_1
-        elif value2 == "TEXT 2":
-            return MSO_THEME_COLOR.TEXT_2
-        elif value2 == "MIXED":
-            return MSO_THEME_COLOR.MIXED
+    value2 = value.upper()
+    if value2 == "NONE":
+        return MSO_THEME_COLOR.NOT_THEME_COLOR
+    elif value2 == "ACCENT 1":
+        return MSO_THEME_COLOR.ACCENT_1
+    elif value2 == "ACCENT 2":
+        return MSO_THEME_COLOR.ACCENT_2
+    elif value2 == "ACCENT 3":
+        return MSO_THEME_COLOR.ACCENT_3
+    elif value2 == "ACCENT 4":
+        return MSO_THEME_COLOR.ACCENT_4
+    elif value2 == "ACCENT 5":
+        return MSO_THEME_COLOR.ACCENT_5
+    elif value2 == "ACCENT 6":
+        return MSO_THEME_COLOR.ACCENT_6
+    elif value2 == "BACKGROUND 1":
+        return MSO_THEME_COLOR.BACKGROUND_1
+    elif value2 == "BACKGROUND 2":
+        return MSO_THEME_COLOR.BACKGROUND_2
+    elif value2 == "DARK 1":
+        return MSO_THEME_COLOR.DARK_1
+    elif value2 == "DARK 2":
+        return MSO_THEME_COLOR.DARK_2
+    elif value2 == "FOLLOWED HYPERLINK":
+        return MSO_THEME_COLOR.FOLLOWED_HYPERLINK
+    elif value2 == "HYPERLINK":
+        return MSO_THEME_COLOR.HYPERLINK
+    elif value2 == "LIGHT 1":
+        return MSO_THEME_COLOR.LIGHT_1
+    elif value2 == "LIGHT 2":
+        return MSO_THEME_COLOR.LIGHT_2
+    elif value2 == "TEXT 1":
+        return MSO_THEME_COLOR.TEXT_1
+    elif value2 == "TEXT 2":
+        return MSO_THEME_COLOR.TEXT_2
+    elif value2 == "MIXED":
+        return MSO_THEME_COLOR.MIXED
+
 
 # Following functions are workarounds for python-pptx not having these functions for the font object
 def set_subscript(font):
@@ -168,13 +170,16 @@ def removeBullets(textFrame):
     for p in textFrame.paragraphs:
         removeBullet(p)
 
+
 # Get the slide object the run is in
 def SlideFromRun(run):
     return run._parent._parent._parent._parent._parent
 
+
 # Get the slide object the picture is in
 def SlideFromPicture(picture):
     return picture._parent._parent
+
 
 # Creates a hyperlink to another slide and/or a tooltip - for a
 # text run
@@ -182,9 +187,11 @@ def SlideFromPicture(picture):
 #       so it links to itself.
 def createRunHyperlinkOrTooltip(run, to_slide, tooltipText=""):
     # Get hold of the shape the run is in
-    if run._parent._parent._parent.__class__ .__name__== "_Cell":
+    if run._parent._parent._parent.__class__.__name__ == "_Cell":
         # Run in a table cell has to be handled differently
-        shape = run._parent._parent._parent._parent._parent._parent._parent._graphic_frame
+        shape = (
+            run._parent._parent._parent._parent._parent._parent._parent._graphic_frame
+        )
     else:
         # Ordinary text run
         shape = run._parent._parent._parent
@@ -197,20 +204,21 @@ def createRunHyperlinkOrTooltip(run, to_slide, tooltipText=""):
 
     # Add a click action to generate an internal hyperlink address
     sca.target_slide = to_slide
-    
-        # Use that internal hyperlink address for the run
+
+    # Use that internal hyperlink address for the run
     hl.address = sca_hl.address
-    
+
     # Also clone the hyperlink click action
     hl._hlinkClick.action = sca_hl._hlink.action
     if tooltipText != "":
         hl._hlinkClick.set("tooltip", tooltipText)
-        
+
     # Also clone the hyperlink rId
     hl._hlinkClick.rId = sca_hl._hlink.rId
-    
+
     # Delete the shape click action
     sca.target_slide = None
+
 
 # Creates a hyperlink to another slide and/or a tooltip - for a
 # picture
@@ -222,16 +230,16 @@ def createPictureHyperlinkOrTooltip(picture, to_slide, tooltipText=""):
         # done nothing
         if tooltipText == "":
             return
-        
+
         # Tooltip but no target slide
         to_slide = SlideFromPicture(picture)
 
     picture.click_action.target_slide = to_slide
-    
-    
+
     if tooltipText != "":
         picture.click_action.hyperlink._hlink.set("tooltip", tooltipText)
-    
+
+
 # If a tooltip has been set return it else return an empty string
 def getPictureTooltip(picture):
     if picture.click_action.hyperlink._hlink != None:
@@ -244,7 +252,7 @@ def getPictureTooltip(picture):
 
 def get_image_size(fname):
     """Determine the image type of fhandle and return its size.
-	from draco"""
+    from draco"""
     try:
         with open(fname, "rb") as fhandle:
             head = fhandle.read(24)
@@ -280,6 +288,7 @@ def get_image_size(fname):
     except EnvironmentError:
         return -1, -1
 
+
 # Takes a list of bullets and applies it to a text shape
 def populateTextBlock(shape, bullets):
     tf = shape.text_frame
@@ -308,6 +317,7 @@ def populateTextBlock(shape, bullets):
 
     tf.auto_size = MSO_AUTO_SIZE.TEXT_TO_FIT_SHAPE
 
+
 def findSlideTitle(slide):
     if slide.shapes.title == None:
         # Have to use first shape as title
@@ -334,6 +344,7 @@ def formatTitle(presentation, title, titleText):
 
     return title.top + title.height
 
+
 # Parse the string after the e.g. ### for a displayable title and
 # an optional heading reference
 def parseTitleText(titleLineString):
@@ -346,8 +357,9 @@ def parseTitleText(titleLineString):
         href = hrefMatch.group(2)
     else:
         href = ""
-        slide_title =  slideTitleWithPossibleHref
+        slide_title = slideTitleWithPossibleHref
     return slide_title, href
+
 
 def parseText(text):
     textArray = []
@@ -743,6 +755,7 @@ def parseText(text):
         textArray.append([state, fragment])
     return textArray
 
+
 # Calls the tokeniser and then handles the fragments it gets back
 def addFormattedText(p, text):
     # Get back parsed text fragments, along with control information on each
@@ -925,7 +938,7 @@ def processingSummarySlide(presentation, metadata):
     runTime = now.strftime("%H:%M").lstrip()
     runDate = now.strftime("%e %B, %G").lstrip()
     runDateTime = "Presentation built: " + runTime + " on " + runDate
-    
+
     # Find title
     title = findSlideTitle(slide)
 
@@ -948,13 +961,10 @@ def processingSummarySlide(presentation, metadata):
 
     columns = metadataColumnPairs * 2
     rows = min(maxMetadataRowsPerColumn, metadataRows)
-    
+
     # Figure out table height
     maxTableHeight = (
-        presentation.slide_height
-        - titleBottom
-        - numbers_content_margin
-        - marginBase
+        presentation.slide_height - titleBottom - numbers_content_margin - marginBase
     )
     tableHeight = min(maxTableHeight, Inches(0.25) * rows)
 
@@ -966,13 +976,12 @@ def processingSummarySlide(presentation, metadata):
 
     # Figure out the width of a single-width column
     columnWidthUnit = int(tableWidth / (2 * metadataColumnPairs))
-    
 
     # Create the table with the above number of rows and columns
     newTable = slide.shapes.add_table(
         rows, columns, tableMargin, tableTop, tableWidth, tableHeight
     ).table
-    
+
     # Don't want headings
     newTable.first_row = False
 
@@ -980,13 +989,12 @@ def processingSummarySlide(presentation, metadata):
     for cp in range(metadataColumnPairs):
         cols[2 * cp].width = columnWidthUnit
         cols[2 * cp + 1].width = columnWidthUnit
-        
 
     row = 0
     column = 0
     for item in metadata:
         key, value = item
-        
+
         if row == maxMetadataRowsPerColumn:
             # Move to next column
             column += 2
@@ -1002,7 +1010,8 @@ def processingSummarySlide(presentation, metadata):
         else:
             newTable.cell(row, column).text_frame.paragraphs[0].font.size = Pt(16)
             newTable.cell(row, column + 1).text_frame.paragraphs[0].font.size = Pt(16)
-        row +=1
+        row += 1
+
 
 def titleSlide(presentation, slideNumber, titleText, subtitleText):
     slide = presentation.slides.add_slide(presentation.slide_layouts[titleSlideLayout])
@@ -1115,7 +1124,7 @@ def graphicSlide(presentation, slideNumber, titleText, graphicFilenameTitle):
     graphicHref = graphicFilenameTitleParts[2]
     if graphicHref == "":
         graphicHref = "#XYZZY-None"
-    
+
     graphicFilename, printableGraphicFilename = handleWhateverGraphicType(
         graphicFilename
     )
@@ -1123,7 +1132,6 @@ def graphicSlide(presentation, slideNumber, titleText, graphicFilenameTitle):
         slide = presentation.slides.add_slide(
             presentation.slide_layouts[titleOnlyLayout]
         )
-
 
         # Add title and constrain its size and placement
         title = findSlideTitle(slide)
@@ -1331,7 +1339,7 @@ def contentSlide(presentation, slideNumber, titleText, subtitleText, bullets):
 
     # Calculate the space the buckets text shape and/or cards can occupy
     content_height = presentation.slide_height - Inches(1.0) - titleBottom
-    
+
     # Calculate the width the content should be on the slide
     content_width = presentation.slide_width - Inches(1.0)
 
@@ -1342,79 +1350,86 @@ def contentSlide(presentation, slideNumber, titleText, subtitleText, bullets):
     if in_card:
         # Create shapes for card titles and the cards' bullets
         card_shapes = []
-        cardTitle_shapes=[]
+        cardTitle_shapes = []
         card_count = len(cards)
-        
+
         for c in range(card_count):
             # Card title modeled on slide title - but smaller
             cardTitle_shape = addClonedShape(slide, title)
-            
+
             cardTitle_shapes.append(cardTitle_shape)
-            
+
             # Clear text from cloned title and add in the title text
             cardTitle_shape.text_frame.paragraphs[0].text = ""
             addFormattedText(cardTitle_shape.text_frame.paragraphs[0], cards[c][0])
-            
+
             # Set card title font size
             if want_card_title_size:
-                cardTitle_shape.text_frame.paragraphs[0].font.size = Pt(cardTitleFontSize)
+                cardTitle_shape.text_frame.paragraphs[0].font.size = Pt(
+                    cardTitleFontSize
+                )
             else:
-                cardTitle_shape.text_frame.paragraphs[0].font.size = Pt(pageTitleSize * 2 / 3)
+                cardTitle_shape.text_frame.paragraphs[0].font.size = Pt(
+                    pageTitleSize * 2 / 3
+                )
 
             # Titles are centred
             cardTitle_shape.text_frame.paragraphs[0].alignment = PP_ALIGN.CENTER
 
-            
             # Card shape modeled on bulleted list
-            if (bullet_count > 0) | (c > 0): 
+            if (bullet_count > 0) | (c > 0):
                 card_shape = addClonedShape(slide, bullets_shape)
             else:
                 # Co-opt bullets shape as first card shape
                 card_shape = bullets_shape
             card_shapes.append(card_shape)
-            
+
             # Fill in card's background
             if want_card_colour:
                 fill = card_shape.fill
                 fill.solid()
                 fill.fore_color.theme_color = card_colour
-        
-        card_width = (content_width - Inches(0.25) * (card_count - 1))/ card_count
+
+        card_width = (content_width - Inches(0.25) * (card_count - 1)) / card_count
     else:
         card_count = 0
 
     bullets_shape.top = titleBottom + Inches(0.25)
     bullets_shape.left = Inches(0.5)
     bullets_shape.width = content_width
-    
+
     # Adjust bullets shape height - and calculate verticals for any cards
     if in_card:
         # Will be doing cards
         cardTitle_height = Inches(0.33)
 
-        if bullet_count >0 :
+        if bullet_count > 0:
             # Bullets shape vertically shortened
-            bullets_shape.height = int(content_height * 1 / 5)
-        
+            bullets_shape.height = int(content_height * (100 - cardPercent) / 100)
+
             # Card title top
-            cardTitle_top = bullets_shape.height + titleBottom +Inches(0.25 + 0.5)
+            cardTitle_top = bullets_shape.height + titleBottom + Inches(0.25 + 0.5)
             cardTitle_height = Inches(0.33)
-        
+
             # Card top and height
             card_top = cardTitle_top + cardTitle_height
-            card_height = presentation.slide_height - cardTitle_top - Inches(0.33 + 0.25)
+            card_height = (
+                presentation.slide_height - cardTitle_top - Inches(0.33 + 0.25)
+            )
         else:
             # No bullets so cards and their titles occupy whole height
 
             # Card title top
-            cardTitle_top =  + titleBottom +Inches(0.25)
-        
+            cardTitle_top = +titleBottom + Inches(0.25)
+
             # Card top and height
             card_top = cardTitle_top + cardTitle_height
-            card_height = presentation.slide_height - cardTitle_top - Inches(0.33 + 0.25)
+            card_height = (
+                presentation.slide_height - cardTitle_top - Inches(0.33 + 0.25)
+            )
     else:
         bullets_shape.height = content_height
-    
+
     bullets_shape.bottom = bullets_shape.top + bullets_shape.height
 
     populateTextBlock(bullets_shape, bullets)
@@ -1426,25 +1441,25 @@ def contentSlide(presentation, slideNumber, titleText, subtitleText, bullets):
             cardTitle_shape.top = cardTitle_top
             cardTitle_shape.left = int(Inches(0.5) + c * (card_width + Inches(0.25)))
             cardTitle_shape.width = int(card_width)
-            
+
             # Position card
             card_shape = card_shapes[c]
             card_shape.top = card_top
             card_shape.left = int(Inches(0.5) + c * (card_width + Inches(0.25)))
             card_shape.width = int(card_width)
             card_shape.height = int(card_height)
-            
+
             if len(cards[c]) > 1:
                 populateTextBlock(card_shape, cards[c][1])
 
-            lf=card_shape.line
-            
+            lf = card_shape.line
+
             if want_card_border_colour:
                 lf.color.theme_color = card_border_colour
 
             if want_card_border_width:
                 lf.width = Pt(card_border_width)
-            
+
             if want_card_shadow:
                 createShadow(card_shape)
 
@@ -1581,14 +1596,16 @@ def tableSlide(presentation, slideNumber, titleText, table):
 
         # Attempt to retrieve filename for left side - top row
         topLeftSide = table[0][0]
-        if(graphicRegex.match(topLeftSide) != None) | (clickableGraphicRegex.match(topLeftSide) != None):
+        if (graphicRegex.match(topLeftSide) != None) | (
+            clickableGraphicRegex.match(topLeftSide) != None
+        ):
             if clickableGraphicRegex.match(topLeftSide):
-                # Clickable graphic case 
+                # Clickable graphic case
                 clickableGraphicMatch = clickableGraphicRegex.match(topLeftSide)
-                topLeftGraphicTitle=clickableGraphicMatch.group(1)
-                topLeftGraphicFilename=clickableGraphicMatch.group(2)
-                topLeftGraphicHref=clickableGraphicMatch.group(3)
-            else:    
+                topLeftGraphicTitle = clickableGraphicMatch.group(1)
+                topLeftGraphicFilename = clickableGraphicMatch.group(2)
+                topLeftGraphicHref = clickableGraphicMatch.group(3)
+            else:
                 # Graphic
                 topLeftGraphicMatch = graphicRegex.match(topLeftSide)
                 topLeftGraphicTitle = topLeftGraphicMatch.group(1)
@@ -1611,14 +1628,16 @@ def tableSlide(presentation, slideNumber, titleText, table):
                 topRightSide = table[0][1]
             else:
                 topRightSide = ""
-            if(graphicRegex.match(topRightSide) != None) | (clickableGraphicRegex.match(topRightSide) != None):
+            if (graphicRegex.match(topRightSide) != None) | (
+                clickableGraphicRegex.match(topRightSide) != None
+            ):
                 if clickableGraphicRegex.match(topRightSide):
-                    # Clickable graphic case 
+                    # Clickable graphic case
                     clickableGraphicMatch = clickableGraphicRegex.match(topRightSide)
-                    topRightGraphicTitle=clickableGraphicMatch.group(1)
-                    topRightGraphicFilename=clickableGraphicMatch.group(2)
-                    topRightGraphicHref=clickableGraphicMatch.group(3)
-                else:    
+                    topRightGraphicTitle = clickableGraphicMatch.group(1)
+                    topRightGraphicFilename = clickableGraphicMatch.group(2)
+                    topRightGraphicHref = clickableGraphicMatch.group(3)
+                else:
                     # Graphic
                     topRightGraphicMatch = graphicRegex.match(topRightSide)
                     topRightGraphicTitle = topRightGraphicMatch.group(1)
@@ -1646,14 +1665,16 @@ def tableSlide(presentation, slideNumber, titleText, table):
             # Attempt to retrieve filename for left side - bottom row
             bottomGraphicCount = 0
             bottomLeftSide = table[1][0]
-            if(graphicRegex.match(bottomLeftSide) != None) | (clickableGraphicRegex.match(bottomLeftSide) != None):
+            if (graphicRegex.match(bottomLeftSide) != None) | (
+                clickableGraphicRegex.match(bottomLeftSide) != None
+            ):
                 if clickableGraphicRegex.match(bottomLeftSide):
-                    # Clickable graphic case 
+                    # Clickable graphic case
                     clickableGraphicMatch = clickableGraphicRegex.match(bottomLeftSide)
-                    bottomLeftGraphicTitle=clickableGraphicMatch.group(1)
-                    bottomLeftGraphicFilename=clickableGraphicMatch.group(2)
-                    bottomLeftGraphicHref=clickableGraphicMatch.group(3)
-                else:    
+                    bottomLeftGraphicTitle = clickableGraphicMatch.group(1)
+                    bottomLeftGraphicFilename = clickableGraphicMatch.group(2)
+                    bottomLeftGraphicHref = clickableGraphicMatch.group(3)
+                else:
                     # Graphic
                     bottomLeftGraphicMatch = graphicRegex.match(bottomLeftSide)
                     bottomLeftGraphicTitle = bottomLeftGraphicMatch.group(1)
@@ -1680,18 +1701,26 @@ def tableSlide(presentation, slideNumber, titleText, table):
                     # There is a bottom right so this is "4-up", though one or OTHER_MEMBERS
                     # bottom cells might be empty
                     bottomRightSide = table[1][1]
-                    if(graphicRegex.match(bottomRightSide) != None) | (clickableGraphicRegex.match(bottomRightSide) != None):
+                    if (graphicRegex.match(bottomRightSide) != None) | (
+                        clickableGraphicRegex.match(bottomRightSide) != None
+                    ):
                         if clickableGraphicRegex.match(bottomRightSide):
-                            # Clickable graphic case 
-                            clickableGraphicMatch = clickableGraphicRegex.match(bottomRightSide)
-                            bottomRightGraphicTitle=clickableGraphicMatch.group(1)
-                            bottomRightGraphicFilename=clickableGraphicMatch.group(2)
-                            bottomRightGraphicHref=clickableGraphicMatch.group(3)
-                        else:    
+                            # Clickable graphic case
+                            clickableGraphicMatch = clickableGraphicRegex.match(
+                                bottomRightSide
+                            )
+                            bottomRightGraphicTitle = clickableGraphicMatch.group(1)
+                            bottomRightGraphicFilename = clickableGraphicMatch.group(2)
+                            bottomRightGraphicHref = clickableGraphicMatch.group(3)
+                        else:
                             # Graphic
-                            bottomRightGraphicMatch = graphicRegex.match(bottomRightSide)
+                            bottomRightGraphicMatch = graphicRegex.match(
+                                bottomRightSide
+                            )
                             bottomRightGraphicTitle = bottomRightGraphicMatch.group(1)
-                            bottomRightGraphicFilename = bottomRightGraphicMatch.group(2)
+                            bottomRightGraphicFilename = bottomRightGraphicMatch.group(
+                                2
+                            )
                             bottomRightGraphicHref = ""
 
                         (
@@ -1885,7 +1914,7 @@ def tableSlide(presentation, slideNumber, titleText, table):
                 topLeftPicWidth,
                 topLeftPicHeight,
             )
-            
+
             # Maybe add tooltip text
             clickable_picture_tooltips.append(topLeftGraphicTitle)
 
@@ -1947,7 +1976,7 @@ def tableSlide(presentation, slideNumber, titleText, table):
                     topRightPicWidth,
                     topRightPicHeight,
                 )
-                
+
                 # Maybe add tooltip text
                 clickable_picture_tooltips.append(topRightGraphicTitle)
 
@@ -2076,7 +2105,7 @@ def tableSlide(presentation, slideNumber, titleText, table):
                             bottomRightPicWidth,
                             bottomRightPicHeight,
                         )
-                        
+
                         # Maybe add tooltip text
                         clickable_picture_tooltips.append(bottomRightGraphicTitle)
 
@@ -2087,7 +2116,6 @@ def tableSlide(presentation, slideNumber, titleText, table):
                             bottomRightGraphicHref = "#XYZZY-None"
 
                         clickable_picture_Hrefs.append(bottomRightGraphicHref)
-
 
     else:
         # Normal table slide
@@ -2239,6 +2267,7 @@ def createSlide(
 ):
     if block_type == "title":
         slide = titleSlide(presentation, slideNumber, titleText, slide_subtitle)
+
     elif block_type == "section":
         if tocStyle != "":
             # This is a section slide in TOC style
@@ -2247,6 +2276,7 @@ def createSlide(
             )
         else:
             slide = sectionSlide(presentation, slideNumber, titleText, slide_subtitle)
+
     elif block_type == "graphic":
         slide = graphicSlide(presentation, slideNumber, titleText, bulletsOrFilename)
     elif block_type == "content":
@@ -2331,10 +2361,11 @@ def createTaskSlides(prs, slideNumber, tasks, titleStem):
     for row in table.rows:
         cell0Text = row.cells[0].text
         if cell0Text not in ["Slide", ""]:
-           run = row.cells[0].text_frame.paragraphs[0].runs[0]
-           createRunHyperlinkOrTooltip(run, prs.slides[int(cell0Text)-2+templateSlideCount], "")
-    
-        
+            run = row.cells[0].text_frame.paragraphs[0].runs[0]
+            createRunHyperlinkOrTooltip(
+                run, prs.slides[int(cell0Text) - 2 + templateSlideCount], ""
+            )
+
     slideNumber += 1
 
 
@@ -2386,6 +2417,7 @@ def createGlossarySlides(prs, slideNumber, abbrevDictionary):
     slideNumber += 1
 
     return slideNumber, glossarySlides
+
 
 def createFootnoteSlides(prs, slideNumber, footnoteDefinitions):
     footnoteNumber = 0
@@ -2439,7 +2471,7 @@ def createFootnoteSlides(prs, slideNumber, footnoteDefinitions):
     removeBullets(findBodyShape(slide).text_frame)
 
     slideNumber += 1
-    
+
     return slideNumber, footnoteSlides
 
 
@@ -2490,7 +2522,8 @@ twoUpRegex = re.compile("^\|(.+?)\|(.+?)\|")
 footnoteDefinitionRegex = re.compile("^\[\^(.+?)]: (.+)")
 spanRegex = re.compile("<span( )*class=")
 slideHrefRegex = re.compile("(.+)\[(.+)\]")
-anchorRegex = re.compile("^<a id=[\"\'](.+)[\"\']></a>")
+anchorRegex = re.compile("^<a id=[\"'](.+)[\"']></a>")
+dynamicMetadataRegex = re.compile("^<!-- md2pptx: (.+): (.+) -->")
 
 
 # Slide layout enumeration
@@ -2518,6 +2551,10 @@ in_comment = False
 in_HTML = False
 
 for line in input_file:
+    if line.lstrip().startswith("<!-- md2pptx: "):
+        # md2pptx dynamic metadata so keep it
+        after_metadata_and_HTML.append(line)
+
     if line.lstrip().startswith("<!--"):
         if line.rstrip().endswith("-->"):
             # Note: Not taking text after end of comment
@@ -2561,7 +2598,11 @@ for line in input_file:
 want_numbers_headings = False
 want_numbers_content = False
 slideTemplateFile = ""
-pageTitleSize = 30
+
+default_pageTitleSize = 30
+pageTitleSize = default_pageTitleSize
+pres_pageTitleSize = default_pageTitleSize
+
 baseTextSize = 0
 baseTextDecrement = 2
 sectionTitleSize = 40
@@ -2582,7 +2623,14 @@ want_card_border_width = False
 want_card_title_size = False
 want_card_shadow = False
 
-compactTables = 0
+default_cardPercent = 80
+cardPercent = default_cardPercent
+pres_cardPercent = default_cardPercent
+
+default_compactTables = 0
+compactTables = default_compactTables
+pres_compactTables = default_compactTables
+
 abstractTitle = ""
 
 taskSlides = "all"
@@ -2636,7 +2684,7 @@ for line in metadata_lines:
 
     # Print name as it was typed
     print(name.ljust(40) + " " + value)
-    
+
     # Lower case name for checking
     name = name.lower()
 
@@ -2657,8 +2705,11 @@ for line in metadata_lines:
             # (Can code any other value, including 'no' or omit this metadata type)
             want_numbers_headings = False
             want_numbers_content = False
+
     elif name == "pagetitlesize":
         pageTitleSize = float(value)
+        pres_pageTitleSize = pageTitleSize
+
     elif name == "basetextsize":
         baseTextSize = float(value)
     elif name == "basetextdecrement":
@@ -2689,31 +2740,45 @@ for line in metadata_lines:
             want_bold_bold = False
     elif name == "compacttables":
         compactTables = float(value)
+        pres_compactTables = compactTables
+
     elif (name == "boldcolour") | (name == "boldcolour"):
         want_bold_colour = True
-        bold_colour=parseThemeColour(value)
+        bold_colour = parseThemeColour(value)
+
     elif name == "italicitalic":
         if value == "no":
             want_italic_italic = False
+
     elif (name == "italiccolour") | (name == "italiccolor"):
         want_italic_colour = True
         italic_colour = parseThemeColour(value)
+
     elif (name == "cardcolour") | (name == "cardcolor"):
         want_card_colour = True
         card_colour = parseThemeColour(value)
+
     elif (name == "cardbordercolour") | (name == "cardbordercolor"):
         want_card_border_colour = True
         card_border_colour = parseThemeColour(value)
         print(card_border_colour)
+
     elif name == "cardborderwidth":
         want_card_border_width = True
         card_border_width = float(value)
+
     elif name == "cardtitlesize":
         want_card_title_size = True
         cardTitleFontSize = float(value)
+
     elif name == "cardshadow":
         if value.lower() == "yes":
             want_card_shadow = True
+
+    elif name == "cardpercent":
+        cardPercent = float(value)
+        pres_cardPercent = cardPercent
+
     elif name == "taskslides":
         taskSlides = value
     elif name == "tasksperpage":
@@ -2763,7 +2828,7 @@ if slideTemplateFile == "":
     # Use default slide deck that comes with python-pptx as base
     prs = Presentation()
     print("\nNo slide to document metadata on. Continuing without it.")
-    
+
     templateSlideCount = 0
 else:
     # Use user-specified presentation as base
@@ -2810,12 +2875,19 @@ for line in after_metadata_and_HTML:
     if line == "\n":
         # This is a blank line so copy it over
         lines_after_concatenation.append(line)
+
     elif previous_line == "\n":
         # Previous line was blank so copy this one over
         lines_after_concatenation.append(line)
+
+    elif line.startswith("<!-- md2pptx: "):
+        # This is a dynamic metadata line so keep it separate
+        lines_after_concatenation.append(line)
+
     elif line.startswith("<a id="):
         # This is an anchor line so keep it separate
         lines_after_concatenation.append(line)
+
     else:
         # Previous line was not blank and nor is this one so consider concatenation
         if line.lstrip()[0] not in "*#\|":
@@ -2914,8 +2986,52 @@ for line in lines_after_concatenation:
         # Anchor on whatever slide we're on
         if anchorRegex.match(line):
             href = anchorRegex.match(line).group(1)
-            if (href !="") & (href in slide_hrefs.keys()):
+            if (href != "") & (href in slide_hrefs.keys()):
                 print(f"Heading Reference redefined: '{href}' for slide {slideNumber}")
+
+    elif line.startswith("<!-- md2pptx: "):
+        # Dynamic metadata line
+        if dynamicMetadataRegex.match(line):
+            metadataKey = dynamicMetadataRegex.match(line).group(1).lower()
+            metadataValue = dynamicMetadataRegex.match(line).group(2).lower()
+            if (metadataKey != "") & (metadataValue != ""):
+                # Valid metadata pair so parse key / value - and apply if valid
+                if metadataKey == "compacttables":
+                    # Font size for tables
+                    if metadataValue == "default":
+                        compactTables = default_compactTables
+
+                    elif metadataValue == "pres":
+                        compactTables = pres_compactTables
+
+                    else:
+                        compactTables = float(metadataValue)
+
+                elif metadataKey == "pagetitlesize":
+                    # Page Title Font size
+                    if metadataValue == "default":
+                        pageTitleSize = default_pageTitleSize
+
+                    elif metadataValue == "pres":
+                        pageTitleSize = pres_pageTitleSize
+
+                    else:
+                        pageTitleSize = float(metadataValue)
+
+                elif metadataKey == "cardpercent":
+                    # Cards' vertical percent of content area
+                    if metadataValue == "default":
+                        cardPercent = default_cardPercent
+
+                    elif metadataValue == "pres":
+                        cardPercent = pres_cardPercent
+
+                    else:
+                        cardPercent = float(metadataValue)
+
+                else:
+                    # Invalid dynamic metadata specification
+                    print(f"Invalid dynamic metadata key: '{metadataKey}' in '{line}'")
 
     elif line[:4] == "####":
         # Heading Level 4 - card on an existing slide
@@ -2923,13 +3039,12 @@ for line in lines_after_concatenation:
 
         # Get card title text and any href
         cardName, href = parseTitleText(line[4:])
-        if (href !="") & (href in slide_hrefs.keys()):
+        if (href != "") & (href in slide_hrefs.keys()):
             print(f"Heading Reference redefined: '{href}' for slide {slideNumber}")
-        
+
         # Create information about a card_title
         cardBullets = []
         cards.append([cardName])
-
 
     elif line[:3] == "###":
         # Heading Level 3 - slide
@@ -2938,12 +3053,12 @@ for line in lines_after_concatenation:
             slideNumber, slide = createSlide(
                 prs, slideNumber, slide_title, slide_subtitle, block_type, bullets
             )
-            
+
             slide_hrefs[href] = slideNumber
 
         # Get slide title text and any href
         slide_title, href = parseTitleText(line[3:])
-        if (href !="") & (href in slide_hrefs.keys()):
+        if (href != "") & (href in slide_hrefs.keys()):
             print(f"Heading Reference redefined: '{href}' for slide {slideNumber}")
 
         in_block = True
@@ -2973,7 +3088,7 @@ for line in lines_after_concatenation:
 
         # Get slide title text and any href
         slide_title, href = parseTitleText(line[2:])
-        if (href !="") & (href in slide_hrefs.keys()):
+        if (href != "") & (href in slide_hrefs.keys()):
             print(f"Heading Reference redefined: '{href}' for slide {slideNumber}")
 
         in_block = True
@@ -3002,7 +3117,7 @@ for line in lines_after_concatenation:
 
         # Get slide title text and any href
         slide_title, href = parseTitleText(line[1:])
-        if (href !="") & (href in slide_hrefs.keys()):
+        if (href != "") & (href in slide_hrefs.keys()):
             print(f"Heading Reference redefined: '{href}' for slide {slideNumber}")
 
         in_block = True
@@ -3045,14 +3160,16 @@ for line in lines_after_concatenation:
         # Add clean table row (list of cells) to saved table rows
         table_rows.append(table_row)
 
-    elif (graphicRegex.match(line) != None) | (clickableGraphicRegex.match(line) != None):
+    elif (graphicRegex.match(line) != None) | (
+        clickableGraphicRegex.match(line) != None
+    ):
         if clickableGraphicRegex.match(line):
-            # Clickable graphic case 
+            # Clickable graphic case
             clickableGraphicMatch = clickableGraphicRegex.match(line)
-            graphicTitle=clickableGraphicMatch.group(1)
-            graphicFilename=clickableGraphicMatch.group(2)
-            graphicHref=clickableGraphicMatch.group(3)
-        else:    
+            graphicTitle = clickableGraphicMatch.group(1)
+            graphicFilename = clickableGraphicMatch.group(2)
+            graphicHref = clickableGraphicMatch.group(3)
+        else:
             # Graphic
             graphicMatch = graphicRegex.match(line)
             graphicTitle = graphicMatch.group(1)
@@ -3115,7 +3232,6 @@ if (in_block is True) | (in_code is True) | (in_table is True):
 
     slide_hrefs[href] = slideNumber
 
-
     if (notes_text != "") & (slide != None):
         notes_slide = slide.notes_slide
         text_frame = notes_slide.notes_text_frame
@@ -3125,21 +3241,25 @@ if (in_block is True) | (in_code is True) | (in_table is True):
 
 # Add a footnotes slide - if there were any footnote definitions
 if len(footnoteDefinitions) > 0:
-    slideNumber,footnoteSlides = createFootnoteSlides(prs, slideNumber, footnoteDefinitions)
-    
+    slideNumber, footnoteSlides = createFootnoteSlides(
+        prs, slideNumber, footnoteDefinitions
+    )
+
     # Fix up any footnote slide hyperlinks
     footnoteNumber = -1
     for footnoteRun in footnoteRunsDictionary.keys():
         footnoteNumber += 1
         run = footnoteRunsDictionary[footnoteRun]
-        
+
         footnoteSlideNumber = int(footnoteNumber / footnotesPerPage)
-        createRunHyperlinkOrTooltip(run,footnoteSlides[footnoteSlideNumber],"")
-    
+        createRunHyperlinkOrTooltip(run, footnoteSlides[footnoteSlideNumber], "")
+
 
 # Add a dictionary slide - if there were any abbr elements encountered
 if len(abbrevDictionary) > 0:
-    slideNumber, glossarySlides = createGlossarySlides(prs, slideNumber, abbrevDictionary)
+    slideNumber, glossarySlides = createGlossarySlides(
+        prs, slideNumber, abbrevDictionary
+    )
     # Fix up internal glossary hyperlinks
     abbrevNumber = -1
     for abbreviation in sorted(abbrevRunsDictionary.keys()):
@@ -3147,8 +3267,10 @@ if len(abbrevDictionary) > 0:
         runs = abbrevRunsDictionary[abbreviation]
         for run in runs:
             # Add tooltip for glossary definition
-            glossarySlideNumber= int(abbrevNumber / glossaryTermsPerPage)
-            createRunHyperlinkOrTooltip(run, glossarySlides[glossarySlideNumber], abbrevDictionary[abbreviation])
+            glossarySlideNumber = int(abbrevNumber / glossaryTermsPerPage)
+            createRunHyperlinkOrTooltip(
+                run, glossarySlides[glossarySlideNumber], abbrevDictionary[abbreviation]
+            )
 
 
 # Add final slide - or more than one - with any Taskpaper tasks in
@@ -3187,7 +3309,9 @@ if (len(tasks) > 0) & (taskSlides != "none"):
 # Fix up any internal links
 for href in href_runs.keys():
     run = href_runs[href]
-    createRunHyperlinkOrTooltip(run, prs.slides[slide_hrefs[href] - 2 + templateSlideCount], "")
+    createRunHyperlinkOrTooltip(
+        run, prs.slides[slide_hrefs[href] - 2 + templateSlideCount], ""
+    )
 
 clickable_picture_count = len(clickable_pictures)
 for p in range(clickable_picture_count):
@@ -3208,4 +3332,3 @@ prs.save(output_filename)
 
 
 sys.exit()
-

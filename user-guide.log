@@ -5,8 +5,8 @@ mdpre Markdown Preprocessor v0.4.6 (4 November, 2020)
 Def mdpre_date = 4 November, 2020
 Def mdpre_level = 0.4.6
 Def userid = martinpacker
-Def time = 16&colon;19
-Def date = 29 December&comma; 2020
+Def time = 11&colon;33
+Def date = 1 January&comma; 2020
 Def TOC = Table Of Contents
 Def md = Markdown
 Def pp = Powerpoint
@@ -18,7 +18,6 @@ Table Of Contents - spec '2 * Table Of Contents'
 .....  How Do You Use md2pptx?
 .....  python-pptx license
 .....  Change Log
-Column Width - spec '2 3 5'
 CSV Start
 CSV Stop
 .....  Creating Slides
@@ -80,6 +79,11 @@ CSV Stop
 ..... ..... .....  Card Border Width - `CardBorderWidth`
 ..... ..... .....  Card Title Size - `CardTitleSize`
 ..... ..... .....   Card Shadow - `CardShadow`
+..... ..... .....  Controlling Card Size With `CardPercent`
+..... .....  Dynamic Metadata
+..... ..... .....  `CompactTables`
+..... ..... .....  `CardPercent`
+..... ..... .....  `PageTitleSize`
 .....  Modifying The Slide Template
 ..... .....  Basics
 ..... .....  Slide Template Sequence
