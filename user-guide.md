@@ -68,10 +68,16 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 		* [Card Title Size - `CardTitleSize`](#card-title-size-cardtitlesize)
 		* [Card Shadow - `CardShadow`](#card-shadow-cardshadow)
 		* [Controlling Card Size With `CardPercent`](#controlling-card-size-with-cardpercent)
+		* [Controlling Card Layout Direction With `CardLayout`](#controlling-card-layout-direction-with-cardlayout)
+		* [Controlling Card Title Alignment With `CardTitleAlign`](#controlling-card-title-alignment-with-cardtitlealign)
 	* [Dynamic Metadata](#dynamic-metadata)
 		* [`CompactTables`](#compacttables)
 		* [`CardPercent`](#cardpercent)
+		* [`CardLayout`](#cardlayout)
+		* [`CardTitleAlign`](#cardtitlealign)
 		* [`PageTitleSize`](#pagetitlesize)
+		* [`BaseTextSize`](#basetextsize)
+		* [`BaseTextDecrement`](#basetextdecrement)
 * [Modifying The Slide Template](#modifying-the-slide-template)
 	* [Basics](#basics)
 	* [Slide Template Sequence](#slide-template-sequence)
@@ -170,6 +176,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|:-|:-|
+|1.6.3|2 January 2021|Added support for vertical cards. Also new `CardTitleAlign` and `CardLayout` metadata&comma; plus `basetextsize` and `basetextdecrement` Dynamic Metadata items.|
 |1.6.2|1 January 2021|Added 3 slide-level Dynamic Metadata capabilities and `cardpercent` metadata value.|
 |1.6.1|29 December 2020|Added `<a id=` as an alternative hyperlink anchor.|
 |1.6|22 December 2020|Added Card Slide support. Metadata keys are now case-insensitive.|
@@ -1039,6 +1046,8 @@ If you just coded
 
 the top-level bullet uses a 20 point font, the next level down a 18 point font, and so on.
 
+You can specify these dynamically. See [here](#basetextsize-dynamic) and [here](#basetextdecrement-dynamic). You might want to do this to fine tune a particularly sparse or crowded page.
+
 #### Specifying Bold And Italic Text Colour With `BoldColour` And `ItalicColour`
 <a id="specifying-bold-and-italic-text-colour-with-boldcolour-and-italiccolour"></a>
 
@@ -1214,8 +1223,8 @@ You can specify whether a card has a shadow - using `CardShadow`. For example:
 
 If you don't specify this the cards won't have a shadow - unless the default text box style is to have a shadow.
 
-#### Controlling Card Size With `CardPercent`
 <a id="controlling-card-size-with-cardpercent"></a>
+#### Controlling Card Size With `CardPercent`
 
 You can control the vertical space used by cards - as a percentage of the content area. The default is 80%.
 
@@ -1225,8 +1234,37 @@ Here is an example:
 
 You can override this value on a slide-by-slide basis with [Dynamic CardPercent](#cardpercent-dynamic).
 
-### Dynamic Metadata
+<a id="controlling-card-layout-direction-with-cardlayout"></a>
+#### Controlling Card Layout Direction With `CardLayout`
+
+By default md2pptx lays out cards across the slide. This is called "horizontal layout" - and is generally a good use of slide space. But it's not what many Markdown processors do with Heading Level 4 (`####`). They tend to lay out vertically, even though this is generally a poorer use of slide "real estate".
+
+To specify horizontal card layout code:
+
+    CardLayout: horizontal
+
+To specify vertical card layout code:
+
+    CardLayout: vertical
+
+You can override this value on a slide-by-slide basis with [Dynamic CardLayout](#cardlayout-dynamic).
+
+<a id="controlling-card-title-alignment-with-cardtitlealign"></a>
+#### Controlling Card Title Alignment With `CardTitleAlign`
+
+By default md2pptx centres card titles above the corresponding card. Generally this looks best for the horizontal card layout.You can override this - perhaps to make titles on a vertical card layout slide left aligned.
+
+To specify left card title alignment code:
+
+    CardTitleAlign: left
+
+You can specify `left`, `right`, or `center` or `centre`. You can abbreviate these to `l`, `r`, or `c`.
+
+You can override this value on a slide-by-slide basis with [Dynamic CardTitleAlign](#cardtitlealign-dynamic).
+
 <a id="dynamic-metadata"></a>
+### Dynamic Metadata
+
 
 md2pptx can alter some in-effect settings, starting at a particular slide. Straight after the heading code a special form of comment like so:
 
@@ -1240,6 +1278,8 @@ Here are the values you can specify for the metadata:
 * `pres` - revert to the presentations's value (if specified). If, at the beginning of the presentation, you didn't specify a value for this metadata item it will be the md2pptx default that will be in effect.
 * `default` - revert to the md2pptx default.
 * Any other value - used literally.
+
+If you dynamically change a metadata value the new value will remain in effect for the remainder of the presentation, unless changed again.
 
 **Note:** After tweaking a slide you might well want to revert to your presentation's overall value (or even the md2pptx default).
 
@@ -1257,12 +1297,46 @@ You can override the presentation [CardPercent](#controlling-card-size-with-card
 
     <!-- md2pptx: cardpercent: 90 -->
 
+<a id="cardlayout-dynamic"></a>
+#### `CardLayout`
+
+You can override the presentation [CardLayout](#controlling-card-layout-direction-with-cardlayout) metadata value - perhaps to make an individual card slide vertical when most are horizontal:
+
+Either `vertical` or `horizontal` can be specified.
+
+    <!-- md2pptx: cardlayout: vertical -->
+
+<a id="cardtitlealign-dynamic"></a>
+#### `CardTitleAlign`
+
+You can override the presentation [CardTitleAlign](#controlling-card-title-alignment-with-cardtitlealign) metadata value - perhaps to make an individual card slide's titles left-aligned when most are centred:
+
+    <!-- md2pptx: cardtitlealign: l -->
+
 <a id="pagetitlesize-dynamic"></a>
 #### `PageTitleSize`
 
 You can override the presentation [PageTitleSize](#page-title-size-pagetitlesize) metadata value - perhaps to allow room for more text in the title of a slide:
 
     <!-- md2pptx: pagetitlesize: 16 -->
+
+<a id="basetextsize-dynamic"></a>
+#### `BaseTextSize`
+
+You can override the presentation [BaseTextSize](#specifying-text-size-with-basetextsize-and-basetextdecrement) metadata value. For example:
+
+    <!-- md2pptx: basetextsize: 16 -->
+
+The above makes the top-level bullets smaller than you would normally see - perhaps to cram in more bullets.
+
+<a id="basetextdecrement-dynamic"></a>
+#### `BaseTextDecrement`
+
+You can override the presentation [BaseTextDecrement](#specifying-text-size-with-basetextsize-and-basetextdecrement) metadata value. For example:
+
+    <!-- md2pptx: basetextdecrement: 0 -->
+
+The above stops each level of bullets having progressively smaller text.
 
 ## Modifying The Slide Template
 <a id="modifying-the-slide-template"></a>

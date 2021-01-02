@@ -1072,12 +1072,18 @@ body .markdown-body
 <li><a href="#card-title-size-cardtitlesize">Card Title Size - <code>CardTitleSize</code></a></li>
 <li><a href="#card-shadow-cardshadow">Card Shadow - <code>CardShadow</code></a></li>
 <li><a href="#controlling-card-size-with-cardpercent">Controlling Card Size With <code>CardPercent</code></a></li>
+<li><a href="#controlling-card-layout-direction-with-cardlayout">Controlling Card Layout Direction With <code>CardLayout</code></a></li>
+<li><a href="#controlling-card-title-alignment-with-cardtitlealign">Controlling Card Title Alignment With <code>CardTitleAlign</code></a></li>
 </ul>
 </li>
 <li><a href="#dynamic-metadata">Dynamic Metadata</a><ul>
 <li><a href="#compacttables"><code>CompactTables</code></a></li>
 <li><a href="#cardpercent"><code>CardPercent</code></a></li>
+<li><a href="#cardlayout"><code>CardLayout</code></a></li>
+<li><a href="#cardtitlealign"><code>CardTitleAlign</code></a></li>
 <li><a href="#pagetitlesize"><code>PageTitleSize</code></a></li>
+<li><a href="#basetextsize"><code>BaseTextSize</code></a></li>
+<li><a href="#basetextdecrement"><code>BaseTextDecrement</code></a></li>
 </ul>
 </li>
 </ul>
@@ -1179,6 +1185,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">1.6.3</td>
+<td align="left">2 January 2021</td>
+<td align="left">Added support for vertical cards. Also new <code>CardTitleAlign</code> and <code>CardLayout</code> metadata&comma; plus <code>basetextsize</code> and <code>basetextdecrement</code> Dynamic Metadata items.</td>
+</tr>
 <tr>
 <td align="left">1.6.2</td>
 <td align="left">1 January 2021</td>
@@ -2133,6 +2144,7 @@ baseTextDecrement: 1
 
 
 <p>the top-level bullet uses a 20 point font, the next level down a 18 point font, and so on.</p>
+<p>You can specify these dynamically. See <a href="#basetextsize-dynamic">here</a> and <a href="#basetextdecrement-dynamic">here</a>. You might want to do this to fine tune a particularly sparse or crowded page.</p>
 <h4 id="specifying-bold-and-italic-text-colour-with-boldcolour-and-italiccolour">Specifying Bold And Italic Text Colour With <code>BoldColour</code> And <code>ItalicColour</code><a class="headerlink" href="#specifying-bold-and-italic-text-colour-with-boldcolour-and-italiccolour" title="Permanent link"></a></h4>
 <p><a id="specifying-bold-and-italic-text-colour-with-boldcolour-and-italiccolour"></a></p>
 <p>You can modify how md2pptx formats bold and italic colours:</p>
@@ -2293,8 +2305,8 @@ baseTextDecrement: 1
 
 
 <p>If you don&rsquo;t specify this the cards won&rsquo;t have a shadow - unless the default text box style is to have a shadow.</p>
-<h4 id="controlling-card-size-with-cardpercent">Controlling Card Size With <code>CardPercent</code><a class="headerlink" href="#controlling-card-size-with-cardpercent" title="Permanent link"></a></h4>
 <p><a id="controlling-card-size-with-cardpercent"></a></p>
+<h4 id="controlling-card-size-with-cardpercent">Controlling Card Size With <code>CardPercent</code><a class="headerlink" href="#controlling-card-size-with-cardpercent" title="Permanent link"></a></h4>
 <p>You can control the vertical space used by cards - as a percentage of the content area. The default is 80%.</p>
 <p>Here is an example:</p>
 <div class="codehilite"><pre>CardPercent: 70
@@ -2302,8 +2314,32 @@ baseTextDecrement: 1
 
 
 <p>You can override this value on a slide-by-slide basis with <a href="#cardpercent-dynamic">Dynamic CardPercent</a>.</p>
-<h3 id="dynamic-metadata">Dynamic Metadata<a class="headerlink" href="#dynamic-metadata" title="Permanent link"></a></h3>
+<p><a id="controlling-card-layout-direction-with-cardlayout"></a></p>
+<h4 id="controlling-card-layout-direction-with-cardlayout">Controlling Card Layout Direction With <code>CardLayout</code><a class="headerlink" href="#controlling-card-layout-direction-with-cardlayout" title="Permanent link"></a></h4>
+<p>By default md2pptx lays out cards across the slide. This is called &ldquo;horizontal layout&rdquo; - and is generally a good use of slide space. But it&rsquo;s not what many Markdown processors do with Heading Level 4 (<code>####</code>). They tend to lay out vertically, even though this is generally a poorer use of slide &ldquo;real estate&rdquo;.</p>
+<p>To specify horizontal card layout code:</p>
+<div class="codehilite"><pre>CardLayout: horizontal
+</pre></div>
+
+
+<p>To specify vertical card layout code:</p>
+<div class="codehilite"><pre>CardLayout: vertical
+</pre></div>
+
+
+<p>You can override this value on a slide-by-slide basis with <a href="#cardlayout-dynamic">Dynamic CardLayout</a>.</p>
+<p><a id="controlling-card-title-alignment-with-cardtitlealign"></a></p>
+<h4 id="controlling-card-title-alignment-with-cardtitlealign">Controlling Card Title Alignment With <code>CardTitleAlign</code><a class="headerlink" href="#controlling-card-title-alignment-with-cardtitlealign" title="Permanent link"></a></h4>
+<p>By default md2pptx centres card titles above the corresponding card. Generally this looks best for the horizontal card layout.You can override this - perhaps to make titles on a vertical card layout slide left aligned.</p>
+<p>To specify left card title alignment code:</p>
+<div class="codehilite"><pre>CardTitleAlign: left
+</pre></div>
+
+
+<p>You can specify <code>left</code>, <code>right</code>, or <code>center</code> or <code>centre</code>. You can abbreviate these to <code>l</code>, <code>r</code>, or <code>c</code>.</p>
+<p>You can override this value on a slide-by-slide basis with <a href="#cardtitlealign-dynamic">Dynamic CardTitleAlign</a>.</p>
 <p><a id="dynamic-metadata"></a></p>
+<h3 id="dynamic-metadata">Dynamic Metadata<a class="headerlink" href="#dynamic-metadata" title="Permanent link"></a></h3>
 <p>md2pptx can alter some in-effect settings, starting at a particular slide. Straight after the heading code a special form of comment like so:</p>
 <div class="codehilite"><pre>### Origins Of Mainframe, Performance, Topics Podcast
 &lt;!-- md2pptx: compacttables: 14 --&gt;
@@ -2317,6 +2353,7 @@ baseTextDecrement: 1
 <li><code>default</code> - revert to the md2pptx default.</li>
 <li>Any other value - used literally.</li>
 </ul>
+<p>If you dynamically change a metadata value the new value will remain in effect for the remainder of the presentation, unless changed again.</p>
 <p><strong>Note:</strong> After tweaking a slide you might well want to revert to your presentation&rsquo;s overall value (or even the md2pptx default).</p>
 <p><a id="compacttables-dynamic"></a></p>
 <h4 id="compacttables"><code>CompactTables</code><a class="headerlink" href="#compacttables" title="Permanent link"></a></h4>
@@ -2332,6 +2369,21 @@ baseTextDecrement: 1
 </pre></div>
 
 
+<p><a id="cardlayout-dynamic"></a></p>
+<h4 id="cardlayout"><code>CardLayout</code><a class="headerlink" href="#cardlayout" title="Permanent link"></a></h4>
+<p>You can override the presentation <a href="#controlling-card-layout-direction-with-cardlayout">CardLayout</a> metadata value - perhaps to make an individual card slide vertical when most are horizontal:</p>
+<p>Either <code>vertical</code> or <code>horizontal</code> can be specified.</p>
+<div class="codehilite"><pre>&lt;!-- md2pptx: cardlayout: vertical --&gt;
+</pre></div>
+
+
+<p><a id="cardtitlealign-dynamic"></a></p>
+<h4 id="cardtitlealign"><code>CardTitleAlign</code><a class="headerlink" href="#cardtitlealign" title="Permanent link"></a></h4>
+<p>You can override the presentation <a href="#controlling-card-title-alignment-with-cardtitlealign">CardTitleAlign</a> metadata value - perhaps to make an individual card slide&rsquo;s titles left-aligned when most are centred:</p>
+<div class="codehilite"><pre>&lt;!-- md2pptx: cardtitlealign: l --&gt;
+</pre></div>
+
+
 <p><a id="pagetitlesize-dynamic"></a></p>
 <h4 id="pagetitlesize"><code>PageTitleSize</code><a class="headerlink" href="#pagetitlesize" title="Permanent link"></a></h4>
 <p>You can override the presentation <a href="#page-title-size-pagetitlesize">PageTitleSize</a> metadata value - perhaps to allow room for more text in the title of a slide:</p>
@@ -2339,6 +2391,22 @@ baseTextDecrement: 1
 </pre></div>
 
 
+<p><a id="basetextsize-dynamic"></a></p>
+<h4 id="basetextsize"><code>BaseTextSize</code><a class="headerlink" href="#basetextsize" title="Permanent link"></a></h4>
+<p>You can override the presentation <a href="#specifying-text-size-with-basetextsize-and-basetextdecrement">BaseTextSize</a> metadata value. For example:</p>
+<div class="codehilite"><pre>&lt;!-- md2pptx: basetextsize: 16 --&gt;
+</pre></div>
+
+
+<p>The above makes the top-level bullets smaller than you would normally see - perhaps to cram in more bullets.</p>
+<p><a id="basetextdecrement-dynamic"></a></p>
+<h4 id="basetextdecrement"><code>BaseTextDecrement</code><a class="headerlink" href="#basetextdecrement" title="Permanent link"></a></h4>
+<p>You can override the presentation <a href="#specifying-text-size-with-basetextsize-and-basetextdecrement">BaseTextDecrement</a> metadata value. For example:</p>
+<div class="codehilite"><pre>&lt;!-- md2pptx: basetextdecrement: 0 --&gt;
+</pre></div>
+
+
+<p>The above stops each level of bullets having progressively smaller text.</p>
 <h2 id="modifying-the-slide-template">Modifying The Slide Template<a class="headerlink" href="#modifying-the-slide-template" title="Permanent link"></a></h2>
 <p><a id="modifying-the-slide-template"></a></p>
 <p>The included template presentation - Martin Template.pptx - is what the author tested with and gives good results. However, you probably want to develop your own template from it.</p>

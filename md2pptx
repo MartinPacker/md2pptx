@@ -34,8 +34,8 @@ import copy
 from lxml import etree
 
 
-md2pptx_level = "1.6.2"
-md2pptx_date = "1 January, 2021"
+md2pptx_level = "1.6.3"
+md2pptx_date = "2 January, 2021"
 
 # Add a drop shadow to a shape
 def createShadow(shape):
@@ -146,7 +146,7 @@ def set_highlight(run, color):
     hl = OxmlElement("a:highlight")
 
     # Create specify RGB Colour element with color specified
-    srgbClr = OxmlElement("a:srgbClr")
+    srgbClr = OxmlElement("a:srgbClr")  
     setattr(srgbClr, "val", color)
 
     # Add colour specification to highlight element
@@ -1343,12 +1343,13 @@ def contentSlide(presentation, slideNumber, titleText, subtitleText, bullets):
     # Calculate the width the content should be on the slide
     content_width = presentation.slide_width - Inches(1.0)
 
-    # Added bulleted list
+    # Get bulleted text list shape
     bullets_shape = findBodyShape(slide)
 
     bullet_count = len(bullets)
     if in_card:
-        # Create shapes for card titles and the cards' bullets
+        # Create shapes for card titles and the cards' bullets - and
+        # set any non-positioning attributes
         card_shapes = []
         cardTitle_shapes = []
         card_count = len(cards)
@@ -1374,7 +1375,12 @@ def contentSlide(presentation, slideNumber, titleText, subtitleText, bullets):
                 )
 
             # Titles are centred
-            cardTitle_shape.text_frame.paragraphs[0].alignment = PP_ALIGN.CENTER
+            if cardTitleAlign == "l":
+                cardTitle_shape.text_frame.paragraphs[0].alignment = PP_ALIGN.LEFT
+            elif cardTitleAlign == "c":
+                cardTitle_shape.text_frame.paragraphs[0].alignment = PP_ALIGN.CENTER
+            else:
+                cardTitle_shape.text_frame.paragraphs[0].alignment = PP_ALIGN.RIGHT
 
             # Card shape modeled on bulleted list
             if (bullet_count > 0) | (c > 0):
@@ -1414,7 +1420,7 @@ def contentSlide(presentation, slideNumber, titleText, subtitleText, bullets):
             # Card top and height
             card_top = cardTitle_top + cardTitle_height
             card_height = (
-                presentation.slide_height - cardTitle_top - Inches(0.33 + 0.25)
+                presentation.slide_height - cardTitle_top - Inches(0.5) - cardTitle_height
             )
         else:
             # No bullets so cards and their titles occupy whole height
@@ -1425,29 +1431,52 @@ def contentSlide(presentation, slideNumber, titleText, subtitleText, bullets):
             # Card top and height
             card_top = cardTitle_top + cardTitle_height
             card_height = (
-                presentation.slide_height - cardTitle_top - Inches(0.33 + 0.25)
+                presentation.slide_height - cardTitle_top - Inches(0.25) + cardTitle_height
             )
     else:
         bullets_shape.height = content_height
 
     bullets_shape.bottom = bullets_shape.top + bullets_shape.height
 
+    # Fill in the main bullets shape
     populateTextBlock(bullets_shape, bullets)
 
     if in_card:
+        # Calculate card plus title height - if vertical
+        if cardLayout == "vertical":
+            cardPlusTitleHeight = int((card_height + Inches(0.75)) / card_count)
+            cardsTop = int(bullets_shape.bottom + Inches(0.25))
+        
         for c in range(card_count):
-            # Position card title
             cardTitle_shape = cardTitle_shapes[c]
-            cardTitle_shape.top = cardTitle_top
-            cardTitle_shape.left = int(Inches(0.5) + c * (card_width + Inches(0.25)))
-            cardTitle_shape.width = int(card_width)
-
-            # Position card
             card_shape = card_shapes[c]
-            card_shape.top = card_top
-            card_shape.left = int(Inches(0.5) + c * (card_width + Inches(0.25)))
-            card_shape.width = int(card_width)
-            card_shape.height = int(card_height)
+
+            if cardLayout == "horizontal":
+                # Vertical card layout
+
+                # Position card title
+                cardTitle_shape.top = cardTitle_top
+                cardTitle_shape.left = int(Inches(0.5) + c * (card_width + Inches(0.25)))
+                cardTitle_shape.width = int(card_width)
+
+                # Position card
+                card_shape.top = card_top
+                card_shape.left = int(Inches(0.5) + c * (card_width + Inches(0.25)))
+                card_shape.width = int(card_width)
+                card_shape.height = int(card_height)
+            else:
+                # Vertical card layout
+
+                # Position card title
+                cardTitle_shape.top = int(cardPlusTitleHeight * c + cardsTop)
+                cardTitle_shape.left = int(Inches(0.5))
+                cardTitle_shape.width = int(content_width)
+
+                # Position card
+                card_shape.top = int(cardTitle_shape.top + cardTitle_height)
+                card_shape.left = int(Inches(0.5))
+                card_shape.width = int(content_width)
+                card_shape.height = int(cardPlusTitleHeight - cardTitle_height)
 
             if len(cards[c]) > 1:
                 populateTextBlock(card_shape, cards[c][1])
@@ -2603,8 +2632,14 @@ default_pageTitleSize = 30
 pageTitleSize = default_pageTitleSize
 pres_pageTitleSize = default_pageTitleSize
 
-baseTextSize = 0
-baseTextDecrement = 2
+default_baseTextSize = 0
+pres_baseTextSize = default_baseTextSize
+baseTextSize = default_baseTextSize
+
+default_baseTextDecrement = 2
+pres_baseTextDecrement = default_baseTextDecrement
+baseTextDecrement = default_baseTextDecrement
+
 sectionTitleSize = 40
 sectionSubtitleSize = 28
 monoFont = "Courier"
@@ -2630,6 +2665,14 @@ pres_cardPercent = default_cardPercent
 default_compactTables = 0
 compactTables = default_compactTables
 pres_compactTables = default_compactTables
+
+default_cardLayout = "horizontal"
+cardLayout = default_cardLayout
+pres_cardLayout = default_cardLayout
+
+default_cardTitleAlign = "c"
+cardTitleAlign = default_cardTitleAlign
+pres_cardTitleAlign = default_cardTitleAlign
 
 abstractTitle = ""
 
@@ -2712,32 +2755,46 @@ for line in metadata_lines:
 
     elif name == "basetextsize":
         baseTextSize = float(value)
+        pres_baseTextSize = baseTextSize
+
     elif name == "basetextdecrement":
         baseTextDecrement = float(value)
+        pres_baseTextDecrement = baseTextDecrement
+
     elif name == "sectiontitlesize":
         sectionTitleSize = float(value)
+
     elif name == "sectionsubtitlesize":
         sectionSubtitleSize = float(value)
+
     elif (name == "template") | (name == "master"):
         if value == "Martin Master.pptx":
             slideTemplateFile = "Martin Template.pptx"
         else:
             slideTemplateFile = value
+
     elif name == "monofont":
         monoFont = value
+
     elif name == "marginbase":
         marginBase = Inches(float(value))
+
     elif name == "tablemargin":
         tableMargin = Inches(float(value))
+
     elif name == "tocstyle":
         tocStyle = value
+
     elif name == "toctitle":
         tocTitle = value
+
     elif name == "abstracttitle":
         abstractTitle = value
+
     elif name == "boldbold":
         if value.lower() == "no":
             want_bold_bold = False
+
     elif name == "compacttables":
         compactTables = float(value)
         pres_compactTables = compactTables
@@ -2761,7 +2818,6 @@ for line in metadata_lines:
     elif (name == "cardbordercolour") | (name == "cardbordercolor"):
         want_card_border_colour = True
         card_border_colour = parseThemeColour(value)
-        print(card_border_colour)
 
     elif name == "cardborderwidth":
         want_card_border_width = True
@@ -2779,6 +2835,21 @@ for line in metadata_lines:
         cardPercent = float(value)
         pres_cardPercent = cardPercent
 
+    elif name == "cardlayout":
+        if value in ["horizontal","vertical"]:
+            cardLayout = value
+            pres_cardLayout = value
+        else:
+            print(f"CardLayout value '{value}' unsupported.")
+
+    elif name == "cardtitlealign":
+        val1l = value[:1].lower()
+        if val1l in ["l","r","c"]:
+            cardTitleAlign = val1l
+            pres_cardTitleAlign = cardTitleAlign
+        else:
+            print(f"CardAlign value '{value}' unsupported.")
+                
     elif name == "taskslides":
         taskSlides = value
     elif name == "tasksperpage":
@@ -3028,6 +3099,50 @@ for line in lines_after_concatenation:
 
                     else:
                         cardPercent = float(metadataValue)
+
+                elif metadataKey == "cardlayout":
+                    # Cards' layout - horizontal or vertical
+                    if metadataValue == "default":
+                        cardLayout = default_cardLayout
+
+                    elif metadataValue == "pres":
+                        cardLayout = pres_cardLayout
+
+                    else:
+                        cardLayout = metadataValue
+    
+                elif metadataKey == "basetextsize":
+                    # Base text size
+                    if metadataValue == "default":
+                        baseTextSize = default_baseTextSize
+
+                    elif metadataValue == "pres":
+                        baseTextSize = pres_baseTextSize
+
+                    else:
+                        baseTextSize = float(metadataValue)
+
+                elif metadataKey == "basetextdecrement":
+                    # Base text decrement
+                    if metadataValue == "default":
+                        baseTextDecrement = default_baseTextDecrement
+
+                    elif metadataValue == "pres":
+                        baseTextDecrement = pres_baseTextDecrement
+
+                    else:
+                        baseTextDecrement = float(metadataValue)
+
+                elif metadataKey == "cardtitlealign":
+                    # Card title alignment
+                    if metadataValue == "default":
+                        cardTitleAlign = default_cardTitleAlign
+
+                    elif metadataValue == "pres":
+                        cardTitleAlign = pres_cardTitleAlign
+
+                    else:
+                        cardTitleAlign = metadataValue[:1].lower()
 
                 else:
                     # Invalid dynamic metadata specification
