@@ -1007,7 +1007,10 @@ body .markdown-body
 <li><a href="#creating-slides">Creating Slides</a><ul>
 <li><a href="#presentation-title-slides">Presentation Title Slides</a></li>
 <li><a href="#presentation-section-slides">Presentation Section Slides</a></li>
-<li><a href="#bullet-slides">Bullet Slides</a></li>
+<li><a href="#bullet-slides">Bullet Slides</a><ul>
+<li><a href="#numbered-list-items">Numbered List Items</a></li>
+</ul>
+</li>
 <li><a href="#graphics-slides">Graphics Slides</a><ul>
 <li><a href="#clickable-pictures">Clickable Pictures</a></li>
 <li><a href="#graphics-file-references">Graphics File References</a></li>
@@ -1134,6 +1137,7 @@ body .markdown-body
 <li>Install python-pptx using the command <code>pip3 install python-pptx</code>. (You might have to install pip firsst.)</li>
 <li>Invoke it.</li>
 </ol>
+<p><strong>NOTE:</strong> A future release of md2pptx will require at least Python 3.8. This will bring an improvement in efficiency.</p>
 <p>The following instructions are for Unix-like systems. (It&rsquo;s developed and used by the developer on Mac OS but should also have identical syntax on Linux.) Windows users will need a slightly different form, but the principle is the same.</p>
 <p>Here is a sample invocation:</p>
 <div class="codehilite"><pre>md2pptx powerpoint-filename &lt; markdown-filename
@@ -1185,6 +1189,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">1.7</td>
+<td align="left">9 January 2021</td>
+<td align="left">Added support for numbered list items</td>
+</tr>
 <tr>
 <td align="left">1.6.3</td>
 <td align="left">2 January 2021</td>
@@ -1405,6 +1414,23 @@ sectionTitleSize: 30
 <p><strong>NOTE:</strong> Some dialects of Markdown allow other bullet markers but md2pptx doesn&rsquo;t. You can be sure by coding <code>*</code> you have valid Markdown that md2pptx can also process correctly. For an explanation of why you have to stick to <code>*</code> see <a href="#task-list-slides">here</a>.</p>
 <p>To nest bullets use a tab character or 4 spaces to indent the sub-bullets. md2pptx doesn&rsquo;t have a limit on the level of nesting but Powerpoint probably does.</p>
 <p>Terminate the bulleted list slide with a blank line.</p>
+<h4 id="numbered-list-items">Numbered List Items<a class="headerlink" href="#numbered-list-items" title="Permanent link"></a></h4>
+<p><a id="numbered-items"></a></p>
+<p>Within a bullet slide you can have numbered items. Here is an example of a slide with mixed numbers and bullets:</p>
+<div class="codehilite"><pre>### This Is A Mixed Numbers And Bullets Slide
+
+* Bullet One
+    1. Numbered sub-bullet A
+    1. Numbered sub-bullet B
+* Bullet Two
+* Bullet Three
+</pre></div>
+
+
+<p>Numbered list items are introduced with an integer, followed by a full stop.</p>
+<p>Markdown takes care of the numbering. In the above example there are two numbered items. While the first will indeed be numbered &ldquo;1&rdquo; the second will be numbered &ldquo;2&rdquo;, despite the <code>1.</code> coding.</p>
+<p>Numbering with <code>1.</code> is actually a useful practice - as it makes it easier to reorder a numbered list (by moving the lines around).</p>
+<p><strong>Note:</strong> You can mix numbered and bulleted items in a list.</p>
 <h3 id="graphics-slides">Graphics Slides<a class="headerlink" href="#graphics-slides" title="Permanent link"></a></h3>
 <p><a id="graphics-slides"></a></p>
 <p>As with <a href="#bullet-slides">bullet slides</a>, code the slide title as a Markdown Heading Level 3. Specify the graphic to embed with the standard Markdown image reference:</p>

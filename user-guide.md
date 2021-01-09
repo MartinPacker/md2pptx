@@ -16,6 +16,7 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 	* [Presentation Title Slides](#presentation-title-slides)
 	* [Presentation Section Slides](#presentation-section-slides)
 	* [Bullet Slides](#bullet-slides)
+		* [Numbered List Items](#numbered-list-items)
 	* [Graphics Slides](#graphics-slides)
 		* [Clickable Pictures](#clickable-pictures)
 		* [Graphics File References](#graphics-file-references)
@@ -128,6 +129,8 @@ To use md2pptx you need to
 1. Install python-pptx using the command `pip3 install python-pptx`. (You might have to install pip firsst.)
 1. Invoke it.
 
+**NOTE:** A future release of md2pptx will require at least Python 3.8. This will bring an improvement in efficiency.
+
 The following instructions are for Unix-like systems. (It's developed and used by the developer on Mac OS but should also have identical syntax on Linux.) Windows users will need a slightly different form, but the principle is the same.
 
 Here is a sample invocation:
@@ -176,6 +179,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|:-|:-|
+|1.7|9 January 2021|Added support for numbered list items|
 |1.6.3|2 January 2021|Added support for vertical cards. Also new `CardTitleAlign` and `CardLayout` metadata&comma; plus `basetextsize` and `basetextdecrement` Dynamic Metadata items.|
 |1.6.2|1 January 2021|Added 3 slide-level Dynamic Metadata capabilities and `cardpercent` metadata value.|
 |1.6.1|29 December 2020|Added `<a id=` as an alternative hyperlink anchor.|
@@ -296,6 +300,27 @@ Bulleted list items are introduced by an asterisk.
 To nest bullets use a tab character or 4 spaces to indent the sub-bullets. md2pptx doesn't have a limit on the level of nesting but Powerpoint probably does.
 
 Terminate the bulleted list slide with a blank line.
+
+#### Numbered List Items
+<a id="numbered-items"></a>
+
+Within a bullet slide you can have numbered items. Here is an example of a slide with mixed numbers and bullets:
+
+	### This Is A Mixed Numbers And Bullets Slide
+
+	* Bullet One
+		1. Numbered sub-bullet A
+		1. Numbered sub-bullet B
+	* Bullet Two
+	* Bullet Three
+
+Numbered list items are introduced with an integer, followed by a full stop.
+
+Markdown takes care of the numbering. In the above example there are two numbered items. While the first will indeed be numbered "1" the second will be numbered "2", despite the `1.` coding.
+
+Numbering with `1.` is actually a useful practice - as it makes it easier to reorder a numbered list (by moving the lines around).
+
+**Note:** You can mix numbered and bulleted items in a list.
 
 ### Graphics Slides
 <a id="graphics-slides"></a>

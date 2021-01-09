@@ -34,8 +34,39 @@ import copy
 from lxml import etree
 
 
-md2pptx_level = "1.6.3"
-md2pptx_date = "2 January, 2021"
+md2pptx_level = "1.7"
+md2pptx_date = "9 January, 2021"
+
+# Turn a paragraph into a numbered list item
+def makeNumberedListItem(p):
+    if (
+        p._element.getchildren()[0].tag
+        == "{http://schemas.openxmlformats.org/drawingml/2006/main}pPr"
+    ):
+        pPr = p._element.getchildren()[0]
+        if len(pPr.getchildren()) > 0:
+            # Remove Default Text Run Properties element - if present
+            x = pPr.getchildren()[0]
+            if x.tag == "{http://schemas.openxmlformats.org/drawingml/2006/main}defRPr":
+                pPr.remove(x)
+    else:
+        pPr = OxmlElement("a:pPr")
+        p._element.insert(0, pPr)
+    # indentMarL = 514350
+    # pPr.set("indent", str(-indentMarL))
+    # pPr.set("indent", str(-indentMarL * (p.level+1)))
+    # pPr.set("marL", str(indentMarL * (p.level +1)))
+
+    buFont = OxmlElement("a:buFont")
+    buFont.set("typeface", "+mj-lt")
+    pPr.append(buFont)
+
+    buAutoNum = OxmlElement("a:buAutoNum")
+    buAutoNum.set("type", "arabicPeriod")
+    pPr.append(buAutoNum)
+
+    # p.level = level
+
 
 # Add a drop shadow to a shape
 def createShadow(shape):
@@ -146,7 +177,7 @@ def set_highlight(run, color):
     hl = OxmlElement("a:highlight")
 
     # Create specify RGB Colour element with color specified
-    srgbClr = OxmlElement("a:srgbClr")  
+    srgbClr = OxmlElement("a:srgbClr")
     setattr(srgbClr, "val", color)
 
     # Add colour specification to highlight element
@@ -313,6 +344,9 @@ def populateTextBlock(shape, bullets):
 
         addFormattedText(p, bullet[1])
 
+        if bullet[2] == "numbered":
+            makeNumberedListItem(p)
+
         bulletNumber = bulletNumber + 1
 
     tf.auto_size = MSO_AUTO_SIZE.TEXT_TO_FIT_SHAPE
@@ -342,7 +376,7 @@ def formatTitle(presentation, title, titleText):
     title.text_frame.paragraphs[0].font.size = Pt(pageTitleSize)
     title.text_frame.vertical_anchor = MSO_ANCHOR.TOP
 
-    return title.top + title.height
+    return title.top + title.height + Inches(0.1)
 
 
 # Parse the string after the e.g. ### for a displayable title and
@@ -1420,7 +1454,10 @@ def contentSlide(presentation, slideNumber, titleText, subtitleText, bullets):
             # Card top and height
             card_top = cardTitle_top + cardTitle_height
             card_height = (
-                presentation.slide_height - cardTitle_top - Inches(0.5) - cardTitle_height
+                presentation.slide_height
+                - cardTitle_top
+                - Inches(0.5)
+                - cardTitle_height
             )
         else:
             # No bullets so cards and their titles occupy whole height
@@ -1431,7 +1468,10 @@ def contentSlide(presentation, slideNumber, titleText, subtitleText, bullets):
             # Card top and height
             card_top = cardTitle_top + cardTitle_height
             card_height = (
-                presentation.slide_height - cardTitle_top - Inches(0.25) + cardTitle_height
+                presentation.slide_height
+                - cardTitle_top
+                - Inches(0.25)
+                + cardTitle_height
             )
     else:
         bullets_shape.height = content_height
@@ -1446,7 +1486,7 @@ def contentSlide(presentation, slideNumber, titleText, subtitleText, bullets):
         if cardLayout == "vertical":
             cardPlusTitleHeight = int((card_height + Inches(0.75)) / card_count)
             cardsTop = int(bullets_shape.bottom + Inches(0.25))
-        
+
         for c in range(card_count):
             cardTitle_shape = cardTitle_shapes[c]
             card_shape = card_shapes[c]
@@ -1456,7 +1496,9 @@ def contentSlide(presentation, slideNumber, titleText, subtitleText, bullets):
 
                 # Position card title
                 cardTitle_shape.top = cardTitle_top
-                cardTitle_shape.left = int(Inches(0.5) + c * (card_width + Inches(0.25)))
+                cardTitle_shape.left = int(
+                    Inches(0.5) + c * (card_width + Inches(0.25))
+                )
                 cardTitle_shape.width = int(card_width)
 
                 # Position card
@@ -2542,7 +2584,8 @@ if len(input_file) == 0:
 
 slideNumber = 1
 
-bulletRegex = re.compile("^(\s)*\*(.*)")
+bulletRegex = re.compile("^(\s)*(\*)(.*)")
+numberRegex = re.compile("^(\s)*(\d+)\.(.*)")
 metadataRegex = re.compile("^(.+):(.+)")
 graphicRegex = re.compile("^!\[(.*)\]\((.+)\)")
 clickableGraphicRegex = re.compile("^\[!\[(.*)\]\((.+)\)\]\((.+)\)")
@@ -2836,7 +2879,7 @@ for line in metadata_lines:
         pres_cardPercent = cardPercent
 
     elif name == "cardlayout":
-        if value in ["horizontal","vertical"]:
+        if value in ["horizontal", "vertical"]:
             cardLayout = value
             pres_cardLayout = value
         else:
@@ -2844,12 +2887,12 @@ for line in metadata_lines:
 
     elif name == "cardtitlealign":
         val1l = value[:1].lower()
-        if val1l in ["l","r","c"]:
+        if val1l in ["l", "r", "c"]:
             cardTitleAlign = val1l
             pres_cardTitleAlign = cardTitleAlign
         else:
             print(f"CardAlign value '{value}' unsupported.")
-                
+
     elif name == "taskslides":
         taskSlides = value
     elif name == "tasksperpage":
@@ -2961,7 +3004,7 @@ for line in after_metadata_and_HTML:
 
     else:
         # Previous line was not blank and nor is this one so consider concatenation
-        if line.lstrip()[0] not in "*#\|":
+        if line.lstrip()[0] not in "*#\|0123456789":
             if previous_line[0:2] != "# ":
                 # Previous line was not Heading Level 1 so concatenate
                 lines_after_concatenation[-1] = (
@@ -3110,7 +3153,7 @@ for line in lines_after_concatenation:
 
                     else:
                         cardLayout = metadataValue
-    
+
                 elif metadataKey == "basetextsize":
                     # Base text size
                     if metadataValue == "default":
@@ -3318,22 +3361,42 @@ for line in lines_after_concatenation:
             text_frame.text = notes_text
 
         notes_text = ""
+
     elif bulletRegex.match(line):
         # Bulleted list
-        bulletPos = line.index("*") + 1
-        bulletLine = line[bulletPos:].lstrip()
-        bulletLevel = (bulletPos + 1) / 2
+        match = bulletRegex.match(line)
+        bulletLine = match.group(3).lstrip()
+        bulletLevel = int(match.start(2) / 2) + 1
+        bulletType = "bulleted"
         if in_card:
-            cardBullets.append([bulletLevel, bulletLine])
+            cardBullets.append([bulletLevel, bulletLine, bulletType])
             cardsLength = len(cards)
             if len(cards[cardsLength - 1]) == 1:
                 cards[cardsLength - 1].append(cardBullets)
             else:
                 cards[cardsLength - 1][1] = cardBullets
         else:
-            bullets.append([bulletLevel, bulletLine])
+            bullets.append([bulletLevel, bulletLine, bulletType])
         in_list = True
         in_table = False
+
+    elif numberRegex.match(line):
+        match = numberRegex.match(line)
+        bulletLine = match.group(3).lstrip()
+        bulletLevel = int(match.start(2) / 2) + 1
+        bulletType = "numbered"
+        if in_card:
+            cardBullets.append([bulletLevel, bulletLine, bulletType])
+            cardsLength = len(cards)
+            if len(cards[cardsLength - 1]) == 1:
+                cards[cardsLength - 1].append(cardBullets)
+            else:
+                cards[cardsLength - 1][1] = cardBullets
+        else:
+            bullets.append([bulletLevel, bulletLine, bulletType])
+        in_list = True
+        in_table = False
+
     else:
         # Must be a slide note line
         slide_subtitle = slide_subtitle + "\n" + line
