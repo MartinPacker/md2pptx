@@ -121,6 +121,7 @@ To quote from the python-pptx license statement:
 
 =csv
 Level,Date,What
+1.7.1,11 January 2021,Fixed bug where hyperlinks in slide titles didn't work
 1.7,9 January 2021,Added support for numbered list items
 1.6.3,2 January 2021,Added support for vertical cards. Also new `CardTitleAlign` and `CardLayout` metadata&comma; plus `basetextsize` and `basetextdecrement` Dynamic Metadata items.
 1.6.2,1 January 2021,Added 3 slide-level Dynamic Metadata capabilities and `cardpercent` metadata value.
