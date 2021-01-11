@@ -34,8 +34,8 @@ import copy
 from lxml import etree
 
 
-md2pptx_level = "1.7"
-md2pptx_date = "9 January, 2021"
+md2pptx_level = "1.7.1"
+md2pptx_date = "11 January, 2021"
 
 # Turn a paragraph into a numbered list item
 def makeNumberedListItem(p):
@@ -2593,7 +2593,7 @@ linkRegex = re.compile("^\[(.+)\]\((.+)\)")
 twoUpRegex = re.compile("^\|(.+?)\|(.+?)\|")
 footnoteDefinitionRegex = re.compile("^\[\^(.+?)]: (.+)")
 spanRegex = re.compile("<span( )*class=")
-slideHrefRegex = re.compile("(.+)\[(.+)\]")
+slideHrefRegex = re.compile("\[(.+)\]\(.+\)")
 anchorRegex = re.compile("^<a id=[\"'](.+)[\"']></a>")
 dynamicMetadataRegex = re.compile("^<!-- md2pptx: (.+): (.+) -->")
 
