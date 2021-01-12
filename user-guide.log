@@ -2,7 +2,100 @@
 mdpre Markdown Preprocessor v0.4.6 (4 November, 2020)
 =====================================================
 - opened <stdout> for writing
+Def mdpre_date = 4 November, 2020
+Def mdpre_level = 0.4.6
+Def userid = martinpacker
+Def time = 10&colon;48
+Def date = 12 January&comma; 2021
+Def TOC = Table Of Contents
+Def md = Markdown
+Def pp = Powerpoint
+Markdown To Powerpoint User Guide
+Table Of Contents - spec '2 * Table Of Contents'
 2 4 Table Of Contents
+.....  Why md2pptx?
+..... .....  A Real World Use Case
+.....  How Do You Use md2pptx?
+.....  python-pptx license
+.....  Change Log
+CSV Start
+CSV Stop
+.....  Creating Slides
+..... .....  Presentation Title Slides
+..... .....  Presentation Section Slides
+..... .....  Bullet Slides
+..... ..... .....  Numbered List Items
+..... .....  Graphics Slides
+..... ..... .....  Clickable Pictures
+..... ..... .....  Graphics File References
+..... .....  Table Slides
+..... ..... .....  Special Case: Two Graphics Side By Side
+..... ..... .....  Special Case: Two By Two Grid Of Graphics
+..... ..... .....  Special Case: Three Graphics On A Slide
+..... ..... .....  Special Case: One Graphic Above Another
+..... .....  Card Slides
+..... .....  Code Slides
+..... .....  Task List Slides
+.....  Hyperlinks
+..... .....  Coding A Heading Reference On A Target Slide
+..... .....  Coding A Hyperlink To Another Slide
+.....  HTML Comments
+.....  Special Text Formatting
+CSV Start
+CSV Stop
+..... .....  Using HTML `<style>` Elements To Specify Text Colours And Underlining
+..... .....  HTML Entity References
+CSV Start
+CSV Stop
+..... .....  Numeric Character References
+..... .....   Escaped Characters
+..... .....  CriticMarkup
+.....  Creating A Glossary Of Terms
+.....  Creating Footnotes
+..... .....  Creating A Footnote
+..... .....  Referring To A Footnote
+.....  Controlling The Presentation With Metadata
+..... .....  Specifying Metadata
+..... .....  Metadata Keys
+..... ..... .....  Slide Numbers - `numbers`
+..... ..... .....  Page Title Size - `pageTitleSize`
+..... ..... .....  Section Title Size - `sectionTitleSize`
+..... ..... .....  Section Subtitle Size - `sectionSubtitleSize`
+..... ..... .....  Monospace Font - `monoFont`
+..... ..... .....  Margin size - `marginBase` and `tableMargin`
+..... ..... .....  Associating A Class Name with A Background Colour With `style.bgcolor`
+..... ..... .....  Associating A Class Name with A Foreground Colour With `style.fgcolor`
+..... ..... .....  Associating A Class Name With Text Emphasis With `style.emphasis`
+..... ..... .....  Template Presentation - `template`
+..... ..... .....  "Chevron Style" Table Of Contents - `tocStyle` And `tocTitle`
+..... ..... .....  Specifying An Abstract Slide With `abstractTitle`
+..... ..... .....  Specifying Text Size With `baseTextSize` And `baseTextDecrement`
+..... ..... .....  Specifying Bold And Italic Text Colour With `BoldColour` And `ItalicColour`
+..... ..... .....  Specifying Bold And Italic Text Effects With `BoldBold` And `ItalicItalic`
+..... ..... .....  Shrinking Tables With `compactTables`
+..... ..... .....  Controlling Task Slide Production With `taskSlides` and `tasksPerSlide`
+..... ..... .....  Controlling Glossary Slide Production With `glossaryTitle`, `glossaryTerm`, `glossaryMeaning`,`glossaryMeaningWidth`, and `glossaryTermsPerPage`
+..... ..... .....  Card Background Colour - `CardColour`
+..... ..... .....  Card Border Colour - `CardBorderColour`
+..... ..... .....  Card Border Width - `CardBorderWidth`
+..... ..... .....  Card Title Size - `CardTitleSize`
+..... ..... .....   Card Shadow - `CardShadow`
+..... ..... .....  Controlling Card Size With `CardPercent`
+..... ..... .....  Controlling Card Layout Direction With `CardLayout`
+..... ..... .....  Controlling Card Title Alignment With `CardTitleAlign`
+..... .....  Dynamic Metadata
+..... ..... .....  `CompactTables`
+..... ..... .....  `CardPercent`
+..... ..... .....  `CardLayout`
+..... ..... .....  `CardTitleAlign`
+..... ..... .....  `PageTitleSize`
+..... ..... .....  `BaseTextSize`
+..... ..... .....  `BaseTextDecrement`
+.....  Modifying The Slide Template
+..... .....  Basics
+..... .....  Slide Template Sequence
+CSV Start
+CSV Stop
 -----------------------------------------------------
 - Processing completed.
 -----------------------------------------------------

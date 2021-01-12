@@ -227,8 +227,8 @@ Let's start with a simple example. Consider the following text.
 	### This Is A Bullet Slide
 
 	* Bullet One
-		* Sub-bullet A
-		* Sub-bullet B
+	  * Sub-bullet A
+	  * Sub-bullet B
 	* Bullet Two
 	* Bullet Three
 
@@ -298,7 +298,7 @@ Bulleted list items are introduced by an asterisk.
 
 **NOTE:** Some dialects of Markdown allow other bullet markers but md2pptx doesn't. You can be sure by coding `*` you have valid Markdown that md2pptx can also process correctly. For an explanation of why you have to stick to `*` see [here](#task-list-slides).
 
-To nest bullets use a tab character or 4 spaces to indent the sub-bullets. md2pptx doesn't have a limit on the level of nesting but Powerpoint probably does.
+To nest bullets use a tab character or 2 spaces to indent the sub-bullets. md2pptx doesn't have a limit on the level of nesting but Powerpoint probably does.
 
 Terminate the bulleted list slide with a blank line.
 
