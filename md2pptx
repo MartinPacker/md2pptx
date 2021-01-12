@@ -34,8 +34,8 @@ import copy
 from lxml import etree
 
 
-md2pptx_level = "1.7.1"
-md2pptx_date = "11 January, 2021"
+md2pptx_level = "1.7.2"
+md2pptx_date = "12 January, 2021"
 
 # Turn a paragraph into a numbered list item
 def makeNumberedListItem(p):
@@ -1328,7 +1328,7 @@ def abstractSlide(presentation, slideNumber, titleText, subtitleText, bullets):
     f = p.font
     f.size = Pt(22)
     for abstractLine in bullets:
-        lineLevel, lineText = abstractLine
+        lineLevel, lineText, bulletType = abstractLine
         if para > 1:
 
             # Spacer paragraph
@@ -1603,7 +1603,7 @@ def tocSlide(presentation, slideNumber, titleText, subtitleText, bullets):
 
     # Create global list of TOC entries
     for bullet in bullets:
-        bulletLevel, bulletText = bullet
+        bulletLevel, bulletText, bulletType = bullet
         if bulletLevel == 1:
             tocEntries.append(delinkify(bulletText))
 
