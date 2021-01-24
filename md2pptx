@@ -12,6 +12,7 @@ Reads from stdin
 import re
 import sys
 import os
+import time
 from pptx import Presentation
 from pptx.util import Inches, Pt
 from pptx.dml.color import RGBColor, MSO_THEME_COLOR
@@ -35,7 +36,7 @@ from lxml import etree
 
 
 md2pptx_level = "1.7.2"
-md2pptx_date = "12 January, 2021"
+md2pptx_date = "22 January, 2021"
 
 # Turn a paragraph into a numbered list item
 def makeNumberedListItem(p):
@@ -52,10 +53,6 @@ def makeNumberedListItem(p):
     else:
         pPr = OxmlElement("a:pPr")
         p._element.insert(0, pPr)
-    # indentMarL = 514350
-    # pPr.set("indent", str(-indentMarL))
-    # pPr.set("indent", str(-indentMarL * (p.level+1)))
-    # pPr.set("marL", str(indentMarL * (p.level +1)))
 
     buFont = OxmlElement("a:buFont")
     buFont.set("typeface", "+mj-lt")
@@ -64,8 +61,6 @@ def makeNumberedListItem(p):
     buAutoNum = OxmlElement("a:buAutoNum")
     buAutoNum.set("type", "arabicPeriod")
     pPr.append(buAutoNum)
-
-    # p.level = level
 
 
 # Add a drop shadow to a shape
@@ -251,21 +246,25 @@ def createRunHyperlinkOrTooltip(run, to_slide, tooltipText=""):
     sca.target_slide = None
 
 
-# Creates a hyperlink to another slide and/or a tooltip - for a
+# Creates a hyperlink to another slide or a URL and/or a tooltip - for a
 # picture
 # Note: To get just a tooltip make to_slide be the source slide
 #       so it links to itself.
-def createPictureHyperlinkOrTooltip(picture, to_slide, tooltipText=""):
-    if to_slide == None:
+def createPictureHyperlinkOrTooltip(picture, target, tooltipText=""):
+    if target == None:
         # If neither a tooltip nor a target slide then return having
         # done nothing
         if tooltipText == "":
             return
 
         # Tooltip but no target slide
-        to_slide = SlideFromPicture(picture)
-
-    picture.click_action.target_slide = to_slide
+        target = SlideFromPicture(picture)
+        picture.click_action.target_slide = target
+    elif target.__class__.__name__ == "str":
+        # Is a URL
+        picture.click_action.hyperlink.address = target
+    else:
+        picture.click_action.target_slide = target
 
     if tooltipText != "":
         picture.click_action.hyperlink._hlink.set("tooltip", tooltipText)
@@ -1149,99 +1148,6 @@ def handleWhateverGraphicType(graphicFilename):
     return graphicFilename, printableGraphicFilename
 
 
-def graphicSlide(presentation, slideNumber, titleText, graphicFilenameTitle):
-    # Split graphic filename/title into filename and flyover text (if any),
-    # and any href (for clickability)
-    graphicFilenameTitleParts = graphicFilenameTitle.split("||")
-    graphicFilename = graphicFilenameTitleParts[0]
-    flyoverText = graphicFilenameTitleParts[1]
-    graphicHref = graphicFilenameTitleParts[2]
-    if graphicHref == "":
-        graphicHref = "#XYZZY-None"
-
-    graphicFilename, printableGraphicFilename = handleWhateverGraphicType(
-        graphicFilename
-    )
-    if titleText != "":
-        slide = presentation.slides.add_slide(
-            presentation.slide_layouts[titleOnlyLayout]
-        )
-
-        # Add title and constrain its size and placement
-        title = findSlideTitle(slide)
-        titleBottom = formatTitle(presentation, title, titleText)
-        flattenedTitle = addFormattedText(title.text_frame.paragraphs[0], titleText)
-
-        print(
-            str(slideNumber).rjust(4)
-            + "     "
-            + flattenedTitle.ljust(50)
-            + "   --> "
-            + printableGraphicFilename
-        )
-
-        # Figure out graphic height on slide
-        maxPicHeight = presentation.slide_height - titleBottom - numbers_content_margin
-    else:
-        print(
-            str(slideNumber).rjust(4)
-            + "        "
-            + " ".ljust(50)
-            + "--> "
-            + printableGraphicFilename
-        )
-
-        slide = presentation.slides.add_slide(presentation.slide_layouts[blankLayout])
-
-        # There is not title so title bottom is a fixed place
-        titleBottom = marginBase
-
-        # Figure out graphic height on slide
-        maxPicHeight = presentation.slide_height - marginBase * 2.5
-
-    slide_hrefs[href] = slideNumber + 1
-
-    # Figure out picture width - with 2 x marginBase margins
-    maxPicWidth = presentation.slide_width - marginBase * 4
-
-    # Get image dimensions
-    imgWidth, imgHeight = get_image_size(graphicFilename)
-    if imgWidth == -1:
-        print("Missing image file: " + printableGraphicFilename)
-        return slide
-
-    heightIfWidthUsed = maxPicWidth * imgHeight / imgWidth
-    widthIfHeightUsed = maxPicHeight * imgWidth / imgHeight
-
-    if heightIfWidthUsed > maxPicHeight:
-        # Use the height to scale
-        picWidth = widthIfHeightUsed
-        picHeight = maxPicHeight
-    else:
-        # Use the width to scale
-        picWidth = maxPicWidth
-        picHeight = heightIfWidthUsed
-
-    # Calculate horizontal start - centred
-    picX = (presentation.slide_width - picWidth) / 2
-    picY = titleBottom + marginBase
-    picY = titleBottom + marginBase + (maxPicHeight - picHeight) / 2
-
-    picture = slide.shapes.add_picture(graphicFilename, picX, picY, picWidth, picHeight)
-
-    # Maybe add tooltip text
-    clickable_picture_tooltips.append(flyoverText)
-
-    # Maybe add picture to list with clickability hrefs
-    clickable_pictures.append(picture)
-    clickable_picture_Hrefs.append(graphicHref)
-
-    if want_numbers_content is True:
-        addFooter(presentation, slideNumber, slide)
-
-    return slide
-
-
 def codeSlide(presentation, slideNumber, titleText, code):
     if titleText != "":
         slide = presentation.slides.add_slide(
@@ -1646,6 +1552,11 @@ def tableSlide(presentation, slideNumber, titleText, table):
 
     shapes = slide.shapes
 
+    printableTopLeftGraphicFilename = ""
+    printableTopRightGraphicFilename = ""
+    printableBottomLeftGraphicFilename = ""
+    printableBottomRightGraphicFilename = ""
+
     # Add title
     title = findSlideTitle(slide)
     titleBottom = formatTitle(presentation, title, titleText)
@@ -1986,16 +1897,12 @@ def tableSlide(presentation, slideNumber, titleText, table):
                 topLeftPicHeight,
             )
 
-            # Maybe add tooltip text
-            clickable_picture_tooltips.append(topLeftGraphicTitle)
-
-            # Maybe add picture to list with clickability hrefs
-            clickable_pictures.append(topLeftPicture)
-
             if topLeftGraphicHref == "":
                 topLeftGraphicHref = "#XYZZY-None"
 
-            clickable_picture_Hrefs.append(topLeftGraphicHref)
+            pictureInfos.append(
+                (topLeftPicture, topLeftGraphicHref, topLeftGraphicTitle)
+            )
 
         if gridColumns == 2:
             # Top Right Picture
@@ -2048,15 +1955,12 @@ def tableSlide(presentation, slideNumber, titleText, table):
                     topRightPicHeight,
                 )
 
-                # Maybe add tooltip text
-                clickable_picture_tooltips.append(topRightGraphicTitle)
-
                 if topRightGraphicHref == "":
                     topRightGraphicHref = "#XYZZY-None"
 
-                # Maybe add picture to list with clickability hrefs
-                clickable_pictures.append(topRightPicture)
-                clickable_picture_Hrefs.append(topRightGraphicHref)
+                pictureInfos.append(
+                    (topRightPicture, topRightGraphicHref, topRightGraphicTitle)
+                )
 
         if gridRows == 2:
             # Need second row of pictures
@@ -2111,16 +2015,12 @@ def tableSlide(presentation, slideNumber, titleText, table):
                     bottomLeftPicHeight,
                 )
 
-                # Maybe add tooltip text
-                clickable_picture_tooltips.append(bottomLeftGraphicTitle)
-
-                # Maybe add picture to list with clickability hrefs
-                clickable_pictures.append(bottomLeftPicture)
-
                 if bottomLeftGraphicHref == "":
                     bottomLeftGraphicHref = "#XYZZY-None"
 
-                clickable_picture_Hrefs.append(bottomLeftGraphicHref)
+                pictureInfos.append(
+                    (bottomLeftPicture, bottomLeftGraphicHref, bottomLeftGraphicTitle)
+                )
 
             if gridColumns == 2:
                 # Bottom Right Picture
@@ -2177,16 +2077,16 @@ def tableSlide(presentation, slideNumber, titleText, table):
                             bottomRightPicHeight,
                         )
 
-                        # Maybe add tooltip text
-                        clickable_picture_tooltips.append(bottomRightGraphicTitle)
-
-                        # Maybe add picture to list with clickability hrefs
-                        clickable_pictures.append(bottomRightPicture)
-
                         if bottomRightGraphicHref == "":
                             bottomRightGraphicHref = "#XYZZY-None"
 
-                        clickable_picture_Hrefs.append(bottomRightGraphicHref)
+                        pictureInfos.append(
+                            (
+                                bottomRightPicture,
+                                bottomRightGraphicHref,
+                                bottomRightGraphicTitle,
+                            )
+                        )
 
     else:
         # Normal table slide
@@ -2348,8 +2248,6 @@ def createSlide(
         else:
             slide = sectionSlide(presentation, slideNumber, titleText, slide_subtitle)
 
-    elif block_type == "graphic":
-        slide = graphicSlide(presentation, slideNumber, titleText, bulletsOrFilename)
     elif block_type == "content":
         if (tocStyle != "") & (tocTitle == titleText):
             # This is a Table Of Contents slide
@@ -2545,6 +2443,7 @@ def createFootnoteSlides(prs, slideNumber, footnoteDefinitions):
 
     return slideNumber, footnoteSlides
 
+start_time = time.time()
 
 banner = (
     "md2pptx Markdown To Powerpoint Converter " + md2pptx_level + " " + md2pptx_date
@@ -2587,8 +2486,19 @@ slideNumber = 1
 bulletRegex = re.compile("^(\s)*(\*)(.*)")
 numberRegex = re.compile("^(\s)*(\d+)\.(.*)")
 metadataRegex = re.compile("^(.+):(.+)")
-graphicRegex = re.compile("^!\[(.*)\]\((.+)\)")
-clickableGraphicRegex = re.compile("^\[!\[(.*)\]\((.+)\)\]\((.+)\)")
+
+graphicRE = "!\[(.*?)\]\((.+?)\)"
+clickableGraphicRE = "\[" + graphicRE + "\]\((.+?)\)"
+graphicRegex = re.compile(graphicRE)
+clickableGraphicRegex = re.compile(clickableGraphicRE)
+
+neitherClickableGraphicRegex = re.compile(graphicRE + "(.*?)" + graphicRE)
+leftClickableGraphicRegex = re.compile(clickableGraphicRE + "(.*?)" + graphicRE)
+rightClickableGraphicRegex = re.compile(graphicRE + "(.*?)" + clickableGraphicRE)
+bothClickableGraphicRegex = re.compile(
+    clickableGraphicRE + "(.*?)" + clickableGraphicRE
+)
+
 linkRegex = re.compile("^\[(.+)\]\((.+)\)")
 twoUpRegex = re.compile("^\|(.+?)\|(.+?)\|")
 footnoteDefinitionRegex = re.compile("^\[\^(.+?)]: (.+)")
@@ -2978,9 +2888,8 @@ tasks = []
 slide_hrefs = {}
 href_runs = {}
 
-clickable_pictures = []
-clickable_picture_Hrefs = []
-clickable_picture_tooltips = []
+# Each of these is a picture, then a href, then a tooltip - as a tuple
+pictureInfos = []
 
 # Pass to concatenate lines with continuations
 previous_line = "\n"
@@ -3004,7 +2913,7 @@ for line in after_metadata_and_HTML:
 
     else:
         # Previous line was not blank and nor is this one so consider concatenation
-        if line.lstrip()[0] not in "*#\|0123456789":
+        if line.lstrip()[0] not in "*#\|0123456789!":
             if previous_line[0:2] != "# ":
                 # Previous line was not Heading Level 1 so concatenate
                 lines_after_concatenation[-1] = (
@@ -3212,7 +3121,8 @@ for line in lines_after_concatenation:
                 prs, slideNumber, slide_title, slide_subtitle, block_type, bullets
             )
 
-            slide_hrefs[href] = slideNumber
+            if href != "":
+                slide_hrefs[href] = slideNumber
 
         # Get slide title text and any href
         slide_title, href = parseTitleText(line[3:])
@@ -3242,7 +3152,8 @@ for line in lines_after_concatenation:
                 prs, slideNumber, slide_title, slide_subtitle, block_type, bullets
             )
 
-        slide_hrefs[href] = slideNumber
+            if href != "":
+                slide_hrefs[href] = slideNumber
 
         # Get slide title text and any href
         slide_title, href = parseTitleText(line[2:])
@@ -3271,7 +3182,8 @@ for line in lines_after_concatenation:
                 prs, slideNumber, slide_title, slide_subtitle, block_type, bullets
             )
 
-            slide_hrefs[href] = slideNumber
+            if href != "":
+                slide_hrefs[href] = slideNumber
 
         # Get slide title text and any href
         slide_title, href = parseTitleText(line[1:])
@@ -3285,75 +3197,6 @@ for line in lines_after_concatenation:
         in_list = False
         in_table = False
         in_card = False
-
-        if (notes_text != "") & (slide != None):
-            notes_slide = slide.notes_slide
-            text_frame = notes_slide.notes_text_frame
-            text_frame.text = notes_text
-
-        notes_text = ""
-
-    elif line[:1] == "|":
-        # Table or side-by-side
-        if in_table is False:
-            block_type = "table"
-            table_rows = []
-            in_table = True
-            in_list = False
-            in_card = False
-
-        # Create a table row - but with (maybe empty) junk before and after
-        words = line.split("|")
-        table_row = []
-        for cell in words:
-            table_row.append(cell)
-
-        # Remove first element
-        table_row.pop(0)
-
-        # Remove last element - if blank
-        if cell == "":
-            table_row.pop()
-
-        # Add clean table row (list of cells) to saved table rows
-        table_rows.append(table_row)
-
-    elif (graphicRegex.match(line) != None) | (
-        clickableGraphicRegex.match(line) != None
-    ):
-        if clickableGraphicRegex.match(line):
-            # Clickable graphic case
-            clickableGraphicMatch = clickableGraphicRegex.match(line)
-            graphicTitle = clickableGraphicMatch.group(1)
-            graphicFilename = clickableGraphicMatch.group(2)
-            graphicHref = clickableGraphicMatch.group(3)
-        else:
-            # Graphic
-            graphicMatch = graphicRegex.match(line)
-            graphicTitle = graphicMatch.group(1)
-            graphicFilename = graphicMatch.group(2)
-            graphicHref = ""
-        block_type = "graphic"
-
-        if in_block is True:
-            graphicInfo = graphicFilename + "||" + graphicTitle
-            graphicInfo = graphicInfo + "||" + graphicHref
-
-            slideNumber, slide = createSlide(
-                prs, slideNumber, slide_title, "", block_type, graphicInfo
-            )
-        else:
-            graphicInfo = graphicFilename + "||" + "||" + graphicHref
-
-            slideNumber, slide = createSlide(
-                prs, slideNumber, graphicTitle, "", block_type, graphicInfo
-            )
-
-        slide_title = ""
-        slide_subtitle = ""
-        in_block = False
-        in_list = False
-        in_table = False
 
         if (notes_text != "") & (slide != None):
             notes_slide = slide.notes_slide
@@ -3397,6 +3240,101 @@ for line in lines_after_concatenation:
         in_list = True
         in_table = False
 
+    elif (graphicRegex.match(line) != None) | (
+        clickableGraphicRegex.match(line) != None
+    ):
+        # There is at least one graphic in the line - whether clickable or not
+        if in_table is False:
+            block_type = "table"
+            table_rows = []
+            in_table = True
+            in_list = False
+            in_card = False
+
+        # Create a table row
+        table_row = []
+
+        if len(graphicRegex.findall(line)) == 2:
+            # Two graphics - whether clickable or not - on same line
+            if bothClickableGraphicRegex.match(line) != None:
+                matches = bothClickableGraphicRegex.match(line)
+
+                leftGraphic = (
+                    "[![" + matches[1] + "](" + matches[2] + ")](" + matches[3] + ")"
+                )
+
+                rightGraphic = (
+                    "[![" + matches[5] + "](" + matches[6] + ")](" + matches[7] + ")"
+                )
+
+            elif leftClickableGraphicRegex.match(line) != None:
+                matches = leftClickableGraphicRegex.match(line)
+
+                leftGraphic = (
+                    "[![" + matches[1] + "](" + matches[2] + ")](" + matches[3] + ")"
+                )
+
+                rightGraphic = (
+                    "![" + matches[5] + "](" + matches[6] + ")"
+                )
+
+            elif rightClickableGraphicRegex.match(line) != None:
+                matches = rightClickableGraphicRegex.match(line)
+
+                leftGraphic = (
+                    "![" + matches[1] + "](" + matches[2] + ")"
+                )
+
+                rightGraphic = (
+                    "[![" + matches[4] + "](" + matches[5] + ")](" + matches[6] + ")"
+                )
+
+            else:
+                matches = neitherClickableGraphicRegex.match(line)
+                leftGraphic = (
+                    "![" + matches[1] + "](" + matches[2] + ")"
+                )
+
+                rightGraphic = (
+                    "![" + matches[4] + "](" + matches[5] + ")"
+                )
+
+            table_row.append(leftGraphic)
+            table_row.append(rightGraphic)
+
+        else:
+            # One graphic - whether clickable or not - on the line
+
+            table_row.append(line)
+
+        # Add table row to saved table rows
+        table_rows.append(table_row)
+
+    elif line[:1] == "|":
+        # Table or side-by-side
+        if in_table is False:
+            block_type = "table"
+            table_rows = []
+            in_table = True
+            in_list = False
+            in_card = False
+
+        # Create a table row - but with (maybe empty) junk before and after
+        words = line.split("|")
+        table_row = []
+        for cell in words:
+            table_row.append(cell)
+
+        # Remove first element
+        table_row.pop(0)
+
+        # Remove last element - if blank
+        if cell == "":
+            table_row.pop()
+
+        # Add clean table row (list of cells) to saved table rows
+        table_rows.append(table_row)
+
     else:
         # Must be a slide note line
         slide_subtitle = slide_subtitle + "\n" + line
@@ -3408,7 +3346,8 @@ if (in_block is True) | (in_code is True) | (in_table is True):
         prs, slideNumber, slide_title, slide_subtitle, block_type, bullets
     )
 
-    slide_hrefs[href] = slideNumber
+    if href != "":
+        slide_hrefs[href] = slideNumber
 
     if (notes_text != "") & (slide != None):
         notes_slide = slide.notes_slide
@@ -3491,22 +3430,33 @@ for href in href_runs.keys():
         run, prs.slides[slide_hrefs[href] - 2 + templateSlideCount], ""
     )
 
-clickable_picture_count = len(clickable_pictures)
-for p in range(clickable_picture_count):
-    picture = clickable_pictures[p]
-    href = clickable_picture_Hrefs[p]
-    tooltip = clickable_picture_tooltips[p]
+# Each picture appears in pictures
+# There's a corresponding entry in picture_Hrefs
+# There's a corresponding entry in picture_tooltips
 
-    # Internal Link
+# fix up any clickable picture links
+picture_count = len(pictureInfos)
+for p in range(picture_count):
+    picture, href, tooltip = pictureInfos[p]
+
+    # Pick up link target - if any
     if href == "#XYZZY-None":
-        target_slide = None
+        target = None
     else:
-        internalHref = href[1:]
-        target_slide = prs.slides[slide_hrefs[internalHref] - 2 + templateSlideCount]
-    createPictureHyperlinkOrTooltip(picture, target_slide, tooltip)
+        if href[1:] in slide_hrefs.keys():
+            # Is an internal link
+            target = prs.slides[slide_hrefs[href[1:]] - 2 + templateSlideCount]
+        else:
+            # Is an external Link
+            target = href
+
+    createPictureHyperlinkOrTooltip(picture, target, tooltip)
 
 # Write out the finished presentation
 prs.save(output_filename)
 
+elapsed_time = time.time() - start_time
+
+print("\nProcessing complete.\nElapsed time: " + str(int(1000*elapsed_time)/1000) + "s")
 
 sys.exit()

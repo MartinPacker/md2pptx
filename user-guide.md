@@ -179,6 +179,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|:-|:-|
+|1.7.2|24 January 2021|Make vertical bars optional around image references|
 |1.7.1|11 January 2021|Fixed bug where hyperlinks in slide titles didn't work|
 |1.7|9 January 2021|Added support for numbered list items|
 |1.6.3|2 January 2021|Added support for vertical cards. Also new `CardTitleAlign` and `CardLayout` metadata&comma; plus `basetextsize` and `basetextdecrement` Dynamic Metadata items.|
@@ -427,7 +428,7 @@ For the types of graphics supported see [Graphics File References](#graphics-fil
 
 For how to make such graphics clickable or have a tooltip see [Clickable Pictures](#clickable-pictures).
 
-**Note:** Regular Markdown processors don't support pictures in tables; They render the `|` characters literally.
+**Note:** Regular Markdown processors don't support pictures in tables; They render the `|` characters literally. For this reason the vertical bars are optional.
 
 #### Special Case: Two By Two Grid Of Graphics
 <a id="special-case-two-by-two-grid-of-graphics"></a>
@@ -449,7 +450,7 @@ For the types of graphics supported see [Graphics File References](#graphics-fil
 
 For how to make such graphics clickable or have a tooltip see [Clickable Pictures](#clickable-pictures).
 
-**Note:** Regular Markdown processors don't support pictures in tables; They render the `|` characters literally.
+**Note:** Regular Markdown processors don't support pictures in tables; They render the `|` characters literally. For this reason the vertical bars are optional.
 
 #### Special Case: Three Graphics On A Slide
 <a id="special-case-three-graphics-on-a-slide"></a>
@@ -493,7 +494,7 @@ For the types of graphics supported see [Graphics File References](#graphics-fil
 
 For how to make such graphics clickable or have a tooltip see [Clickable Pictures](#clickable-pictures).
 
-**Note:** Regular Markdown processors don't support pictures in tables; They render the `|` characters literally.
+**Note:** Regular Markdown processors don't support pictures in tables; They render the `|` characters literally. For this reason the vertical bars are optional.
 
 #### Special Case: One Graphic Above Another
 <a id="special-case-one-graphic-above-another"></a>
@@ -514,7 +515,7 @@ For the types of graphics supported see [Graphics File References](#graphics-fil
 
 For how to make such graphics clickable or have a tooltip see [Clickable Pictures](#clickable-pictures).
 
-**Note:** Regular Markdown processors don't support pictures in tables; They render the `|` characters literally.
+**Note:** Regular Markdown processors don't support pictures in tables; They render the `|` characters literally. For this reason the vertical bars are optional.
 
 ### Card Slides
 <a id="card-slides"></a>
