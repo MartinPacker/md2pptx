@@ -34,9 +34,16 @@ import copy
 # import xml.etree
 from lxml import etree
 
+# Try to import CairoSVG - which might not be installed.
+# Flag availability or otherwise
+try:
+    import cairosvg
+    have_cairosvg = True
+except:
+    have_cairosvg = False
 
-md2pptx_level = "1.7.2"
-md2pptx_date = "22 January, 2021"
+md2pptx_level = "1.7.3"
+md2pptx_date = "26 January, 2021"
 
 # Turn a paragraph into a numbered list item
 def makeNumberedListItem(p):
@@ -3103,6 +3110,10 @@ for line in lines_after_concatenation:
     elif line[:4] == "####":
         # Heading Level 4 - card on an existing slide
         in_card = True
+        
+        # If there is an outstanding href then store it
+        if href != "":
+            slide_hrefs[href] = slideNumber + 1
 
         # Get card title text and any href
         cardName, href = parseTitleText(line[4:])
@@ -3424,11 +3435,22 @@ if (len(tasks) > 0) & (taskSlides != "none"):
             createTaskSlides(prs, slideNumber, incomplete, "Incomplete Tasks")
 
 # Fix up any internal links
+xrefCheck_errors = False
 for href in href_runs.keys():
     run = href_runs[href]
-    createRunHyperlinkOrTooltip(
-        run, prs.slides[slide_hrefs[href] - 2 + templateSlideCount], ""
-    )
+    if href in slide_hrefs.keys():
+        createRunHyperlinkOrTooltip(
+            run, prs.slides[slide_hrefs[href] - 2 + templateSlideCount], ""
+        )
+    else:
+        # No id defined with that name
+        if not xrefCheck_errors:
+            # First time in this run a cross reference error occurred
+            xrefCheck_errors = True
+            print("\nHyperlink Reference Errors")
+            print("--------------------------")
+        
+        print("Slide " + str(prs.slides.index(SlideFromRun(run)) + 1 - templateSlideCount) + f": '{href}'")
 
 # Each picture appears in pictures
 # There's a corresponding entry in picture_Hrefs
