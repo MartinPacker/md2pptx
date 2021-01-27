@@ -5,7 +5,7 @@ md2pptx - Converts (a subset of) Markdown to Powerpoint (PPTX)
 
 First argument is file to write to
 
-Reads from stdin 
+Reads from stdin
 
 """
 
