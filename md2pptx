@@ -38,12 +38,13 @@ from lxml import etree
 # Flag availability or otherwise
 try:
     import cairosvg
+
     have_cairosvg = True
 except:
     have_cairosvg = False
 
-md2pptx_level = "1.7.3"
-md2pptx_date = "26 January, 2021"
+md2pptx_level = "1.8"
+md2pptx_date = "31 January, 2021"
 
 # Turn a paragraph into a numbered list item
 def makeNumberedListItem(p):
@@ -1146,11 +1147,46 @@ def handleWhateverGraphicType(graphicFilename):
         graphicFile = tempfile.NamedTemporaryFile(delete=False)
         graphicFile.write(data)
 
-        # Retrieve the temporary file name
-        graphicFilename = graphicFile.name
+        if ".svg" in graphicFilename.lower():
+            # is a web-based SVG file
+            if have_cairosvg:
+                # Convert SVG file to temporary PNG
+
+                # Store SVG in a temporary file
+                convertedGraphicFile = tempfile.NamedTemporaryFile(delete=False)
+
+                cairosvg.svg2png(file_obj=graphicFile, write_to=convertedGraphicFile)
+
+                # Retrieve the temporary file name
+                graphicFilename = convertedGraphicFile.name
+
+            else:
+                print("Don't have CairoSVG installed. Terminating.")
+                sys.exit()
+        else:
+            # Retrieve the temporary (PNG) file name
+            graphicFilename = graphicFile.name
+
     else:
-        # Is a physical file
+        # Files don't get their names edited
         printableGraphicFilename = graphicFilename
+
+        if ".svg" in graphicFilename.lower():
+            # is a physical SVG file
+            if have_cairosvg:
+                # Convert SVG file to temporary PNG
+
+                # Store in a temporary file
+                graphicFile = tempfile.NamedTemporaryFile(delete=False)
+
+                cairosvg.svg2png(file_obj=open(graphicFilename), write_to=graphicFile)
+
+                # Retrieve the temporary file name
+                graphicFilename = graphicFile.name
+
+            else:
+                print("Don't have CairoSVG installed. Terminating.")
+                sys.exit()
 
     return graphicFilename, printableGraphicFilename
 
@@ -2450,6 +2486,7 @@ def createFootnoteSlides(prs, slideNumber, footnoteDefinitions):
 
     return slideNumber, footnoteSlides
 
+
 start_time = time.time()
 
 banner = (
@@ -3110,7 +3147,7 @@ for line in lines_after_concatenation:
     elif line[:4] == "####":
         # Heading Level 4 - card on an existing slide
         in_card = True
-        
+
         # If there is an outstanding href then store it
         if href != "":
             slide_hrefs[href] = slideNumber + 1
@@ -3285,16 +3322,12 @@ for line in lines_after_concatenation:
                     "[![" + matches[1] + "](" + matches[2] + ")](" + matches[3] + ")"
                 )
 
-                rightGraphic = (
-                    "![" + matches[5] + "](" + matches[6] + ")"
-                )
+                rightGraphic = "![" + matches[5] + "](" + matches[6] + ")"
 
             elif rightClickableGraphicRegex.match(line) != None:
                 matches = rightClickableGraphicRegex.match(line)
 
-                leftGraphic = (
-                    "![" + matches[1] + "](" + matches[2] + ")"
-                )
+                leftGraphic = "![" + matches[1] + "](" + matches[2] + ")"
 
                 rightGraphic = (
                     "[![" + matches[4] + "](" + matches[5] + ")](" + matches[6] + ")"
@@ -3302,13 +3335,9 @@ for line in lines_after_concatenation:
 
             else:
                 matches = neitherClickableGraphicRegex.match(line)
-                leftGraphic = (
-                    "![" + matches[1] + "](" + matches[2] + ")"
-                )
+                leftGraphic = "![" + matches[1] + "](" + matches[2] + ")"
 
-                rightGraphic = (
-                    "![" + matches[4] + "](" + matches[5] + ")"
-                )
+                rightGraphic = "![" + matches[4] + "](" + matches[5] + ")"
 
             table_row.append(leftGraphic)
             table_row.append(rightGraphic)
@@ -3449,8 +3478,12 @@ for href in href_runs.keys():
             xrefCheck_errors = True
             print("\nHyperlink Reference Errors")
             print("--------------------------")
-        
-        print("Slide " + str(prs.slides.index(SlideFromRun(run)) + 1 - templateSlideCount) + f": '{href}'")
+
+        print(
+            "Slide "
+            + str(prs.slides.index(SlideFromRun(run)) + 1 - templateSlideCount)
+            + f": '{href}'"
+        )
 
 # Each picture appears in pictures
 # There's a corresponding entry in picture_Hrefs
@@ -3479,6 +3512,10 @@ prs.save(output_filename)
 
 elapsed_time = time.time() - start_time
 
-print("\nProcessing complete.\nElapsed time: " + str(int(1000*elapsed_time)/1000) + "s")
+print(
+    "\nProcessing complete.\nElapsed time: "
+    + str(int(1000 * elapsed_time) / 1000)
+    + "s"
+)
 
 sys.exit()

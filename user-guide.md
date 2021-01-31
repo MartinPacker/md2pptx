@@ -10,6 +10,8 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 * [Why md2pptx?](#why-md2pptx)
 	* [A Real World Use Case](#a-real-world-use-case)
 * [How Do You Use md2pptx?](#how-do-you-use-md2pptx)
+	* [Installation](#installation)
+	* [Use](#use)
 * [python-pptx license](#pythonpptx-license)
 * [Change Log](#change-log)
 * [Creating Slides](#creating-slides)
@@ -122,14 +124,21 @@ It was relatively little trouble to convert to Markdown. In fact it took about a
 
 You write Markdown in exactly the same way as normal, with some understanding of how Markdown is converted to slides (using the information in [Creating Slides](#creating-slides)).
 
-To use md2pptx you need to
+To use md2pptx you need to download it and install the prerequisites.
 
-1. Download it.
+### Installation
+
+To install md2pptx and its prerequisites
+
 1. Have Python 3 installed - at a reasonably high level.
 1. Install python-pptx using the command `pip3 install python-pptx`. (You might have to install pip firsst.)
-1. Invoke it.
+1. Optionally install CairoSVG - using the command `pip3 install cairosvg`. (This is for SVG graphics support.)
+1. Install md2pptx by copying a version and unzipping it or using `git clone`. md2pptx can be found [here](https://github.com/MartinPacker/md2pptx).
 
-**NOTE:** A future release of md2pptx will require at least Python 3.8. This will bring an improvement in efficiency.
+**NOTE:** Any release of md2pptx published from 1 March 2021 onwards will require at least Python 3.8. This will bring an improvement in efficiency. CairoSVG requires Python 3.6 or higher.
+
+### Use
+
 
 The following instructions are for Unix-like systems. (It's developed and used by the developer on Mac OS but should also have identical syntax on Linux.) Windows users will need a slightly different form, but the principle is the same.
 
@@ -179,6 +188,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|:-|:-|
+|1.8|31 January 2021|SVG support for file and web graphics|
 |1.7.2|24 January 2021|Make vertical bars optional around image references|
 |1.7.1|11 January 2021|Fixed bug where hyperlinks in slide titles didn't work|
 |1.7|9 January 2021|Added support for numbered list items|
@@ -373,8 +383,6 @@ md2pptx supports graphics references in three different formats:
 
 The `data:` URI example actually works! Try it.
 
-**Note:** Scalable Vector Graphics (SVG) is not supported - as PowerPoint doesn't support it (and nor does python-pptx).
-
 For cases other than the local file, the reference - when displayed by md2pptx - is shortened to show the beginning and the end of the reference. This is to make it easy to recognise if you've accidentally repeated the reference. Here is an example:
 
 ```
@@ -383,6 +391,14 @@ Slides:
 
    1     Test Title                                           --> data:image/png;base64,/9j.../Nka02WcDC6hCtKgQhCAP/9k=
 ```
+
+For image graphics only PNG and JPEG have been tested. While the code doesn't explicitly prohibit other image file types they aren't currently supported.
+
+Scalable Vector Graphics (SVG) format is only supported if you have installed the CairoSVG Python package - as PowerPoint doesn't support it (and nor does python-pptx). SVG files - whether from the web or a local file - are converted to a temporary PNG file first, before copying into the PowerPoint slide deck.
+
+SVG support uses the [CairoSVG](https://cairosvg.org/) library - which requires Python to be at least at the 3.6 level. md2pptx's SVG support is limited by that available in CairoSVG and so not all SVG files are supported.
+
+If CairoSVG is not installed and md2pptx encounters an SVG graphic reference it will write a message reminding you of the need for CairoSVG. md2pptx will then immediately terminate.
 
 ### Table Slides
 <a id="table-slides"></a>
