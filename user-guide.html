@@ -1073,14 +1073,19 @@ body .markdown-body
 <li><a href="#shrinking-tables-with-compacttables">Shrinking Tables With <code>compactTables</code></a></li>
 <li><a href="#controlling-task-slide-production-with-taskslides-and-tasksperslide">Controlling Task Slide Production With <code>taskSlides</code> and <code>tasksPerSlide</code></a></li>
 <li><a href="#controlling-glossary-slide-production-with-glossarytitle-glossaryterm-glossarymeaningglossarymeaningwidth-and-glossarytermsperpage">Controlling Glossary Slide Production With <code>glossaryTitle</code>, <code>glossaryTerm</code>, <code>glossaryMeaning</code>,<code>glossaryMeaningWidth</code>, and <code>glossaryTermsPerPage</code></a></li>
+<li><a href="#card-slide-metadata">Card Slide Metadata</a><ul>
 <li><a href="#card-background-colour-cardcolour">Card Background Colour - <code>CardColour</code></a></li>
 <li><a href="#card-border-colour-cardbordercolour">Card Border Colour - <code>CardBorderColour</code></a></li>
 <li><a href="#card-border-width-cardborderwidth">Card Border Width - <code>CardBorderWidth</code></a></li>
 <li><a href="#card-title-size-cardtitlesize">Card Title Size - <code>CardTitleSize</code></a></li>
 <li><a href="#card-shadow-cardshadow">Card Shadow - <code>CardShadow</code></a></li>
-<li><a href="#controlling-card-size-with-cardpercent">Controlling Card Size With <code>CardPercent</code></a></li>
-<li><a href="#controlling-card-layout-direction-with-cardlayout">Controlling Card Layout Direction With <code>CardLayout</code></a></li>
-<li><a href="#controlling-card-title-alignment-with-cardtitlealign">Controlling Card Title Alignment With <code>CardTitleAlign</code></a></li>
+<li><a href="#card-size-cardpercent">Card Size - <code>CardPercent</code></a></li>
+<li><a href="#card-layout-direction-cardlayout">Card Layout Direction - <code>CardLayout</code></a></li>
+<li><a href="#card-title-alignment-cardtitlealign">Card Title Alignment - <code>CardTitleAlign</code></a></li>
+<li><a href="#card-title-position-cardtitleposition">Card Title Position - <code>CardTitlePosition</code></a></li>
+<li><a href="#card-shape-cardshape">Card Shape - <code>CardShape</code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#dynamic-metadata">Dynamic Metadata</a><ul>
@@ -1088,6 +1093,8 @@ body .markdown-body
 <li><a href="#cardpercent"><code>CardPercent</code></a></li>
 <li><a href="#cardlayout"><code>CardLayout</code></a></li>
 <li><a href="#cardtitlealign"><code>CardTitleAlign</code></a></li>
+<li><a href="#cardtitleposition"><code>CardTitlePosition</code></a></li>
+<li><a href="#cardshape"><code>CardShape</code></a></li>
 <li><a href="#pagetitlesize"><code>PageTitleSize</code></a></li>
 <li><a href="#basetextsize"><code>BaseTextSize</code></a></li>
 <li><a href="#basetextdecrement"><code>BaseTextDecrement</code></a></li>
@@ -1191,174 +1198,179 @@ THE SOFTWARE.
 <thead>
 <tr>
 <th align="left">Level</th>
-<th align="left">Date</th>
+<th align="right">Date</th>
 <th align="left">What</th>
 </tr>
 </thead>
 <tbody>
 <tr>
+<td align="left">1.8.1</td>
+<td align="right">10&nbsp;February&nbsp;2021</td>
+<td align="left">Card options: Rounded versus square corners. Titles above or in cards</td>
+</tr>
+<tr>
 <td align="left">1.8</td>
-<td align="left">31 January 2021</td>
+<td align="right">31&nbsp;January&nbsp;2021</td>
 <td align="left">SVG support for file and web graphics</td>
 </tr>
 <tr>
 <td align="left">1.7.2</td>
-<td align="left">24 January 2021</td>
+<td align="right">24&nbsp;January&nbsp;2021</td>
 <td align="left">Make vertical bars optional around image references</td>
 </tr>
 <tr>
 <td align="left">1.7.1</td>
-<td align="left">11 January 2021</td>
+<td align="right">11&nbsp;January&nbsp;2021</td>
 <td align="left">Fixed bug where hyperlinks in slide titles didn&rsquo;t work</td>
 </tr>
 <tr>
 <td align="left">1.7</td>
-<td align="left">9 January 2021</td>
+<td align="right">9&nbsp;January&nbsp;2021</td>
 <td align="left">Added support for numbered list items</td>
 </tr>
 <tr>
 <td align="left">1.6.3</td>
-<td align="left">2 January 2021</td>
+<td align="right">2&nbsp;January&nbsp;2021</td>
 <td align="left">Added support for vertical cards. Also new <code>CardTitleAlign</code> and <code>CardLayout</code> metadata&comma; plus <code>basetextsize</code> and <code>basetextdecrement</code> Dynamic Metadata items.</td>
 </tr>
 <tr>
 <td align="left">1.6.2</td>
-<td align="left">1 January 2021</td>
+<td align="right">1&nbsp;January&nbsp;2021</td>
 <td align="left">Added 3 slide-level Dynamic Metadata capabilities and <code>cardpercent</code> metadata value.</td>
 </tr>
 <tr>
 <td align="left">1.6.1</td>
-<td align="left">29 December 2020</td>
+<td align="right">29&nbsp;December&nbsp;2020</td>
 <td align="left">Added <code>&lt;a id=</code> as an alternative hyperlink anchor.</td>
 </tr>
 <tr>
 <td align="left">1.6</td>
-<td align="left">22 December 2020</td>
+<td align="right">22&nbsp;December&nbsp;2020</td>
 <td align="left">Added Card Slide support. Metadata keys are now case-insensitive.</td>
 </tr>
 <tr>
 <td align="left">1.5</td>
-<td align="left">7 December 2020</td>
+<td align="right">7&nbsp;December&nbsp;2020</td>
 <td align="left">Pictures now can have a tooltip. You can define inter-slide links on both pictures and runs of text. You can omit the final <code>|</code> of a table line.</td>
 </tr>
 <tr>
 <td align="left">1.4</td>
-<td align="left">23 November 2020</td>
+<td align="right">23&nbsp;November&nbsp;2020</td>
 <td align="left">Task slides&rsquo; slide numbers are hyperlinked to the relevant slide</td>
 </tr>
 <tr>
 <td align="left">1.3</td>
-<td align="left">20 November 2020</td>
+<td align="right">20&nbsp;November&nbsp;2020</td>
 <td align="left">Glossary terms now have tooltips and hyperlinks to the relevant Glossary slide. Footnotes have hyperlinks to the relevant Footnotes slide.</td>
 </tr>
 <tr>
 <td align="left">1.2</td>
-<td align="left">3 November 2020</td>
+<td align="right">3&nbsp;November&nbsp;2020</td>
 <td align="left">Support URLs for graphics. Reworked Processing Summary slide to use a flowed table.</td>
 </tr>
 <tr>
 <td align="left">1.1</td>
-<td align="left">25 October 2020</td>
+<td align="right">25&nbsp;October&nbsp;2020</td>
 <td align="left">Introduce Template as a better replacement for Master - which still works. Add German characters. Better template file searching. Escape underscore. Better handling of continuation onto second and subsequent lines.</td>
 </tr>
 <tr>
 <td align="left">1.0</td>
-<td align="left">13 October 2020</td>
+<td align="right">13&nbsp;October&nbsp;2020</td>
 <td align="left">Python 3&comma; Support input filename as first command line parameter.</td>
 </tr>
 <tr>
 <td align="left">0.9</td>
-<td align="left">4 September 2020</td>
+<td align="right">4&nbsp;September&nbsp;2020</td>
 <td align="left">Footnote slide support</td>
 </tr>
 <tr>
 <td align="left">0.8</td>
-<td align="left">14 June 2020</td>
+<td align="right">14&nbsp;June&nbsp;2020</td>
 <td align="left"><code>bgcolor</code> is now <code>style.bgcolor</code>. Added <code>style.fgcolor</code> and <code>style.emphasis</code>.</td>
 </tr>
 <tr>
 <td align="left">0.7.3</td>
-<td align="left">24 May 2020</td>
+<td align="right">24&nbsp;May&nbsp;2020</td>
 <td align="left">Allow background colouring via <code>span</code> elements</td>
 </tr>
 <tr>
 <td align="left">0.7.2</td>
-<td align="left">14 April 2020</td>
+<td align="right">14&nbsp;April&nbsp;2020</td>
 <td align="left">Support three graphics on a slide. Added <code>&amp;equals;</code> entity reference. Added <code>tableMargin</code>.</td>
 </tr>
 <tr>
 <td align="left">0.7.1</td>
-<td align="left">14 November 2019</td>
+<td align="right">14&nbsp;November&nbsp;2019</td>
 <td align="left">Make slide titles longer. Fixed formatting issue with one-graphic-above-another table slide.</td>
 </tr>
 <tr>
 <td align="left">0.7</td>
-<td align="left">3 November 2019</td>
+<td align="right">3&nbsp;November&nbsp;2019</td>
 <td align="left">Support <code>abbr</code> element as a glossary item. Each distinct term leads to a glossary slide entry at the back of the presentation.</td>
 </tr>
 <tr>
 <td align="left">0.6</td>
-<td align="left">8 October 2019</td>
+<td align="right">8&nbsp;October&nbsp;2019</td>
 <td align="left">Support vertical pair of graphics in a table<br/>Fixed some issues with Markdown-syntax hyperlinks<br/>Support escaped square brackets <code>\[</code> and <code>\]</code>&comma;<code>&amp;lsqb;</code> and <code>&amp;rsqb;</code> being newly-supported alternatives</td>
 </tr>
 <tr>
 <td align="left">0.5</td>
-<td align="left">12 May 2019</td>
+<td align="right">12&nbsp;May&nbsp;2019</td>
 <td align="left">CriticMarkup support</td>
 </tr>
 <tr>
 <td align="left">0.4.5</td>
-<td align="left">5 May 2019</td>
+<td align="right">5&nbsp;May&nbsp;2019</td>
 <td align="left">Some numeric character references</td>
 </tr>
 <tr>
 <td align="left">0.4.4</td>
-<td align="left">6 March 2019</td>
+<td align="right">6&nbsp;March&nbsp;2019</td>
 <td align="left">Processing summary slide shows build date and time</td>
 </tr>
 <tr>
 <td align="left">0.4.3</td>
-<td align="left">20 January 2019</td>
+<td align="right">20&nbsp;January&nbsp;2019</td>
 <td align="left">Support a few HTML entity references - punctuation and arrows.<br/>Support split task slide sets - completed and incomplete.<br/>Task tags are sorted.</td>
 </tr>
 <tr>
 <td align="left">0.4.2</td>
-<td align="left">13 January 2019</td>
+<td align="right">13&nbsp;January&nbsp;2019</td>
 <td align="left">Tasks slide set controllable with metadata <code>taskSlides</code> and <code>tasksPerSlide</code></td>
 </tr>
 <tr>
 <td align="left">0.4.1</td>
-<td align="left">9 January 2019</td>
+<td align="right">9&nbsp;January&nbsp;2019</td>
 <td align="left">Enhanced Taskpaper support with <code>@due</code>&comma; <code>@tags</code>&comma; and <code>@done</code>&comma; and reworked as a series of table slides.</td>
 </tr>
 <tr>
 <td align="left">0.4</td>
-<td align="left">7 January 2019</td>
+<td align="right">7&nbsp;January&nbsp;2019</td>
 <td align="left">Support shrinking of table cell font and margins.<br/>Added two-to-by-two grid of graphics on a slide.</td>
 </tr>
 <tr>
 <td align="left">0.3.2</td>
-<td align="left">3 January 2019</td>
+<td align="right">3 January 2019</td>
 <td align="left">Support \# as a literal octothorpe/hash/pound.<br/>Tidied up reporting.<br/>Added superscript, subscript, strikethrough, and underline text effects.</td>
 </tr>
 <tr>
 <td align="left">0.3.1</td>
-<td align="left">3 November 2018</td>
+<td align="right">3 November 2018</td>
 <td align="left">Fixed support for <code>&lt;br/&gt;</code> so it won&rsquo;t create a bullet on the new line.</td>
 </tr>
 <tr>
 <td align="left">0.3</td>
-<td align="left">22 October 2018</td>
+<td align="right">22 October 2018</td>
 <td align="left">Added customisation for bold and italic text</td>
 </tr>
 <tr>
 <td align="left">0.2</td>
-<td align="left">3 September 2018</td>
+<td align="right">3 September 2018</td>
 <td align="left">Added ways of controlling bullet sizes</td>
 </tr>
 <tr>
 <td align="left">0.1</td>
-<td align="left">1 April 2018</td>
+<td align="right">1 April 2018</td>
 <td align="left">Initial Prototype</td>
 </tr>
 </tbody>
@@ -1624,7 +1636,19 @@ sectionTitleSize: 30
 </li>
 </ul>
 <p>The width of each card is calculated depending on the number of cards. In this example the horizontal space is divided equally between the 4 cards.</p>
-<p>In the above example there has been a small amount of tweaking of the format, using metadata. You can control the exact format using <a href="#cardcolour">CardColour</a>, <a href="#cardbordercolour">CardBorderColour</a>, <a href="#cardborderwidth">CardBorderWidth</a>, <a href="#cardtitlesize">CardTitleSize</a>, and <a href="#cardshadow">CardShadow</a>.</p>
+<p>In the above example there has been a small amount of tweaking of the format, using metadata. You can control the exact format using many tweaks:</p>
+<ul>
+<li><a href="#card-background-colour-cardcolour">Card Background Colour</a></li>
+<li><a href="#card-border-colour-cardbordercolour">Card Border Colour</a></li>
+<li><a href="#card-border-width-cardborderwidth">Card Border Width</a></li>
+<li><a href="#card-title-size-cardtitlesize">Card Title Font Size</a></li>
+<li><a href="#card-shadow-cardshadow">Card Shadow</a></li>
+<li><a href="#card-size-cardpercent">Card Size</a></li>
+<li><a href="#card-layout-direction-cardlayout">Card Layout Direction</a></li>
+<li><a href="#title-alignment-cardtitlealign">Card Title Alignment</a></li>
+<li><a href="#card-title-position-cardtitleposition">Card Title Position</a></li>
+<li><a href="#card-shape-cardshape">Card Shape</a></li>
+</ul>
 <h3 id="code-slides">Code Slides<a class="headerlink" href="#code-slides" title="Permanent link"></a></h3>
 <p><a id="code-slides"></a></p>
 <p>You can create a slide where the body is in a monospace font, without bullets.</p>
@@ -1738,7 +1762,7 @@ To create an internal slide reference you need to do two things:</p>
 <thead>
 <tr>
 <th align="left">Effect</th>
-<th align="left">HTML Element</th>
+<th align="right">HTML Element</th>
 <th align="left">Example</th>
 <th align="left">Produces</th>
 </tr>
@@ -1746,25 +1770,25 @@ To create an internal slide reference you need to do two things:</p>
 <tbody>
 <tr>
 <td align="left">Superscript</td>
-<td align="left"><code>sup</code></td>
+<td align="right"><code>sup</code></td>
 <td align="left"><code>x&lt;sup&gt;2&lt;/sup&gt;</code></td>
 <td align="left">x<sup>2</sup></td>
 </tr>
 <tr>
 <td align="left">Subscript</td>
-<td align="left"><code>sub</code></td>
+<td align="right"><code>sub</code></td>
 <td align="left"><code>C&lt;sub&gt;6&lt;/sub&gt;H&lt;sub&gt;12&lt;/sub&gt;O&lt;sub&gt;6&lt;/sub&gt;</code></td>
 <td align="left">C<sub>6</sub>H<sub>12</sub>O<sub>6</sub></td>
 </tr>
 <tr>
 <td align="left">Underline</td>
-<td align="left"><code>ins</code></td>
+<td align="right"><code>ins</code></td>
 <td align="left"><code>this is &lt;ins&gt;important&lt;/ins&gt;</code></td>
 <td align="left">this is <ins>important</ins></td>
 </tr>
 <tr>
 <td align="left">Strikethrough</td>
-<td align="left"><code>del</code></td>
+<td align="right"><code>del</code></td>
 <td align="left"><code>this is &lt;del&gt;obsolete&gt;/del&gt;</code></td>
 <td align="left">this is <del>obsolete</del></td>
 </tr>
@@ -1819,7 +1843,7 @@ To create an internal slide reference you need to do two things:</p>
 <thead>
 <tr>
 <th align="left">Entity Reference</th>
-<th align="left">Character</th>
+<th align="right">Character</th>
 <th align="left">Entity Reference</th>
 <th align="left">Character</th>
 <th align="left">Entity Reference</th>
@@ -1829,7 +1853,7 @@ To create an internal slide reference you need to do two things:</p>
 <tbody>
 <tr>
 <td align="left"><code>&amp;lt;</code></td>
-<td align="left">&lt;</td>
+<td align="right">&lt;</td>
 <td align="left"><code>&amp;larr;</code></td>
 <td align="left">&larr;</td>
 <td align="left"><code>&amp;auml;</code></td>
@@ -1837,7 +1861,7 @@ To create an internal slide reference you need to do two things:</p>
 </tr>
 <tr>
 <td align="left"><code>&amp;gt;</code></td>
-<td align="left">&gt;</td>
+<td align="right">&gt;</td>
 <td align="left"><code>&amp;rarr;</code></td>
 <td align="left">&rarr;</td>
 <td align="left"><code>&amp;Auml;</code></td>
@@ -1845,7 +1869,7 @@ To create an internal slide reference you need to do two things:</p>
 </tr>
 <tr>
 <td align="left"><code>&amp;ge;</code></td>
-<td align="left">&ge;</td>
+<td align="right">&ge;</td>
 <td align="left"><code>&amp;uarr;</code></td>
 <td align="left">&uarr;</td>
 <td align="left"><code>&amp;uuml;</code></td>
@@ -1853,7 +1877,7 @@ To create an internal slide reference you need to do two things:</p>
 </tr>
 <tr>
 <td align="left"><code>&amp;le;</code></td>
-<td align="left">&le;</td>
+<td align="right">&le;</td>
 <td align="left"><code>&amp;darr;</code></td>
 <td align="left">&darr;</td>
 <td align="left"><code>&amp;Uuml;</code></td>
@@ -1861,7 +1885,7 @@ To create an internal slide reference you need to do two things:</p>
 </tr>
 <tr>
 <td align="left"><code>&amp;asymp;</code></td>
-<td align="left">&asymp;</td>
+<td align="right">&asymp;</td>
 <td align="left"><code>&amp;harr;</code></td>
 <td align="left">&harr;</td>
 <td align="left"><code>&amp;ouml;</code></td>
@@ -1869,7 +1893,7 @@ To create an internal slide reference you need to do two things:</p>
 </tr>
 <tr>
 <td align="left"><code>&amp;Delta;</code></td>
-<td align="left">&Delta;</td>
+<td align="right">&Delta;</td>
 <td align="left"><code>&amp;varr;</code></td>
 <td align="left">&varr;</td>
 <td align="left"><code>&amp;Ouml;</code></td>
@@ -1877,7 +1901,7 @@ To create an internal slide reference you need to do two things:</p>
 </tr>
 <tr>
 <td align="left"><code>&amp;delta;</code></td>
-<td align="left">&delta;</td>
+<td align="right">&delta;</td>
 <td align="left"><code>&amp;nearr;</code></td>
 <td align="left">&nearr;</td>
 <td align="left"><code>&amp;szlig;</code></td>
@@ -1885,7 +1909,7 @@ To create an internal slide reference you need to do two things:</p>
 </tr>
 <tr>
 <td align="left"><code>&amp;sim;</code></td>
-<td align="left">&sim;</td>
+<td align="right">&sim;</td>
 <td align="left"><code>&amp;nwarr;</code></td>
 <td align="left">&nwarr;</td>
 <td align="left"><code>&amp;euro;</code></td>
@@ -1893,7 +1917,7 @@ To create an internal slide reference you need to do two things:</p>
 </tr>
 <tr>
 <td align="left"><code>&amp;lowast;</code></td>
-<td align="left">&lowast;</td>
+<td align="right">&lowast;</td>
 <td align="left"><code>&amp;searr;</code></td>
 <td align="left">&searr;</td>
 <td align="left"></td>
@@ -1901,7 +1925,7 @@ To create an internal slide reference you need to do two things:</p>
 </tr>
 <tr>
 <td align="left"><code>&amp;semi;</code></td>
-<td align="left">&semi;</td>
+<td align="right">&semi;</td>
 <td align="left"><code>&amp;swarr;</code></td>
 <td align="left">&swarr;</td>
 <td align="left"></td>
@@ -1909,7 +1933,7 @@ To create an internal slide reference you need to do two things:</p>
 </tr>
 <tr>
 <td align="left"><code>&amp;colon;</code></td>
-<td align="left">&colon;</td>
+<td align="right">&colon;</td>
 <td align="left"><code>&amp;lsqb;</code></td>
 <td align="left">&lsqb;</td>
 <td align="left"></td>
@@ -1917,7 +1941,7 @@ To create an internal slide reference you need to do two things:</p>
 </tr>
 <tr>
 <td align="left"><code>&amp;amp;</code></td>
-<td align="left">&amp;</td>
+<td align="right">&amp;</td>
 <td align="left"><code>&amp;rsqb;</code></td>
 <td align="left">&rsqb;</td>
 <td align="left"></td>
@@ -1925,7 +1949,7 @@ To create an internal slide reference you need to do two things:</p>
 </tr>
 <tr>
 <td align="left"><code>&amp;comma;</code></td>
-<td align="left">&comma;</td>
+<td align="right">&comma;</td>
 <td align="left"><code>&amp;infin;</code></td>
 <td align="left">&infin;</td>
 <td align="left"></td>
@@ -2316,7 +2340,8 @@ baseTextDecrement: 1
 
 
 <p>will cause the maximum number of glossary items on a Glossary slide to be 10. If there are more terms, a second slide will be created. And so on. The default is 20.</p>
-<h4 id="card-background-colour-cardcolour">Card Background Colour - <code>CardColour</code><a class="headerlink" href="#card-background-colour-cardcolour" title="Permanent link"></a></h4>
+<h4 id="card-slide-metadata">Card Slide Metadata<a class="headerlink" href="#card-slide-metadata" title="Permanent link"></a></h4>
+<h5 id="card-background-colour-cardcolour">Card Background Colour - <code>CardColour</code><a class="headerlink" href="#card-background-colour-cardcolour" title="Permanent link"></a></h5>
 <p><a id="card-background-colour-cardcolour"></a></p>
 <p>You can specify which of the theme colours to use for the background of each card in a <a href="#card-slides">Card Slide</a> - using <code>CardColour</code> (or <code>CardColor</code>). For example:</p>
 <div class="codehilite"><pre>CardColour: BACKGROUND 2
@@ -2324,7 +2349,7 @@ baseTextDecrement: 1
 
 
 <p>If you don&rsquo;t specify this the default text box background colour - from the template - will be used.</p>
-<h4 id="card-border-colour-cardbordercolour">Card Border Colour - <code>CardBorderColour</code><a class="headerlink" href="#card-border-colour-cardbordercolour" title="Permanent link"></a></h4>
+<h5 id="card-border-colour-cardbordercolour">Card Border Colour - <code>CardBorderColour</code><a class="headerlink" href="#card-border-colour-cardbordercolour" title="Permanent link"></a></h5>
 <p><a id="card-border-colour-cardbordercolour"></a></p>
 <p>You can specify which of the theme colours to use for the border of each card in a <a href="#card-slides">Card Slide</a> - using <code>CardBorderColour</code> (or <code>CardBorderColor</code>).For example:</p>
 <div class="codehilite"><pre>CardBorderColour: TEXT 1
@@ -2332,7 +2357,7 @@ baseTextDecrement: 1
 
 
 <p>If you don&rsquo;t specify this the cards won&rsquo;t have a border.</p>
-<h4 id="card-border-width-cardborderwidth">Card Border Width - <code>CardBorderWidth</code><a class="headerlink" href="#card-border-width-cardborderwidth" title="Permanent link"></a></h4>
+<h5 id="card-border-width-cardborderwidth">Card Border Width - <code>CardBorderWidth</code><a class="headerlink" href="#card-border-width-cardborderwidth" title="Permanent link"></a></h5>
 <p><a id="card-border-width-cardborderwidth"></a></p>
 <p>You can specify the thickness of the border (in points) of each card in a <a href="#card-slides">Card Slide</a> - using <code>CardBorderWidth</code>. For example:</p>
 <div class="codehilite"><pre>CardBorderWidth: 1
@@ -2340,7 +2365,7 @@ baseTextDecrement: 1
 
 
 <p>If you don&rsquo;t specify this the cards will use the default text box border width - from the template.</p>
-<h4 id="card-title-size-cardtitlesize">Card Title Size - <code>CardTitleSize</code><a class="headerlink" href="#card-title-size-cardtitlesize" title="Permanent link"></a></h4>
+<h5 id="card-title-size-cardtitlesize">Card Title Size - <code>CardTitleSize</code><a class="headerlink" href="#card-title-size-cardtitlesize" title="Permanent link"></a></h5>
 <p><a id="card-title-size-cardtitlesize"></a></p>
 <p>You can specify the size of the font (in points) for the cards&rsquo; title - using <code>CardTitleSize</code>. For example:</p>
 <div class="codehilite"><pre>CardTitleSize: 15
@@ -2348,7 +2373,7 @@ baseTextDecrement: 1
 
 
 <p>If you don&rsquo;t specify this the card titles will be 2/3 the size of the slide&rsquo;s title.</p>
-<h4 id="card-shadow-cardshadow">Card Shadow - <code>CardShadow</code><a class="headerlink" href="#card-shadow-cardshadow" title="Permanent link"></a></h4>
+<h5 id="card-shadow-cardshadow">Card Shadow - <code>CardShadow</code><a class="headerlink" href="#card-shadow-cardshadow" title="Permanent link"></a></h5>
 <p><a id="card-shadow-cardshadow"></a></p>
 <p>You can specify whether a card has a shadow - using <code>CardShadow</code>. For example:</p>
 <div class="codehilite"><pre>CardShadow: yes
@@ -2356,8 +2381,8 @@ baseTextDecrement: 1
 
 
 <p>If you don&rsquo;t specify this the cards won&rsquo;t have a shadow - unless the default text box style is to have a shadow.</p>
-<p><a id="controlling-card-size-with-cardpercent"></a></p>
-<h4 id="controlling-card-size-with-cardpercent">Controlling Card Size With <code>CardPercent</code><a class="headerlink" href="#controlling-card-size-with-cardpercent" title="Permanent link"></a></h4>
+<p><a id="card-size-cardpercent"></a></p>
+<h5 id="card-size-cardpercent">Card Size - <code>CardPercent</code><a class="headerlink" href="#card-size-cardpercent" title="Permanent link"></a></h5>
 <p>You can control the vertical space used by cards - as a percentage of the content area. The default is 80%.</p>
 <p>Here is an example:</p>
 <div class="codehilite"><pre>CardPercent: 70
@@ -2365,8 +2390,8 @@ baseTextDecrement: 1
 
 
 <p>You can override this value on a slide-by-slide basis with <a href="#cardpercent-dynamic">Dynamic CardPercent</a>.</p>
-<p><a id="controlling-card-layout-direction-with-cardlayout"></a></p>
-<h4 id="controlling-card-layout-direction-with-cardlayout">Controlling Card Layout Direction With <code>CardLayout</code><a class="headerlink" href="#controlling-card-layout-direction-with-cardlayout" title="Permanent link"></a></h4>
+<p><a id="card-layout-direction-cardlayout"></a></p>
+<h5 id="card-layout-direction-cardlayout">Card Layout Direction - <code>CardLayout</code><a class="headerlink" href="#card-layout-direction-cardlayout" title="Permanent link"></a></h5>
 <p>By default md2pptx lays out cards across the slide. This is called &ldquo;horizontal layout&rdquo; - and is generally a good use of slide space. But it&rsquo;s not what many Markdown processors do with Heading Level 4 (<code>####</code>). They tend to lay out vertically, even though this is generally a poorer use of slide &ldquo;real estate&rdquo;.</p>
 <p>To specify horizontal card layout code:</p>
 <div class="codehilite"><pre>CardLayout: horizontal
@@ -2379,8 +2404,8 @@ baseTextDecrement: 1
 
 
 <p>You can override this value on a slide-by-slide basis with <a href="#cardlayout-dynamic">Dynamic CardLayout</a>.</p>
-<p><a id="controlling-card-title-alignment-with-cardtitlealign"></a></p>
-<h4 id="controlling-card-title-alignment-with-cardtitlealign">Controlling Card Title Alignment With <code>CardTitleAlign</code><a class="headerlink" href="#controlling-card-title-alignment-with-cardtitlealign" title="Permanent link"></a></h4>
+<p><a id="card-title-alignment-cardtitlealign"></a></p>
+<h5 id="card-title-alignment-cardtitlealign">Card Title Alignment - <code>CardTitleAlign</code><a class="headerlink" href="#card-title-alignment-cardtitlealign" title="Permanent link"></a></h5>
 <p>By default md2pptx centres card titles above the corresponding card. Generally this looks best for the horizontal card layout.You can override this - perhaps to make titles on a vertical card layout slide left aligned.</p>
 <p>To specify left card title alignment code:</p>
 <div class="codehilite"><pre>CardTitleAlign: left
@@ -2389,6 +2414,26 @@ baseTextDecrement: 1
 
 <p>You can specify <code>left</code>, <code>right</code>, or <code>center</code> or <code>centre</code>. You can abbreviate these to <code>l</code>, <code>r</code>, or <code>c</code>.</p>
 <p>You can override this value on a slide-by-slide basis with <a href="#cardtitlealign-dynamic">Dynamic CardTitleAlign</a>.</p>
+<p><a id="card-title-position-cardtitleposition"></a></p>
+<h5 id="card-title-position-cardtitleposition">Card Title Position - <code>CardTitlePosition</code><a class="headerlink" href="#card-title-position-cardtitleposition" title="Permanent link"></a></h5>
+<p>By default md2pptx places each card&rsquo;s title above the card body. You can override this.</p>
+<p>To specify the cards&rsquo; titles will be inside the card body, at the top, code:</p>
+<div class="codehilite"><pre>CardTitlePosition: inside
+</pre></div>
+
+
+<p>The default value is <code>above</code>.</p>
+<p>You can override this value on a slide-by-slide basis with <a href="#cardtitleposition-dynamic">Dynamic CardTitlePosition</a>.</p>
+<p><a id="card-shape-cardshape"></a></p>
+<h5 id="card-shape-cardshape">Card Shape - <code>CardShape</code><a class="headerlink" href="#card-shape-cardshape" title="Permanent link"></a></h5>
+<p>By default md2pptx renders each card with a rounded card body. You can override this.</p>
+<p>To specify the cards&rsquo; bodies will be squared off, at the top, code:</p>
+<div class="codehilite"><pre>CardShape: squared
+</pre></div>
+
+
+<p>The default value is <code>rounded</code>.</p>
+<p>You can override this value on a slide-by-slide basis with <a href="#cardshape-dynamic">Dynamic CardShape</a>.</p>
 <p><a id="dynamic-metadata"></a></p>
 <h3 id="dynamic-metadata">Dynamic Metadata<a class="headerlink" href="#dynamic-metadata" title="Permanent link"></a></h3>
 <p>md2pptx can alter some in-effect settings, starting at a particular slide. Straight after the heading code a special form of comment like so:</p>
@@ -2415,14 +2460,14 @@ baseTextDecrement: 1
 
 <p><a id="cardpercent-dynamic"></a></p>
 <h4 id="cardpercent"><code>CardPercent</code><a class="headerlink" href="#cardpercent" title="Permanent link"></a></h4>
-<p>You can override the presentation <a href="#controlling-card-size-with-cardpercent">CardPercent</a> metadata value - perhaps to allow room for more card content:</p>
+<p>You can override the presentation <a href="#card-size-cardpercent">CardPercent</a> metadata value - perhaps to allow room for more card content:</p>
 <div class="codehilite"><pre>&lt;!-- md2pptx: cardpercent: 90 --&gt;
 </pre></div>
 
 
 <p><a id="cardlayout-dynamic"></a></p>
 <h4 id="cardlayout"><code>CardLayout</code><a class="headerlink" href="#cardlayout" title="Permanent link"></a></h4>
-<p>You can override the presentation <a href="#controlling-card-layout-direction-with-cardlayout">CardLayout</a> metadata value - perhaps to make an individual card slide vertical when most are horizontal:</p>
+<p>You can override the presentation <a href="#card-layout-direction-cardlayout">CardLayout</a> metadata value - perhaps to make an individual card slide vertical when most are horizontal:</p>
 <p>Either <code>vertical</code> or <code>horizontal</code> can be specified.</p>
 <div class="codehilite"><pre>&lt;!-- md2pptx: cardlayout: vertical --&gt;
 </pre></div>
@@ -2430,8 +2475,22 @@ baseTextDecrement: 1
 
 <p><a id="cardtitlealign-dynamic"></a></p>
 <h4 id="cardtitlealign"><code>CardTitleAlign</code><a class="headerlink" href="#cardtitlealign" title="Permanent link"></a></h4>
-<p>You can override the presentation <a href="#controlling-card-title-alignment-with-cardtitlealign">CardTitleAlign</a> metadata value - perhaps to make an individual card slide&rsquo;s titles left-aligned when most are centred:</p>
+<p>You can override the presentation <a href="#card-title-alignment-cardtitlealign">CardTitleAlign</a> metadata value - perhaps to make an individual card slide&rsquo;s titles left-aligned when most are centred:</p>
 <div class="codehilite"><pre>&lt;!-- md2pptx: cardtitlealign: l --&gt;
+</pre></div>
+
+
+<p><a id="cardtitleposition-dynamic"></a></p>
+<h4 id="cardtitleposition"><code>CardTitlePosition</code><a class="headerlink" href="#cardtitleposition" title="Permanent link"></a></h4>
+<p>You can override the presentation <a href="#card-title-position-cardtitleposition">CardTitlePosition</a> metadata value - perhaps to make an individual card slide&rsquo;s titles inside the cards when most are above:</p>
+<div class="codehilite"><pre>&lt;!-- md2pptx: cardtitleposition: insde --&gt;
+</pre></div>
+
+
+<p><a id="cardshape-dynamic"></a></p>
+<h4 id="cardshape"><code>CardShape</code><a class="headerlink" href="#cardshape" title="Permanent link"></a></h4>
+<p>You can override the presentation <a href="#card-shape-cardshape">CardShape</a> metadata value - perhaps to make an individual card slide&rsquo;s cards have square corners when most are rounded:</p>
+<div class="codehilite"><pre>&lt;!-- md2pptx: cardshape: squared --&gt;
 </pre></div>
 
 
@@ -2472,54 +2531,54 @@ baseTextDecrement: 1
 <thead>
 <tr>
 <th align="left">Slide Type</th>
-<th align="left">Origin</th>
+<th align="right">Origin</th>
 <th align="left">Non-Title Content</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td align="left">Processing Summary</td>
-<td align="left">Original slide from Template</td>
+<td align="right">Original slide from Template</td>
 <td align="left">Metadata: Second Shape</td>
 </tr>
 <tr>
 <td align="left">Presentation Title</td>
-<td align="left">Slide Layout 0</td>
+<td align="right">Slide Layout 0</td>
 <td align="left">Subtitle: Second Shape</td>
 </tr>
 <tr>
 <td align="left">Section</td>
-<td align="left">Slide Layout 1</td>
+<td align="right">Slide Layout 1</td>
 <td align="left">Subtitle: Second Shape</td>
 </tr>
 <tr>
 <td align="left">Graphic With Title</td>
-<td align="left">Slide Layout 5</td>
+<td align="right">Slide Layout 5</td>
 <td align="left">Graphic: New Shape</td>
 </tr>
 <tr>
 <td align="left">Graphic Without Title</td>
-<td align="left">Slide Layout 6</td>
+<td align="right">Slide Layout 6</td>
 <td align="left">Graphic: New Shape</td>
 </tr>
 <tr>
 <td align="left">Code</td>
-<td align="left">Slide Layout 5</td>
+<td align="right">Slide Layout 5</td>
 <td align="left">Code: New Shape</td>
 </tr>
 <tr>
 <td align="left">Content</td>
-<td align="left">Slide Layout 2</td>
+<td align="right">Slide Layout 2</td>
 <td align="left">Bulleted List: Second Shape</td>
 </tr>
 <tr>
 <td align="left">Table</td>
-<td align="left">Slide Layout 5</td>
+<td align="right">Slide Layout 5</td>
 <td align="left">Table: New Shape</td>
 </tr>
 <tr>
 <td align="left">Tasks</td>
-<td align="left">Slide Layout 2</td>
+<td align="right">Slide Layout 2</td>
 <td align="left">Bulleted List: Second Shape</td>
 </tr>
 </tbody>

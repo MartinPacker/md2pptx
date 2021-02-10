@@ -65,19 +65,24 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 		* [Shrinking Tables With `compactTables`](#shrinking-tables-with-compacttables)
 		* [Controlling Task Slide Production With `taskSlides` and `tasksPerSlide`](#controlling-task-slide-production-with-taskslides-and-tasksperslide)
 		* [Controlling Glossary Slide Production With `glossaryTitle`, `glossaryTerm`, `glossaryMeaning`,`glossaryMeaningWidth`, and `glossaryTermsPerPage`](#controlling-glossary-slide-production-with-glossarytitle-glossaryterm-glossarymeaningglossarymeaningwidth-and-glossarytermsperpage)
-		* [Card Background Colour - `CardColour`](#card-background-colour-cardcolour)
-		* [Card Border Colour - `CardBorderColour`](#card-border-colour-cardbordercolour)
-		* [Card Border Width - `CardBorderWidth`](#card-border-width-cardborderwidth)
-		* [Card Title Size - `CardTitleSize`](#card-title-size-cardtitlesize)
-		* [Card Shadow - `CardShadow`](#card-shadow-cardshadow)
-		* [Controlling Card Size With `CardPercent`](#controlling-card-size-with-cardpercent)
-		* [Controlling Card Layout Direction With `CardLayout`](#controlling-card-layout-direction-with-cardlayout)
-		* [Controlling Card Title Alignment With `CardTitleAlign`](#controlling-card-title-alignment-with-cardtitlealign)
+		* [Card Slide Metadata](#card-slide-metadata)
+			* [Card Background Colour - `CardColour`](#card-background-colour-cardcolour)
+			* [Card Border Colour - `CardBorderColour`](#card-border-colour-cardbordercolour)
+			* [Card Border Width - `CardBorderWidth`](#card-border-width-cardborderwidth)
+			* [Card Title Size - `CardTitleSize`](#card-title-size-cardtitlesize)
+			* [Card Shadow - `CardShadow`](#card-shadow-cardshadow)
+			* [Card Size - `CardPercent`](#card-size-cardpercent)
+			* [Card Layout Direction - `CardLayout`](#card-layout-direction-cardlayout)
+			* [Card Title Alignment - `CardTitleAlign`](#card-title-alignment-cardtitlealign)
+			* [Card Title Position - `CardTitlePosition`](#card-title-position-cardtitleposition)
+			* [Card Shape - `CardShape`](#card-shape-cardshape)
 	* [Dynamic Metadata](#dynamic-metadata)
 		* [`CompactTables`](#compacttables)
 		* [`CardPercent`](#cardpercent)
 		* [`CardLayout`](#cardlayout)
 		* [`CardTitleAlign`](#cardtitlealign)
+		* [`CardTitlePosition`](#cardtitleposition)
+		* [`CardShape`](#cardshape)
 		* [`PageTitleSize`](#pagetitlesize)
 		* [`BaseTextSize`](#basetextsize)
 		* [`BaseTextDecrement`](#basetextdecrement)
@@ -187,35 +192,36 @@ To quote from the python-pptx license statement:
 ## Change Log
 
 |Level|Date|What|
-|:-|:-|:-|
-|1.8|31 January 2021|SVG support for file and web graphics|
-|1.7.2|24 January 2021|Make vertical bars optional around image references|
-|1.7.1|11 January 2021|Fixed bug where hyperlinks in slide titles didn't work|
-|1.7|9 January 2021|Added support for numbered list items|
-|1.6.3|2 January 2021|Added support for vertical cards. Also new `CardTitleAlign` and `CardLayout` metadata&comma; plus `basetextsize` and `basetextdecrement` Dynamic Metadata items.|
-|1.6.2|1 January 2021|Added 3 slide-level Dynamic Metadata capabilities and `cardpercent` metadata value.|
-|1.6.1|29 December 2020|Added `<a id=` as an alternative hyperlink anchor.|
-|1.6|22 December 2020|Added Card Slide support. Metadata keys are now case-insensitive.|
-|1.5|7 December 2020|Pictures now can have a tooltip. You can define inter-slide links on both pictures and runs of text. You can omit the final `|` of a table line.|
-|1.4|23 November 2020|Task slides' slide numbers are hyperlinked to the relevant slide|
-|1.3|20 November 2020|Glossary terms now have tooltips and hyperlinks to the relevant Glossary slide. Footnotes have hyperlinks to the relevant Footnotes slide.|
-|1.2|3 November 2020|Support URLs for graphics. Reworked Processing Summary slide to use a flowed table.|
-|1.1|25 October 2020|Introduce Template as a better replacement for Master - which still works. Add German characters. Better template file searching. Escape underscore. Better handling of continuation onto second and subsequent lines.|
-|1.0|13 October 2020|Python 3&comma; Support input filename as first command line parameter.|
-|0.9|4 September 2020|Footnote slide support|
-|0.8|14 June 2020|`bgcolor` is now `style.bgcolor`. Added `style.fgcolor` and `style.emphasis`.|
-|0.7.3|24 May 2020|Allow background colouring via `span` elements|
-|0.7.2|14 April 2020| Support three graphics on a slide. Added `&equals;` entity reference. Added `tableMargin`.|
-|0.7.1|14 November 2019| Make slide titles longer. Fixed formatting issue with one-graphic-above-another table slide.|
-|0.7|3 November 2019|Support `abbr` element as a glossary item. Each distinct term leads to a glossary slide entry at the back of the presentation.|
-|0.6|8 October 2019|Support vertical pair of graphics in a table<br/>Fixed some issues with Markdown-syntax hyperlinks<br/>Support escaped square brackets `\[` and `\]`&comma;`&lsqb;` and `&rsqb;` being newly-supported alternatives|
-|0.5|12 May 2019|CriticMarkup support|
-|0.4.5|5 May 2019|Some numeric character references|
-|0.4.4|6 March 2019|Processing summary slide shows build date and time|
-|0.4.3|20 January 2019|Support a few HTML entity references - punctuation and arrows.<br/>Support split task slide sets - completed and incomplete.<br/>Task tags are sorted.|
-|0.4.2|13 January 2019|Tasks slide set controllable with metadata `taskSlides` and `tasksPerSlide`|
-|0.4.1|9 January 2019|Enhanced Taskpaper support with `@due`&comma; `@tags`&comma; and `@done`&comma; and reworked as a series of table slides.|
-|0.4|7 January 2019|Support shrinking of table cell font and margins.<br/>Added two-to-by-two grid of graphics on a slide.|
+|:-|-:|:-|
+|1.8.1|10&nbsp;February&nbsp;2021|Card options: Rounded versus square corners. Titles above or in cards|
+|1.8|31&nbsp;January&nbsp;2021|SVG support for file and web graphics|
+|1.7.2|24&nbsp;January&nbsp;2021|Make vertical bars optional around image references|
+|1.7.1|11&nbsp;January&nbsp;2021|Fixed bug where hyperlinks in slide titles didn't work|
+|1.7|9&nbsp;January&nbsp;2021|Added support for numbered list items|
+|1.6.3|2&nbsp;January&nbsp;2021|Added support for vertical cards. Also new `CardTitleAlign` and `CardLayout` metadata&comma; plus `basetextsize` and `basetextdecrement` Dynamic Metadata items.|
+|1.6.2|1&nbsp;January&nbsp;2021|Added 3 slide-level Dynamic Metadata capabilities and `cardpercent` metadata value.|
+|1.6.1|29&nbsp;December&nbsp;2020|Added `<a id=` as an alternative hyperlink anchor.|
+|1.6|22&nbsp;December&nbsp;2020|Added Card Slide support. Metadata keys are now case-insensitive.|
+|1.5|7&nbsp;December&nbsp;2020|Pictures now can have a tooltip. You can define inter-slide links on both pictures and runs of text. You can omit the final `|` of a table line.|
+|1.4|23&nbsp;November&nbsp;2020|Task slides' slide numbers are hyperlinked to the relevant slide|
+|1.3|20&nbsp;November&nbsp;2020|Glossary terms now have tooltips and hyperlinks to the relevant Glossary slide. Footnotes have hyperlinks to the relevant Footnotes slide.|
+|1.2|3&nbsp;November&nbsp;2020|Support URLs for graphics. Reworked Processing Summary slide to use a flowed table.|
+|1.1|25&nbsp;October&nbsp;2020|Introduce Template as a better replacement for Master - which still works. Add German characters. Better template file searching. Escape underscore. Better handling of continuation onto second and subsequent lines.|
+|1.0|13&nbsp;October&nbsp;2020|Python 3&comma; Support input filename as first command line parameter.|
+|0.9|4&nbsp;September&nbsp;2020|Footnote slide support|
+|0.8|14&nbsp;June&nbsp;2020|`bgcolor` is now `style.bgcolor`. Added `style.fgcolor` and `style.emphasis`.|
+|0.7.3|24&nbsp;May&nbsp;2020|Allow background colouring via `span` elements|
+|0.7.2|14&nbsp;April&nbsp;2020| Support three graphics on a slide. Added `&equals;` entity reference. Added `tableMargin`.|
+|0.7.1|14&nbsp;November&nbsp;2019| Make slide titles longer. Fixed formatting issue with one-graphic-above-another table slide.|
+|0.7|3&nbsp;November&nbsp;2019|Support `abbr` element as a glossary item. Each distinct term leads to a glossary slide entry at the back of the presentation.|
+|0.6|8&nbsp;October&nbsp;2019|Support vertical pair of graphics in a table<br/>Fixed some issues with Markdown-syntax hyperlinks<br/>Support escaped square brackets `\[` and `\]`&comma;`&lsqb;` and `&rsqb;` being newly-supported alternatives|
+|0.5|12&nbsp;May&nbsp;2019|CriticMarkup support|
+|0.4.5|5&nbsp;May&nbsp;2019|Some numeric character references|
+|0.4.4|6&nbsp;March&nbsp;2019|Processing summary slide shows build date and time|
+|0.4.3|20&nbsp;January&nbsp;2019|Support a few HTML entity references - punctuation and arrows.<br/>Support split task slide sets - completed and incomplete.<br/>Task tags are sorted.|
+|0.4.2|13&nbsp;January&nbsp;2019|Tasks slide set controllable with metadata `taskSlides` and `tasksPerSlide`|
+|0.4.1|9&nbsp;January&nbsp;2019|Enhanced Taskpaper support with `@due`&comma; `@tags`&comma; and `@done`&comma; and reworked as a series of table slides.|
+|0.4|7&nbsp;January&nbsp;2019|Support shrinking of table cell font and margins.<br/>Added two-to-by-two grid of graphics on a slide.|
 |0.3.2|3 January 2019|Support \\# as a literal octothorpe/hash/pound.<br/>Tidied up reporting.<br/>Added superscript, subscript, strikethrough, and underline text effects.|
 |0.3.1|3 November 2018|Fixed support for `<br/>` so it won't create a bullet on the new line.|
 |0.3|22 October 2018|Added customisation for bold and italic text|
@@ -552,7 +558,18 @@ The key features of this slide are:
 
 The width of each card is calculated depending on the number of cards. In this example the horizontal space is divided equally between the 4 cards.
 
-In the above example there has been a small amount of tweaking of the format, using metadata. You can control the exact format using [CardColour](#cardcolour), [CardBorderColour](#cardbordercolour), [CardBorderWidth](#cardborderwidth), [CardTitleSize](#cardtitlesize), and [CardShadow](#cardshadow).
+In the above example there has been a small amount of tweaking of the format, using metadata. You can control the exact format using many tweaks:
+
+* [Card Background Colour](#card-background-colour-cardcolour)
+* [Card Border Colour](#card-border-colour-cardbordercolour)
+* [Card Border Width](#card-border-width-cardborderwidth)
+* [Card Title Font Size](#card-title-size-cardtitlesize)
+* [Card Shadow](#card-shadow-cardshadow)
+* [Card Size](#card-size-cardpercent)
+* [Card Layout Direction](#card-layout-direction-cardlayout)
+* [Card Title Alignment](#title-alignment-cardtitlealign)
+* [Card Title Position](#card-title-position-cardtitleposition)
+* [Card Shape](#card-shape-cardshape)
 
 ### Code Slides
 <a id="code-slides"></a>
@@ -690,7 +707,7 @@ To force a line break code `<br/>`. This, being HTML, is legitimate in Markdown 
 Some other HTML-originated text effects work - as Markdown allows you to embed HTML (elements and attributes):
 
 |Effect|HTML Element|Example|Produces|
-|:-|:-|:-|:-|
+|:-|-:|:-|:-|
 |Superscript|`sup`|`x<sup>2</sup>`|x<sup>2</sup>|
 |Subscript|`sub`|`C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>`|C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>|
 |Underline|`ins`|`this is <ins>important</ins>`|this is <ins>important</ins>|
@@ -748,7 +765,7 @@ md2pptx supports a few [HTML entity references](https://en.wikipedia.org/wiki/Li
 
 
 |Entity Reference|Character|Entity Reference|Character|Entity Reference|Character|
-|:-|:-|:-|:-|:-|:-|
+|:-|-:|:-|:-|:-|:-|
 |`&lt;`|&lt;|`&larr;`|&larr;|`&auml;`|&auml;|
 |`&gt;`|&gt;|`&rarr;`|&rarr;|`&Auml;`|&Auml;|
 |`&ge;`|&ge;|`&uarr;`|&uarr;|`&uuml;`|&uuml;|
@@ -1221,7 +1238,8 @@ Coding
 
 will cause the maximum number of glossary items on a Glossary slide to be 10. If there are more terms, a second slide will be created. And so on. The default is 20.
 
-#### Card Background Colour - `CardColour`
+####  Card Slide Metadata
+##### Card Background Colour - `CardColour`
 <a id="card-background-colour-cardcolour"></a>
 
 You can specify which of the theme colours to use for the background of each card in a [Card Slide](#card-slides) - using `CardColour` (or `CardColor`). For example:
@@ -1230,7 +1248,7 @@ You can specify which of the theme colours to use for the background of each car
 
 If you don't specify this the default text box background colour - from the template - will be used.
 
-#### Card Border Colour - `CardBorderColour`
+##### Card Border Colour - `CardBorderColour`
 <a id="card-border-colour-cardbordercolour"></a>
 
 You can specify which of the theme colours to use for the border of each card in a [Card Slide](#card-slides) - using `CardBorderColour` (or `CardBorderColor`).For example:
@@ -1239,7 +1257,7 @@ You can specify which of the theme colours to use for the border of each card in
 
 If you don't specify this the cards won't have a border.
 
-#### Card Border Width - `CardBorderWidth`
+##### Card Border Width - `CardBorderWidth`
 <a id="card-border-width-cardborderwidth"></a>
 
 You can specify the thickness of the border (in points) of each card in a [Card Slide](#card-slides) - using `CardBorderWidth`. For example:
@@ -1248,7 +1266,7 @@ You can specify the thickness of the border (in points) of each card in a [Card 
 
 If you don't specify this the cards will use the default text box border width - from the template.
 
-#### Card Title Size - `CardTitleSize`
+##### Card Title Size - `CardTitleSize`
 <a id="card-title-size-cardtitlesize"></a>
 
 You can specify the size of the font (in points) for the cards' title - using `CardTitleSize`. For example:
@@ -1257,7 +1275,7 @@ You can specify the size of the font (in points) for the cards' title - using `C
 
 If you don't specify this the card titles will be 2/3 the size of the slide's title.
 
-####  Card Shadow - `CardShadow`
+#####  Card Shadow - `CardShadow`
 <a id="card-shadow-cardshadow"></a>
 
 You can specify whether a card has a shadow - using `CardShadow`. For example:
@@ -1266,8 +1284,8 @@ You can specify whether a card has a shadow - using `CardShadow`. For example:
 
 If you don't specify this the cards won't have a shadow - unless the default text box style is to have a shadow.
 
-<a id="controlling-card-size-with-cardpercent"></a>
-#### Controlling Card Size With `CardPercent`
+<a id="card-size-cardpercent"></a>
+##### Card Size - `CardPercent`
 
 You can control the vertical space used by cards - as a percentage of the content area. The default is 80%.
 
@@ -1277,8 +1295,8 @@ Here is an example:
 
 You can override this value on a slide-by-slide basis with [Dynamic CardPercent](#cardpercent-dynamic).
 
-<a id="controlling-card-layout-direction-with-cardlayout"></a>
-#### Controlling Card Layout Direction With `CardLayout`
+<a id="card-layout-direction-cardlayout"></a>
+##### Card Layout Direction - `CardLayout`
 
 By default md2pptx lays out cards across the slide. This is called "horizontal layout" - and is generally a good use of slide space. But it's not what many Markdown processors do with Heading Level 4 (`####`). They tend to lay out vertically, even though this is generally a poorer use of slide "real estate".
 
@@ -1292,8 +1310,8 @@ To specify vertical card layout code:
 
 You can override this value on a slide-by-slide basis with [Dynamic CardLayout](#cardlayout-dynamic).
 
-<a id="controlling-card-title-alignment-with-cardtitlealign"></a>
-#### Controlling Card Title Alignment With `CardTitleAlign`
+<a id="card-title-alignment-cardtitlealign"></a>
+##### Card Title Alignment - `CardTitleAlign`
 
 By default md2pptx centres card titles above the corresponding card. Generally this looks best for the horizontal card layout.You can override this - perhaps to make titles on a vertical card layout slide left aligned.
 
@@ -1304,6 +1322,32 @@ To specify left card title alignment code:
 You can specify `left`, `right`, or `center` or `centre`. You can abbreviate these to `l`, `r`, or `c`.
 
 You can override this value on a slide-by-slide basis with [Dynamic CardTitleAlign](#cardtitlealign-dynamic).
+
+<a id="card-title-position-cardtitleposition"></a>
+##### Card Title Position - `CardTitlePosition`
+
+By default md2pptx places each card's title above the card body. You can override this.
+
+To specify the cards' titles will be inside the card body, at the top, code:
+
+    CardTitlePosition: inside
+
+The default value is `above`.
+
+You can override this value on a slide-by-slide basis with [Dynamic CardTitlePosition](#cardtitleposition-dynamic).
+
+<a id="card-shape-cardshape"></a>
+##### Card Shape - `CardShape`
+
+By default md2pptx renders each card with a rounded card body. You can override this.
+
+To specify the cards' bodies will be squared off, at the top, code:
+
+    CardShape: squared
+
+The default value is `rounded`.
+
+You can override this value on a slide-by-slide basis with [Dynamic CardShape](#cardshape-dynamic).
 
 <a id="dynamic-metadata"></a>
 ### Dynamic Metadata
@@ -1336,14 +1380,14 @@ You can override the presentation [CompactTables](#shrinking-tables-with-compact
 <a id="cardpercent-dynamic"></a>
 #### `CardPercent`
 
-You can override the presentation [CardPercent](#controlling-card-size-with-cardpercent) metadata value - perhaps to allow room for more card content:
+You can override the presentation [CardPercent](#card-size-cardpercent) metadata value - perhaps to allow room for more card content:
 
     <!-- md2pptx: cardpercent: 90 -->
 
 <a id="cardlayout-dynamic"></a>
 #### `CardLayout`
 
-You can override the presentation [CardLayout](#controlling-card-layout-direction-with-cardlayout) metadata value - perhaps to make an individual card slide vertical when most are horizontal:
+You can override the presentation [CardLayout](#card-layout-direction-cardlayout) metadata value - perhaps to make an individual card slide vertical when most are horizontal:
 
 Either `vertical` or `horizontal` can be specified.
 
@@ -1352,9 +1396,23 @@ Either `vertical` or `horizontal` can be specified.
 <a id="cardtitlealign-dynamic"></a>
 #### `CardTitleAlign`
 
-You can override the presentation [CardTitleAlign](#controlling-card-title-alignment-with-cardtitlealign) metadata value - perhaps to make an individual card slide's titles left-aligned when most are centred:
+You can override the presentation [CardTitleAlign](#card-title-alignment-cardtitlealign) metadata value - perhaps to make an individual card slide's titles left-aligned when most are centred:
 
     <!-- md2pptx: cardtitlealign: l -->
+
+<a id="cardtitleposition-dynamic"></a>
+#### `CardTitlePosition`
+
+You can override the presentation [CardTitlePosition](#card-title-position-cardtitleposition) metadata value - perhaps to make an individual card slide's titles inside the cards when most are above:
+
+    <!-- md2pptx: cardtitleposition: insde -->
+
+<a id="cardshape-dynamic"></a>
+#### `CardShape`
+
+You can override the presentation [CardShape](#card-shape-cardshape) metadata value - perhaps to make an individual card slide's cards have square corners when most are rounded:
+
+    <!-- md2pptx: cardshape: squared -->
 
 <a id="pagetitlesize-dynamic"></a>
 #### `PageTitleSize`
@@ -1399,7 +1457,7 @@ Don't change the order of the slides in the slide master view and don't delete a
 The following table shows how each slide type is created.
 
 |Slide Type|Origin|Non-Title Content|
-|:-|:-|:-|
+|:-|-:|:-|
 |Processing Summary|Original slide from Template|Metadata: Second Shape|
 |Presentation Title|Slide Layout 0|Subtitle: Second Shape|
 |Section|Slide Layout 1|Subtitle: Second Shape|

@@ -43,10 +43,26 @@ try:
 except:
     have_cairosvg = False
 
-md2pptx_level = "1.8"
-md2pptx_date = "31 January, 2021"
+md2pptx_level = "1.8.1"
+md2pptx_date = "10 February, 2021"
 
-# Turn a paragraph into a numbered list item
+
+class slideInfo:
+    def __init__(self, titleText, bodyText, blockType, bulletsOrFilename, tableRows):
+        self.titleText = titleText
+        self.bodyText = bodyText
+        self.blockType = blockType
+        self.bulletsOrFilename = bulletsOrFilename
+        self.tableRows = tableRows
+
+
+# Send a shape to the back on a slide
+def sendToBack(shapes, shape):
+    firstShapeElement = shapes[0]._element
+    firstShapeElement.addprevious(shape._element)
+
+
+# Turn a paragraph into a numbered inList item
 def makeNumberedListItem(p):
     if (
         p._element.getchildren()[0].tag
@@ -82,7 +98,7 @@ def createShadow(shape):
     outerShdw.set("algn", "tl")
     outerShdw.set("blurRad", "50800")
     outerShdw.set("dir", "2700000")
-    outerShdw.set("dist", "127000")
+    outerShdw.set("dist", "95250")
     outerShdw.set("rotWithShape", "0")
 
     el.append(outerShdw)
@@ -327,7 +343,7 @@ def get_image_size(fname):
         return -1, -1
 
 
-# Takes a list of bullets and applies it to a text shape
+# Takes a inList of bullets and applies it to a text shape
 def populateTextBlock(shape, bullets):
     tf = shape.text_frame
 
@@ -394,12 +410,12 @@ def parseTitleText(titleLineString):
 
     if slideHrefRegex.match(slideTitleWithPossibleHref):
         hrefMatch = slideHrefRegex.match(slideTitleWithPossibleHref)
-        slide_title = hrefMatch.group(1)
+        slideTitle = hrefMatch.group(1)
         href = hrefMatch.group(2)
     else:
         href = ""
-        slide_title = slideTitleWithPossibleHref
-    return slide_title, href
+        slideTitle = slideTitleWithPossibleHref
+    return slideTitle, href
 
 
 def parseText(text):
@@ -984,7 +1000,7 @@ def processingSummarySlide(presentation, metadata):
     title = findSlideTitle(slide)
 
     # Format title
-    titleBottom = formatTitle(presentation, title, "")
+    slideTitleBottom = formatTitle(presentation, title, "")
 
     # Add title text into formatted title
     addFormattedText(title.text_frame.paragraphs[0], banner + "<br/>" + runDateTime)
@@ -1005,12 +1021,15 @@ def processingSummarySlide(presentation, metadata):
 
     # Figure out table height
     maxTableHeight = (
-        presentation.slide_height - titleBottom - numbers_content_margin - marginBase
+        presentation.slide_height
+        - slideTitleBottom
+        - numbers_content_margin
+        - marginBase
     )
     tableHeight = min(maxTableHeight, Inches(0.25) * rows)
 
     # Figure out table top
-    tableTop = titleBottom + Inches(0.5)
+    tableTop = slideTitleBottom + Inches(0.5)
 
     # Figure out table width
     tableWidth = presentation.slide_width - 2 * tableMargin
@@ -1054,7 +1073,7 @@ def processingSummarySlide(presentation, metadata):
         row += 1
 
 
-def titleSlide(presentation, slideNumber, titleText, subtitleText):
+def createTitleSlide(presentation, slideNumber, titleText, subtitleText):
     slide = presentation.slides.add_slide(presentation.slide_layouts[titleSlideLayout])
 
     # Add title
@@ -1093,7 +1112,7 @@ def titleSlide(presentation, slideNumber, titleText, subtitleText):
     return slide
 
 
-def sectionSlide(presentation, slideNumber, titleText, subtitleText):
+def createSectionSlide(presentation, slideNumber, titleText, subtitleText):
     slide = presentation.slides.add_slide(
         presentation.slide_layouts[sectionSlideLayout]
     )
@@ -1191,7 +1210,7 @@ def handleWhateverGraphicType(graphicFilename):
     return graphicFilename, printableGraphicFilename
 
 
-def codeSlide(presentation, slideNumber, titleText, code):
+def createCodeSlide(presentation, slideNumber, titleText, code):
     if titleText != "":
         slide = presentation.slides.add_slide(
             presentation.slide_layouts[titleOnlyLayout]
@@ -1199,7 +1218,7 @@ def codeSlide(presentation, slideNumber, titleText, code):
 
         # Add title and constrain its size and placement
         title = findSlideTitle(slide)
-        titleBottom = formatTitle(presentation, title, titleText)
+        slideTitleBottom = formatTitle(presentation, title, titleText)
 
         flattenedTitle = addFormattedText(title.text_frame.paragraphs[0], titleText)
         title.top = marginBase
@@ -1247,14 +1266,14 @@ def codeSlide(presentation, slideNumber, titleText, code):
     return slide
 
 
-def abstractSlide(presentation, slideNumber, titleText, subtitleText, bullets):
+def createAbstractSlide(presentation, slideNumber, titleText, subtitleText, bullets):
     slide = presentation.slides.add_slide(presentation.slide_layouts[titleOnlyLayout])
 
     shapes = slide.shapes
 
     # Add title and constrain its size and placement
     title = findSlideTitle(slide)
-    titleBottom = formatTitle(presentation, title, titleText)
+    slideTitleBottom = formatTitle(presentation, title, titleText)
 
     flattenedTitle = addFormattedText(title.text_frame.paragraphs[0], titleText)
 
@@ -1269,7 +1288,10 @@ def abstractSlide(presentation, slideNumber, titleText, subtitleText, bullets):
     # Add abstract text
     abstractWidth = presentation.slide_width - marginBase * 8
     abstractBox = slide.shapes.add_textbox(
-        marginBase * 4, titleBottom + marginBase * 4, abstractWidth, marginBase * 24
+        marginBase * 4,
+        slideTitleBottom + marginBase * 4,
+        abstractWidth,
+        marginBase * 24,
     )
     p = abstractBox.text_frame.paragraphs[0]
     para = 1
@@ -1304,16 +1326,16 @@ def abstractSlide(presentation, slideNumber, titleText, subtitleText, bullets):
     return slide
 
 
-def contentSlide(presentation, slideNumber, titleText, subtitleText, bullets):
+def createContentSlide(presentation, slideNumber, titleText, subtitleText, bullets):
     slide = presentation.slides.add_slide(
-        presentation.slide_layouts[contentSlideLayout]
+        presentation.slide_layouts[createContentSlideLayout]
     )
 
     shapes = slide.shapes
 
     # Add title
     title = findSlideTitle(slide)
-    titleBottom = formatTitle(presentation, title, titleText)
+    slideTitleBottom = formatTitle(presentation, title, titleText)
 
     flattenedTitle = addFormattedText(title.text_frame.paragraphs[0], titleText)
     title.text_frame.paragraphs[0].font.size = Pt(pageTitleSize)
@@ -1321,171 +1343,252 @@ def contentSlide(presentation, slideNumber, titleText, subtitleText, bullets):
     print(str(slideNumber).rjust(4) + "     " + flattenedTitle)
 
     # Calculate the space the buckets text shape and/or cards can occupy
-    content_height = presentation.slide_height - Inches(1.0) - titleBottom
+    contentHeight = presentation.slide_height - Inches(0.5) - slideTitleBottom
 
     # Calculate the width the content should be on the slide
-    content_width = presentation.slide_width - Inches(1.0)
+    contentWidth = presentation.slide_width - Inches(1.0)
 
-    # Get bulleted text list shape
-    bullets_shape = findBodyShape(slide)
+    # Get bulleted text shape - either for bullets above cards or first card's body shape
+    bulletsShape = findBodyShape(slide)
 
-    bullet_count = len(bullets)
-    if in_card:
-        # Create shapes for card titles and the cards' bullets - and
-        # set any non-positioning attributes
-        card_shapes = []
-        cardTitle_shapes = []
-        card_count = len(cards)
+    # Set bulleted shape top, left, width
+    bulletsShape.top = slideTitleBottom + Inches(0.25)
+    bulletsShape.left = Inches(0.5)
+    bulletsShape.width = contentWidth
 
-        for c in range(card_count):
+    bulletCount = len(bullets)
+
+    # Set bulleted text height - depending on whether there's a card
+    # Remainder is card area height - if there are cards
+    if inCard:
+        if bulletCount > 0:
+            # Bullets shape vertically shortened
+            bulletsShape.height = int(contentHeight * (100 - cardPercent) / 100)
+
+            # Card area takes the rest of the content area
+            cardAreaHeight = int(contentHeight) - bulletsShape.height
+        else:
+            # No bullets so content is all cards
+            bulletsShape.height = 0
+
+            cardAreaHeight = contentHeight
+    else:
+        # Bullets shape takes the whole content area
+        bulletsShape.height = contentHeight
+
+        # There are no cards so the card area is zero height
+        cardAreaHeight = 0
+
+    if inCard:
+        cardBackgroundShapes = []
+        cardBodyShapes = []
+        cardTitleShapes = []
+        cardLeft = []
+        cardTop = []
+        cardBodyTop = []
+        cardBackgroundTop = []
+        cardTitleTop = []
+
+        cardCount = len(cards)
+
+        # card width applies to card title, card background, card body
+        if cardLayout == "horizontal":
+            # Divide horizontal card space up
+            cardWidth = int((contentWidth - Inches(0.25) * (cardCount - 1)) / cardCount)
+        else:
+            # Card takes all the horizontal space
+            cardWidth = int(contentWidth)
+
+        # Calculate title top and height - horizontal layout
+        if want_card_title_size:
+            # Specified by user
+            cardTitleHeightRaw = Inches(cardTitleFontSize / 72)
+        else:
+            # Shrunk to 2/3 of page title height
+            cardTitleHeightRaw = Inches(int(10000 * pageTitleSize * 2 / 3 / 72) / 10000)
+
+        # Adjust title height to be slightly larger than the text
+        cardTitleHeight = cardTitleHeightRaw + Inches(0.1)
+
+        if bulletCount > 0:
+            # Bullets so cards and their titles occupy less than whole height
+            cardAreaTop = bulletsShape.height + slideTitleBottom + Inches(0.25)
+
+        else:
+            # No bullets so cards and their titles occupy whole height
+            cardAreaTop = slideTitleBottom + Inches(0.25)
+
+        if cardLayout == "horizontal":
+            # Card takes up all the card area, vertically
+            cardHeight = cardAreaHeight
+        else:
+            # Card height is just a proportion of the card area height
+
+            if cardTitlePosition == "above":
+                paddingFactor = Inches(0.1)
+            else:
+                paddingFactor = Inches(0.15)
+
+            cardHeight = int((cardAreaHeight) / cardCount - paddingFactor)
+
+        for c in range(cardCount):
+            # Calculate a card's vertical position
+            if cardLayout == "horizontal":
+                cardTop.append(cardAreaTop)
+            else:
+                cardTop.append(int((cardHeight + paddingFactor) * c + cardAreaTop))
+
+            # Card top and height
+            if cardTitlePosition == "above":
+                # Card title above card background
+                cardBackgroundTop.append(cardTop[c] + cardTitleHeight)
+                cardBodyTop.append(cardBackgroundTop[c])
+            else:
+                # card title inside card background
+                cardBackgroundTop.append(cardTop[c])
+
+                # Leave room above the card body for the card title
+                cardBodyTop.append(cardBackgroundTop[c] + cardTitleHeight)
+
+            # Calculate a card's horizontal position
+            if cardLayout == "horizontal":
+                cardLeft.append(int(Inches(0.5) + c * (cardWidth + Inches(0.25))))
+            else:
+                cardLeft.append(int(Inches(0.5)))
+
             # Card title modeled on slide title - but smaller
-            cardTitle_shape = addClonedShape(slide, title)
+            cardTitleShape = addClonedShape(slide, title)
 
-            cardTitle_shapes.append(cardTitle_shape)
+            cardTitleShapes.append(cardTitleShape)
 
             # Clear text from cloned title and add in the title text
-            cardTitle_shape.text_frame.paragraphs[0].text = ""
-            addFormattedText(cardTitle_shape.text_frame.paragraphs[0], cards[c][0])
+            cardTitleShape.text_frame.paragraphs[0].text = ""
+            addFormattedText(cardTitleShape.text_frame.paragraphs[0], cards[c][0])
 
             # Set card title font size
             if want_card_title_size:
-                cardTitle_shape.text_frame.paragraphs[0].font.size = Pt(
+                cardTitleShape.text_frame.paragraphs[0].font.size = Pt(
                     cardTitleFontSize
                 )
             else:
-                cardTitle_shape.text_frame.paragraphs[0].font.size = Pt(
+                cardTitleShape.text_frame.paragraphs[0].font.size = Pt(
                     pageTitleSize * 2 / 3
                 )
 
             # Titles are centred
             if cardTitleAlign == "l":
-                cardTitle_shape.text_frame.paragraphs[0].alignment = PP_ALIGN.LEFT
+                cardTitleShape.text_frame.paragraphs[0].alignment = PP_ALIGN.LEFT
             elif cardTitleAlign == "c":
-                cardTitle_shape.text_frame.paragraphs[0].alignment = PP_ALIGN.CENTER
+                cardTitleShape.text_frame.paragraphs[0].alignment = PP_ALIGN.CENTER
             else:
-                cardTitle_shape.text_frame.paragraphs[0].alignment = PP_ALIGN.RIGHT
+                cardTitleShape.text_frame.paragraphs[0].alignment = PP_ALIGN.RIGHT
 
-            # Card shape modeled on bulleted list
-            if (bullet_count > 0) | (c > 0):
-                card_shape = addClonedShape(slide, bullets_shape)
+            # Create card background and make sure it's behind the card body (and maybe card title)
+
+            if cardShape == "rounded":
+                # Rounded Rectangle for card
+                cardBackgroundShape = slide.shapes.add_shape(
+                    MSO_SHAPE.ROUNDED_RECTANGLE,
+                    Inches(0),
+                    Inches(0),
+                    Inches(0),
+                    Inches(0),
+                )
+
+                # Rounding adjustment works better with different values for horizontal and vertical cards
+                if cardLayout == "horizontal":
+                    # Make the rounding radius small. This is 1/4 the default
+                    cardBackgroundShape.adjustments[0] = 0.0416675
+                else:
+                    # Make the rounding radius smallish. This is 1/2 the default
+                    cardBackgroundShape.adjustments[0] = 0.083335
+            else:
+                # Squared-corner Rectangle for card
+                cardBackgroundShape = slide.shapes.add_shape(
+                    MSO_SHAPE.RECTANGLE, Inches(0), Inches(0), Inches(0), Inches(0)
+                )
+
+            cardBackgroundShapes.append(cardBackgroundShape)
+            sendToBack(shapes, cardBackgroundShape)
+
+            # Card shape modeled on bulleted inList
+            if (bulletCount > 0) | (c > 0):
+                cardBodyShape = addClonedShape(slide, bulletsShape)
             else:
                 # Co-opt bullets shape as first card shape
-                card_shape = bullets_shape
-            card_shapes.append(card_shape)
+                cardBodyShape = bulletsShape
+            cardBodyShapes.append(cardBodyShape)
 
-            # Fill in card's background
+            # Make card's body transparent
+            fill = cardBodyShape.fill
+            fill.background()
+
+            # Fill in card's background - if necessary
             if want_card_colour:
-                fill = card_shape.fill
+                fill = cardBackgroundShape.fill
                 fill.solid()
                 fill.fore_color.theme_color = card_colour
 
-        card_width = (content_width - Inches(0.25) * (card_count - 1)) / card_count
     else:
-        card_count = 0
-
-    bullets_shape.top = titleBottom + Inches(0.25)
-    bullets_shape.left = Inches(0.5)
-    bullets_shape.width = content_width
+        cardCount = 0
 
     # Adjust bullets shape height - and calculate verticals for any cards
-    if in_card:
-        # Will be doing cards
-        cardTitle_height = Inches(0.33)
 
-        if bullet_count > 0:
-            # Bullets shape vertically shortened
-            bullets_shape.height = int(content_height * (100 - cardPercent) / 100)
-
-            # Card title top
-            cardTitle_top = bullets_shape.height + titleBottom + Inches(0.25 + 0.5)
-            cardTitle_height = Inches(0.33)
-
-            # Card top and height
-            card_top = cardTitle_top + cardTitle_height
-            card_height = (
-                presentation.slide_height
-                - cardTitle_top
-                - Inches(0.5)
-                - cardTitle_height
-            )
-        else:
-            # No bullets so cards and their titles occupy whole height
-
-            # Card title top
-            cardTitle_top = +titleBottom + Inches(0.25)
-
-            # Card top and height
-            card_top = cardTitle_top + cardTitle_height
-            card_height = (
-                presentation.slide_height
-                - cardTitle_top
-                - Inches(0.25)
-                + cardTitle_height
-            )
-    else:
-        bullets_shape.height = content_height
-
-    bullets_shape.bottom = bullets_shape.top + bullets_shape.height
+    bulletsShape.bottom = bulletsShape.top + bulletsShape.height
 
     # Fill in the main bullets shape
-    populateTextBlock(bullets_shape, bullets)
+    populateTextBlock(bulletsShape, bullets)
 
-    if in_card:
-        # Calculate card plus title height - if vertical
-        if cardLayout == "vertical":
-            cardPlusTitleHeight = int((card_height + Inches(0.75)) / card_count)
-            cardsTop = int(bullets_shape.bottom + Inches(0.25))
+    for c in range(cardCount):
+        # Get the shapes for this card
+        cardBackgroundShape = cardBackgroundShapes[c]
+        cardTitleShape = cardTitleShapes[c]
+        cardBodyShape = cardBodyShapes[c]
 
-        for c in range(card_count):
-            cardTitle_shape = cardTitle_shapes[c]
-            card_shape = card_shapes[c]
+        # Set the card shapes' width
+        cardBackgroundShape.width = cardWidth
+        cardBodyShape.width = cardWidth
+        cardTitleShape.width = cardWidth
 
-            if cardLayout == "horizontal":
-                # Vertical card layout
+        # Set the card shapes' left side
+        cardBackgroundShape.left = cardLeft[c]
+        cardTitleShape.left = cardLeft[c]
+        cardBodyShape.left = cardLeft[c]
 
-                # Position card title
-                cardTitle_shape.top = cardTitle_top
-                cardTitle_shape.left = int(
-                    Inches(0.5) + c * (card_width + Inches(0.25))
-                )
-                cardTitle_shape.width = int(card_width)
+        # Position card title
+        cardTitleShape.top = cardTop[c]
+        cardTitleShape.height = cardTitleHeight
 
-                # Position card
-                card_shape.top = card_top
-                card_shape.left = int(Inches(0.5) + c * (card_width + Inches(0.25)))
-                card_shape.width = int(card_width)
-                card_shape.height = int(card_height)
-            else:
-                # Vertical card layout
+        # Calculate positions and heights within card background of body
+        if cardTitlePosition == "above":
+            cardBackgroundShape.top = cardTop[c] + cardTitleHeight
+            cardBodyHeight = cardHeight - cardTitleHeight
+            cardBackgroundShape.height = cardBodyHeight
+        else:
+            cardBackgroundShape.top = cardTop[c]
+            cardBodyHeight = cardHeight
+            cardBackgroundShape.height = cardBodyHeight
 
-                # Position card title
-                cardTitle_shape.top = int(cardPlusTitleHeight * c + cardsTop)
-                cardTitle_shape.left = int(Inches(0.5))
-                cardTitle_shape.width = int(content_width)
+        # Position card
+        cardBodyShape.top = cardBodyTop[c]
+        cardBodyShape.height = cardBodyHeight
 
-                # Position card
-                card_shape.top = int(cardTitle_shape.top + cardTitle_height)
-                card_shape.left = int(Inches(0.5))
-                card_shape.width = int(content_width)
-                card_shape.height = int(cardPlusTitleHeight - cardTitle_height)
+        if len(cards[c]) > 1:
+            populateTextBlock(cardBodyShape, cards[c][1])
 
-            if len(cards[c]) > 1:
-                populateTextBlock(card_shape, cards[c][1])
+        lf = cardBackgroundShape.line
 
-            lf = card_shape.line
+        if want_card_border_colour:
+            lf.color.theme_color = card_border_colour
 
-            if want_card_border_colour:
-                lf.color.theme_color = card_border_colour
+        if want_card_border_width:
+            lf.width = Pt(card_border_width)
 
-            if want_card_border_width:
-                lf.width = Pt(card_border_width)
-
-            if want_card_shadow:
-                createShadow(card_shape)
+        if want_card_shadow:
+            createShadow(cardBackgroundShape)
 
     if want_numbers_content is True:
         addFooter(presentation, slideNumber, slide)
-
     return slide
 
 
@@ -1515,7 +1618,7 @@ def createChevron(chevronText, x, y, width, height, filled, shapes):
         shape.fill.background()
 
 
-def tocSlide(presentation, slideNumber, titleText, subtitleText, bullets):
+def createTOCSlide(presentation, slideNumber, titleText, subtitleText, bullets):
     print(
         str(slideNumber).rjust(4)
         + '     Table Of Contents (Style: "'
@@ -1530,7 +1633,7 @@ def tocSlide(presentation, slideNumber, titleText, subtitleText, bullets):
 
     # Add title
     title = findSlideTitle(slide)
-    titleBottom = formatTitle(presentation, title, titleText)
+    slideTitleBottom = formatTitle(presentation, title, titleText)
 
     if titleText == tocTitle:
         addFormattedText(title.text_frame.paragraphs[0], titleText)
@@ -1538,7 +1641,10 @@ def tocSlide(presentation, slideNumber, titleText, subtitleText, bullets):
 
     # Figure out TOC height
     maxTOCHeight = (
-        presentation.slide_height - titleBottom - numbers_content_margin - marginBase
+        presentation.slide_height
+        - slideTitleBottom
+        - numbers_content_margin
+        - marginBase
     )
 
     # Figure out table width
@@ -1550,7 +1656,7 @@ def tocSlide(presentation, slideNumber, titleText, subtitleText, bullets):
 
     chevronsPerRow = 4
 
-    # Create global list of TOC entries
+    # Create global inList of TOC entries
     for bullet in bullets:
         bulletLevel, bulletText, bulletType = bullet
         if bulletLevel == 1:
@@ -1561,7 +1667,7 @@ def tocSlide(presentation, slideNumber, titleText, subtitleText, bullets):
     # Calculate actual TOC height so it can be vertically centred
     TOCHeight = (rowCount * height) + ((rowCount - 1) * rowGap)
 
-    TOCtop = titleBottom + (maxTOCHeight - TOCHeight + height) / 2
+    TOCtop = slideTitleBottom + (maxTOCHeight - TOCHeight + height) / 2
 
     # Calculate actual TOC width
     TOCWidth = chevronsPerRow * (width - Inches(0.5)) + Inches(0.5)
@@ -1590,7 +1696,7 @@ def tocSlide(presentation, slideNumber, titleText, subtitleText, bullets):
     return slide
 
 
-def tableSlide(presentation, slideNumber, titleText, table):
+def createTableSlide(presentation, slideNumber, titleText, table):
     slide = presentation.slides.add_slide(presentation.slide_layouts[titleOnlyLayout])
 
     shapes = slide.shapes
@@ -1602,7 +1708,7 @@ def tableSlide(presentation, slideNumber, titleText, table):
 
     # Add title
     title = findSlideTitle(slide)
-    titleBottom = formatTitle(presentation, title, titleText)
+    slideTitleBottom = formatTitle(presentation, title, titleText)
 
     flattenedTitle = addFormattedText(title.text_frame.paragraphs[0], titleText)
     title.text_frame.paragraphs[0].font.size = Pt(pageTitleSize)
@@ -1877,7 +1983,9 @@ def tableSlide(presentation, slideNumber, titleText, table):
                             return slide
 
         # Figure out graphic height on slide
-        maxPicHeight = presentation.slide_height - titleBottom - numbers_content_margin
+        maxPicHeight = (
+            presentation.slide_height - slideTitleBottom - numbers_content_margin
+        )
 
         if gridRows == 2:
             # gridRows adjusted if two rows
@@ -1927,7 +2035,7 @@ def tableSlide(presentation, slideNumber, titleText, table):
 
             # Calculate vertical start
             topLeftPicY = (
-                titleBottom + marginBase + (maxPicHeight - topLeftPicHeight) / 2
+                slideTitleBottom + marginBase + (maxPicHeight - topLeftPicHeight) / 2
             )
             if gridRows == 2:
                 topLeftPicY -= Inches(0.2)
@@ -1984,7 +2092,9 @@ def tableSlide(presentation, slideNumber, titleText, table):
 
                 # Calculate vertical start
                 topRightPicY = (
-                    titleBottom + marginBase + (maxPicHeight - topRightPicHeight) / 2
+                    slideTitleBottom
+                    + marginBase
+                    + (maxPicHeight - topRightPicHeight) / 2
                 )
 
                 if gridRows == 2:
@@ -2044,7 +2154,9 @@ def tableSlide(presentation, slideNumber, titleText, table):
 
                 # Calculate vertical start
                 bottomLeftPicY = (
-                    titleBottom + marginBase + (maxPicHeight + bottomLeftPicHeight) / 2
+                    slideTitleBottom
+                    + marginBase
+                    + (maxPicHeight + bottomLeftPicHeight) / 2
                 )
 
                 if gridRows == 2:
@@ -2103,7 +2215,7 @@ def tableSlide(presentation, slideNumber, titleText, table):
 
                     # Calculate vertical start
                     bottomRightPicY = (
-                        titleBottom
+                        slideTitleBottom
                         + marginBase
                         + (maxPicHeight + bottomRightPicHeight) / 2
                     )
@@ -2193,15 +2305,15 @@ def tableSlide(presentation, slideNumber, titleText, table):
         # Figure out table height
         maxTableHeight = (
             presentation.slide_height
-            - titleBottom
+            - slideTitleBottom
             - numbers_content_margin
             - marginBase
         )
         tableHeight = min(maxTableHeight, Inches(0.25) * rows)
 
         # Figure out table top
-        # tableTop = titleBottom + marginBase + (maxTableHeight - tableHeight ) / 2
-        tableTop = titleBottom + Inches(0.5)
+        # tableTop = slideTitleBottom + marginBase + (maxTableHeight - tableHeight ) / 2
+        tableTop = slideTitleBottom + Inches(0.5)
 
         # Figure out table width
         tableWidth = presentation.slide_width - 2 * tableMargin
@@ -2233,8 +2345,16 @@ def tableSlide(presentation, slideNumber, titleText, table):
 
         # Fill in the cells
         rowNumber = 0
+
         for row in table:
             columnNumber = 0
+
+            # Add dummy cells to the end of the row so that there are as many
+            # cells in the row as there are columns in the table
+            cellCount = len(row)
+            for c in range(cellCount, columns):
+                row.append("")
+
             for cell in row:
                 newCell = newTable.cell(rowNumber, columnNumber)
 
@@ -2267,7 +2387,9 @@ def tableSlide(presentation, slideNumber, titleText, table):
                     p.alignment = PP_ALIGN.LEFT
 
                 addFormattedText(p, cell)
+
                 columnNumber += 1
+
             rowNumber += 1
 
     if want_numbers_content is True:
@@ -2276,40 +2398,56 @@ def tableSlide(presentation, slideNumber, titleText, table):
     return slide
 
 
-def createSlide(
-    presentation, slideNumber, titleText, bodyText, block_type, bulletsOrFilename
-):
-    if block_type == "title":
-        slide = titleSlide(presentation, slideNumber, titleText, slide_subtitle)
+def createSlide(presentation, slideNumber, SI):
+    if SI.blockType == "title":
+        slide = createTitleSlide(presentation, slideNumber, SI.titleText, SI.bodyText)
 
-    elif block_type == "section":
+    elif SI.blockType == "section":
         if tocStyle != "":
             # This is a section slide in TOC style
-            slide = tocSlide(
-                presentation, slideNumber, titleText, slide_subtitle, bullets
+            slide = createTOCSlide(
+                presentation,
+                slideNumber,
+                SI.titleText,
+                SI.bodyText,
+                SI.bulletsOrFilename,
             )
         else:
-            slide = sectionSlide(presentation, slideNumber, titleText, slide_subtitle)
+            slide = createSectionSlide(
+                presentation, slideNumber, SI.titleText, SI.bodyText
+            )
 
-    elif block_type == "content":
-        if (tocStyle != "") & (tocTitle == titleText):
+    elif SI.blockType == "content":
+        if (tocStyle != "") & (tocTitle == SI.titleText):
             # This is a Table Of Contents slide
-            slide = tocSlide(
-                presentation, slideNumber, titleText, slide_subtitle, bullets
+            slide = createTOCSlide(
+                presentation,
+                slideNumber,
+                SI.titleText,
+                SI.bodyText,
+                SI.bulletsOrFilename,
             )
-        elif (abstractTitle != "") & (abstractTitle == titleText):
+        elif (abstractTitle != "") & (abstractTitle == SI.titleText):
             # This is an abstract slide
-            slide = abstractSlide(
-                presentation, slideNumber, titleText, slide_subtitle, bullets
+            slide = createAbstractSlide(
+                presentation,
+                slideNumber,
+                SI.titleText,
+                SI.bodyText,
+                SI.bulletsOrFilename,
             )
         else:
-            slide = contentSlide(
-                presentation, slideNumber, titleText, slide_subtitle, bullets
+            slide = createContentSlide(
+                presentation,
+                slideNumber,
+                SI.titleText,
+                SI.bodyText,
+                SI.bulletsOrFilename,
             )
-    elif block_type == "code":
-        slide = codeSlide(presentation, slideNumber, titleText, code)
-    elif block_type == "table":
-        slide = tableSlide(presentation, slideNumber, titleText, table_rows)
+    elif SI.blockType == "code":
+        slide = createCodeSlide(presentation, slideNumber, SI.titleText, SI.bodyText)
+    elif SI.blockType == "table":
+        slide = createTableSlide(presentation, slideNumber, SI.titleText, SI.tableRows)
 
     slideNumber = slideNumber + 1
 
@@ -2335,11 +2473,11 @@ def createTaskSlides(prs, slideNumber, tasks, titleStem):
                     # Only one task page
                     title = titleStem
 
-                slide = tableSlide(prs, slideNumber, title, table_rows)
+                slide = createTableSlide(prs, slideNumber, title, tableRows)
                 slideNumber += 1
 
-            table_rows = [["Slide", "Due", "Task", "Tags", "Done"]]
-            table_rows.append(["-:", ":--:", ":----", ":----", ":--:"])
+            tableRows = [["Slide", "Due", "Task", "Tags", "Done"]]
+            tableRows.append(["-:", ":--:", ":----", ":----", ":--:"])
             old_sNum = 0
 
         sNum, taskText, dueDate, tags, done = task
@@ -2351,9 +2489,9 @@ def createTaskSlides(prs, slideNumber, tasks, titleStem):
             tags = str.join(",", sortedTagList)
 
         if sNum != old_sNum:
-            table_rows.append([str(sNum), dueDate, taskText, tags, done])
+            tableRows.append([str(sNum), dueDate, taskText, tags, done])
         else:
-            table_rows.append(["", dueDate, taskText, tags, done])
+            tableRows.append(["", dueDate, taskText, tags, done])
         old_sNum = sNum
 
         taskNumber += 1
@@ -2365,7 +2503,7 @@ def createTaskSlides(prs, slideNumber, tasks, titleStem):
     else:
         title = titleStem
 
-    slide = tableSlide(prs, slideNumber, title, table_rows)
+    slide = createTableSlide(prs, slideNumber, title, tableRows)
 
     # Fix up references to be active links to the slide where the task
     # was declared
@@ -2401,17 +2539,17 @@ def createGlossarySlides(prs, slideNumber, abbrevDictionary):
                     # Only one glossary page
                     title = glossaryTerm
 
-                slide = tableSlide(prs, slideNumber, title, table_rows)
+                slide = createTableSlide(prs, slideNumber, title, tableRows)
                 glossarySlides.append(slide)
                 slideNumber += 1
 
-            table_rows = [[glossaryTerm, glossaryMeaning]]
-            table_rows.append([":-", ":" + ("-" * glossaryMeaningWidth)])
+            tableRows = [[glossaryTerm, glossaryMeaning]]
+            tableRows.append([":-", ":" + ("-" * glossaryMeaningWidth)])
             old_sNum = 0
 
         meaning = abbrevDictionary.get(term)
 
-        table_rows.append([term, meaning])
+        tableRows.append([term, meaning])
 
         termNumber += 1
 
@@ -2424,7 +2562,7 @@ def createGlossarySlides(prs, slideNumber, abbrevDictionary):
         # Only one glossary page
         title = glossaryTitle
 
-    slide = tableSlide(prs, slideNumber, title, table_rows)
+    slide = createTableSlide(prs, slideNumber, title, tableRows)
     glossarySlides.append(slide)
     slideNumber += 1
 
@@ -2451,7 +2589,7 @@ def createFootnoteSlides(prs, slideNumber, footnoteDefinitions):
                     # Only one footnotes page
                     title = footnotesTitle
 
-                slide = contentSlide(prs, slideNumber, title, "", bullets)
+                slide = createContentSlide(prs, slideNumber, title, "", bullets)
                 footnoteSlides.append(slide)
 
                 # Turn off bulleting
@@ -2476,7 +2614,7 @@ def createFootnoteSlides(prs, slideNumber, footnoteDefinitions):
         # Only one glossary page
         title = footnotesTitle
 
-    slide = contentSlide(prs, slideNumber, title, "", bullets)
+    slide = createContentSlide(prs, slideNumber, title, "", bullets)
     footnoteSlides.append(slide)
 
     # Turn off bulleting
@@ -2555,7 +2693,7 @@ dynamicMetadataRegex = re.compile("^<!-- md2pptx: (.+): (.+) -->")
 # Slide layout enumeration
 titleSlideLayout = 0
 sectionSlideLayout = 1
-contentSlideLayout = 2
+createContentSlideLayout = 2
 titleOnlyLayout = 5
 blankLayout = 6
 
@@ -2570,7 +2708,7 @@ footnoteRunsDictionary = {}
 
 # Extract metadata
 metadata_lines = []
-after_metadata_and_HTML = []
+afterMetadataAndHTML = []
 
 in_metadata = True
 in_comment = False
@@ -2579,7 +2717,7 @@ in_HTML = False
 for line in input_file:
     if line.lstrip().startswith("<!-- md2pptx: "):
         # md2pptx dynamic metadata so keep it
-        after_metadata_and_HTML.append(line)
+        afterMetadataAndHTML.append(line)
 
     if line.lstrip().startswith("<!--"):
         if line.rstrip().endswith("-->"):
@@ -2619,23 +2757,23 @@ for line in input_file:
 
     else:
         # Line goes to post-metadata array
-        after_metadata_and_HTML.append(line)
+        afterMetadataAndHTML.append(line)
 
 want_numbers_headings = False
 want_numbers_content = False
 slideTemplateFile = ""
 
-default_pageTitleSize = 30
-pageTitleSize = default_pageTitleSize
-pres_pageTitleSize = default_pageTitleSize
+defaultPageTitleSize = 30
+pageTitleSize = defaultPageTitleSize
+presPageTitleSize = defaultPageTitleSize
 
-default_baseTextSize = 0
-pres_baseTextSize = default_baseTextSize
-baseTextSize = default_baseTextSize
+defaultBaseTextSize = 0
+presBaseTextSize = defaultBaseTextSize
+baseTextSize = defaultBaseTextSize
 
-default_baseTextDecrement = 2
-pres_baseTextDecrement = default_baseTextDecrement
-baseTextDecrement = default_baseTextDecrement
+defaultBaseTextDecrement = 2
+presBaseTextDecrement = defaultBaseTextDecrement
+baseTextDecrement = defaultBaseTextDecrement
 
 sectionTitleSize = 40
 sectionSubtitleSize = 28
@@ -2655,21 +2793,29 @@ want_card_border_width = False
 want_card_title_size = False
 want_card_shadow = False
 
-default_cardPercent = 80
-cardPercent = default_cardPercent
-pres_cardPercent = default_cardPercent
+defaultCardPercent = 80
+cardPercent = defaultCardPercent
+presCardPercent = defaultCardPercent
 
-default_compactTables = 0
-compactTables = default_compactTables
-pres_compactTables = default_compactTables
+defaultCompactTables = 0
+compactTables = defaultCompactTables
+presCompactTables = defaultCompactTables
 
-default_cardLayout = "horizontal"
-cardLayout = default_cardLayout
-pres_cardLayout = default_cardLayout
+defaultCardLayout = "horizontal"
+cardLayout = defaultCardLayout
+presCardLayout = defaultCardLayout
 
-default_cardTitleAlign = "c"
-cardTitleAlign = default_cardTitleAlign
-pres_cardTitleAlign = default_cardTitleAlign
+defaultCardTitleAlign = "c"
+cardTitleAlign = defaultCardTitleAlign
+presCardTitleAlign = defaultCardTitleAlign
+
+defaultCardTitlePosition = "above"
+cardTitlePosition = defaultCardTitlePosition
+presCardTitlePosition = defaultCardTitlePosition
+
+defaultCardShape = "rounded"
+cardShape = defaultCardShape
+presCardShape = defaultCardShape
 
 abstractTitle = ""
 
@@ -2748,15 +2894,15 @@ for line in metadata_lines:
 
     elif name == "pagetitlesize":
         pageTitleSize = float(value)
-        pres_pageTitleSize = pageTitleSize
+        presPageTitleSize = pageTitleSize
 
     elif name == "basetextsize":
         baseTextSize = float(value)
-        pres_baseTextSize = baseTextSize
+        presBaseTextSize = baseTextSize
 
     elif name == "basetextdecrement":
         baseTextDecrement = float(value)
-        pres_baseTextDecrement = baseTextDecrement
+        presBaseTextDecrement = baseTextDecrement
 
     elif name == "sectiontitlesize":
         sectionTitleSize = float(value)
@@ -2794,7 +2940,7 @@ for line in metadata_lines:
 
     elif name == "compacttables":
         compactTables = float(value)
-        pres_compactTables = compactTables
+        presCompactTables = compactTables
 
     elif (name == "boldcolour") | (name == "boldcolour"):
         want_bold_colour = True
@@ -2830,20 +2976,40 @@ for line in metadata_lines:
 
     elif name == "cardpercent":
         cardPercent = float(value)
-        pres_cardPercent = cardPercent
+        presCardPercent = cardPercent
 
     elif name == "cardlayout":
         if value in ["horizontal", "vertical"]:
             cardLayout = value
-            pres_cardLayout = value
+            presCardLayout = value
         else:
-            print(f"CardLayout value '{value}' unsupported.")
+            print(
+                f'CardLayout value \'{value}\' unsupported. "horizontal" or "vertical" required.'
+            )
+
+    elif name == "cardshape":
+        if value in ["squared", "rounded"]:
+            cardShape = value
+            presCardShape = value
+        else:
+            print(
+                f'CardShape value \'{value}\' unsupported. "squared" or "rounded" required.'
+            )
+
+    elif name == "cardtitleposition":
+        if value in ["above", "inside"]:
+            cardTitlePosition = value
+            presCardTitlePosition = value
+        else:
+            print(
+                f'CardTitlePosition value \'{value}\' unsupported. "inside" or "above" required.'
+            )
 
     elif name == "cardtitlealign":
         val1l = value[:1].lower()
         if val1l in ["l", "r", "c"]:
             cardTitleAlign = val1l
-            pres_cardTitleAlign = cardTitleAlign
+            presCardTitleAlign = cardTitleAlign
         else:
             print(f"CardAlign value '{value}' unsupported.")
 
@@ -2915,65 +3081,66 @@ print("Slides:")
 print("=======")
 print("")
 
-in_block = False
-in_list = False
-in_table = False
-in_card = False
+inBlock = False
+inList = False
+inTable = False
+inCard = False
 
-block_type = ""
-slide_title = ""
-slide_subtitle = ""
+blockType = ""
+slideTitle = ""
+slideSubtitle = ""
 bullets = []
-in_code = False
+tableRows = []
+inCode = False
 notes_text = ""
 slide = None
 tasks = []
 
-slide_hrefs = {}
+slideHrefs = {}
 href_runs = {}
 
 # Each of these is a picture, then a href, then a tooltip - as a tuple
 pictureInfos = []
 
 # Pass to concatenate lines with continuations
-previous_line = "\n"
-lines_after_concatenation = []
-for line in after_metadata_and_HTML:
+previousLine = "\n"
+linesAfterConcatenation = []
+for line in afterMetadataAndHTML:
     if line == "\n":
         # This is a blank line so copy it over
-        lines_after_concatenation.append(line)
+        linesAfterConcatenation.append(line)
 
-    elif previous_line == "\n":
+    elif previousLine == "\n":
         # Previous line was blank so copy this one over
-        lines_after_concatenation.append(line)
+        linesAfterConcatenation.append(line)
 
     elif line.startswith("<!-- md2pptx: "):
         # This is a dynamic metadata line so keep it separate
-        lines_after_concatenation.append(line)
+        linesAfterConcatenation.append(line)
 
     elif line.startswith("<a id="):
         # This is an anchor line so keep it separate
-        lines_after_concatenation.append(line)
+        linesAfterConcatenation.append(line)
 
     else:
         # Previous line was not blank and nor is this one so consider concatenation
         if line.lstrip()[0] not in "*#\|0123456789!":
-            if previous_line[0:2] != "# ":
+            if previousLine[0:2] != "# ":
                 # Previous line was not Heading Level 1 so concatenate
-                lines_after_concatenation[-1] = (
-                    lines_after_concatenation[-1].rstrip() + " " + line.lstrip()
+                linesAfterConcatenation[-1] = (
+                    linesAfterConcatenation[-1].rstrip() + " " + line.lstrip()
                 )
             else:
-                lines_after_concatenation.append(line)
+                linesAfterConcatenation.append(line)
         else:
-            lines_after_concatenation.append(line)
+            linesAfterConcatenation.append(line)
 
     # Store previous line to see if it was H1 or blank
-    previous_line = line
+    previousLine = line
 
 # Pass to get footnote definitions
-metadata_linenumber = 0
-for line in lines_after_concatenation:
+metadataLinenumber = 0
+for line in linesAfterConcatenation:
     line = line.rstrip()
     if footnoteDefinitionRegex.match(line):
         m = footnoteDefinitionRegex.match(line)
@@ -2983,12 +3150,12 @@ for line in lines_after_concatenation:
         footnoteDefinitions.append([fnRef, fnText])
         footnoteReferences.append(fnRef)
 
-        lines_after_concatenation[metadata_linenumber] = "<ignoreme>"
-    metadata_linenumber += 1
+        linesAfterConcatenation[metadataLinenumber] = "<ignoreme>"
+    metadataLinenumber += 1
 
 # Main pass over the input file, now that footnote
 # references have been gathered
-for line in lines_after_concatenation:
+for line in linesAfterConcatenation:
     line = line.rstrip()
     line = line.replace("\t", "    ")
 
@@ -2996,15 +3163,15 @@ for line in lines_after_concatenation:
         # Line was taken care of in the previous pass
         continue
 
-    if (line == "") & (in_code is True):
-        in_code = False
+    if (line == "") & (inCode is True):
+        inCode = False
 
-    if (line.startswith("    ")) & (in_list is False):
-        if in_code is False:
+    if (line.startswith("    ")) & (inList is False):
+        if inCode is False:
             code = []
-        block_type = "code"
+        blockType = "code"
         code.append(line[4:])
-        in_code = True
+        inCode = True
 
     # Taskpaper task
     if line[:1] == "-":
@@ -3053,7 +3220,7 @@ for line in lines_after_concatenation:
         # Anchor on whatever slide we're on
         if anchorRegex.match(line):
             href = anchorRegex.match(line).group(1)
-            if (href != "") & (href in slide_hrefs.keys()):
+            if (href != "") & (href in slideHrefs.keys()):
                 print(f"Heading Reference redefined: '{href}' for slide {slideNumber}")
 
     elif line.startswith("<!-- md2pptx: "):
@@ -3066,10 +3233,10 @@ for line in lines_after_concatenation:
                 if metadataKey == "compacttables":
                     # Font size for tables
                     if metadataValue == "default":
-                        compactTables = default_compactTables
+                        compactTables = defaultCompactTables
 
                     elif metadataValue == "pres":
-                        compactTables = pres_compactTables
+                        compactTables = presCompactTables
 
                     else:
                         compactTables = float(metadataValue)
@@ -3077,10 +3244,10 @@ for line in lines_after_concatenation:
                 elif metadataKey == "pagetitlesize":
                     # Page Title Font size
                     if metadataValue == "default":
-                        pageTitleSize = default_pageTitleSize
+                        pageTitleSize = defaultPageTitleSize
 
                     elif metadataValue == "pres":
-                        pageTitleSize = pres_pageTitleSize
+                        pageTitleSize = presPageTitleSize
 
                     else:
                         pageTitleSize = float(metadataValue)
@@ -3088,10 +3255,10 @@ for line in lines_after_concatenation:
                 elif metadataKey == "cardpercent":
                     # Cards' vertical percent of content area
                     if metadataValue == "default":
-                        cardPercent = default_cardPercent
+                        cardPercent = defaultCardPercent
 
                     elif metadataValue == "pres":
-                        cardPercent = pres_cardPercent
+                        cardPercent = presCardPercent
 
                     else:
                         cardPercent = float(metadataValue)
@@ -3099,10 +3266,10 @@ for line in lines_after_concatenation:
                 elif metadataKey == "cardlayout":
                     # Cards' layout - horizontal or vertical
                     if metadataValue == "default":
-                        cardLayout = default_cardLayout
+                        cardLayout = defaultCardLayout
 
                     elif metadataValue == "pres":
-                        cardLayout = pres_cardLayout
+                        cardLayout = presCardLayout
 
                     else:
                         cardLayout = metadataValue
@@ -3110,10 +3277,10 @@ for line in lines_after_concatenation:
                 elif metadataKey == "basetextsize":
                     # Base text size
                     if metadataValue == "default":
-                        baseTextSize = default_baseTextSize
+                        baseTextSize = defaultBaseTextSize
 
                     elif metadataValue == "pres":
-                        baseTextSize = pres_baseTextSize
+                        baseTextSize = presBaseTextSize
 
                     else:
                         baseTextSize = float(metadataValue)
@@ -3121,10 +3288,10 @@ for line in lines_after_concatenation:
                 elif metadataKey == "basetextdecrement":
                     # Base text decrement
                     if metadataValue == "default":
-                        baseTextDecrement = default_baseTextDecrement
+                        baseTextDecrement = defaultBaseTextDecrement
 
                     elif metadataValue == "pres":
-                        baseTextDecrement = pres_baseTextDecrement
+                        baseTextDecrement = presBaseTextDecrement
 
                     else:
                         baseTextDecrement = float(metadataValue)
@@ -3132,13 +3299,24 @@ for line in lines_after_concatenation:
                 elif metadataKey == "cardtitlealign":
                     # Card title alignment
                     if metadataValue == "default":
-                        cardTitleAlign = default_cardTitleAlign
+                        cardTitleAlign = defaultCardTitleAlign
 
                     elif metadataValue == "pres":
-                        cardTitleAlign = pres_cardTitleAlign
+                        cardTitleAlign = presCardTitleAlign
 
                     else:
                         cardTitleAlign = metadataValue[:1].lower()
+
+                elif metadataKey == "cardtitleposition":
+                    # Card title position - above or inside
+                    if metadataValue == "default":
+                        cardTitlePosition = defaultCardTitlePosition
+
+                    elif metadataValue == "pres":
+                        cardTitlePosition = presCardTitlePosition
+
+                    else:
+                        cardTitlePosition = metadataValue
 
                 else:
                     # Invalid dynamic metadata specification
@@ -3146,15 +3324,15 @@ for line in lines_after_concatenation:
 
     elif line[:4] == "####":
         # Heading Level 4 - card on an existing slide
-        in_card = True
+        inCard = True
 
         # If there is an outstanding href then store it
         if href != "":
-            slide_hrefs[href] = slideNumber + 1
+            slideHrefs[href] = slideNumber + 1
 
         # Get card title text and any href
         cardName, href = parseTitleText(line[4:])
-        if (href != "") & (href in slide_hrefs.keys()):
+        if (href != "") & (href in slideHrefs.keys()):
             print(f"Heading Reference redefined: '{href}' for slide {slideNumber}")
 
         # Create information about a card_title
@@ -3163,27 +3341,26 @@ for line in lines_after_concatenation:
 
     elif line[:3] == "###":
         # Heading Level 3 - slide
-        if in_block is True:
+        if inBlock is True:
             # Create the previous slide
-            slideNumber, slide = createSlide(
-                prs, slideNumber, slide_title, slide_subtitle, block_type, bullets
-            )
+            SI = slideInfo(slideTitle, slideSubtitle, blockType, bullets, tableRows)
+            slideNumber, slide = createSlide(prs, slideNumber, SI)
 
             if href != "":
-                slide_hrefs[href] = slideNumber
+                slideHrefs[href] = slideNumber
 
         # Get slide title text and any href
-        slide_title, href = parseTitleText(line[3:])
-        if (href != "") & (href in slide_hrefs.keys()):
+        slideTitle, href = parseTitleText(line[3:])
+        if (href != "") & (href in slideHrefs.keys()):
             print(f"Heading Reference redefined: '{href}' for slide {slideNumber}")
 
-        in_block = True
-        block_type = "content"
-        slide_subtitle = ""
+        inBlock = True
+        blockType = "content"
+        slideSubtitle = ""
         bullets = []
-        in_list = False
-        in_table = False
-        in_card = False
+        inList = False
+        inTable = False
+        inCard = False
         cards = []
 
         if (notes_text != "") & (slide != None):
@@ -3195,26 +3372,25 @@ for line in lines_after_concatenation:
 
     elif line[:2] == "##":
         # Heading Level 2 - section
-        if in_block is True:
-            slideNumber, slide = createSlide(
-                prs, slideNumber, slide_title, slide_subtitle, block_type, bullets
-            )
+        if inBlock is True:
+            SI = slideInfo(slideTitle, slideSubtitle, blockType, bullets, tableRows)
+            slideNumber, slide = createSlide(prs, slideNumber, SI)
 
             if href != "":
-                slide_hrefs[href] = slideNumber
+                slideHrefs[href] = slideNumber
 
         # Get slide title text and any href
-        slide_title, href = parseTitleText(line[2:])
-        if (href != "") & (href in slide_hrefs.keys()):
+        slideTitle, href = parseTitleText(line[2:])
+        if (href != "") & (href in slideHrefs.keys()):
             print(f"Heading Reference redefined: '{href}' for slide {slideNumber}")
 
-        in_block = True
-        block_type = "section"
-        slide_subtitle = ""
+        inBlock = True
+        blockType = "section"
+        slideSubtitle = ""
         bullets = []
-        in_list = False
-        in_table = False
-        in_card = False
+        inList = False
+        inTable = False
+        inCard = False
 
         if (notes_text != "") & (slide != None):
             notes_slide = slide.notes_slide
@@ -3225,26 +3401,25 @@ for line in lines_after_concatenation:
 
     elif line[:1] == "#":
         # Heading Level 1 - slide title
-        if in_block is True:
-            slideNumber, slide = createSlide(
-                prs, slideNumber, slide_title, slide_subtitle, block_type, bullets
-            )
+        if inBlock is True:
+            SI = slideInfo(slideTitle, slideSubtitle, blockType, bullets, tableRows)
+            slideNumber, slide = createSlide(prs, slideNumber, SI)
 
             if href != "":
-                slide_hrefs[href] = slideNumber
+                slideHrefs[href] = slideNumber
 
         # Get slide title text and any href
-        slide_title, href = parseTitleText(line[1:])
-        if (href != "") & (href in slide_hrefs.keys()):
+        slideTitle, href = parseTitleText(line[1:])
+        if (href != "") & (href in slideHrefs.keys()):
             print(f"Heading Reference redefined: '{href}' for slide {slideNumber}")
 
-        in_block = True
-        block_type = "title"
-        slide_subtitle = ""
+        inBlock = True
+        blockType = "title"
+        slideSubtitle = ""
         bullets = []
-        in_list = False
-        in_table = False
-        in_card = False
+        inList = False
+        inTable = False
+        inCard = False
 
         if (notes_text != "") & (slide != None):
             notes_slide = slide.notes_slide
@@ -3254,12 +3429,12 @@ for line in lines_after_concatenation:
         notes_text = ""
 
     elif bulletRegex.match(line):
-        # Bulleted list
+        # Bulleted inList
         match = bulletRegex.match(line)
         bulletLine = match.group(3).lstrip()
         bulletLevel = int(match.start(2) / 2) + 1
         bulletType = "bulleted"
-        if in_card:
+        if inCard:
             cardBullets.append([bulletLevel, bulletLine, bulletType])
             cardsLength = len(cards)
             if len(cards[cardsLength - 1]) == 1:
@@ -3268,15 +3443,15 @@ for line in lines_after_concatenation:
                 cards[cardsLength - 1][1] = cardBullets
         else:
             bullets.append([bulletLevel, bulletLine, bulletType])
-        in_list = True
-        in_table = False
+        inList = True
+        inTable = False
 
     elif numberRegex.match(line):
         match = numberRegex.match(line)
         bulletLine = match.group(3).lstrip()
         bulletLevel = int(match.start(2) / 2) + 1
         bulletType = "numbered"
-        if in_card:
+        if inCard:
             cardBullets.append([bulletLevel, bulletLine, bulletType])
             cardsLength = len(cards)
             if len(cards[cardsLength - 1]) == 1:
@@ -3285,22 +3460,22 @@ for line in lines_after_concatenation:
                 cards[cardsLength - 1][1] = cardBullets
         else:
             bullets.append([bulletLevel, bulletLine, bulletType])
-        in_list = True
-        in_table = False
+        inList = True
+        inTable = False
 
     elif (graphicRegex.match(line) != None) | (
         clickableGraphicRegex.match(line) != None
     ):
         # There is at least one graphic in the line - whether clickable or not
-        if in_table is False:
-            block_type = "table"
-            table_rows = []
-            in_table = True
-            in_list = False
-            in_card = False
+        if inTable is False:
+            blockType = "table"
+            tableRows = []
+            inTable = True
+            inList = False
+            inCard = False
 
         # Create a table row
-        table_row = []
+        tableRow = []
 
         if len(graphicRegex.findall(line)) == 2:
             # Two graphics - whether clickable or not - on same line
@@ -3339,55 +3514,54 @@ for line in lines_after_concatenation:
 
                 rightGraphic = "![" + matches[4] + "](" + matches[5] + ")"
 
-            table_row.append(leftGraphic)
-            table_row.append(rightGraphic)
+            tableRow.append(leftGraphic)
+            tableRow.append(rightGraphic)
 
         else:
             # One graphic - whether clickable or not - on the line
 
-            table_row.append(line)
+            tableRow.append(line)
 
         # Add table row to saved table rows
-        table_rows.append(table_row)
+        tableRows.append(tableRow)
 
     elif line[:1] == "|":
         # Table or side-by-side
-        if in_table is False:
-            block_type = "table"
-            table_rows = []
-            in_table = True
-            in_list = False
-            in_card = False
+        if inTable is False:
+            blockType = "table"
+            tableRows = []
+            inTable = True
+            inList = False
+            inCard = False
 
         # Create a table row - but with (maybe empty) junk before and after
         words = line.split("|")
-        table_row = []
+        tableRow = []
         for cell in words:
-            table_row.append(cell)
+            tableRow.append(cell)
 
         # Remove first element
-        table_row.pop(0)
+        tableRow.pop(0)
 
         # Remove last element - if blank
         if cell == "":
-            table_row.pop()
+            tableRow.pop()
 
-        # Add clean table row (list of cells) to saved table rows
-        table_rows.append(table_row)
+        # Add clean table row (inList of cells) to saved table rows
+        tableRows.append(tableRow)
 
     else:
         # Must be a slide note line
-        slide_subtitle = slide_subtitle + "\n" + line
+        slideSubtitle = slideSubtitle + "\n" + line
         notes_text = notes_text + "\n" + line
 
 #  Finish off last slide
-if (in_block is True) | (in_code is True) | (in_table is True):
-    slideNumber, slide = createSlide(
-        prs, slideNumber, slide_title, slide_subtitle, block_type, bullets
-    )
+if (inBlock is True) | (inCode is True) | (inTable is True):
+    SI = slideInfo(slideTitle, slideSubtitle, blockType, bullets, tableRows)
+    slideNumber, slide = createSlide(prs, slideNumber, SI)
 
     if href != "":
-        slide_hrefs[href] = slideNumber
+        slideHrefs[href] = slideNumber
 
     if (notes_text != "") & (slide != None):
         notes_slide = slide.notes_slide
@@ -3467,9 +3641,9 @@ if (len(tasks) > 0) & (taskSlides != "none"):
 xrefCheck_errors = False
 for href in href_runs.keys():
     run = href_runs[href]
-    if href in slide_hrefs.keys():
+    if href in slideHrefs.keys():
         createRunHyperlinkOrTooltip(
-            run, prs.slides[slide_hrefs[href] - 2 + templateSlideCount], ""
+            run, prs.slides[slideHrefs[href] - 2 + templateSlideCount], ""
         )
     else:
         # No id defined with that name
@@ -3498,9 +3672,9 @@ for p in range(picture_count):
     if href == "#XYZZY-None":
         target = None
     else:
-        if href[1:] in slide_hrefs.keys():
+        if href[1:] in slideHrefs.keys():
             # Is an internal link
-            target = prs.slides[slide_hrefs[href[1:]] - 2 + templateSlideCount]
+            target = prs.slides[slideHrefs[href[1:]] - 2 + templateSlideCount]
         else:
             # Is an external Link
             target = href
