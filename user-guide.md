@@ -65,6 +65,7 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 		* [Shrinking Tables With `compactTables`](#shrinking-tables-with-compacttables)
 		* [Controlling Task Slide Production With `taskSlides` and `tasksPerSlide`](#controlling-task-slide-production-with-taskslides-and-tasksperslide)
 		* [Controlling Glossary Slide Production With `glossaryTitle`, `glossaryTerm`, `glossaryMeaning`,`glossaryMeaningWidth`, and `glossaryTermsPerPage`](#controlling-glossary-slide-production-with-glossarytitle-glossaryterm-glossarymeaningglossarymeaningwidth-and-glossarytermsperpage)
+		* [Specifying How Much Space To Reserve For Slide Numbers With `NumbersHeight`](#specifying-how-much-space-to-reserve-for-slide-numbers-with-numbersheight)
 		* [Card Slide Metadata](#card-slide-metadata)
 			* [Card Background Colour - `CardColour`](#card-background-colour-cardcolour)
 			* [Card Border Colour - `CardBorderColour`](#card-border-colour-cardbordercolour)
@@ -1245,7 +1246,15 @@ Coding
 
 will cause the maximum number of glossary items on a Glossary slide to be 10. If there are more terms, a second slide will be created. And so on. The default is 20.
 
-####  Card Slide Metadata
+#### Specifying How Much Space To Reserve For Slide Numbers With `NumbersHeight`
+
+You can override the default space left at the bottom of the slides - for slide numbers or maybe a custom footer:
+
+    NumbersHeight: 1.0
+
+This specifies to reserve 1.0 inches of vertical space. The default is 0.4 inches.
+
+#### Card Slide Metadata
 ##### Card Background Colour - `CardColour`
 <a id="card-background-colour-cardcolour"></a>
 

@@ -1073,6 +1073,7 @@ body .markdown-body
 <li><a href="#shrinking-tables-with-compacttables">Shrinking Tables With <code>compactTables</code></a></li>
 <li><a href="#controlling-task-slide-production-with-taskslides-and-tasksperslide">Controlling Task Slide Production With <code>taskSlides</code> and <code>tasksPerSlide</code></a></li>
 <li><a href="#controlling-glossary-slide-production-with-glossarytitle-glossaryterm-glossarymeaningglossarymeaningwidth-and-glossarytermsperpage">Controlling Glossary Slide Production With <code>glossaryTitle</code>, <code>glossaryTerm</code>, <code>glossaryMeaning</code>,<code>glossaryMeaningWidth</code>, and <code>glossaryTermsPerPage</code></a></li>
+<li><a href="#specifying-how-much-space-to-reserve-for-slide-numbers-with-numbersheight">Specifying How Much Space To Reserve For Slide Numbers With <code>NumbersHeight</code></a></li>
 <li><a href="#card-slide-metadata">Card Slide Metadata</a><ul>
 <li><a href="#card-background-colour-cardcolour">Card Background Colour - <code>CardColour</code></a></li>
 <li><a href="#card-border-colour-cardbordercolour">Card Border Colour - <code>CardBorderColour</code></a></li>
@@ -2353,6 +2354,13 @@ baseTextDecrement: 1
 
 
 <p>will cause the maximum number of glossary items on a Glossary slide to be 10. If there are more terms, a second slide will be created. And so on. The default is 20.</p>
+<h4 id="specifying-how-much-space-to-reserve-for-slide-numbers-with-numbersheight">Specifying How Much Space To Reserve For Slide Numbers With <code>NumbersHeight</code><a class="headerlink" href="#specifying-how-much-space-to-reserve-for-slide-numbers-with-numbersheight" title="Permanent link"></a></h4>
+<p>You can override the default space left at the bottom of the slides - for slide numbers or maybe a custom footer:</p>
+<div class="codehilite"><pre>NumbersHeight: 1.0
+</pre></div>
+
+
+<p>This specifies to reserve 1.0 inches of vertical space. The default is 0.4 inches.</p>
 <h4 id="card-slide-metadata">Card Slide Metadata<a class="headerlink" href="#card-slide-metadata" title="Permanent link"></a></h4>
 <h5 id="card-background-colour-cardcolour">Card Background Colour - <code>CardColour</code><a class="headerlink" href="#card-background-colour-cardcolour" title="Permanent link"></a></h5>
 <p><a id="card-background-colour-cardcolour"></a></p>

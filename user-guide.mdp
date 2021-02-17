@@ -1273,7 +1273,16 @@ Coding
 
 will cause the maximum number of glossary items on a Glossary slide to be 10. If there are more terms, a second slide will be created. And so on. The default is 20.
 
-####  Card Slide Metadata
+#### Specifying How Much Space To Reserve For Slide Numbers With `NumbersHeight`
+
+You can override the default space left at the bottom of the slides - for slide numbers or maybe a custom footer:
+
+    NumbersHeight: 1.0
+
+This specifies to reserve 1.0 inches of vertical space. \
+The default is 0.4 inches.
+
+#### Card Slide Metadata
 ##### Card Background Colour - `CardColour`
 <a id="card-background-colour-cardcolour"></a>
 
