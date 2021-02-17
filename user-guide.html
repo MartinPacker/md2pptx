@@ -1105,6 +1105,14 @@ body .markdown-body
 <li><a href="#modifying-the-slide-template">Modifying The Slide Template</a><ul>
 <li><a href="#basics">Basics</a></li>
 <li><a href="#slide-template-sequence">Slide Template Sequence</a></li>
+<li><a href="#template-slide-types">Template Slide Types</a><ul>
+<li><a href="#title-slide-titleslidelayout">Title Slide - <code>TitleSlideLayout</code></a></li>
+<li><a href="#section-slide-sectionslidelayout">Section Slide - <code>SectionSlideLayout</code></a></li>
+<li><a href="#title-only-slide-titleonlylayout">Title Only Slide - <code>TitleOnlyLayout</code></a></li>
+<li><a href="#blank-slide-blanklayout">Blank Slide - <code>BlankLayout</code></a></li>
+<li><a href="#content-slide-contentslidelayout">Content Slide - <code>ContentSlideLayout</code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -1203,6 +1211,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">1.9</td>
+<td align="right">17&nbsp;February&nbsp;2021</td>
+<td align="left">Add support to specify which slide in master. Also numbersMargin</td>
+</tr>
 <tr>
 <td align="left">1.8.1</td>
 <td align="right">10&nbsp;February&nbsp;2021</td>
@@ -2523,7 +2536,12 @@ baseTextDecrement: 1
 <p>This section is a basic introduction to the rules of the game for doing so.</p>
 <h3 id="basics">Basics<a class="headerlink" href="#basics" title="Permanent link"></a></h3>
 <p><a id="basics"></a></p>
-<p>Don&rsquo;t change the order of the slides in the slide master view and don&rsquo;t delete any elements. It&rsquo;s probably also not useful to add elements. Take care with moving and resizing elements; It&rsquo;s probably best to experiment to see what effects you get.</p>
+<p>It&rsquo;s best not to change the order of the slides in the slide master view and not to delete any elements. If you have a slide template presentation where the necessary slides are in the wrong order you can override where md2pptx picks its slides from. See the table below for metadata items to specify different template slides i.e override what md2pptx expects. Here&rsquo;s an example:</p>
+<div class="codehilite"><pre>BlankLayout: 14
+</pre></div>
+
+<p>In this example, the slide in the template presentation to use for blank slides is number 14, with 0 being the first.</p>
+<p>It&rsquo;s probably also not useful to add elements. Take care with moving and resizing elements; It&rsquo;s probably best to experiment to see what effects you get.</p>
 <h3 id="slide-template-sequence">Slide Template Sequence<a class="headerlink" href="#slide-template-sequence" title="Permanent link"></a></h3>
 <p><a id="slide-template-sequence"></a></p>
 <p>The following table shows how each slide type is created.</p>
@@ -2532,6 +2550,7 @@ baseTextDecrement: 1
 <tr>
 <th align="left">Slide Type</th>
 <th align="right">Origin</th>
+<th align="left">Metadata<br/>Override</th>
 <th align="left">Non-Title Content</th>
 </tr>
 </thead>
@@ -2539,46 +2558,55 @@ baseTextDecrement: 1
 <tr>
 <td align="left">Processing Summary</td>
 <td align="right">Original slide from Template</td>
+<td align="left"></td>
 <td align="left">Metadata: Second Shape</td>
 </tr>
 <tr>
 <td align="left">Presentation Title</td>
 <td align="right">Slide Layout 0</td>
+<td align="left">TitleSlideLayout</td>
 <td align="left">Subtitle: Second Shape</td>
 </tr>
 <tr>
 <td align="left">Section</td>
 <td align="right">Slide Layout 1</td>
+<td align="left">SectionSlideLayout</td>
 <td align="left">Subtitle: Second Shape</td>
 </tr>
 <tr>
 <td align="left">Graphic With Title</td>
 <td align="right">Slide Layout 5</td>
+<td align="left">TitleOnlyLayout</td>
 <td align="left">Graphic: New Shape</td>
 </tr>
 <tr>
 <td align="left">Graphic Without Title</td>
 <td align="right">Slide Layout 6</td>
+<td align="left">BlankLayout</td>
 <td align="left">Graphic: New Shape</td>
 </tr>
 <tr>
 <td align="left">Code</td>
 <td align="right">Slide Layout 5</td>
+<td align="left">TitleOnlyLayout</td>
 <td align="left">Code: New Shape</td>
 </tr>
 <tr>
 <td align="left">Content</td>
 <td align="right">Slide Layout 2</td>
+<td align="left">ContentSlideLayout</td>
 <td align="left">Bulleted List: Second Shape</td>
 </tr>
 <tr>
 <td align="left">Table</td>
 <td align="right">Slide Layout 5</td>
+<td align="left">TitleOnlyLayout</td>
 <td align="left">Table: New Shape</td>
 </tr>
 <tr>
 <td align="left">Tasks</td>
 <td align="right">Slide Layout 2</td>
+<td align="left">ContentSlideLayout</td>
 <td align="left">Bulleted List: Second Shape</td>
 </tr>
 </tbody>
@@ -2588,4 +2616,19 @@ baseTextDecrement: 1
 <li>When looking for a title md2pptx looks first for a title shape and, failing that, uses the first shape. It&rsquo;s the Template Designer&rsquo;s responsibility to size and position it sensibly.</li>
 <li>&ldquo;New Shape&rdquo; means md2pptx will create a new shape with, hopefully, sensible position and size.</li>
 <li>With &ldquo;Second Shape&rdquo; it&rsquo;s the Template Designer&rsquo;s responsibility to size and position it sensibly.</li>
-</ol></article></body></html>
+</ol>
+<h3 id="template-slide-types">Template Slide Types<a class="headerlink" href="#template-slide-types" title="Permanent link"></a></h3>
+<p>The following sections give a brief description of each slide type md2pptx builds a presentation from. Your template presentation should have a slide of each type.</p>
+<p>The title of each section includes the metadata override for that type of template slide.</p>
+<h4 id="title-slide-titleslidelayout">Title Slide - <code>TitleSlideLayout</code><a class="headerlink" href="#title-slide-titleslidelayout" title="Permanent link"></a></h4>
+<p>This is for the presentation&rsquo;s overall title. It probably has a title text line half way down the slide - though other designs are possible.</p>
+<p>Generally you would use a Heading Level 1 (<code>#</code>) to create such a slide.</p>
+<h4 id="section-slide-sectionslidelayout">Section Slide - <code>SectionSlideLayout</code><a class="headerlink" href="#section-slide-sectionslidelayout" title="Permanent link"></a></h4>
+<p>This is for a section within the presentation - and is generally simpler than the presentation title slide. It probably has a title text line half way down the slide - though other designs are possible.</p>
+<p>Generally you would use a Heading Level 2 (<code>##</code>) to create such a slide.</p>
+<h4 id="title-only-slide-titleonlylayout">Title Only Slide - <code>TitleOnlyLayout</code><a class="headerlink" href="#title-only-slide-titleonlylayout" title="Permanent link"></a></h4>
+<p>This is used where there will be some content below a title - and md2pptx doesn&rsquo;t use any content that might already be on the slide.</p>
+<h4 id="blank-slide-blanklayout">Blank Slide - <code>BlankLayout</code><a class="headerlink" href="#blank-slide-blanklayout" title="Permanent link"></a></h4>
+<p>This is where md2pptx wants to create a slide without using any content from the template slide.</p>
+<h4 id="content-slide-contentslidelayout">Content Slide - <code>ContentSlideLayout</code><a class="headerlink" href="#content-slide-contentslidelayout" title="Permanent link"></a></h4>
+<p>This is where md2pptx wants to reuse e.g. a text area. It is expected the template slide will have a title shape.</p></article></body></html>

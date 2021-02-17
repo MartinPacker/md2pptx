@@ -43,8 +43,8 @@ try:
 except:
     have_cairosvg = False
 
-md2pptx_level = "1.8.1"
-md2pptx_date = "10 February, 2021"
+md2pptx_level = "1.9"
+md2pptx_date = "17 February, 2021"
 
 
 class slideInfo:
@@ -399,6 +399,7 @@ def formatTitle(presentation, title, titleText):
     title.text_frame.paragraphs[0].font.size = Pt(pageTitleSize)
     title.text_frame.vertical_anchor = MSO_ANCHOR.TOP
 
+    # Return where the next shape below the title would be - vertically
     return title.top + title.height + Inches(0.1)
 
 
@@ -974,9 +975,9 @@ def addFooter(presentation, slideNumber, slide):
     shapes = slide.shapes
     footer = shapes.add_textbox(
         Inches(0.1),
-        presentation.slide_height - numbers_height,
+        presentation.slide_height - numbersHeight,
         Inches(0.2),
-        numbers_height / 2,
+        numbersHeight / 2,
     )
     frame = footer.text_frame
     p = frame.paragraphs[0]
@@ -1021,10 +1022,7 @@ def processingSummarySlide(presentation, metadata):
 
     # Figure out table height
     maxTableHeight = (
-        presentation.slide_height
-        - slideTitleBottom
-        - numbers_content_margin
-        - marginBase
+        presentation.slide_height - slideTitleBottom - numbersContentMargin - marginBase
     )
     tableHeight = min(maxTableHeight, Inches(0.25) * rows)
 
@@ -1328,7 +1326,7 @@ def createAbstractSlide(presentation, slideNumber, titleText, subtitleText, bull
 
 def createContentSlide(presentation, slideNumber, titleText, subtitleText, bullets):
     slide = presentation.slides.add_slide(
-        presentation.slide_layouts[createContentSlideLayout]
+        presentation.slide_layouts[contentSlideLayout]
     )
 
     shapes = slide.shapes
@@ -1641,10 +1639,7 @@ def createTOCSlide(presentation, slideNumber, titleText, subtitleText, bullets):
 
     # Figure out TOC height
     maxTOCHeight = (
-        presentation.slide_height
-        - slideTitleBottom
-        - numbers_content_margin
-        - marginBase
+        presentation.slide_height - slideTitleBottom - numbersContentMargin - marginBase
     )
 
     # Figure out table width
@@ -1984,7 +1979,7 @@ def createTableSlide(presentation, slideNumber, titleText, table):
 
         # Figure out graphic height on slide
         maxPicHeight = (
-            presentation.slide_height - slideTitleBottom - numbers_content_margin
+            presentation.slide_height - slideTitleBottom - numbersContentMargin
         )
 
         if gridRows == 2:
@@ -2037,6 +2032,7 @@ def createTableSlide(presentation, slideNumber, titleText, table):
             topLeftPicY = (
                 slideTitleBottom + marginBase + (maxPicHeight - topLeftPicHeight) / 2
             )
+
             if gridRows == 2:
                 topLeftPicY -= Inches(0.2)
 
@@ -2306,7 +2302,7 @@ def createTableSlide(presentation, slideNumber, titleText, table):
         maxTableHeight = (
             presentation.slide_height
             - slideTitleBottom
-            - numbers_content_margin
+            - numbersContentMargin
             - marginBase
         )
         tableHeight = min(maxTableHeight, Inches(0.25) * rows)
@@ -2446,6 +2442,7 @@ def createSlide(presentation, slideNumber, SI):
             )
     elif SI.blockType == "code":
         slide = createCodeSlide(presentation, slideNumber, SI.titleText, SI.bodyText)
+
     elif SI.blockType == "table":
         slide = createTableSlide(presentation, slideNumber, SI.titleText, SI.tableRows)
 
@@ -2690,10 +2687,10 @@ anchorRegex = re.compile("^<a id=[\"'](.+)[\"']></a>")
 dynamicMetadataRegex = re.compile("^<!-- md2pptx: (.+): (.+) -->")
 
 
-# Slide layout enumeration
+# Default slide layout enumeration
 titleSlideLayout = 0
 sectionSlideLayout = 1
-createContentSlideLayout = 2
+contentSlideLayout = 2
 titleOnlyLayout = 5
 blankLayout = 6
 
@@ -2835,11 +2832,11 @@ marginBase = Inches(0.2)
 tableMargin = Inches(0.2)
 
 # Space to leave at bottom if numbers
-numbers_height = Inches(0.4)
+numbersHeight = Inches(0.4)
 
 # If no numbers leave all the above height anyway
-numbers_content_margin = numbers_height
-numbers_headings_margin = numbers_content_margin
+numbersContentMargin = numbersHeight
+numbersHeadingsMargin = numbersContentMargin
 
 # Background colour class correspondence
 bgcolors = {}
@@ -2878,14 +2875,14 @@ for line in metadata_lines:
         if value.lower() == "yes":
             # Want slide numbers everywhere
             want_numbers_headings = True
-            numbers_headings_margin = numbers_height
+            numbersHeadingsMargin = numbersHeight
             want_numbers_content = True
-            numbers_content_margin = numbers_height
+            numbersContentMargin = numbersHeight
         elif value.lower() == "content":
             # Want slide numbers on content slides but not headings & sections
             want_numbers_headings = False
             want_numbers_content = True
-            numbers_content_margin = numbers_height
+            numbersContentMargin = numbersHeight
         else:
             # Don't want slide numbers - but they could still be added by slide master
             # (Can code any other value, including 'no' or omit this metadata type)
@@ -3015,8 +3012,32 @@ for line in metadata_lines:
 
     elif name == "taskslides":
         taskSlides = value
+
     elif name == "tasksperpage":
         tasksPerPage = int(value)
+
+    elif name == "titleslidelayout":
+        titleSlideLayout = int(value)
+
+    elif name == "sectionslidelayout":
+        sectionSlideLayout = int(value)
+
+    elif name == "contentslidelayout":
+        contentSlideLayout = int(value)
+
+    elif name == "titleonlylayout":
+        titleOnlyLayout = int(value)
+
+    elif name == "blanklayout":
+        blankLayout = int(value)
+
+    elif name == "numbersheight":
+        numbersHeight = Inches(float(value))
+
+        # If no numbers leave all the above height anyway
+        numbersContentMargin = numbersHeight
+        numbersHeadingsMargin = numbersContentMargin
+
     elif name == "glossarytitle":
         glossaryTitle = value
     elif name == "glossaryterm":

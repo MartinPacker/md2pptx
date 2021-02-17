@@ -89,6 +89,12 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 * [Modifying The Slide Template](#modifying-the-slide-template)
 	* [Basics](#basics)
 	* [Slide Template Sequence](#slide-template-sequence)
+	* [Template Slide Types](#template-slide-types)
+		* [Title Slide - `TitleSlideLayout`](#title-slide-titleslidelayout)
+		* [Section Slide - `SectionSlideLayout`](#section-slide-sectionslidelayout)
+		* [Title Only Slide - `TitleOnlyLayout`](#title-only-slide-titleonlylayout)
+		* [Blank Slide - `BlankLayout`](#blank-slide-blanklayout)
+		* [Content Slide - `ContentSlideLayout`](#content-slide-contentslidelayout)
 
 ## Why md2pptx?
 
@@ -193,6 +199,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|1.9|17&nbsp;February&nbsp;2021|Add support to specify which slide in master. Also numbersMargin|
 |1.8.1|10&nbsp;February&nbsp;2021|Card options: Rounded versus square corners. Titles above or in cards|
 |1.8|31&nbsp;January&nbsp;2021|SVG support for file and web graphics|
 |1.7.2|24&nbsp;January&nbsp;2021|Make vertical bars optional around image references|
@@ -1449,24 +1456,32 @@ This section is a basic introduction to the rules of the game for doing so.
 ### Basics
 <a id="basics"></a>
 
-Don't change the order of the slides in the slide master view and don't delete any elements. It's probably also not useful to add elements. Take care with moving and resizing elements; It's probably best to experiment to see what effects you get.
+It's best not to change the order of the slides in the slide master view and not to delete any elements. If you have a slide template presentation where the necessary slides are in the wrong order you can override where md2pptx picks its slides from. See the table below for metadata items to specify different template slides i.e override what md2pptx expects. Here's an example:
+
+```
+BlankLayout: 14
+```
+
+In this example, the slide in the template presentation to use for blank slides is number 14, with 0 being the first.
+
+It's probably also not useful to add elements. Take care with moving and resizing elements; It's probably best to experiment to see what effects you get.
 
 ### Slide Template Sequence
 <a id="slide-template-sequence"></a>
 
 The following table shows how each slide type is created.
 
-|Slide Type|Origin|Non-Title Content|
-|:-|-:|:-|
-|Processing Summary|Original slide from Template|Metadata: Second Shape|
-|Presentation Title|Slide Layout 0|Subtitle: Second Shape|
-|Section|Slide Layout 1|Subtitle: Second Shape|
-|Graphic With Title|Slide Layout 5|Graphic: New Shape|
-|Graphic Without Title|Slide Layout 6|Graphic: New Shape|
-|Code|Slide Layout 5|Code: New Shape|
-|Content|Slide Layout 2|Bulleted List: Second Shape|
-|Table|Slide Layout 5|Table: New Shape|
-|Tasks|Slide Layout 2| Bulleted List: Second Shape|
+|Slide Type|Origin|Metadata<br/>Override|Non-Title Content|
+|:-|-:|:-|:-|
+|Processing Summary|Original slide from Template||Metadata: Second Shape|
+|Presentation Title|Slide Layout 0|TitleSlideLayout|Subtitle: Second Shape|
+|Section|Slide Layout 1|SectionSlideLayout|Subtitle: Second Shape|
+|Graphic With Title|Slide Layout 5|TitleOnlyLayout|Graphic: New Shape|
+|Graphic Without Title|Slide Layout 6|BlankLayout|Graphic: New Shape|
+|Code|Slide Layout 5|TitleOnlyLayout|Code: New Shape|
+|Content|Slide Layout 2|ContentSlideLayout|Bulleted List: Second Shape|
+|Table|Slide Layout 5|TitleOnlyLayout|Table: New Shape|
+|Tasks|Slide Layout 2|ContentSlideLayout| Bulleted List: Second Shape|
 
 **Notes:**
 
@@ -1474,6 +1489,32 @@ The following table shows how each slide type is created.
 2. "New Shape" means md2pptx will create a new shape with, hopefully, sensible position and size.
 3. With "Second Shape" it's the Template Designer's responsibility to size and position it sensibly.
 
+### Template Slide Types
 
+The following sections give a brief description of each slide type md2pptx builds a presentation from. Your template presentation should have a slide of each type.
 
+The title of each section includes the metadata override for that type of template slide.
 
+#### Title Slide - `TitleSlideLayout`
+
+This is for the presentation's overall title. It probably has a title text line half way down the slide - though other designs are possible.
+
+Generally you would use a Heading Level 1 (`#`) to create such a slide.
+
+#### Section Slide - `SectionSlideLayout`
+
+This is for a section within the presentation - and is generally simpler than the presentation title slide. It probably has a title text line half way down the slide - though other designs are possible.
+
+Generally you would use a Heading Level 2 (`##`) to create such a slide.
+
+#### Title Only Slide - `TitleOnlyLayout`
+
+This is used where there will be some content below a title - and md2pptx doesn't use any content that might already be on the slide.
+
+####  Blank Slide - `BlankLayout`
+
+This is where md2pptx wants to create a slide without using any content from the template slide.
+
+#### Content Slide - `ContentSlideLayout`
+
+This is where md2pptx wants to reuse e.g. a text area. It is expected the template slide will have a title shape.
