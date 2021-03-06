@@ -1154,12 +1154,11 @@ body .markdown-body
 <h3 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link"></a></h3>
 <p>To install md2pptx and its prerequisites</p>
 <ol>
-<li>Have Python 3 installed - at a reasonably high level.</li>
+<li>Have Python 3.8 or higher installed.</li>
 <li>Install python-pptx using the command <code>pip3 install python-pptx</code>. (You might have to install pip firsst.)</li>
 <li>Optionally install CairoSVG - using the command <code>pip3 install cairosvg</code>. (This is for SVG graphics support.)</li>
 <li>Install md2pptx by copying a version and unzipping it or using <code>git clone</code>. md2pptx can be found <a href="https://github.com/MartinPacker/md2pptx">here</a>.</li>
 </ol>
-<p><strong>NOTE:</strong> Any release of md2pptx published from 1 March 2021 onwards will require at least Python 3.8. This will bring an improvement in efficiency. CairoSVG requires Python 3.6 or higher.</p>
 <h3 id="use">Use<a class="headerlink" href="#use" title="Permanent link"></a></h3>
 <p>The following instructions are for Unix-like systems. (It&rsquo;s developed and used by the developer on Mac OS but should also have identical syntax on Linux.) Windows users will need a slightly different form, but the principle is the same.</p>
 <p>Here is a sample invocation:</p>
@@ -1212,6 +1211,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">1.9.1</td>
+<td align="right">6&nbsp;March&nbsp;2021</td>
+<td align="left">Added <code>&amp;check;</code> entity reference. Reworked internals with more consistent layout and <code>getContentRec</code> and title formatting improvements. Prereq Python 3.8.</td>
+</tr>
 <tr>
 <td align="left">1.9</td>
 <td align="right">17&nbsp;February&nbsp;2021</td>
@@ -1966,6 +1970,14 @@ To create an internal slide reference you need to do two things:</p>
 <td align="right">&comma;</td>
 <td align="left"><code>&amp;infin;</code></td>
 <td align="left">&infin;</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left"><code>&amp;check;</code></td>
+<td align="right">&check;</td>
+<td align="left"></td>
+<td align="left"></td>
 <td align="left"></td>
 <td align="left"></td>
 </tr>

@@ -67,12 +67,10 @@ To use md2pptx you need to download it and install the prerequisites.
 
 To install md2pptx and its prerequisites
 
-1. Have Python 3 installed - at a reasonably high level.
+1. Have Python 3.8 or higher installed.
 1. Install python-pptx using the command `pip3 install python-pptx`. (You might have to install pip firsst.)
 1. Optionally install CairoSVG - using the command `pip3 install cairosvg`. (This is for SVG graphics support.)
 1. Install md2pptx by copying a version and unzipping it or using `git clone`. md2pptx can be found [here](https://github.com/MartinPacker/md2pptx).
-
-**NOTE:** Any release of md2pptx published from 1 March 2021 onwards will require at least Python 3.8. This will bring an improvement in efficiency. CairoSVG requires Python 3.6 or higher.
 
 ### Use
 
@@ -129,6 +127,7 @@ To quote from the python-pptx license statement:
 =colalign l r l
 =csv
 Level,Date,What
+1.9.1,6&nbsp;March&nbsp;2021,Added `&check;` entity reference. Reworked internals with more consistent layout and `getContentRec` and title formatting improvements. Prereq Python 3.8.
 1.9,17&nbsp;February&nbsp;2021,Add support to specify which slide in master. Also numbersMargin
 1.8.1,10&nbsp;February&nbsp;2021,Card options: Rounded versus square corners. Titles above or in cards
 1.8,31&nbsp;January&nbsp;2021,SVG support for file and web graphics
@@ -787,6 +786,7 @@ md2pptx supports a few [HTML entity references](https://en.wikipedia.org/wiki/Li
 `&colon;`,&colon;,`&lsqb;`,&lsqb;
 `&amp;`,&amp;,`&rsqb;`,&rsqb;
 `&comma;`,&comma;,`&infin;`,&infin;
+`&check;`,&check;
 =endcsv
 
 ### Numeric Character References

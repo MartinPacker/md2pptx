@@ -43,8 +43,8 @@ try:
 except:
     have_cairosvg = False
 
-md2pptx_level = "1.9"
-md2pptx_date = "17 February, 2021"
+md2pptx_level = "1.9.1"
+md2pptx_date = "6 March, 2021"
 
 
 class slideInfo:
@@ -384,23 +384,51 @@ def findSlideTitle(slide):
 
 
 def findBodyShape(slide):
-    return slide.shapes[1]
+    if len(slide.shapes) >1:
+        return slide.shapes[1]
+    else:
+        return None
 
+# Returns a top, left, width, height for content to be rendered into
+def getContentRect(presentation, slide, topOfContent):
+    # Left and right are always defined by the margins
+    rectLeft = marginBase
+    rectWidth = presentation.slide_width - 2 * marginBase
+    
+    if topOfContent == 0:
+        # There is no title on this slide
+        rectTop = marginBase
+        rectHeight = presentation.slide_height - marginBase - max(marginBase, numbersHeight)
+    else:
+        # There is a title on this slide
+        rectTop = topOfContent + marginBase
+        rectHeight = presentation.slide_height - rectTop - max(marginBase, numbersHeight)
 
-def formatTitle(presentation, title, titleText):
+    return (rectLeft, rectWidth, rectTop, rectHeight )
+    
+
+# Finds the title and adds the text to it, returning title bottom, title shape, and
+# flattened title
+def formatTitle(presentation, slide, titleText, titleFontSize):
+    # Find title
+    title = findSlideTitle(slide)
+
     title.top = marginBase
     title.left = marginBase
     title.width = presentation.slide_width - marginBase * 2
 
     # Figure out how many lines title will need (ignoring overflow)
-    titleLines = len(titleText.split("<br/>"))
+    titleLineCount = len(titleText.split("<br/>"))
 
-    title.height = Pt(pageTitleSize) * titleLines
-    title.text_frame.paragraphs[0].font.size = Pt(pageTitleSize)
+    # Add the title text to the first paragraph
+    flattenedTitle = addFormattedText(title.text_frame.paragraphs[0], titleText)
+
+    title.height = Pt(titleFontSize) * titleLineCount
+    title.text_frame.paragraphs[0].font.size = Pt(titleFontSize)
     title.text_frame.vertical_anchor = MSO_ANCHOR.TOP
 
     # Return where the next shape below the title would be - vertically
-    return title.top + title.height + Inches(0.1)
+    return (title.top + title.height + Inches(0.1), title, flattenedTitle)
 
 
 # Parse the string after the e.g. ### for a displayable title and
@@ -409,8 +437,7 @@ def parseTitleText(titleLineString):
     # Get rid of any cruft on the line
     slideTitleWithPossibleHref = titleLineString.strip().rstrip("#").rstrip()
 
-    if slideHrefRegex.match(slideTitleWithPossibleHref):
-        hrefMatch = slideHrefRegex.match(slideTitleWithPossibleHref)
+    if (hrefMatch := slideHrefRegex.match(slideTitleWithPossibleHref)):
         slideTitle = hrefMatch.group(1)
         href = hrefMatch.group(2)
     else:
@@ -469,6 +496,7 @@ def parseText(text):
     text2 = text2.replace("&Ouml;", "Ö")
     text2 = text2.replace("&szlig;", "ß")
     text2 = text2.replace("&euro;", "€")
+    text2 = text2.replace("&check;", "✓")
 
     # Replace any asterisks with spaces either side with entity reference
     text2 = text2.replace(" * ", " &lowast; ")
@@ -987,7 +1015,7 @@ def addFooter(presentation, slideNumber, slide):
     font.size = Pt(12)
 
 
-def processingSummarySlide(presentation, metadata):
+def createProcessingSummarySlide(presentation, metadata):
     # Use the first slide in the template presentation as the base
     slide = presentation.slides[0]
 
@@ -997,15 +1025,8 @@ def processingSummarySlide(presentation, metadata):
     runDate = now.strftime("%e %B, %G").lstrip()
     runDateTime = "Presentation built: " + runTime + " on " + runDate
 
-    # Find title
-    title = findSlideTitle(slide)
-
-    # Format title
-    slideTitleBottom = formatTitle(presentation, title, "")
-
-    # Add title text into formatted title
-    addFormattedText(title.text_frame.paragraphs[0], banner + "<br/>" + runDateTime)
-    title.text_frame.paragraphs[0].font.size = Pt(pageTitleSize)
+    # Format title and add title text
+    slideTitleBottom, title, flattenedTitle = formatTitle(presentation, slide, banner + "<br/>" + runDateTime, pageTitleSize)
 
     # Work out how many pairs of columns we need
     metadataRows = len(metadata)
@@ -1020,24 +1041,17 @@ def processingSummarySlide(presentation, metadata):
     columns = metadataColumnPairs * 2
     rows = min(maxMetadataRowsPerColumn, metadataRows)
 
-    # Figure out table height
-    maxTableHeight = (
-        presentation.slide_height - slideTitleBottom - numbersContentMargin - marginBase
-    )
-    tableHeight = min(maxTableHeight, Inches(0.25) * rows)
+    # Get the rectangle the content will draw in
+    contentLeft, contentWidth, contentTop, contentHeight = getContentRect(presentation, slide, slideTitleBottom)
 
-    # Figure out table top
-    tableTop = slideTitleBottom + Inches(0.5)
-
-    # Figure out table width
-    tableWidth = presentation.slide_width - 2 * tableMargin
+    tableHeight = min(contentHeight, Inches(0.25) * rows)
 
     # Figure out the width of a single-width column
-    columnWidthUnit = int(tableWidth / (2 * metadataColumnPairs))
+    columnWidthUnit = int(contentWidth / (2 * metadataColumnPairs))
 
     # Create the table with the above number of rows and columns
     newTable = slide.shapes.add_table(
-        rows, columns, tableMargin, tableTop, tableWidth, tableHeight
+        rows, columns, tableMargin, contentTop, contentWidth, tableHeight
     ).table
 
     # Don't want headings
@@ -1071,77 +1085,43 @@ def processingSummarySlide(presentation, metadata):
         row += 1
 
 
-def createTitleSlide(presentation, slideNumber, titleText, subtitleText):
-    slide = presentation.slides.add_slide(presentation.slide_layouts[titleSlideLayout])
-
-    # Add title
-    title = findSlideTitle(slide)
-    flattenedTitle = addFormattedText(title.text_frame.paragraphs[0], titleText)
-    title.text_frame.paragraphs[0].font.size = Pt(sectionTitleSize)
-
-    print(str(slideNumber).rjust(4) + " " + flattenedTitle)
-
-    # Add subtitle - if there is one
-    subtitleText = subtitleText.strip()
-    if subtitleText != "":
-        # There is a subtitle
-        subtitle = findBodyShape(slide)
-
-        addFormattedText(subtitle.text_frame.paragraphs[0], subtitleText)
-        subtitle.text_frame.paragraphs[0].font.size = Pt(sectionSubtitleSize)
-    else:
-        # There isn't a subtitle so move the title down a bit
-        title.height = marginBase * 4
-        title.width = presentation.slide_width - marginBase * 8
-        title.left = marginBase * 2
-        title.top = int((presentation.slide_height - title.height) / 2)
-
-        # Reformat subtitle to be out of the way
-        subtitle = findBodyShape(slide)
-
-        subtitle.top = title.top + title.height + marginBase * 2
-        subtitle.width = title.width
-        subtitle.left = title.left
-        subtitle.height = marginBase * 2
-
-    if want_numbers_headings is True:
-        addFooter(presentation, slideNumber, slide)
-
-    return slide
-
-
-def createSectionSlide(presentation, slideNumber, titleText, subtitleText):
+# Note: This doesn't use formatTitle()
+def createTitleOrSectionSlide(presentation, slideNumber, titleText , layout, titleSize, subtitleText,subtitleSize):
     slide = presentation.slides.add_slide(
-        presentation.slide_layouts[sectionSlideLayout]
+        presentation.slide_layouts[layout]
     )
 
     # Add title
     title = findSlideTitle(slide)
     flattenedTitle = addFormattedText(title.text_frame.paragraphs[0], titleText)
 
-    print(str(slideNumber).rjust(4) + "   " + flattenedTitle)
+    title.text_frame.paragraphs[0].font.size = Pt(titleSize)
 
-    title_height = Pt(sectionTitleSize)
-
-    title.text_frame.paragraphs[0].font.size = title_height
-
-    # Position title
-    title.top = int((presentation.slide_height - Pt(sectionTitleSize)) / 2)
-    title.height = title_height
-    title.width = presentation.slide_width - 2 * marginBase
-    title.left = marginBase
-
+    # Add subtitle - if there is one
+    subtitleText = subtitleText.strip()
     if subtitleText != "":
-        subtitle = findBodyShape(slide)
+        # There is a subtitle
+        subtitleShape = findBodyShape(slide)
+        if subtitleShape != None:
+            addFormattedText(subtitleShape.text_frame.paragraphs[0], subtitleText)
+            subtitleShape.text_frame.paragraphs[0].font.size = Pt(subtitleSize)
+        else:
+            print("Warning: No subtitle shape on this slide to add text to.")
+    else:
+        # Reformat subtitle shape to be out of the way
+        subtitleShape = findBodyShape(slide)
+        if subtitleShape != None:
+            subtitleShape.top = title.top + title.height + marginBase * 2
+            subtitleShape.width = title.width
+            subtitleShape.left = title.left
+            subtitleShape.height = marginBase * 2
 
-        subtitle.text = subtitleText
-        subtitle.text_frame.paragraphs[0].font.size = Pt(sectionSubtitleSize)
+    print(str(slideNumber).rjust(4) + "   " + flattenedTitle)
 
     if want_numbers_headings is True:
         addFooter(presentation, slideNumber, slide)
 
     return slide
-
 
 def handleWhateverGraphicType(graphicFilename):
     # Handles both physical file and URI file types
@@ -1215,22 +1195,18 @@ def createCodeSlide(presentation, slideNumber, titleText, code):
         )
 
         # Add title and constrain its size and placement
-        title = findSlideTitle(slide)
-        slideTitleBottom = formatTitle(presentation, title, titleText)
-
-        flattenedTitle = addFormattedText(title.text_frame.paragraphs[0], titleText)
-        title.top = marginBase
-        title.left = marginBase * 2
-        title.width = presentation.slide_width - marginBase * 4
-        title.height = marginBase * 2
-        title.text_frame.paragraphs[0].font.size = Pt(pageTitleSize)
-
+        slideTitleBottom, title, flattenedTitle = formatTitle(presentation, slide, titleText, pageTitleSize)
+        
         print(str(slideNumber).rjust(4) + "     " + flattenedTitle)
 
-        # Add code
-        codeWidth = presentation.slide_width - marginBase * 4
+        # Get the rectangle the content will draw in
+        contentLeft, contentWidth, contentTop, contentHeight = getContentRect(presentation, slide, slideTitleBottom)
+
+        # Split the code into lines
+        codeLines = code.split("\n")
+        
         codeBox = slide.shapes.add_textbox(
-            marginBase * 2, marginBase * 4, codeWidth, marginBase * 24
+            contentLeft, contentTop, contentWidth, contentHeight
         )
 
         # Get the sole paragraph
@@ -1240,14 +1216,22 @@ def createCodeSlide(presentation, slideNumber, titleText, code):
         if baseTextSize > 0:
             p.font.size = Pt(baseTextSize)
 
-        for codeLine in code:
+        # Adjust code box height based on lines
+        codeBox.height = min(len(codeLines) * Pt(baseTextSize+5), contentHeight)
+
+        # Add the code - one line at a time
+        for codeLine in codeLines:
             run = p.add_run()
             run.text = codeLine + "\n"
             font = run.font
             font.name = monoFont
+
+        # Try to control text frame but SHAPE_TO_FIT_TEXT doesn't seem to work
         tf = codeBox.text_frame
         tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
         tf.word_wrap = False
+        
+        # Fill the code box with green
         fill = codeBox.fill
         fill.solid()
         fill.fore_color.rgb = RGBColor(223, 255, 223)
@@ -1264,40 +1248,33 @@ def createCodeSlide(presentation, slideNumber, titleText, code):
     return slide
 
 
-def createAbstractSlide(presentation, slideNumber, titleText, subtitleText, bullets):
+def createAbstractSlide(presentation, slideNumber, titleText, subtitleText, paragraphs):
     slide = presentation.slides.add_slide(presentation.slide_layouts[titleOnlyLayout])
 
     shapes = slide.shapes
 
     # Add title and constrain its size and placement
-    title = findSlideTitle(slide)
-    slideTitleBottom = formatTitle(presentation, title, titleText)
-
-    flattenedTitle = addFormattedText(title.text_frame.paragraphs[0], titleText)
+    slideTitleBottom, title, flattenedTitle = formatTitle(presentation, slide, titleText, pageTitleSize)
 
     print(str(slideNumber).rjust(4) + "     Abstract: " + flattenedTitle)
 
-    title.top = marginBase
-    title.left = marginBase * 2
-    title.width = presentation.slide_width - marginBase * 4
-    title.height = marginBase * 2
-    title.text_frame.paragraphs[0].font.size = Pt(pageTitleSize)
+    # Get the rectangle the content will draw in
+    contentLeft, contentWidth, contentTop, contentHeight = getContentRect(presentation, slide, slideTitleBottom)
 
     # Add abstract text
-    abstractWidth = presentation.slide_width - marginBase * 8
     abstractBox = slide.shapes.add_textbox(
-        marginBase * 4,
-        slideTitleBottom + marginBase * 4,
-        abstractWidth,
-        marginBase * 24,
+        contentLeft,
+        contentTop,
+        contentWidth,
+        contentHeight,
     )
     p = abstractBox.text_frame.paragraphs[0]
     para = 1
     tf = abstractBox.text_frame
     f = p.font
     f.size = Pt(22)
-    for abstractLine in bullets:
-        lineLevel, lineText, bulletType = abstractLine
+    for abstractParagraph in paragraphs:
+        paragraphLevel, paragraphText, paragraphType = abstractParagraph
         if para > 1:
 
             # Spacer paragraph
@@ -1309,14 +1286,10 @@ def createAbstractSlide(presentation, slideNumber, titleText, subtitleText, bull
             p = tf.add_paragraph()
             f = p.font
             f.size = Pt(22)
-        addFormattedText(p, lineText)
+        addFormattedText(p, paragraphText)
         para = para + 1
 
-    # tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
     tf.word_wrap = True
-    # fill = abstractBox.fill
-    # fill.solid()
-    # fill.fore_color.rgb = RGBColor(223, 255, 223)
 
     if want_numbers_content is True:
         addFooter(presentation, slideNumber, slide)
@@ -1332,26 +1305,19 @@ def createContentSlide(presentation, slideNumber, titleText, subtitleText, bulle
     shapes = slide.shapes
 
     # Add title
-    title = findSlideTitle(slide)
-    slideTitleBottom = formatTitle(presentation, title, titleText)
-
-    flattenedTitle = addFormattedText(title.text_frame.paragraphs[0], titleText)
-    title.text_frame.paragraphs[0].font.size = Pt(pageTitleSize)
+    slideTitleBottom, title, flattenedTitle = formatTitle(presentation, slide, titleText, pageTitleSize)
 
     print(str(slideNumber).rjust(4) + "     " + flattenedTitle)
 
-    # Calculate the space the buckets text shape and/or cards can occupy
-    contentHeight = presentation.slide_height - Inches(0.5) - slideTitleBottom
-
-    # Calculate the width the content should be on the slide
-    contentWidth = presentation.slide_width - Inches(1.0)
-
+    # Get the rectangle the content will draw in
+    contentLeft, contentWidth, contentTop, contentHeight = getContentRect(presentation, slide, slideTitleBottom)
+    
     # Get bulleted text shape - either for bullets above cards or first card's body shape
     bulletsShape = findBodyShape(slide)
 
     # Set bulleted shape top, left, width
-    bulletsShape.top = slideTitleBottom + Inches(0.25)
-    bulletsShape.left = Inches(0.5)
+    bulletsShape.top = contentTop
+    bulletsShape.left = contentLeft
     bulletsShape.width = contentWidth
 
     bulletCount = len(bullets)
@@ -1591,8 +1557,7 @@ def createContentSlide(presentation, slideNumber, titleText, subtitleText, bulle
 
 
 def delinkify(text):
-    if linkRegex.match(text):
-        linkMatch = linkRegex.match(text)
+    if (linkMatch := linkRegex.match(text)):
         linkText = linkMatch.group(1)
         linkURL = linkMatch.group(2)
 
@@ -1630,20 +1595,15 @@ def createTOCSlide(presentation, slideNumber, titleText, subtitleText, bullets):
     shapes = slide.shapes
 
     # Add title
-    title = findSlideTitle(slide)
-    slideTitleBottom = formatTitle(presentation, title, titleText)
-
     if titleText == tocTitle:
-        addFormattedText(title.text_frame.paragraphs[0], titleText)
-        title.text_frame.paragraphs[0].font.size = Pt(pageTitleSize)
+        useTitle = tocTitle
+    else:
+        useTitle = ""
 
-    # Figure out TOC height
-    maxTOCHeight = (
-        presentation.slide_height - slideTitleBottom - numbersContentMargin - marginBase
-    )
+    slideTitleBottom, title, flattenedTitle = formatTitle(presentation, slide, useTitle, pageTitleSize)
 
-    # Figure out table width
-    maxTOCWidth = presentation.slide_width - 2 * marginBase
+    # Get the rectangle the content will draw in
+    contentLeft, contentWidth, contentTop, contentHeight = getContentRect(presentation, slide, slideTitleBottom)
 
     width = Inches(3)
     height = Inches(1)
@@ -1662,7 +1622,7 @@ def createTOCSlide(presentation, slideNumber, titleText, subtitleText, bullets):
     # Calculate actual TOC height so it can be vertically centred
     TOCHeight = (rowCount * height) + ((rowCount - 1) * rowGap)
 
-    TOCtop = slideTitleBottom + (maxTOCHeight - TOCHeight + height) / 2
+    TOCtop = slideTitleBottom + (contentHeight - TOCHeight + height) / 2
 
     # Calculate actual TOC width
     TOCWidth = chevronsPerRow * (width - Inches(0.5)) + Inches(0.5)
@@ -1702,11 +1662,7 @@ def createTableSlide(presentation, slideNumber, titleText, table):
     printableBottomRightGraphicFilename = ""
 
     # Add title
-    title = findSlideTitle(slide)
-    slideTitleBottom = formatTitle(presentation, title, titleText)
-
-    flattenedTitle = addFormattedText(title.text_frame.paragraphs[0], titleText)
-    title.text_frame.paragraphs[0].font.size = Pt(pageTitleSize)
+    slideTitleBottom, title, flattenedTitle = formatTitle(presentation, slide, titleText, pageTitleSize)
 
     # Handle table body
     if (len(table) <= 2) & (len(table[0]) <= 2):
@@ -1725,9 +1681,8 @@ def createTableSlide(presentation, slideNumber, titleText, table):
         if (graphicRegex.match(topLeftSide) != None) | (
             clickableGraphicRegex.match(topLeftSide) != None
         ):
-            if clickableGraphicRegex.match(topLeftSide):
+            if (clickableGraphicMatch := clickableGraphicRegex.match(topLeftSide)):
                 # Clickable graphic case
-                clickableGraphicMatch = clickableGraphicRegex.match(topLeftSide)
                 topLeftGraphicTitle = clickableGraphicMatch.group(1)
                 topLeftGraphicFilename = clickableGraphicMatch.group(2)
                 topLeftGraphicHref = clickableGraphicMatch.group(3)
@@ -1757,9 +1712,8 @@ def createTableSlide(presentation, slideNumber, titleText, table):
             if (graphicRegex.match(topRightSide) != None) | (
                 clickableGraphicRegex.match(topRightSide) != None
             ):
-                if clickableGraphicRegex.match(topRightSide):
+                if (clickableGraphicMatch := clickableGraphicRegex.match(topRightSide)):
                     # Clickable graphic case
-                    clickableGraphicMatch = clickableGraphicRegex.match(topRightSide)
                     topRightGraphicTitle = clickableGraphicMatch.group(1)
                     topRightGraphicFilename = clickableGraphicMatch.group(2)
                     topRightGraphicHref = clickableGraphicMatch.group(3)
@@ -1794,9 +1748,8 @@ def createTableSlide(presentation, slideNumber, titleText, table):
             if (graphicRegex.match(bottomLeftSide) != None) | (
                 clickableGraphicRegex.match(bottomLeftSide) != None
             ):
-                if clickableGraphicRegex.match(bottomLeftSide):
+                if (clickableGraphicMatch := clickableGraphicRegex.match(bottomLeftSide)):
                     # Clickable graphic case
-                    clickableGraphicMatch = clickableGraphicRegex.match(bottomLeftSide)
                     bottomLeftGraphicTitle = clickableGraphicMatch.group(1)
                     bottomLeftGraphicFilename = clickableGraphicMatch.group(2)
                     bottomLeftGraphicHref = clickableGraphicMatch.group(3)
@@ -1830,11 +1783,8 @@ def createTableSlide(presentation, slideNumber, titleText, table):
                     if (graphicRegex.match(bottomRightSide) != None) | (
                         clickableGraphicRegex.match(bottomRightSide) != None
                     ):
-                        if clickableGraphicRegex.match(bottomRightSide):
+                        if (clickableGraphicMatch := clickableGraphicRegex.match(bottomRightSide)):
                             # Clickable graphic case
-                            clickableGraphicMatch = clickableGraphicRegex.match(
-                                bottomRightSide
-                            )
                             bottomRightGraphicTitle = clickableGraphicMatch.group(1)
                             bottomRightGraphicFilename = clickableGraphicMatch.group(2)
                             bottomRightGraphicHref = clickableGraphicMatch.group(3)
@@ -2396,7 +2346,7 @@ def createTableSlide(presentation, slideNumber, titleText, table):
 
 def createSlide(presentation, slideNumber, SI):
     if SI.blockType == "title":
-        slide = createTitleSlide(presentation, slideNumber, SI.titleText, SI.bodyText)
+        slide = createTitleOrSectionSlide(presentation, slideNumber, SI.titleText, titleSlideLayout, sectionTitleSize, SI.bodyText, sectionSubtitleSize)
 
     elif SI.blockType == "section":
         if tocStyle != "":
@@ -2409,9 +2359,7 @@ def createSlide(presentation, slideNumber, SI):
                 SI.bulletsOrFilename,
             )
         else:
-            slide = createSectionSlide(
-                presentation, slideNumber, SI.titleText, SI.bodyText
-            )
+            slide = createTitleOrSectionSlide(presentation, slideNumber, SI.titleText, sectionSlideLayout, sectionTitleSize, SI.bodyText, sectionSubtitleSize)
 
     elif SI.blockType == "content":
         if (tocStyle != "") & (tocTitle == SI.titleText):
@@ -2441,7 +2389,8 @@ def createSlide(presentation, slideNumber, SI):
                 SI.bulletsOrFilename,
             )
     elif SI.blockType == "code":
-        slide = createCodeSlide(presentation, slideNumber, SI.titleText, SI.bodyText)
+        # Note: Somehow two newlines got prepended to the code
+        slide = createCodeSlide(presentation, slideNumber, SI.titleText, SI.bodyText[2:])
 
     elif SI.blockType == "table":
         slide = createTableSlide(presentation, slideNumber, SI.titleText, SI.tableRows)
@@ -2764,7 +2713,7 @@ defaultPageTitleSize = 30
 pageTitleSize = defaultPageTitleSize
 presPageTitleSize = defaultPageTitleSize
 
-defaultBaseTextSize = 0
+defaultBaseTextSize = 18
 presBaseTextSize = defaultBaseTextSize
 baseTextSize = defaultBaseTextSize
 
@@ -3092,7 +3041,7 @@ else:
     # If there is a slide to use fill it with metadata
     templateSlideCount = len(prs.slides)
     if templateSlideCount > 0:
-        processingSummarySlide(prs, metadata)
+        createProcessingSummarySlide(prs, metadata)
         print("\nWriting processing summary slide with metadata on it.")
     else:
         print("\nNo slide to document metadata on. Continuing without it.")
@@ -3146,8 +3095,8 @@ for line in afterMetadataAndHTML:
     else:
         # Previous line was not blank and nor is this one so consider concatenation
         if line.lstrip()[0] not in "*#\|0123456789!":
-            if previousLine[0:2] != "# ":
-                # Previous line was not Heading Level 1 so concatenate
+            if (previousLine[0:2] != "# ") & (previousLine[0:3] != "## ") & (previousLine[0:4] != '    '):
+                # Previous line was not Heading Level 1 or 2 so concatenate
                 linesAfterConcatenation[-1] = (
                     linesAfterConcatenation[-1].rstrip() + " " + line.lstrip()
                 )
@@ -3163,9 +3112,7 @@ for line in afterMetadataAndHTML:
 metadataLinenumber = 0
 for line in linesAfterConcatenation:
     line = line.rstrip()
-    if footnoteDefinitionRegex.match(line):
-        m = footnoteDefinitionRegex.match(line)
-
+    if (m := footnoteDefinitionRegex.match(line)):
         fnRef = m.group(1).strip()
         fnText = m.group(2).strip()
         footnoteDefinitions.append([fnRef, fnText])
@@ -3239,16 +3186,16 @@ for line in linesAfterConcatenation:
 
     elif line.startswith("<a id="):
         # Anchor on whatever slide we're on
-        if anchorRegex.match(line):
-            href = anchorRegex.match(line).group(1)
+        if (hrefMatch := anchorRegex.match(line)):
+            href = hrefMatch.group(1)
             if (href != "") & (href in slideHrefs.keys()):
                 print(f"Heading Reference redefined: '{href}' for slide {slideNumber}")
 
     elif line.startswith("<!-- md2pptx: "):
         # Dynamic metadata line
-        if dynamicMetadataRegex.match(line):
-            metadataKey = dynamicMetadataRegex.match(line).group(1).lower()
-            metadataValue = dynamicMetadataRegex.match(line).group(2).lower()
+        if (DMMatch := dynamicMetadataRegex.match(line)):
+            metadataKey = DMMatch.group(1).lower()
+            metadataValue = DMMatch.group(2).lower()
             if (metadataKey != "") & (metadataValue != ""):
                 # Valid metadata pair so parse key / value - and apply if valid
                 if metadataKey == "compacttables":
@@ -3449,9 +3396,8 @@ for line in linesAfterConcatenation:
 
         notes_text = ""
 
-    elif bulletRegex.match(line):
+    elif (match := bulletRegex.match(line)):
         # Bulleted inList
-        match = bulletRegex.match(line)
         bulletLine = match.group(3).lstrip()
         bulletLevel = int(match.start(2) / 2) + 1
         bulletType = "bulleted"
@@ -3467,8 +3413,7 @@ for line in linesAfterConcatenation:
         inList = True
         inTable = False
 
-    elif numberRegex.match(line):
-        match = numberRegex.match(line)
+    elif (match := numberRegex.match(line)):
         bulletLine = match.group(3).lstrip()
         bulletLevel = int(match.start(2) / 2) + 1
         bulletType = "numbered"
@@ -3500,9 +3445,7 @@ for line in linesAfterConcatenation:
 
         if len(graphicRegex.findall(line)) == 2:
             # Two graphics - whether clickable or not - on same line
-            if bothClickableGraphicRegex.match(line) != None:
-                matches = bothClickableGraphicRegex.match(line)
-
+            if (matches := bothClickableGraphicRegex.match(line)):
                 leftGraphic = (
                     "[![" + matches[1] + "](" + matches[2] + ")](" + matches[3] + ")"
                 )
@@ -3511,18 +3454,14 @@ for line in linesAfterConcatenation:
                     "[![" + matches[5] + "](" + matches[6] + ")](" + matches[7] + ")"
                 )
 
-            elif leftClickableGraphicRegex.match(line) != None:
-                matches = leftClickableGraphicRegex.match(line)
-
+            elif (matches := leftClickableGraphicRegex.match(line)):
                 leftGraphic = (
                     "[![" + matches[1] + "](" + matches[2] + ")](" + matches[3] + ")"
                 )
 
                 rightGraphic = "![" + matches[5] + "](" + matches[6] + ")"
 
-            elif rightClickableGraphicRegex.match(line) != None:
-                matches = rightClickableGraphicRegex.match(line)
-
+            elif (matches := rightClickableGraphicRegex.match(line)):
                 leftGraphic = "![" + matches[1] + "](" + matches[2] + ")"
 
                 rightGraphic = (
