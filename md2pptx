@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+
 """
 md2pptx - Converts (a subset of) Markdown to Powerpoint (PPTX)
 
@@ -43,8 +43,8 @@ try:
 except:
     have_cairosvg = False
 
-md2pptx_level = "1.9.1"
-md2pptx_date = "6 March, 2021"
+md2pptx_level = "1.9.2"
+md2pptx_date = "14 March, 2021"
 
 
 class slideInfo:
@@ -55,6 +55,13 @@ class slideInfo:
         self.bulletsOrFilename = bulletsOrFilename
         self.tableRows = tableRows
 
+
+def startswithOneOf(haystack, needleList):
+    for needle in needleList:
+        if haystack.startswith(needle):
+            return True
+    
+    return False
 
 # Send a shape to the back on a slide
 def sendToBack(shapes, shape):
@@ -332,7 +339,7 @@ def get_image_size(fname):
                         ftype = ord(byte)
                         size = struct.unpack(">H", fhandle.read(2))[0] - 2
                     # We are at a SOFn block
-                    fhandle.seek(1, 1)  # Skip `precision' byte.
+                    fhandle.seek(1, 1)  # Skip 'precision' byte.
                     height, width = struct.unpack(">HH", fhandle.read(4))
                 except Exception:  # IGNORE:W0703
                     return
@@ -1015,9 +1022,19 @@ def addFooter(presentation, slideNumber, slide):
     font.size = Pt(12)
 
 
+# Called "Simple" because more complex shapes might not work
+def deleteSimpleShape(shape):
+    if shape == None:
+        return
+    shapeElement = shape.element
+    shapeElement.getparent().remove(shapeElement)
+
 def createProcessingSummarySlide(presentation, metadata):
     # Use the first slide in the template presentation as the base
     slide = presentation.slides[0]
+
+    # Delete any body shape
+    deleteSimpleShape(findBodyShape(slide))
 
     # Build "run time" text
     now = datetime.datetime.now()
@@ -1031,9 +1048,9 @@ def createProcessingSummarySlide(presentation, metadata):
     # Work out how many pairs of columns we need
     metadataRows = len(metadata)
     maxMetadataRowsPerColumn = 15
-    if metadataRows >= 2 * maxMetadataRowsPerColumn:
+    if metadataRows > 2 * maxMetadataRowsPerColumn:
         metadataColumnPairs = 3
-    elif metadataRows >= maxMetadataRowsPerColumn:
+    elif metadataRows > maxMetadataRowsPerColumn:
         metadataColumnPairs = 2
     else:
         metadataColumnPairs = 1
@@ -1204,6 +1221,18 @@ def createCodeSlide(presentation, slideNumber, titleText, code):
 
         # Split the code into lines
         codeLines = code.split("\n")
+
+        # Handle any trailing empty lines
+        while codeLines[-1] == "":
+            codeLines.pop(-1)
+
+        # Handle any leading <pre>, <code>, triple backtick line
+        if startswithOneOf(codeLines[0], ["<pre>", "<code>", "```"]):
+            codeLines.pop(0)
+        
+        # Handle any trailing </pre>, </code>, triple backtick line
+        if startswithOneOf(codeLines[-1], ["</pre>", "</code>", "```"]):
+            codeLines.pop(-1)
         
         codeBox = slide.shapes.add_textbox(
             contentLeft, contentTop, contentWidth, contentHeight
@@ -2656,9 +2685,10 @@ footnoteRunsDictionary = {}
 metadata_lines = []
 afterMetadataAndHTML = []
 
-in_metadata = True
+inMetadata = True
 in_comment = False
-in_HTML = False
+inHTML = False
+inCode = False
 
 for line in input_file:
     if line.lstrip().startswith("<!-- md2pptx: "):
@@ -2681,23 +2711,44 @@ for line in input_file:
     elif in_comment is True:
         continue
 
-    elif (line.lstrip()[:1] == "<") & (line.lstrip().startswith("<a id=") is False):
-        in_HTML = True
+    elif ((line.lstrip()[:1] == "<") & (inCode is False)):
+        lineLstrip = line.lstrip()
+        if startswithOneOf(lineLstrip, ["<a id=", "<span "]):
+            # Line goes to post-metadata array
+            afterMetadataAndHTML.append(line)
+
+        elif startswithOneOf(lineLstrip, ["<code>", "<pre>"]):
+            inCode = True
+            afterMetadataAndHTML.append(line)
+
+        elif startswithOneOf(lineLstrip, ["</code>", "</pre>"]):
+            inCode = False
+            afterMetadataAndHTML.append(line)
+        else:
+            inHTML = True
         continue
+
+    elif line.startswith("```"):
+        inCode = ~inCode
+        #afterMetadataAndHTML.append(line)
 
     elif line.lstrip()[:1] == "#":
         # Heading has triggered end of metadata and end of HTML
-        in_metadata = False
-        in_HTML = False
+        inMetadata = False
+        inHTML = False
 
-    elif in_HTML is True:
+    elif inHTML:
+        continue
+
+    elif inCode:
+        afterMetadataAndHTML.append(line)
         continue
 
     elif line == "\n":
         # Blank line has triggered end of metadata
-        in_metadata = False
+        inMetadata = False
 
-    if in_metadata is True:
+    if inMetadata is True:
         # Line goes to metadata array
         metadata_lines.append(line)
 
@@ -2705,6 +2756,8 @@ for line in input_file:
         # Line goes to post-metadata array
         afterMetadataAndHTML.append(line)
 
+for line in afterMetadataAndHTML:
+    print(line)
 want_numbers_headings = False
 want_numbers_content = False
 slideTemplateFile = ""
@@ -3062,6 +3115,8 @@ slideSubtitle = ""
 bullets = []
 tableRows = []
 inCode = False
+inHTMLCode = False
+inFencedCode = False
 notes_text = ""
 slide = None
 tasks = []
@@ -3075,8 +3130,23 @@ pictureInfos = []
 # Pass to concatenate lines with continuations
 previousLine = "\n"
 linesAfterConcatenation = []
+
 for line in afterMetadataAndHTML:
-    if line == "\n":
+    if startswithOneOf(line, ["<pre>", "<code>"]):
+        # These are around code lines
+        linesAfterConcatenation.append(line)
+        inHTMLCode = True
+
+    elif startswithOneOf(line, ["</pre>", "</code>"]):
+        # These are around code lines
+        linesAfterConcatenation.append(line)
+        inHTMLCode = False
+
+    elif line.startswith("```"):
+        linesAfterConcatenation.append(line)
+        inCode =  not inCode
+
+    elif line == "\n":
         # This is a blank line so copy it over
         linesAfterConcatenation.append(line)
 
@@ -3092,16 +3162,18 @@ for line in afterMetadataAndHTML:
         # This is an anchor line so keep it separate
         linesAfterConcatenation.append(line)
 
+
     else:
         # Previous line was not blank and nor is this one so consider concatenation
         if line.lstrip()[0] not in "*#\|0123456789!":
-            if (previousLine[0:2] != "# ") & (previousLine[0:3] != "## ") & (previousLine[0:4] != '    '):
-                # Previous line was not Heading Level 1 or 2 so concatenate
+            if (previousLine[0:2] != "# ") & (previousLine[0:3] != "## ") & (previousLine[0:4] != '    ') & (inCode is False) & (inHTMLCode is False):
+                # Previous line was not Heading Level 1 or 2 and we're not in code so concatenate
                 linesAfterConcatenation[-1] = (
                     linesAfterConcatenation[-1].rstrip() + " " + line.lstrip()
                 )
             else:
                 linesAfterConcatenation.append(line)
+        
         else:
             linesAfterConcatenation.append(line)
 
@@ -3131,7 +3203,28 @@ for line in linesAfterConcatenation:
         # Line was taken care of in the previous pass
         continue
 
-    if (line == "") & (inCode is True):
+    if startswithOneOf(line,["<pre>", "<code>"]):
+        code = []
+        inCode = True
+        inHTMLCode = True
+    
+    if startswithOneOf(line,["</pre>", "</code>"]):
+        inCode = True
+        inHTMLCode = False
+
+    if line.startswith("```"):
+        inCode = not inCode
+        if inCode:
+            # Just entered code
+            code = []
+            blockType = "code"
+        inFencedCode = not inFencedCode
+
+
+    if inCode or inHTMLCode or inFencedCode:
+        code.append(line)
+
+    if (line == "") & (inCode is True) & (inHTMLCode is False) & (inFencedCode is False):
         inCode = False
 
     if (line.startswith("    ")) & (inList is False):
