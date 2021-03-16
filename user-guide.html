@@ -118,23 +118,28 @@ body .markdown-body
   padding: 0;
 }
 
-.markdown-body .codehilitetable {
+.markdown-body .codehilitetable,
+.markdown-body .highlighttable {
   border: 0;
   border-spacing: 0;
 }
 
-.markdown-body .codehilitetable tr {
+.markdown-body .codehilitetable tr,
+.markdown-body .highlighttable {
   border: 0;
 }
 
 .markdown-body .codehilitetable pre,
-.markdown-body .codehilitetable div.codehilite {
+.markdown-body .codehilitetable div.codehilite,
+.markdown-body .highlighttable pre,
+.markdown-body .highlighttable div.highlight {
   margin: 0;
 }
 
 .markdown-body .linenos,
 .markdown-body .code,
-.markdown-body .codehilitetable td {
+.markdown-body .codehilitetable td,
+.markdown-body .highlighttable td {
   border: 0;
   padding: 0;
 }
@@ -517,11 +522,13 @@ body .markdown-body
   border: 0;
 }
 
-.markdown-body .codehilite {
+.markdown-body .codehilite,
+.markdown-body .highlight {
   margin-bottom: 16px;
 }
 
 .markdown-body .codehilite pre,
+.markdown-body .highlight pre,
 .markdown-body pre {
   padding: 16px;
   overflow: auto;
@@ -531,7 +538,8 @@ body .markdown-body
   border-radius: 3px;
 }
 
-.markdown-body .codehilite pre {
+.markdown-body .codehilite pre,
+.markdown-body .highlight pre {
   margin-bottom: 0;
   word-break: normal;
 }
@@ -1028,8 +1036,19 @@ body .markdown-body
 </ul>
 </li>
 <li><a href="#card-slides">Card Slides</a></li>
-<li><a href="#code-slides">Code Slides</a></li>
+<li><a href="#code-slides">Code Slides</a><ul>
+<li><a href="#&lt;code&gt;"><code>&lt;code&gt;</code></a></li>
+<li><a href="#triple-backticks-()">Triple Backticks (```)</a></li>
+<li><a href="#indented-text">Indented Text</a></li>
+<li><a href="#&lt;pre&gt;"><code>&lt;pre&gt;</code></a></li>
+</ul>
+</li>
 <li><a href="#task-list-slides">Task List Slides</a></li>
+</ul>
+</li>
+<li><a href="#slides-without-titles">Slides Without Titles</a><ul>
+<li><a href="#using-a-horizontal-rule">Using A Horizontal Rule</a></li>
+<li><a href="#using-a-level-3-heading-with-&nbsp;">Using A Level 3 Heading With <code>&amp;nbsp;</code></a></li>
 </ul>
 </li>
 <li><a href="#hyperlinks">Hyperlinks</a><ul>
@@ -1162,27 +1181,23 @@ body .markdown-body
 <h3 id="use">Use<a class="headerlink" href="#use" title="Permanent link"></a></h3>
 <p>The following instructions are for Unix-like systems. (It&rsquo;s developed and used by the developer on Mac OS but should also have identical syntax on Linux.) Windows users will need a slightly different form, but the principle is the same.</p>
 <p>Here is a sample invocation:</p>
-<div class="codehilite"><pre>md2pptx powerpoint-filename &lt; markdown-filename
-</pre></div>
-
-
+<pre><code>md2pptx powerpoint-filename &lt; markdown-filename
+</code></pre>
 <p>An alternative is to have the Markdown be in-stream. md2pptx reads from stdin. You can, of course, use stdin in a pipeline. Indeed the developer uses this to pipe from another program.
 Alternatively, you can specify both an input file and an output file:</p>
-<div class="codehilite"><pre>md2pptx markdown-filename powerpoint-filename
-</pre></div>
-
-
+<pre><code>md2pptx markdown-filename powerpoint-filename
+</code></pre>
 <p>If the input file doesn&rsquo;t exist md2pptx will terminate with a message. If the input file is empty the same thing will happen.</p>
 <p>If you don&rsquo;t specify an input filename and don&rsquo;t redirect stdin md2pptx will await terminal input. This works but is probably only useful when experimenting with syntax with md2pptx.</p>
 <p>Messages are written to stderr.</p>
 <h2 id="python-pptx-license">python-pptx license<a class="headerlink" href="#python-pptx-license" title="Permanent link"></a></h2>
 <p>While <a href="http://python-pptx.readthedocs.io/en/latest/">python-pptx</a> is not included in md2pptx it is used by it.</p>
 <p>To quote from the python-pptx license statement:</p>
-<div class="codehilite"><pre>The MIT License (MIT)
+<pre><code>The MIT License (MIT)
 Copyright (c) 2013 Steve Canny, https://github.com/scanny
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the &quot;Software&quot;), to deal
+of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
@@ -1191,16 +1206,14 @@ furnished to do so, subject to the following conditions:
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
-</pre></div>
-
-
+</code></pre>
 <h2 id="change-log">Change Log<a class="headerlink" href="#change-log" title="Permanent link"></a></h2>
 <table>
 <thead>
@@ -1211,6 +1224,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">1.9.2</td>
+<td align="right">16&nbsp;March&nbsp;2021</td>
+<td align="left">Added <code>&lt;pre&gt;</code>&comma; <code>&lt;code&gt;</code>&comma; triple backtick - with <code>&lt;span&gt;</code> colouring for <code>&lt;pre&gt;</code>. Added ways to make a no-title slide.</td>
+</tr>
 <tr>
 <td align="left">1.9.1</td>
 <td align="right">6&nbsp;March&nbsp;2021</td>
@@ -1396,7 +1414,7 @@ THE SOFTWARE.
 <h2 id="creating-slides">Creating Slides<a class="headerlink" href="#creating-slides" title="Permanent link"></a></h2>
 <p><a id="creating-slides"></a></p>
 <p>Let&rsquo;s start with a simple example. Consider the following text.</p>
-<div class="codehilite"><pre>template: Martin Template.pptx
+<pre><code>template: Martin Template.pptx
 pageTitleSize: 24
 sectionTitleSize: 30
 
@@ -1411,9 +1429,7 @@ sectionTitleSize: 30
   * Sub-bullet B
 * Bullet Two
 * Bullet Three
-</pre></div>
-
-
+</code></pre>
 <p>You can try it if you like. Just cut it and paste it into a file. Call it something like Example.markdown.</p>
 <p>It will render something like this:</p>
 <p><img alt="" src="/Users/martinpacker/md2pptx/Simple1.png" />
@@ -1436,32 +1452,26 @@ sectionTitleSize: 30
 <h3 id="presentation-title-slides">Presentation Title Slides<a class="headerlink" href="#presentation-title-slides" title="Permanent link"></a></h3>
 <p><a id="presentation-title-slides"></a></p>
 <p>You code a presentation title slide with a Markdown Heading Level 1:</p>
-<div class="codehilite"><pre># This Is the Presentation Title Slide
-</pre></div>
-
-
+<pre><code># This Is the Presentation Title Slide
+</code></pre>
 <p>If you type anything in subsequent lines - before a blank line - the text will appear as extra lines in the presentation title. You might use this, for example, to add the presentation authors&rsquo; details.</p>
 <h3 id="presentation-section-slides">Presentation Section Slides<a class="headerlink" href="#presentation-section-slides" title="Permanent link"></a></h3>
 <p>You code a presentation section slide with a Markdown Heading Level 2:</p>
-<div class="codehilite"><pre>## This Is A Section
-</pre></div>
-
-
+<pre><code>## This Is A Section
+</code></pre>
 <p>You can code multiple lines, as with <a href="#presentation-title-slides">Presentation Title slides</a>.</p>
 <h3 id="bullet-slides">Bullet Slides<a class="headerlink" href="#bullet-slides" title="Permanent link"></a></h3>
 <p><a id="bullet-slides"></a></p>
 <p>Bullet slides use Markdown bulleted lists, which can be nested. This example shows two levels of nesting.</p>
 <p>The title of the slide is defined by coding a Markdown Heading Level 3.</p>
-<div class="codehilite"><pre>### This Is A Bullet Slide
+<pre><code>### This Is A Bullet Slide
 
 * Bullet One
     * Sub-bullet A
     * Sub-bullet B
 * Bullet Two
 * Bullet Three
-</pre></div>
-
-
+</code></pre>
 <p>Bulleted list items are introduced by an asterisk.</p>
 <p><strong>NOTE:</strong> Some dialects of Markdown allow other bullet markers but md2pptx doesn&rsquo;t. You can be sure by coding <code>*</code> you have valid Markdown that md2pptx can also process correctly. For an explanation of why you have to stick to <code>*</code> see <a href="#task-list-slides">here</a>.</p>
 <p>To nest bullets use a tab character or 2 spaces to indent the sub-bullets. md2pptx doesn&rsquo;t have a limit on the level of nesting but Powerpoint probably does.</p>
@@ -1469,16 +1479,14 @@ sectionTitleSize: 30
 <h4 id="numbered-list-items">Numbered List Items<a class="headerlink" href="#numbered-list-items" title="Permanent link"></a></h4>
 <p><a id="numbered-items"></a></p>
 <p>Within a bullet slide you can have numbered items. Here is an example of a slide with mixed numbers and bullets:</p>
-<div class="codehilite"><pre>### This Is A Mixed Numbers And Bullets Slide
+<pre><code>### This Is A Mixed Numbers And Bullets Slide
 
 * Bullet One
     1. Numbered sub-bullet A
     1. Numbered sub-bullet B
 * Bullet Two
 * Bullet Three
-</pre></div>
-
-
+</code></pre>
 <p>Numbered list items are introduced with an integer, followed by a full stop.</p>
 <p>Markdown takes care of the numbering. In the above example there are two numbered items. While the first will indeed be numbered &ldquo;1&rdquo; the second will be numbered &ldquo;2&rdquo;, despite the <code>1.</code> coding.</p>
 <p>Numbering with <code>1.</code> is actually a useful practice - as it makes it easier to reorder a numbered list (by moving the lines around).</p>
@@ -1486,27 +1494,21 @@ sectionTitleSize: 30
 <h3 id="graphics-slides">Graphics Slides<a class="headerlink" href="#graphics-slides" title="Permanent link"></a></h3>
 <p><a id="graphics-slides"></a></p>
 <p>As with <a href="#bullet-slides">bullet slides</a>, code the slide title as a Markdown Heading Level 3. Specify the graphic to embed with the standard Markdown image reference:</p>
-<div class="codehilite"><pre>### A Graphic Slide
+<pre><code>### A Graphic Slide
 
 ![](graphics/my-graphic.png)
-</pre></div>
-
-
+</code></pre>
 <p>The graphic will be scaled to sensibly fill the slide area.</p>
 <p>If you code a string inside the square brackets it will be used as a tooltip (or screentip, in Powerpoint parlance). In Presentation Mode, when you hover over the graphic the tooltip will be displayed. Here is an example:</p>
-<div class="codehilite"><pre>![Here is a tooltip](graphics/my-graphic.png)
-</pre></div>
-
-
+<pre><code>![Here is a tooltip](graphics/my-graphic.png)
+</code></pre>
 <p><strong>HINT:</strong> If you want two graphics side by side use a single-row table, described <a href="#special-case-two-graphics-side-by-side">here</a>. If you want two graphics one above the other use a two-row, single-column table, described <a href="#special-case-one-graphic-above-another">here</a>.</p>
 <h4 id="clickable-pictures">Clickable Pictures<a class="headerlink" href="#clickable-pictures" title="Permanent link"></a></h4>
 <p><a id="clickable-pictures"></a></p>
 <p>You can make a picture clickable, with an optional tooltip. This means you can click on a picture in slideshow mode to go to another slide. The tooltip is shown in slideshow mode when your mouse hovers over the picture.</p>
 <p>Here&rsquo;s an example, showing both a tooltip and a clickable link.</p>
-<div class="codehilite"><pre>[![Foo Fighters Sonic Highways](https://upload.wikimedia.org/wikipedia/en/6/67/Foo_Fighters_8LP_Sonic_Highways.jpg)](#sonic-highways)
-</pre></div>
-
-
+<pre><code>[![Foo Fighters Sonic Highways](https://upload.wikimedia.org/wikipedia/en/6/67/Foo_Fighters_8LP_Sonic_Highways.jpg)](#sonic-highways)
+</code></pre>
 <p>Here the image reference is embedded in the clickable link:</p>
 <ul>
 <li>The tooltip text is <code>Foo Fighters Sonic Highways</code>.</li>
@@ -1514,10 +1516,8 @@ sectionTitleSize: 30
 <li>The target slide has the heading reference <code>sonic-highways</code>.</li>
 </ul>
 <p>To create a hyperlink to a slide with heading reference code something like this as the title of that slide:</p>
-<div class="codehilite"><pre>### My Slide’s Title [sonic-highways]
-</pre></div>
-
-
+<pre><code>### My Slide’s Title [sonic-highways]
+</code></pre>
 <p>See <a href="#hyperlinks">Hyperlinks</a> for more on creating hyperlinks.</p>
 <h4 id="graphics-file-references">Graphics File References<a class="headerlink" href="#graphics-file-references" title="Permanent link"></a></h4>
 <p><a id="graphics-file-references"></a></p>
@@ -1529,7 +1529,7 @@ sectionTitleSize: 30
 </ul>
 <p>The <code>data:</code> URI example actually works! Try it.</p>
 <p>For cases other than the local file, the reference - when displayed by md2pptx - is shortened to show the beginning and the end of the reference. This is to make it easy to recognise if you&rsquo;ve accidentally repeated the reference. Here is an example:</p>
-<div class="codehilite"><pre>Slides:
+<div class="highlight"><pre>Slides:
 =======
 
    1     Test Title                                           --&gt; data:image/png;base64,/9j.../Nka02WcDC6hCtKgQhCAP/9k=
@@ -1543,13 +1543,11 @@ sectionTitleSize: 30
 <p><a id="table-slides"></a></p>
 <p>You can create a table slide using Markdown&rsquo;s table format.</p>
 <p>Code a title with a Markdown Heading Level 3. Then code a table. Here is a simple example of a table:</p>
-<div class="codehilite"><pre>|Left Heading|Centre Heading|Right Heading|
+<pre><code>|Left Heading|Centre Heading|Right Heading|
 |:----|:-:|--:|
 |Alpha|Bravo|1|
 |Charlie|Delta|2|
-</pre></div>
-
-
+</code></pre>
 <p>In this example there are three columns and three rows. The first row is the heading row. The third and fourth rows are data rows.</p>
 <p>The second row controls the alignment of each column and their width:</p>
 <ul>
@@ -1565,10 +1563,8 @@ sectionTitleSize: 30
 <p><a id="special-case-two-graphics-side-by-side"></a></p>
 <p>The best Markdown fit for two graphics side by side is a single row table with two cells. md2pptx will &ldquo;special case&rdquo; such a table.</p>
 <p>If you code something like this the two graphics will be placed next to each other:</p>
-<div class="codehilite"><pre>|![](left-graphic.png)|![](right-graphic.png)|
-</pre></div>
-
-
+<pre><code>|![](left-graphic.png)|![](right-graphic.png)|
+</code></pre>
 <p>A table won&rsquo;t be created in this case.</p>
 <p>Don&rsquo;t code any headings or more than one row.</p>
 <p>For the types of graphics supported see <a href="#graphics-file-references">Graphics File References</a>.</p>
@@ -1578,11 +1574,9 @@ sectionTitleSize: 30
 <p><a id="special-case-two-by-two-grid-of-graphics"></a></p>
 <p>The best Markdown fit for four graphics on a slide is a two row table with two pairs of cells. md2pptx will &ldquo;special case&rdquo; such a table.</p>
 <p>If you code something like this the four graphics will be placed in two rows of two:</p>
-<div class="codehilite"><pre>|![](top-left-graphic.png)|![](top-right-graphic.png)|
+<pre><code>|![](top-left-graphic.png)|![](top-right-graphic.png)|
 |![](bottom-left-graphic.png)|![](bottom-right-graphic.png)|
-</pre></div>
-
-
+</code></pre>
 <p>A table won&rsquo;t be created in this case.</p>
 <p>Don&rsquo;t code any headings or more than two rows.</p>
 <p>To achieve the best result some margins around the graphics are reduced.</p>
@@ -1598,28 +1592,22 @@ sectionTitleSize: 30
 </ul>
 <p>md2pptx will &ldquo;special case&rdquo; such a table.</p>
 <p>If you code something like this the three graphics will be placed appropriately:</p>
-<div class="codehilite"><pre>|![](top-left-graphic.png)|![](top-right-graphic.png)|
+<pre><code>|![](top-left-graphic.png)|![](top-right-graphic.png)|
 |![](bottom-graphic.png)|
-</pre></div>
-
-
+</code></pre>
 <p>Here the layout will be a &ldquo;T&rdquo;.</p>
 <p>A table won&rsquo;t be created in this case.</p>
 <p>Don&rsquo;t code any headings or more than two rows.</p>
 <p>To achieve the best result some margins around the graphics are reduced.</p>
 <p>There are some variants on the above scheme. For example, if you code:</p>
-<div class="codehilite"><pre>|![](top-graphic.png)|
+<pre><code>|![](top-graphic.png)|
 |![](bottom-left-graphic.png)|![](bottom-right-graphic.png)|
-</pre></div>
-
-
+</code></pre>
 <p>Here the layout will be an inverted &ldquo;T&rdquo;.</p>
 <p>You can also force left alignment or right alignment of the sole graphic in a row. For example:</p>
-<div class="codehilite"><pre>|![](top-leftgraphic.png)||
+<pre><code>|![](top-leftgraphic.png)||
 |![](bottom-left-graphic.png)|![](bottom-right-graphic.png)|
-</pre></div>
-
-
+</code></pre>
 <p>will align the sole top-row graphic to the left.</p>
 <p>For the types of graphics supported see <a href="#graphics-file-references">Graphics File References</a>.</p>
 <p>For how to make such graphics clickable or have a tooltip see <a href="#clickable-pictures">Clickable Pictures</a>.</p>
@@ -1628,11 +1616,9 @@ sectionTitleSize: 30
 <p><a id="special-case-one-graphic-above-another"></a></p>
 <p>The best Markdown fit for two graphics, on above the other, on a slide is a two row table with a single cell in each row. md2pptx will &ldquo;special case&rdquo; such a table.</p>
 <p>If you code something like this the two graphics will be placed in two rows of one:</p>
-<div class="codehilite"><pre>|![](top-graphic.png)|
+<pre><code>|![](top-graphic.png)|
 |![](bottom-graphic.png)|
-</pre></div>
-
-
+</code></pre>
 <p>A table won&rsquo;t be created in this case.</p>
 <p>Don&rsquo;t code any headings or more than two rows.</p>
 <p>For the types of graphics supported see <a href="#graphics-file-references">Graphics File References</a>.</p>
@@ -1669,23 +1655,61 @@ sectionTitleSize: 30
 </ul>
 <h3 id="code-slides">Code Slides<a class="headerlink" href="#code-slides" title="Permanent link"></a></h3>
 <p><a id="code-slides"></a></p>
-<p>You can create a slide where the body is in a monospace font, without bullets.</p>
-<p>The heading for the slide is introduced with heading level 3 - <code>###</code>.</p>
+<p>You can create a slide where the body is in a monospace font, without bullets, in a number of different ways:</p>
+<ul>
+<li>Where what you type appears exactly as you typed it - using <code>&lt;code&gt;</code>, triple backticks, or by indentation.</li>
+<li>Where what you type can be coloured, using <code>&lt;pre&gt;</code> and <code>&lt;span&gt;</code> elements, together with <code>style.fgcolor</code> etc specifications.</li>
+</ul>
+<p>When we say &ldquo;code&rdquo;, what you&rsquo;re displaying could be something like a terminal screen shot, of course. What&rsquo;s important is that it will be rendered in a fixed-pitch font.</p>
+<p>In each case, the heading for the slide is generally introduced with heading level 3 - <code>###</code>. However you can start a slide without a heading. See <a href="#slides-without-titles">Slides Without Titles</a> for how to do this.</p>
+<h4 id="code"><code>&lt;code&gt;</code><a class="headerlink" href="#code" title="Permanent link"></a></h4>
+<p>The HTML <code>&lt;code&gt;</code> element is supported. Surround the block of text by <code>&lt;code&gt;</code> and <code>&lt;/code</code>:</p>
+<pre><code>### This Is A Code Slide
+
+&lt;code&gt;
+for(i = 0; i &lt; 10; i++){
+    alert(i)
+}
+&lt;/code&gt;
+</code></pre>
+<p><strong>Note:</strong> It, as in HTML, does not support <code>&lt;span&gt;</code> elements.</p>
+<h4 id="triple-backticks">Triple Backticks (```)<a class="headerlink" href="#triple-backticks" title="Permanent link"></a></h4>
+<p>Triple backticks are supported. Surround the block of text by them:</p>
+<pre><code>### This Is A Code Slide
+
+```
+for(i = 0; i &lt; 10; i++){
+    alert(i)
+}
+```
+</code></pre>
+<p><strong>Note:</strong> It does not support <code>&lt;span&gt;</code> elements.</p>
+<h4 id="indented-text">Indented Text<a class="headerlink" href="#indented-text" title="Permanent link"></a></h4>
 <p>Each line of the code fragment - to be displayed in a monospace font - is indented with 4 spaces:</p>
-<div class="codehilite"><pre>### This Is A Code Slide
+<pre><code>### This Is A Code Slide
 
     for i in range(10):
         print(i)
-</pre></div>
+</code></pre>
+<p><strong>Note:</strong> It does not support <code>&lt;span&gt;</code> elements.</p>
+<h4 id="pre"><code>&lt;pre&gt;</code><a class="headerlink" href="#pre" title="Permanent link"></a></h4>
+<p>The HTML <code>&lt;pre&gt;</code> element is supported. Surround the block of text by <code>&lt;pre&gt;</code> and <code>&lt;/pre</code>:</p>
+<pre><code>### This Is A Code Slide
 
-
+&lt;pre&gt;
+for(i = 0; i &lt; 10; i++){
+    alert(i)
+}
+&lt;/pre&gt;
+</code></pre>
+<p><strong>Note:</strong> It, as in HTML, <strong>does</strong> support <code>&lt;span&gt;</code> elements. This is the best way to provide syntax colouring. You can use <code>style.fgcolor</code>, <code>style.bgcolor</code>, and <code>style.emphasis</code> to style the text. To do this you use the <code>class</code> attribute:</p>
+<pre><code>&lt;span class="keyword"&gt;for&lt;/span&gt; (i = 0; i &lt; 10; i ++)
+</code></pre>
 <h3 id="task-list-slides">Task List Slides<a class="headerlink" href="#task-list-slides" title="Permanent link"></a></h3>
 <p><a id="task-list-slides"></a></p>
 <p>You can create tasks in a subset of the <a href="https://support.omnigroup.com/omnifocus-taskpaper-reference/">Taskpaper</a> format by coding a line that starts with a <code>-</code>:</p>
-<div class="codehilite"><pre>- MARTIN: Complete The User Guide
-</pre></div>
-
-
+<pre><code>- MARTIN: Complete The User Guide
+</code></pre>
 <p>If md2pptx detects any such tasks it removes them from the body of the presentation and adds them to a special set of &ldquo;Tasks&rdquo; slides at the end of the presentation. If no tasks are detected these slides are not created.</p>
 <p>Taskpaper is a very flexible and simple text-based task management system. md2pptx parses anything after the <code>-</code> simplistically but doesn&rsquo;t invalidate the Taskpaper format:</p>
 <ul>
@@ -1698,20 +1722,36 @@ sectionTitleSize: 30
 <p>Because of Taskpaper support you can&rsquo;t start a bullet with a <code>-</code>. So always start bulleted list items with a <code>*</code>.</p>
 <p>Tasks on the Tasks slides are shown with the slide number they were coded on. If you click on the slide number you are taken to the corresponding slide.</p>
 <p>Here&rsquo;s a more comprehensive example. Coding</p>
-<div class="codehilite"><pre>- Complete abstract @due(2019-01-11) @tags(Anna,Martin)
-</pre></div>
-
-
+<pre><code>- Complete abstract @due(2019-01-11) @tags(Anna,Martin)
+</code></pre>
 <p>will cause a task to appear with title &ldquo;Complete abstract&rdquo;, a due date of &ldquo;2019-01-11&rdquo;, and tags &ldquo;Anna,Martin&rdquo;. In this case the task has implicitly not been completed. (It would be possible to achieve the same effect by coding <code>@done()</code>.)</p>
 <p>Task slides are paginated: Multiple task slides are created, each with the task slide number appended to the title, if there are more than a certain number of tasks.</p>
 <p>You can control task slide production by specifying <code>taskSlides</code> and <code>tasksPerSlide</code>. See <a href="#controlling-task-slide-production-with-taskslides-and-tasksperslide">Controlling Task Slide Production With <code>taskSlides</code> and <code>tasksPerSlide</code></a>.</p>
+<h2 id="slides-without-titles">Slides Without Titles<a class="headerlink" href="#slides-without-titles" title="Permanent link"></a></h2>
+<p><a id="slides-without-titles"></a></p>
+<p>Most slides have a title - and it&rsquo;s easy to see where such slides start. However, sometimes you want a slide without a title. For those cases you can start a slide in a two basic ways:</p>
+<ul>
+<li>Use a horizontal rule</li>
+<li>Use a level 3 heading with a non-breaking space:</li>
+</ul>
+<p>The most likely use case is for code slides, though you might continue a bulleted-list slide this way.</p>
+<h3 id="using-a-horizontal-rule">Using A Horizontal Rule<a class="headerlink" href="#using-a-horizontal-rule" title="Permanent link"></a></h3>
+<p>You can code a horizontal rule in a number of ways - which all Markdown processors should be able to handle:</p>
+<ul>
+<li>Code an HTML <code>&lt;hr/&gt;</code> element.</li>
+<li>Code a line starting with <code>***</code>, <code>---</code> or <code>___</code>. You can continue these as far to the right as you like.</li>
+</ul>
+<p>Most of the time this is the technique you&rsquo;ll want to use but note other Markdown processors are likely to actually produce a horizontal rule.</p>
+<h3 id="using-a-level-3-heading-with-nbsp">Using A Level 3 Heading With <code>&amp;nbsp;</code><a class="headerlink" href="#using-a-level-3-heading-with-nbsp" title="Permanent link"></a></h3>
+<p>Code the following on its own line:</p>
+<pre><code>### &amp;nbsp;
+</code></pre>
+<p>This has the perhaps-useful side effect of not drawing a horizontal rule in most other Markdown processors.</p>
 <h2 id="hyperlinks">Hyperlinks<a class="headerlink" href="#hyperlinks" title="Permanent link"></a></h2>
 <p><a id="hyperlinks"></a></p>
 <p>To code a hyperlink to an <strong>external</strong> URL in a slide code something like:</p>
-<div class="codehilite"><pre>[IBM Website](http://www.ibm.com)
-</pre></div>
-
-
+<pre><code>[IBM Website](http://www.ibm.com)
+</code></pre>
 <p>It will be rendered with the text &ldquo;IBM Website&rdquo; displayed: <a href="http://www.ibm.com">IBM Website</a>.
 This above works for <strong>external</strong> references.
 To create an internal slide reference you need to do two things:</p>
@@ -1722,37 +1762,31 @@ To create an internal slide reference you need to do two things:</p>
 <h3 id="coding-a-heading-reference-on-a-target-slide">Coding A Heading Reference On A Target Slide<a class="headerlink" href="#coding-a-heading-reference-on-a-target-slide" title="Permanent link"></a></h3>
 <p><a id="coding-a-heading-reference-on-a-target-slide"></a></p>
 <p>Multimarkdown and md2pptx support the following way of identifying a heading reference (href):</p>
-<div class="codehilite"><pre>### z15 Processor Architecture [z15-arch]
+<pre><code>### z15 Processor Architecture [z15-arch]
 
 * 12 Cores Per PU Chip
     * Most of which are enabled
 * 4 PU Chips per drawer
 * 1-5 drawers per machine
-</pre></div>
-
-
+</code></pre>
 <p>The above is a slide with a title (&ldquo;z15 Processor Architecture&rdquo;). You can link to this slide using the href (&ldquo;z15-arch&rdquo;).</p>
 <p>An alternative method of specifying a target is like this:</p>
-<div class="codehilite"><pre>### z15 Processor Architecture
-&lt;a id=&quot;z15-arch&quot;&gt;&lt;/a&gt;
+<pre><code>### z15 Processor Architecture
+&lt;a id="z15-arch"&gt;&lt;/a&gt;
 
 * 12 Cores Per PU Chip
     * Most of which are enabled
 * 4 PU Chips per drawer
 * 1-5 drawers per machine
-</pre></div>
-
-
+</code></pre>
 <p>This method is provided because it is the only reliable within-a-document hyperlink target syntax that both GitHub and other Markdown processors support.</p>
 <h3 id="coding-a-hyperlink-to-another-slide">Coding A Hyperlink To Another Slide<a class="headerlink" href="#coding-a-hyperlink-to-another-slide" title="Permanent link"></a></h3>
 <p><a id="coding-a-hyperlink-to-another-slide"></a></p>
 <p>You can refer to the slide in a hyperlink using the href. Here&rsquo;s an example:</p>
-<div class="codehilite"><pre>### Attributes Of A High Performance System
+<pre><code>### Attributes Of A High Performance System
 
 * For how a high performance system is built see [here](#z15-arch)
-</pre></div>
-
-
+</code></pre>
 <ul>
 <li>The bullet links to the slide with href <code>z15-arch</code>.</li>
 <li>You click on the word <code>here</code> in a presentation to move to the referred-to slide.</li>
@@ -1812,13 +1846,11 @@ To create an internal slide reference you need to do two things:</p>
 </tr>
 </tbody>
 </table>
-<h3 id="using-html-ltstylegt-elements-to-specify-text-colours-and-underlining">Using HTML <code>&lt;style&gt;</code> Elements To Specify Text Colours And Underlining<a class="headerlink" href="#using-html-ltstylegt-elements-to-specify-text-colours-and-underlining" title="Permanent link"></a></h3>
+<h3 id="using-html-style-elements-to-specify-text-colours-and-underlining">Using HTML <code>&lt;style&gt;</code> Elements To Specify Text Colours And Underlining<a class="headerlink" href="#using-html-style-elements-to-specify-text-colours-and-underlining" title="Permanent link"></a></h3>
 <p><a id="using-html-style-elements-to-specify-text-colours-and-underlining"></a></p>
 <p>You can set the background or foreground colour of a piece of text. To do this use the <code>&lt;span&gt;</code> HTML element. Here is an example:</p>
-<div class="codehilite"><pre>I would like to highlight &lt;span class=&quot;yellow&quot;&gt;this bit&lt;/span&gt; but not **this** bit.
-</pre></div>
-
-
+<pre><code>I would like to highlight &lt;span class="yellow"&gt;this bit&lt;/span&gt; but not **this** bit.
+</code></pre>
 <p>In this example the <code>span</code> element specifies a <code>class</code> attribute. The class name must match one specified in the metadata using one of</p>
 <ul>
 <li><code>style.bgcolor.</code> - described in <a href="#associating-a-class-name-with-a-background-colour-with-stylebgcolor">Associating A Class Name With A Background Colour With <code>style.bgcolor</code></a>.</li>
@@ -1826,16 +1858,14 @@ To create an internal slide reference you need to do two things:</p>
 <li><code>style.emphasis</code> - described in <a href="#associating-a-class-name-with-text-emphasis-with-styleemphasis">Associating A Class Name With Text Emphasis With <code>style.emphasis</code></a>.</li>
 </ul>
 <p>If you coded metadata</p>
-<div class="codehilite"><pre>style.fgcolor.yellow: FFFF00
-</pre></div>
-
-
+<pre><code>style.fgcolor.yellow: FFFF00
+</code></pre>
 <p>the result would be something like this:</p>
 <p>I would like to highlight <span style="color: #FFFF00">this bit</span> but not <strong>this</strong> bit.</p>
 <p><strong>Note:</strong> A fragment of text in a span can&rsquo;t use any other text effect, such as bolding or italics.</p>
 <p>The class name can be specified with double quotes, single quotes, or no quotes at all.</p>
 <p>If you want to be able to process the text using a normal Markdown processor you can code Cascading Style Sheet (CSS) using the HTML <code>&lt;style&gt;</code> element. md2pptx will ignore any HTML after the metadata and before the first real Markdown text. For example:</p>
-<div class="codehilite"><pre>&lt;style&gt;
+<pre><code>&lt;style&gt;
 .mytest{
     text-decoration: underline;
     color: #FF0000;
@@ -1845,14 +1875,10 @@ To create an internal slide reference you need to do two things:</p>
 
 }
 &lt;/style&gt;
-</pre></div>
-
-
+</code></pre>
 <p>The above uses only the style elements that md2pptx supports with <code>style.</code> metadata. It relies on you coding</p>
-<div class="codehilite"><pre>&lt;span class=&quot;mytest&quot;&gt;Here is some text&lt;/span&gt;
-</pre></div>
-
-
+<pre><code>&lt;span class="mytest"&gt;Here is some text&lt;/span&gt;
+</code></pre>
 <p>for example - as it uses the class <code>mytest</code>.</p>
 <h3 id="html-entity-references">HTML Entity References<a class="headerlink" href="#html-entity-references" title="Permanent link"></a></h3>
 <p><a id="html-entity-references"></a></p>
@@ -2035,10 +2061,8 @@ To create an internal slide reference you need to do two things:</p>
 <h2 id="creating-a-glossary-of-terms">Creating A Glossary Of Terms<a class="headerlink" href="#creating-a-glossary-of-terms" title="Permanent link"></a></h2>
 <p><a id="creating-a-glossary-of-terms"></a></p>
 <p>You can use the HTML <code>abbr</code> element to generate a glossary entry. For example,</p>
-<div class="codehilite"><pre>&lt;abbr title=&#39;British Broadcasting Corporation&#39;&gt;BBC&lt;/abbr&gt;
-</pre></div>
-
-
+<pre><code>&lt;abbr title='British Broadcasting Corporation'&gt;BBC&lt;/abbr&gt;
+</code></pre>
 <p>In this example the glossary term is &ldquo;BBC&rdquo; and its definition is &ldquo;British Broadcasting Corporation&rdquo;.</p>
 <p>One or more Glossary Table slides will appear at the end of the presentation if any such terms are defined. When you create a glossary entry three things will happen:</p>
 <ul>
@@ -2085,47 +2109,37 @@ Keys are case insensitive. In this User Guide they are capitalised to aid compre
 <p>md2pptx can add slide numbers. These are generated by md2pptx itself (or hardcoded) and are not the same as ones you can turn on in a footer.</p>
 <p>The default value is <code>no</code>. You can turn them on for all slides with <code>yes</code> or non-title slides with <code>content</code>.</p>
 <p>Example:</p>
-<div class="codehilite"><pre>numbers: yes
-</pre></div>
-
-
+<pre><code>numbers: yes
+</code></pre>
 <h4 id="page-title-size-pagetitlesize">Page Title Size - <code>pageTitleSize</code><a class="headerlink" href="#page-title-size-pagetitlesize" title="Permanent link"></a></h4>
 <p><a id="page-title-size-pagetitlesize"></a></p>
 <p>You can specify the point size of each slide that isn&rsquo;t a section divider or title slide. The size is specified in points.</p>
 <p>Example:</p>
-<div class="codehilite"><pre>pageTitleSize: 24
-</pre></div>
-
-
+<pre><code>pageTitleSize: 24
+</code></pre>
 <p>The default is 30 points.</p>
 <p>You can override this value on a slide-by-slide basis with <a href="#pagetitlesize-dynamic">Dynamic PageTitleSize</a>.</p>
 <h4 id="section-title-size-sectiontitlesize">Section Title Size - <code>sectionTitleSize</code><a class="headerlink" href="#section-title-size-sectiontitlesize" title="Permanent link"></a></h4>
 <p><a id="section-title-size-sectiontitlesize"></a></p>
 <p>You can specify the point size of the title text for each slide that&rsquo;s a section divider or title slide. The size is specified in points.</p>
 <p>Example:</p>
-<div class="codehilite"><pre>sectionTitleSize: 42
-</pre></div>
-
-
+<pre><code>sectionTitleSize: 42
+</code></pre>
 <p>The default is 40 points.</p>
 <h4 id="section-subtitle-size-sectionsubtitlesize">Section Subtitle Size - <code>sectionSubtitleSize</code><a class="headerlink" href="#section-subtitle-size-sectionsubtitlesize" title="Permanent link"></a></h4>
 <p><a id="section-subtitle-size-sectionsubtitlesize"></a></p>
 <p>You can specify the point size of the subtitle text for each slide that&rsquo;s a section divider or title slide. The size is specified in points.</p>
 <p>The subtitle text is the second and subsequent lines of the title - generally a separate text shape on the slide.</p>
 <p>Example:</p>
-<div class="codehilite"><pre>sectionSubtitleSize: 24
-</pre></div>
-
-
+<pre><code>sectionSubtitleSize: 24
+</code></pre>
 <p>The default is 28 points.</p>
 <h4 id="monospace-font-monofont">Monospace Font - <code>monoFont</code><a class="headerlink" href="#monospace-font-monofont" title="Permanent link"></a></h4>
 <p><a id="monospace-font-monofont"></a></p>
 <p>You can specify which font to use for monospaced text - such as on <a href="#code-slides">code slides</a>.</p>
 <p>Example:</p>
-<div class="codehilite"><pre>monoFont: Arial
-</pre></div>
-
-
+<pre><code>monoFont: Arial
+</code></pre>
 <p>The default is Courier.</p>
 <h4 id="margin-size-marginbase-and-tablemargin">Margin size - <code>marginBase</code> and <code>tableMargin</code><a class="headerlink" href="#margin-size-marginbase-and-tablemargin" title="Permanent link"></a></h4>
 <p><a id="margin-size-marginbase-and-tablemargin"></a></p>
@@ -2133,19 +2147,15 @@ Keys are case insensitive. In this User Guide they are capitalised to aid compre
 <p>For a table you can specify the left and right margins using <code>tableMargin</code>.
 For everything else use <code>marginBase</code>.</p>
 <p>Example:</p>
-<div class="codehilite"><pre>marginBase: 0.5
-</pre></div>
-
-
+<pre><code>marginBase: 0.5
+</code></pre>
 <p>The default is 0.2 (inches).</p>
 <h4 id="associating-a-class-name-with-a-background-colour-with-stylebgcolor">Associating A Class Name with A Background Colour With <code>style.bgcolor</code><a class="headerlink" href="#associating-a-class-name-with-a-background-colour-with-stylebgcolor" title="Permanent link"></a></h4>
 <p><a id="associating-a-class-name-with-a-background-color-with-style-bgcolor"></a></p>
 <p>You can use HTML <code>&lt;span&gt;</code> elements to set the background colour, as described in <a href="#using-html-ltstylegt-elements-to-specify-text-colours-and-underlining">Using HTML &lt;style&gt; Elements To Specify Text Colours And Underlining</a>.</p>
 <p>Here is an example:</p>
-<div class="codehilite"><pre>style.bgcolor.yellow: FFFF00
-</pre></div>
-
-
+<pre><code>style.bgcolor.yellow: FFFF00
+</code></pre>
 <p>In this example the class &ldquo;yellow&rdquo; is associated with a background colour, defined in RGB terms as hexadecimal FFFF00, which is:</p>
 <ul>
 <li>255 of red</li>
@@ -2157,10 +2167,8 @@ For everything else use <code>marginBase</code>.</p>
 <p><a id="associating-a-class-name-with-a-foreground-color-with-style-fgcolor"></a></p>
 <p>You can use HTML <code>&lt;span&gt;</code> elements to set the foreground colour, as described in <a href="#using-html-ltstylegt-elements-to-specify-text-colours-and-underlining">Using HTML &lt;style&gt; Elements To Specify Text Colours And Underlining</a>.</p>
 <p>Here is an example:</p>
-<div class="codehilite"><pre>style.fgcolor.red: FF0000
-</pre></div>
-
-
+<pre><code>style.fgcolor.red: FF0000
+</code></pre>
 <p>In this example the class &ldquo;red&rdquo; is associated with a foreground colour, defined in RGB terms as hexadecimal FF0000, which is:</p>
 <ul>
 <li>255 of red</li>
@@ -2172,20 +2180,16 @@ For everything else use <code>marginBase</code>.</p>
 <p><a id="associating-a-class-name-with-text-emphasis-with-style-emphasis"></a></p>
 <p>You can use HTML <code>&lt;span&gt;</code> elements to bold text, make it italic, or underline it - as described in <a href="#using-html-ltstylegt-elements-to-specify-text-colours-and-underlining">Using HTML &lt;style&gt; Elements To Specify Text Colours And Underlining</a>.</p>
 <p>Here is an example:</p>
-<div class="codehilite"><pre>style.emphasis.important: bold underline
-</pre></div>
-
-
+<pre><code>style.emphasis.important: bold underline
+</code></pre>
 <p>In this example the class &ldquo;important&rdquo; is associated with bolding the text and underlining it.</p>
 <p>You can also use <code>italic</code>.</p>
 <p>As the example shows, separate the emphasis attributes with a space.</p>
 <h4 id="template-presentation-template">Template Presentation - <code>template</code><a class="headerlink" href="#template-presentation-template" title="Permanent link"></a></h4>
 <p><a id="template-presentation-template"></a></p>
 <p>You can specify a different template file to create the presentation from than the one supplied with python-pptx. The one supplied with md2pptx is a very good one to work from:</p>
-<div class="codehilite"><pre>template: Martin Template.pptx
-</pre></div>
-
-
+<pre><code>template: Martin Template.pptx
+</code></pre>
 <p>If you want to create your own template you probably want to take Martin Template.pptx and modify it. See <a href="/Users/martinpacker/md2pptx/modifying-the-slide-template">Modifying The Slide Template</a> for more information on how to do so.</p>
 <p>(For compatibility purposes, you can continue to use <code>master</code> instead of <code>template</code>. It&rsquo;s probably better practice, though, to use <code>template</code>.)</p>
 <p>Templates are searched for in the following sequence:</p>
@@ -2198,15 +2202,11 @@ For everything else use <code>marginBase</code>.</p>
 <p>If you have a Table Of Contents slide - with each section title listed as a top level bullet you can create a &ldquo;Chevron Style&rdquo; Table Of Contents slide. It will look something like this:</p>
 <p><img alt="" src="/Users/martinpacker/md2pptx/chevronTOC.png" /></p>
 <p>If your Table Of Contents slide&rsquo;s title is &ldquo;Topics&rdquo; you need only code</p>
-<div class="codehilite"><pre>tocStyle: chevron
-</pre></div>
-
-
+<pre><code>tocStyle: chevron
+</code></pre>
 <p>If your Table Of Contents slide&rsquo;s title is something else you need to additionally code something like</p>
-<div class="codehilite"><pre>tocTitle: Agenda
-</pre></div>
-
-
+<pre><code>tocTitle: Agenda
+</code></pre>
 <p>If you specify <code>tocStyle: chevron</code> the section headings will be rendered something like this:</p>
 <p><img alt="" src="/Users/martinpacker/md2pptx/chevronSection.png" /></p>
 <p>Here the section is highlighted by removing the background.</p>
@@ -2220,10 +2220,8 @@ For everything else use <code>marginBase</code>.</p>
 <p>You can arrange for a single-level bulleted list slide to be formatted specially - as an abstract.</p>
 <p>Instead of each list item having a bullet, it is treated as a paragraph. This is more appropriate for an abstract slide. (An extra blank paragraph is added between each paragraph - to space it out.)</p>
 <p>To indicate an abstract slide code</p>
-<div class="codehilite"><pre>abstractTitle: Abstract
-</pre></div>
-
-
+<pre><code>abstractTitle: Abstract
+</code></pre>
 <p>Any slide with the title matching the value of abstractTitle will be rendered as an abstract slide.</p>
 <h4 id="specifying-text-size-with-basetextsize-and-basetextdecrement">Specifying Text Size With <code>baseTextSize</code> And <code>baseTextDecrement</code><a class="headerlink" href="#specifying-text-size-with-basetextsize-and-basetextdecrement" title="Permanent link"></a></h4>
 <p><a id="specifying-text-size-with-basetextsize-and-basetextdecrement"></a></p>
@@ -2233,17 +2231,13 @@ If you don&rsquo;t specify <code>baseTextSize</code> the base presentation&rsquo
 Further, if you specify <code>baseTextDecrement</code> each successive level of bullets&rsquo; font size is decremented by this number of points.
 The default for <code>baseTextDecrement</code> is 2 points.</p>
 <p>For example, if you code</p>
-<div class="codehilite"><pre>baseTextSize: 20
+<pre><code>baseTextSize: 20
 baseTextDecrement: 1
-</pre></div>
-
-
+</code></pre>
 <p>the top-level bullet uses a 20 point font, the next level down a 19 point font, and so on.</p>
 <p>If you just coded</p>
-<div class="codehilite"><pre>baseTextSize: 20
-</pre></div>
-
-
+<pre><code>baseTextSize: 20
+</code></pre>
 <p>the top-level bullet uses a 20 point font, the next level down a 18 point font, and so on.</p>
 <p>You can specify these dynamically. See <a href="#basetextsize-dynamic">here</a> and <a href="#basetextdecrement-dynamic">here</a>. You might want to do this to fine tune a particularly sparse or crowded page.</p>
 <h4 id="specifying-bold-and-italic-text-colour-with-boldcolour-and-italiccolour">Specifying Bold And Italic Text Colour With <code>BoldColour</code> And <code>ItalicColour</code><a class="headerlink" href="#specifying-bold-and-italic-text-colour-with-boldcolour-and-italiccolour" title="Permanent link"></a></h4>
@@ -2254,10 +2248,8 @@ baseTextDecrement: 1
 <li>To specify the colour of italic text use <code>ItalicColour</code> (or <code>ItalicColor</code>).</li>
 </ul>
 <p>For example:</p>
-<div class="codehilite"><pre>BoldColour: ACCENT 1
-</pre></div>
-
-
+<pre><code>BoldColour: ACCENT 1
+</code></pre>
 <p>Will cause text marked like so <code>**I am bold**</code> to be rendered in the presentation&rsquo;s smartmaster&rsquo;s &ldquo;Accent 1&rdquo; colour.</p>
 <p>The values you can use for <code>BoldColour</code> and <code>ItalicColour</code> are:</p>
 <ul>
@@ -2286,15 +2278,11 @@ baseTextDecrement: 1
 <p><a id="specifying-bold-and-italic-text-effects-with-boldbold-and-italicitalic"></a></p>
 <p>You can modify how md2pptx formats bold and italic text.</p>
 <p>If you don&rsquo;t want bold text to actually be bold code</p>
-<div class="codehilite"><pre>BoldBold: no
-</pre></div>
-
-
+<pre><code>BoldBold: no
+</code></pre>
 <p>If you don&rsquo;t want italic text to actually be italic code</p>
-<div class="codehilite"><pre>ItalicItalic: no
-</pre></div>
-
-
+<pre><code>ItalicItalic: no
+</code></pre>
 <p>The default for both of these is, of course, <code>yes</code> so that bold text is bold and italic text is italic.</p>
 <p>These options were added so that <code>BoldColour</code> and <code>ItalicColour</code> could just become colour effects. See <a href="#specifying-bold-and-italic-text-colour-with-boldcolour-and-italiccolour">here</a>.</p>
 <h4 id="shrinking-tables-with-compacttables">Shrinking Tables With <code>compactTables</code><a class="headerlink" href="#shrinking-tables-with-compacttables" title="Permanent link"></a></h4>
@@ -2305,10 +2293,8 @@ baseTextDecrement: 1
 <li>The margins around the text in a cell will be reduced to 0.</li>
 </ul>
 <p>For example, to remove the margins and reduce the font size to 16pt code</p>
-<div class="codehilite"><pre>compactTables: 16
-</pre></div>
-
-
+<pre><code>compactTables: 16
+</code></pre>
 <p>You can override this value with <a href="#compacttables-dynamic">Dynamic Metadata</a>.</p>
 <h4 id="controlling-task-slide-production-with-taskslides-and-tasksperslide">Controlling Task Slide Production With <code>taskSlides</code> and <code>tasksPerSlide</code><a class="headerlink" href="#controlling-task-slide-production-with-taskslides-and-tasksperslide" title="Permanent link"></a></h4>
 <p><a id="controlling-task-slide-production-with-taskslides-and-tasksperslide"></a></p>
@@ -2322,159 +2308,119 @@ baseTextDecrement: 1
 </ul>
 <p>A completed task is one where the <code>@done</code> attribute has been coded with something inside the brackets. An incomplete task is one where either the <code>@done</code> attribute wasn&rsquo;t coded or there is nothing inside the brackets.</p>
 <p>For example, to suppress all task slides code</p>
-<div class="codehilite"><pre>taskSlides: none
-</pre></div>
-
-
+<pre><code>taskSlides: none
+</code></pre>
 <p>Though you wouldn&rsquo;t normally need to do this, you can control how many tasks appear on a slide with <code>tasksPerSlide</code>. For example, coding</p>
-<div class="codehilite"><pre>tasksPerSlide: 10
-</pre></div>
-
-
+<pre><code>tasksPerSlide: 10
+</code></pre>
 <p>will limit the numberof tasks on a slide to 10. The default is 20 tasks per slide.</p>
 <h4 id="controlling-glossary-slide-production-with-glossarytitle-glossaryterm-glossarymeaningglossarymeaningwidth-and-glossarytermsperpage">Controlling Glossary Slide Production With <code>glossaryTitle</code>, <code>glossaryTerm</code>, <code>glossaryMeaning</code>,<code>glossaryMeaningWidth</code>, and <code>glossaryTermsPerPage</code><a class="headerlink" href="#controlling-glossary-slide-production-with-glossarytitle-glossaryterm-glossarymeaningglossarymeaningwidth-and-glossarytermsperpage" title="Permanent link"></a></h4>
 <p><a id="controlling-glossary-slide-production-with=glossarytitle-glossaryterm-glossarymeaning-glossarymeaningwidth-and-glossarytermsperpage"></a></p>
 <p><a href="#creating-a-glossary-of-terms">Creating A Glossary Of Terms</a> describes how you can use the <code>abbr</code> element to generate a glossary of terms.</p>
 <p>You can control various aspects of the appearance of the Glossary Slide(s) using the following metadata items.</p>
 <p>For example, coding</p>
-<div class="codehilite"><pre>glossaryTitle: Definitions
-</pre></div>
-
-
+<pre><code>glossaryTitle: Definitions
+</code></pre>
 <p>will cause the Glossary Slide title to be &ldquo;Definitions&rdquo;. The default is &ldquo;Glossary&rdquo;.</p>
 <p>Coding</p>
-<div class="codehilite"><pre>glossaryTerm: Acronym
-</pre></div>
-
-
+<pre><code>glossaryTerm: Acronym
+</code></pre>
 <p>will cause the first heading of the table in the Glossary Slide to be &ldquo;Acronym&rdquo;. The default is &ldquo;Term&rdquo;.</p>
 <p>Coding</p>
-<div class="codehilite"><pre>glossaryMeaning: Definition
-</pre></div>
-
-
+<pre><code>glossaryMeaning: Definition
+</code></pre>
 <p>will cause the second heading of the table in the Glossary Slide to be &ldquo;Definition&rdquo;. The default is &ldquo;Meaning&rdquo;.</p>
 <p>Coding</p>
-<div class="codehilite"><pre>glossaryMeaningWidth: 3
-</pre></div>
-
-
+<pre><code>glossaryMeaningWidth: 3
+</code></pre>
 <p>will cause the width of the second column in the table to be three times that of the first column.</p>
 <p>Coding</p>
-<div class="codehilite"><pre>glossaryTermsPerPage: 10
-</pre></div>
-
-
+<pre><code>glossaryTermsPerPage: 10
+</code></pre>
 <p>will cause the maximum number of glossary items on a Glossary slide to be 10. If there are more terms, a second slide will be created. And so on. The default is 20.</p>
 <h4 id="specifying-how-much-space-to-reserve-for-slide-numbers-with-numbersheight">Specifying How Much Space To Reserve For Slide Numbers With <code>NumbersHeight</code><a class="headerlink" href="#specifying-how-much-space-to-reserve-for-slide-numbers-with-numbersheight" title="Permanent link"></a></h4>
 <p>You can override the default space left at the bottom of the slides - for slide numbers or maybe a custom footer:</p>
-<div class="codehilite"><pre>NumbersHeight: 1.0
-</pre></div>
-
-
+<pre><code>NumbersHeight: 1.0
+</code></pre>
 <p>This specifies to reserve 1.0 inches of vertical space. The default is 0.4 inches.</p>
 <h4 id="card-slide-metadata">Card Slide Metadata<a class="headerlink" href="#card-slide-metadata" title="Permanent link"></a></h4>
 <h5 id="card-background-colour-cardcolour">Card Background Colour - <code>CardColour</code><a class="headerlink" href="#card-background-colour-cardcolour" title="Permanent link"></a></h5>
 <p><a id="card-background-colour-cardcolour"></a></p>
 <p>You can specify which of the theme colours to use for the background of each card in a <a href="#card-slides">Card Slide</a> - using <code>CardColour</code> (or <code>CardColor</code>). For example:</p>
-<div class="codehilite"><pre>CardColour: BACKGROUND 2
-</pre></div>
-
-
+<pre><code>CardColour: BACKGROUND 2
+</code></pre>
 <p>If you don&rsquo;t specify this the default text box background colour - from the template - will be used.</p>
 <h5 id="card-border-colour-cardbordercolour">Card Border Colour - <code>CardBorderColour</code><a class="headerlink" href="#card-border-colour-cardbordercolour" title="Permanent link"></a></h5>
 <p><a id="card-border-colour-cardbordercolour"></a></p>
 <p>You can specify which of the theme colours to use for the border of each card in a <a href="#card-slides">Card Slide</a> - using <code>CardBorderColour</code> (or <code>CardBorderColor</code>).For example:</p>
-<div class="codehilite"><pre>CardBorderColour: TEXT 1
-</pre></div>
-
-
+<pre><code>CardBorderColour: TEXT 1
+</code></pre>
 <p>If you don&rsquo;t specify this the cards won&rsquo;t have a border.</p>
 <h5 id="card-border-width-cardborderwidth">Card Border Width - <code>CardBorderWidth</code><a class="headerlink" href="#card-border-width-cardborderwidth" title="Permanent link"></a></h5>
 <p><a id="card-border-width-cardborderwidth"></a></p>
 <p>You can specify the thickness of the border (in points) of each card in a <a href="#card-slides">Card Slide</a> - using <code>CardBorderWidth</code>. For example:</p>
-<div class="codehilite"><pre>CardBorderWidth: 1
-</pre></div>
-
-
+<pre><code>CardBorderWidth: 1
+</code></pre>
 <p>If you don&rsquo;t specify this the cards will use the default text box border width - from the template.</p>
 <h5 id="card-title-size-cardtitlesize">Card Title Size - <code>CardTitleSize</code><a class="headerlink" href="#card-title-size-cardtitlesize" title="Permanent link"></a></h5>
 <p><a id="card-title-size-cardtitlesize"></a></p>
 <p>You can specify the size of the font (in points) for the cards&rsquo; title - using <code>CardTitleSize</code>. For example:</p>
-<div class="codehilite"><pre>CardTitleSize: 15
-</pre></div>
-
-
+<pre><code>CardTitleSize: 15
+</code></pre>
 <p>If you don&rsquo;t specify this the card titles will be 2/3 the size of the slide&rsquo;s title.</p>
 <h5 id="card-shadow-cardshadow">Card Shadow - <code>CardShadow</code><a class="headerlink" href="#card-shadow-cardshadow" title="Permanent link"></a></h5>
 <p><a id="card-shadow-cardshadow"></a></p>
 <p>You can specify whether a card has a shadow - using <code>CardShadow</code>. For example:</p>
-<div class="codehilite"><pre>CardShadow: yes
-</pre></div>
-
-
+<pre><code>CardShadow: yes
+</code></pre>
 <p>If you don&rsquo;t specify this the cards won&rsquo;t have a shadow - unless the default text box style is to have a shadow.</p>
 <p><a id="card-size-cardpercent"></a></p>
 <h5 id="card-size-cardpercent">Card Size - <code>CardPercent</code><a class="headerlink" href="#card-size-cardpercent" title="Permanent link"></a></h5>
 <p>You can control the vertical space used by cards - as a percentage of the content area. The default is 80%.</p>
 <p>Here is an example:</p>
-<div class="codehilite"><pre>CardPercent: 70
-</pre></div>
-
-
+<pre><code>CardPercent: 70
+</code></pre>
 <p>You can override this value on a slide-by-slide basis with <a href="#cardpercent-dynamic">Dynamic CardPercent</a>.</p>
 <p><a id="card-layout-direction-cardlayout"></a></p>
 <h5 id="card-layout-direction-cardlayout">Card Layout Direction - <code>CardLayout</code><a class="headerlink" href="#card-layout-direction-cardlayout" title="Permanent link"></a></h5>
 <p>By default md2pptx lays out cards across the slide. This is called &ldquo;horizontal layout&rdquo; - and is generally a good use of slide space. But it&rsquo;s not what many Markdown processors do with Heading Level 4 (<code>####</code>). They tend to lay out vertically, even though this is generally a poorer use of slide &ldquo;real estate&rdquo;.</p>
 <p>To specify horizontal card layout code:</p>
-<div class="codehilite"><pre>CardLayout: horizontal
-</pre></div>
-
-
+<pre><code>CardLayout: horizontal
+</code></pre>
 <p>To specify vertical card layout code:</p>
-<div class="codehilite"><pre>CardLayout: vertical
-</pre></div>
-
-
+<pre><code>CardLayout: vertical
+</code></pre>
 <p>You can override this value on a slide-by-slide basis with <a href="#cardlayout-dynamic">Dynamic CardLayout</a>.</p>
 <p><a id="card-title-alignment-cardtitlealign"></a></p>
 <h5 id="card-title-alignment-cardtitlealign">Card Title Alignment - <code>CardTitleAlign</code><a class="headerlink" href="#card-title-alignment-cardtitlealign" title="Permanent link"></a></h5>
 <p>By default md2pptx centres card titles above the corresponding card. Generally this looks best for the horizontal card layout.You can override this - perhaps to make titles on a vertical card layout slide left aligned.</p>
 <p>To specify left card title alignment code:</p>
-<div class="codehilite"><pre>CardTitleAlign: left
-</pre></div>
-
-
+<pre><code>CardTitleAlign: left
+</code></pre>
 <p>You can specify <code>left</code>, <code>right</code>, or <code>center</code> or <code>centre</code>. You can abbreviate these to <code>l</code>, <code>r</code>, or <code>c</code>.</p>
 <p>You can override this value on a slide-by-slide basis with <a href="#cardtitlealign-dynamic">Dynamic CardTitleAlign</a>.</p>
 <p><a id="card-title-position-cardtitleposition"></a></p>
 <h5 id="card-title-position-cardtitleposition">Card Title Position - <code>CardTitlePosition</code><a class="headerlink" href="#card-title-position-cardtitleposition" title="Permanent link"></a></h5>
 <p>By default md2pptx places each card&rsquo;s title above the card body. You can override this.</p>
 <p>To specify the cards&rsquo; titles will be inside the card body, at the top, code:</p>
-<div class="codehilite"><pre>CardTitlePosition: inside
-</pre></div>
-
-
+<pre><code>CardTitlePosition: inside
+</code></pre>
 <p>The default value is <code>above</code>.</p>
 <p>You can override this value on a slide-by-slide basis with <a href="#cardtitleposition-dynamic">Dynamic CardTitlePosition</a>.</p>
 <p><a id="card-shape-cardshape"></a></p>
 <h5 id="card-shape-cardshape">Card Shape - <code>CardShape</code><a class="headerlink" href="#card-shape-cardshape" title="Permanent link"></a></h5>
 <p>By default md2pptx renders each card with a rounded card body. You can override this.</p>
 <p>To specify the cards&rsquo; bodies will be squared off, at the top, code:</p>
-<div class="codehilite"><pre>CardShape: squared
-</pre></div>
-
-
+<pre><code>CardShape: squared
+</code></pre>
 <p>The default value is <code>rounded</code>.</p>
 <p>You can override this value on a slide-by-slide basis with <a href="#cardshape-dynamic">Dynamic CardShape</a>.</p>
 <p><a id="dynamic-metadata"></a></p>
 <h3 id="dynamic-metadata">Dynamic Metadata<a class="headerlink" href="#dynamic-metadata" title="Permanent link"></a></h3>
 <p>md2pptx can alter some in-effect settings, starting at a particular slide. Straight after the heading code a special form of comment like so:</p>
-<div class="codehilite"><pre>### Origins Of Mainframe, Performance, Topics Podcast
+<pre><code>### Origins Of Mainframe, Performance, Topics Podcast
 &lt;!-- md2pptx: compacttables: 14 --&gt;
-</pre></div>
-
-
+</code></pre>
 <p>The use of <code>md2pptx:</code> in the comment tells md2pptx there is a Dynamic Metadata statement embedded in the comment.</p>
 <p>Here are the values you can specify for the metadata:</p>
 <ul>
@@ -2487,68 +2433,50 @@ baseTextDecrement: 1
 <p><a id="compacttables-dynamic"></a></p>
 <h4 id="compacttables"><code>CompactTables</code><a class="headerlink" href="#compacttables" title="Permanent link"></a></h4>
 <p>You can override the presentation <a href="#shrinking-tables-with-compacttables">CompactTables</a> metadata value - perhaps to decrease the font size for a particularly crowded table slide:</p>
-<div class="codehilite"><pre>&lt;!-- md2pptx: compacttables: 12 --&gt;
-</pre></div>
-
-
+<pre><code>&lt;!-- md2pptx: compacttables: 12 --&gt;
+</code></pre>
 <p><a id="cardpercent-dynamic"></a></p>
 <h4 id="cardpercent"><code>CardPercent</code><a class="headerlink" href="#cardpercent" title="Permanent link"></a></h4>
 <p>You can override the presentation <a href="#card-size-cardpercent">CardPercent</a> metadata value - perhaps to allow room for more card content:</p>
-<div class="codehilite"><pre>&lt;!-- md2pptx: cardpercent: 90 --&gt;
-</pre></div>
-
-
+<pre><code>&lt;!-- md2pptx: cardpercent: 90 --&gt;
+</code></pre>
 <p><a id="cardlayout-dynamic"></a></p>
 <h4 id="cardlayout"><code>CardLayout</code><a class="headerlink" href="#cardlayout" title="Permanent link"></a></h4>
 <p>You can override the presentation <a href="#card-layout-direction-cardlayout">CardLayout</a> metadata value - perhaps to make an individual card slide vertical when most are horizontal:</p>
 <p>Either <code>vertical</code> or <code>horizontal</code> can be specified.</p>
-<div class="codehilite"><pre>&lt;!-- md2pptx: cardlayout: vertical --&gt;
-</pre></div>
-
-
+<pre><code>&lt;!-- md2pptx: cardlayout: vertical --&gt;
+</code></pre>
 <p><a id="cardtitlealign-dynamic"></a></p>
 <h4 id="cardtitlealign"><code>CardTitleAlign</code><a class="headerlink" href="#cardtitlealign" title="Permanent link"></a></h4>
 <p>You can override the presentation <a href="#card-title-alignment-cardtitlealign">CardTitleAlign</a> metadata value - perhaps to make an individual card slide&rsquo;s titles left-aligned when most are centred:</p>
-<div class="codehilite"><pre>&lt;!-- md2pptx: cardtitlealign: l --&gt;
-</pre></div>
-
-
+<pre><code>&lt;!-- md2pptx: cardtitlealign: l --&gt;
+</code></pre>
 <p><a id="cardtitleposition-dynamic"></a></p>
 <h4 id="cardtitleposition"><code>CardTitlePosition</code><a class="headerlink" href="#cardtitleposition" title="Permanent link"></a></h4>
 <p>You can override the presentation <a href="#card-title-position-cardtitleposition">CardTitlePosition</a> metadata value - perhaps to make an individual card slide&rsquo;s titles inside the cards when most are above:</p>
-<div class="codehilite"><pre>&lt;!-- md2pptx: cardtitleposition: insde --&gt;
-</pre></div>
-
-
+<pre><code>&lt;!-- md2pptx: cardtitleposition: insde --&gt;
+</code></pre>
 <p><a id="cardshape-dynamic"></a></p>
 <h4 id="cardshape"><code>CardShape</code><a class="headerlink" href="#cardshape" title="Permanent link"></a></h4>
 <p>You can override the presentation <a href="#card-shape-cardshape">CardShape</a> metadata value - perhaps to make an individual card slide&rsquo;s cards have square corners when most are rounded:</p>
-<div class="codehilite"><pre>&lt;!-- md2pptx: cardshape: squared --&gt;
-</pre></div>
-
-
+<pre><code>&lt;!-- md2pptx: cardshape: squared --&gt;
+</code></pre>
 <p><a id="pagetitlesize-dynamic"></a></p>
 <h4 id="pagetitlesize"><code>PageTitleSize</code><a class="headerlink" href="#pagetitlesize" title="Permanent link"></a></h4>
 <p>You can override the presentation <a href="#page-title-size-pagetitlesize">PageTitleSize</a> metadata value - perhaps to allow room for more text in the title of a slide:</p>
-<div class="codehilite"><pre>&lt;!-- md2pptx: pagetitlesize: 16 --&gt;
-</pre></div>
-
-
+<pre><code>&lt;!-- md2pptx: pagetitlesize: 16 --&gt;
+</code></pre>
 <p><a id="basetextsize-dynamic"></a></p>
 <h4 id="basetextsize"><code>BaseTextSize</code><a class="headerlink" href="#basetextsize" title="Permanent link"></a></h4>
 <p>You can override the presentation <a href="#specifying-text-size-with-basetextsize-and-basetextdecrement">BaseTextSize</a> metadata value. For example:</p>
-<div class="codehilite"><pre>&lt;!-- md2pptx: basetextsize: 16 --&gt;
-</pre></div>
-
-
+<pre><code>&lt;!-- md2pptx: basetextsize: 16 --&gt;
+</code></pre>
 <p>The above makes the top-level bullets smaller than you would normally see - perhaps to cram in more bullets.</p>
 <p><a id="basetextdecrement-dynamic"></a></p>
 <h4 id="basetextdecrement"><code>BaseTextDecrement</code><a class="headerlink" href="#basetextdecrement" title="Permanent link"></a></h4>
 <p>You can override the presentation <a href="#specifying-text-size-with-basetextsize-and-basetextdecrement">BaseTextDecrement</a> metadata value. For example:</p>
-<div class="codehilite"><pre>&lt;!-- md2pptx: basetextdecrement: 0 --&gt;
-</pre></div>
-
-
+<pre><code>&lt;!-- md2pptx: basetextdecrement: 0 --&gt;
+</code></pre>
 <p>The above stops each level of bullets having progressively smaller text.</p>
 <h2 id="modifying-the-slide-template">Modifying The Slide Template<a class="headerlink" href="#modifying-the-slide-template" title="Permanent link"></a></h2>
 <p><a id="modifying-the-slide-template"></a></p>
@@ -2557,7 +2485,7 @@ baseTextDecrement: 1
 <h3 id="basics">Basics<a class="headerlink" href="#basics" title="Permanent link"></a></h3>
 <p><a id="basics"></a></p>
 <p>It&rsquo;s best not to change the order of the slides in the slide master view and not to delete any elements. If you have a slide template presentation where the necessary slides are in the wrong order you can override where md2pptx picks its slides from. See the table below for metadata items to specify different template slides i.e override what md2pptx expects. Here&rsquo;s an example:</p>
-<div class="codehilite"><pre>BlankLayout: 14
+<div class="highlight"><pre>BlankLayout: 14
 </pre></div>
 
 <p>In this example, the slide in the template presentation to use for blank slides is number 14, with 0 being the first.</p>

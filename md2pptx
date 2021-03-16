@@ -44,7 +44,7 @@ except:
     have_cairosvg = False
 
 md2pptx_level = "1.9.2"
-md2pptx_date = "14 March, 2021"
+md2pptx_date = "16 March, 2021"
 
 
 class slideInfo:
@@ -60,8 +60,9 @@ def startswithOneOf(haystack, needleList):
     for needle in needleList:
         if haystack.startswith(needle):
             return True
-    
+
     return False
+
 
 # Send a shape to the back on a slide
 def sendToBack(shapes, shape):
@@ -391,34 +392,46 @@ def findSlideTitle(slide):
 
 
 def findBodyShape(slide):
-    if len(slide.shapes) >1:
+    if len(slide.shapes) > 1:
         return slide.shapes[1]
+    elif slide.shapes.title == None:
+        return slide.shapes[0]
     else:
         return None
+
 
 # Returns a top, left, width, height for content to be rendered into
 def getContentRect(presentation, slide, topOfContent):
     # Left and right are always defined by the margins
     rectLeft = marginBase
     rectWidth = presentation.slide_width - 2 * marginBase
-    
+
     if topOfContent == 0:
         # There is no title on this slide
         rectTop = marginBase
-        rectHeight = presentation.slide_height - marginBase - max(marginBase, numbersHeight)
+        rectHeight = (
+            presentation.slide_height - marginBase - max(marginBase, numbersHeight)
+        )
     else:
         # There is a title on this slide
         rectTop = topOfContent + marginBase
-        rectHeight = presentation.slide_height - rectTop - max(marginBase, numbersHeight)
+        rectHeight = (
+            presentation.slide_height - rectTop - max(marginBase, numbersHeight)
+        )
 
-    return (rectLeft, rectWidth, rectTop, rectHeight )
-    
+    return (rectLeft, rectWidth, rectTop, rectHeight)
+
 
 # Finds the title and adds the text to it, returning title bottom, title shape, and
 # flattened title
 def formatTitle(presentation, slide, titleText, titleFontSize):
     # Find title
     title = findSlideTitle(slide)
+
+    if titleText == "&nbsp;":
+        deleteSimpleShape(title)
+
+        return (marginBase, None, "<No title>")
 
     title.top = marginBase
     title.left = marginBase
@@ -444,7 +457,7 @@ def parseTitleText(titleLineString):
     # Get rid of any cruft on the line
     slideTitleWithPossibleHref = titleLineString.strip().rstrip("#").rstrip()
 
-    if (hrefMatch := slideHrefRegex.match(slideTitleWithPossibleHref)):
+    if (hrefMatch := slideHrefRegex.match(slideTitleWithPossibleHref)) :
         slideTitle = hrefMatch.group(1)
         href = hrefMatch.group(2)
     else:
@@ -1029,6 +1042,7 @@ def deleteSimpleShape(shape):
     shapeElement = shape.element
     shapeElement.getparent().remove(shapeElement)
 
+
 def createProcessingSummarySlide(presentation, metadata):
     # Use the first slide in the template presentation as the base
     slide = presentation.slides[0]
@@ -1043,7 +1057,9 @@ def createProcessingSummarySlide(presentation, metadata):
     runDateTime = "Presentation built: " + runTime + " on " + runDate
 
     # Format title and add title text
-    slideTitleBottom, title, flattenedTitle = formatTitle(presentation, slide, banner + "<br/>" + runDateTime, pageTitleSize)
+    slideTitleBottom, title, flattenedTitle = formatTitle(
+        presentation, slide, banner + "<br/>" + runDateTime, pageTitleSize
+    )
 
     # Work out how many pairs of columns we need
     metadataRows = len(metadata)
@@ -1059,7 +1075,9 @@ def createProcessingSummarySlide(presentation, metadata):
     rows = min(maxMetadataRowsPerColumn, metadataRows)
 
     # Get the rectangle the content will draw in
-    contentLeft, contentWidth, contentTop, contentHeight = getContentRect(presentation, slide, slideTitleBottom)
+    contentLeft, contentWidth, contentTop, contentHeight = getContentRect(
+        presentation, slide, slideTitleBottom
+    )
 
     tableHeight = min(contentHeight, Inches(0.25) * rows)
 
@@ -1103,10 +1121,10 @@ def createProcessingSummarySlide(presentation, metadata):
 
 
 # Note: This doesn't use formatTitle()
-def createTitleOrSectionSlide(presentation, slideNumber, titleText , layout, titleSize, subtitleText,subtitleSize):
-    slide = presentation.slides.add_slide(
-        presentation.slide_layouts[layout]
-    )
+def createTitleOrSectionSlide(
+    presentation, slideNumber, titleText, layout, titleSize, subtitleText, subtitleSize
+):
+    slide = presentation.slides.add_slide(presentation.slide_layouts[layout])
 
     # Add title
     title = findSlideTitle(slide)
@@ -1139,6 +1157,7 @@ def createTitleOrSectionSlide(presentation, slideNumber, titleText , layout, tit
         addFooter(presentation, slideNumber, slide)
 
     return slide
+
 
 def handleWhateverGraphicType(graphicFilename):
     # Handles both physical file and URI file types
@@ -1206,70 +1225,180 @@ def handleWhateverGraphicType(graphicFilename):
 
 
 def createCodeSlide(presentation, slideNumber, titleText, code):
+    # Figure out code slide type
+    if code.startswith("<pre"):
+        codeType = "pre"
+    elif code.startswith("<code"):
+        codeType = "code"
+    elif code.startswith("```"):
+        codeType = "backticks"
+    else:
+        codeType = "indented"
+
     if titleText != "":
         slide = presentation.slides.add_slide(
             presentation.slide_layouts[titleOnlyLayout]
         )
 
         # Add title and constrain its size and placement
-        slideTitleBottom, title, flattenedTitle = formatTitle(presentation, slide, titleText, pageTitleSize)
-        
-        print(str(slideNumber).rjust(4) + "     " + flattenedTitle)
-
-        # Get the rectangle the content will draw in
-        contentLeft, contentWidth, contentTop, contentHeight = getContentRect(presentation, slide, slideTitleBottom)
-
-        # Split the code into lines
-        codeLines = code.split("\n")
-
-        # Handle any trailing empty lines
-        while codeLines[-1] == "":
-            codeLines.pop(-1)
-
-        # Handle any leading <pre>, <code>, triple backtick line
-        if startswithOneOf(codeLines[0], ["<pre>", "<code>", "```"]):
-            codeLines.pop(0)
-        
-        # Handle any trailing </pre>, </code>, triple backtick line
-        if startswithOneOf(codeLines[-1], ["</pre>", "</code>", "```"]):
-            codeLines.pop(-1)
-        
-        codeBox = slide.shapes.add_textbox(
-            contentLeft, contentTop, contentWidth, contentHeight
+        slideTitleBottom, title, flattenedTitle = formatTitle(
+            presentation, slide, titleText, pageTitleSize
         )
 
-        # Get the sole paragraph
-        p = codeBox.text_frame.paragraphs[0]
+        print(str(slideNumber).rjust(4) + "     " + flattenedTitle)
 
-        # Set the font size - if not default
-        if baseTextSize > 0:
-            p.font.size = Pt(baseTextSize)
-
-        # Adjust code box height based on lines
-        codeBox.height = min(len(codeLines) * Pt(baseTextSize+5), contentHeight)
-
-        # Add the code - one line at a time
-        for codeLine in codeLines:
-            run = p.add_run()
-            run.text = codeLine + "\n"
-            font = run.font
-            font.name = monoFont
-
-        # Try to control text frame but SHAPE_TO_FIT_TEXT doesn't seem to work
-        tf = codeBox.text_frame
-        tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
-        tf.word_wrap = False
-        
-        # Fill the code box with green
-        fill = codeBox.fill
-        fill.solid()
-        fill.fore_color.rgb = RGBColor(223, 255, 223)
     else:
         print(str(slideNumber).rjust(4) + "   " + graphicFilename)
 
         slide = presentation.slides.add_slide(presentation.slide_layouts[blankLayout])
 
+        slideTitleBottom = Inches(marginBase)
+
         # Add code
+
+    # Get the rectangle the content will draw in
+    contentLeft, contentWidth, contentTop, contentHeight = getContentRect(
+        presentation, slide, slideTitleBottom
+    )
+
+    # Split the code into lines
+    codeLines = code.split("\n")
+
+    # Handle any trailing empty lines
+    while codeLines[-1] == "":
+        codeLines.pop(-1)
+
+    # Handle any leading <pre>, <code>, triple backtick line
+    if startswithOneOf(codeLines[0], ["<pre>", "<code>", "```"]):
+        codeLines.pop(0)
+
+    # Handle any trailing </pre>, </code>, triple backtick line
+    if startswithOneOf(codeLines[-1], ["</pre>", "</code>", "```"]):
+        codeLines.pop(-1)
+
+    codeBox = slide.shapes.add_textbox(
+        contentLeft, contentTop, contentWidth, contentHeight
+    )
+
+    # Try to control text frame but SHAPE_TO_FIT_TEXT doesn't seem to work
+    tf = codeBox.text_frame
+    tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
+    tf.word_wrap = False
+
+    # Fill the code box with green
+    fill = codeBox.fill
+    fill.solid()
+    fill.fore_color.rgb = RGBColor(223, 255, 223)
+
+    # Get the sole paragraph
+    p = codeBox.text_frame.paragraphs[0]
+
+    # Set the font size slightly smaller than usual
+    if len(codeLines) >= 20:
+        divisor = 1.5
+    else:
+        divisor = 1.2
+    if baseTextSize > 0:
+        p.font.size = int(Pt(baseTextSize) / divisor)
+    else:
+        p.font.size = int(Pt(defaultBaseTextSize) / divisor)
+
+    # Adjust code box height based on lines
+    codeBox.height = min(len(codeLines) * Pt(baseTextSize + 5), contentHeight)
+
+    # Add code
+    if codeType == "pre":
+        # span elements want special handling
+        for codeLine in codeLines:
+            # Split the line - and maybe there are spans
+            cursor = 0
+            spanFragments = codeLine.split("<span ")
+            if len(spanFragments) > 1:
+                textArray = []
+                # Break line down into what will become runs
+                fragmentNumber = 0
+                for fragment in spanFragments:
+
+                    if fragmentNumber > 0:
+                        classNameStartsAt = fragment.index('"')
+                        classNameEndsAt = fragment.index('"', classNameStartsAt + 1)
+                        className = fragment[classNameStartsAt + 1 : classNameEndsAt]
+                        if (
+                            (className in bgcolors)
+                            | (className in fgcolors)
+                            | (className in emphases)
+                        ):
+                            afterSpan = fragment[classNameEndsAt + 2 :]
+                            afterSpan1 = afterSpan[: afterSpan.index("</span>")]
+                            afterSpan2 = afterSpan[afterSpan.index("</span>") + 7 :]
+                            textArray.append(["Span", [className, afterSpan1]])
+                            textArray.append(["Normal", afterSpan2])
+                            fragment = ""
+                        else:
+                            print(
+                                className
+                                + " is not defined. Ignoring reference to it in <span> element."
+                            )
+                            fragment = spanText
+                    else:
+                        textArray.append(["Normal", fragment])
+                    fragmentNumber += 1
+
+                # Now we have a text array we can add the runs for the line
+                for textArrayItem in textArray:
+                    if textArrayItem[0] == "Normal":
+                        # Is not spanned
+                        className = ""
+                        spanText = textArrayItem[1]
+                    else:
+                        # Is spanned
+                        className = textArrayItem[1][0]
+                        spanText = textArrayItem[1][1]
+                    if spanText != "":
+                        run = p.add_run()
+                        run.text = spanText
+                        font = run.font
+                        font.name = monoFont
+                    if className != "":
+                        # Augment run with whatever the span class calls for
+                        if className in bgcolors:
+                            run = set_highlight(run, bgcolors[className])
+                        if className in fgcolors:
+                            font = run.font
+                            font.color.rgb = RGBColor.from_string(fgcolors[className])
+                        if className in emphases:
+                            if " bold " in " " + emphases[className] + " ":
+                                font.bold = True
+                            else:
+                                font.bold = False
+                            if " italic " in " " + emphases[className] + " ":
+                                font.italic = True
+                            else:
+                                font.italic = False
+                            if " underline " in " " + emphases[className] + " ":
+                                font.underline = True
+                            else:
+                                font.underline = False
+
+                # Add terminating newline
+                run = p.add_run()
+                run.text = "\n"
+                font = run.font
+                font.name = monoFont
+            else:
+                # Line has no spans in
+                run = p.add_run()
+                run.text = codeLine + "\n"
+                font = run.font
+                font.name = monoFont
+
+    else:
+        # span doesn't need treating specially
+        for codeLine in codeLines:
+            run = p.add_run()
+            run.text = codeLine + "\n"
+            font = run.font
+            font.name = monoFont
 
     if want_numbers_content is True:
         addFooter(presentation, slideNumber, slide)
@@ -1283,12 +1412,16 @@ def createAbstractSlide(presentation, slideNumber, titleText, subtitleText, para
     shapes = slide.shapes
 
     # Add title and constrain its size and placement
-    slideTitleBottom, title, flattenedTitle = formatTitle(presentation, slide, titleText, pageTitleSize)
+    slideTitleBottom, title, flattenedTitle = formatTitle(
+        presentation, slide, titleText, pageTitleSize
+    )
 
     print(str(slideNumber).rjust(4) + "     Abstract: " + flattenedTitle)
 
     # Get the rectangle the content will draw in
-    contentLeft, contentWidth, contentTop, contentHeight = getContentRect(presentation, slide, slideTitleBottom)
+    contentLeft, contentWidth, contentTop, contentHeight = getContentRect(
+        presentation, slide, slideTitleBottom
+    )
 
     # Add abstract text
     abstractBox = slide.shapes.add_textbox(
@@ -1334,13 +1467,17 @@ def createContentSlide(presentation, slideNumber, titleText, subtitleText, bulle
     shapes = slide.shapes
 
     # Add title
-    slideTitleBottom, title, flattenedTitle = formatTitle(presentation, slide, titleText, pageTitleSize)
+    slideTitleBottom, title, flattenedTitle = formatTitle(
+        presentation, slide, titleText, pageTitleSize
+    )
 
     print(str(slideNumber).rjust(4) + "     " + flattenedTitle)
 
     # Get the rectangle the content will draw in
-    contentLeft, contentWidth, contentTop, contentHeight = getContentRect(presentation, slide, slideTitleBottom)
-    
+    contentLeft, contentWidth, contentTop, contentHeight = getContentRect(
+        presentation, slide, slideTitleBottom
+    )
+
     # Get bulleted text shape - either for bullets above cards or first card's body shape
     bulletsShape = findBodyShape(slide)
 
@@ -1586,7 +1723,7 @@ def createContentSlide(presentation, slideNumber, titleText, subtitleText, bulle
 
 
 def delinkify(text):
-    if (linkMatch := linkRegex.match(text)):
+    if (linkMatch := linkRegex.match(text)) :
         linkText = linkMatch.group(1)
         linkURL = linkMatch.group(2)
 
@@ -1629,10 +1766,14 @@ def createTOCSlide(presentation, slideNumber, titleText, subtitleText, bullets):
     else:
         useTitle = ""
 
-    slideTitleBottom, title, flattenedTitle = formatTitle(presentation, slide, useTitle, pageTitleSize)
+    slideTitleBottom, title, flattenedTitle = formatTitle(
+        presentation, slide, useTitle, pageTitleSize
+    )
 
     # Get the rectangle the content will draw in
-    contentLeft, contentWidth, contentTop, contentHeight = getContentRect(presentation, slide, slideTitleBottom)
+    contentLeft, contentWidth, contentTop, contentHeight = getContentRect(
+        presentation, slide, slideTitleBottom
+    )
 
     width = Inches(3)
     height = Inches(1)
@@ -1691,7 +1832,9 @@ def createTableSlide(presentation, slideNumber, titleText, table):
     printableBottomRightGraphicFilename = ""
 
     # Add title
-    slideTitleBottom, title, flattenedTitle = formatTitle(presentation, slide, titleText, pageTitleSize)
+    slideTitleBottom, title, flattenedTitle = formatTitle(
+        presentation, slide, titleText, pageTitleSize
+    )
 
     # Handle table body
     if (len(table) <= 2) & (len(table[0]) <= 2):
@@ -1710,7 +1853,7 @@ def createTableSlide(presentation, slideNumber, titleText, table):
         if (graphicRegex.match(topLeftSide) != None) | (
             clickableGraphicRegex.match(topLeftSide) != None
         ):
-            if (clickableGraphicMatch := clickableGraphicRegex.match(topLeftSide)):
+            if (clickableGraphicMatch := clickableGraphicRegex.match(topLeftSide)) :
                 # Clickable graphic case
                 topLeftGraphicTitle = clickableGraphicMatch.group(1)
                 topLeftGraphicFilename = clickableGraphicMatch.group(2)
@@ -1741,7 +1884,9 @@ def createTableSlide(presentation, slideNumber, titleText, table):
             if (graphicRegex.match(topRightSide) != None) | (
                 clickableGraphicRegex.match(topRightSide) != None
             ):
-                if (clickableGraphicMatch := clickableGraphicRegex.match(topRightSide)):
+                if (
+                    clickableGraphicMatch := clickableGraphicRegex.match(topRightSide)
+                ) :
                     # Clickable graphic case
                     topRightGraphicTitle = clickableGraphicMatch.group(1)
                     topRightGraphicFilename = clickableGraphicMatch.group(2)
@@ -1777,7 +1922,9 @@ def createTableSlide(presentation, slideNumber, titleText, table):
             if (graphicRegex.match(bottomLeftSide) != None) | (
                 clickableGraphicRegex.match(bottomLeftSide) != None
             ):
-                if (clickableGraphicMatch := clickableGraphicRegex.match(bottomLeftSide)):
+                if (
+                    clickableGraphicMatch := clickableGraphicRegex.match(bottomLeftSide)
+                ) :
                     # Clickable graphic case
                     bottomLeftGraphicTitle = clickableGraphicMatch.group(1)
                     bottomLeftGraphicFilename = clickableGraphicMatch.group(2)
@@ -1812,7 +1959,11 @@ def createTableSlide(presentation, slideNumber, titleText, table):
                     if (graphicRegex.match(bottomRightSide) != None) | (
                         clickableGraphicRegex.match(bottomRightSide) != None
                     ):
-                        if (clickableGraphicMatch := clickableGraphicRegex.match(bottomRightSide)):
+                        if (
+                            clickableGraphicMatch := clickableGraphicRegex.match(
+                                bottomRightSide
+                            )
+                        ) :
                             # Clickable graphic case
                             bottomRightGraphicTitle = clickableGraphicMatch.group(1)
                             bottomRightGraphicFilename = clickableGraphicMatch.group(2)
@@ -2375,7 +2526,15 @@ def createTableSlide(presentation, slideNumber, titleText, table):
 
 def createSlide(presentation, slideNumber, SI):
     if SI.blockType == "title":
-        slide = createTitleOrSectionSlide(presentation, slideNumber, SI.titleText, titleSlideLayout, sectionTitleSize, SI.bodyText, sectionSubtitleSize)
+        slide = createTitleOrSectionSlide(
+            presentation,
+            slideNumber,
+            SI.titleText,
+            titleSlideLayout,
+            sectionTitleSize,
+            SI.bodyText,
+            sectionSubtitleSize,
+        )
 
     elif SI.blockType == "section":
         if tocStyle != "":
@@ -2388,7 +2547,15 @@ def createSlide(presentation, slideNumber, SI):
                 SI.bulletsOrFilename,
             )
         else:
-            slide = createTitleOrSectionSlide(presentation, slideNumber, SI.titleText, sectionSlideLayout, sectionTitleSize, SI.bodyText, sectionSubtitleSize)
+            slide = createTitleOrSectionSlide(
+                presentation,
+                slideNumber,
+                SI.titleText,
+                sectionSlideLayout,
+                sectionTitleSize,
+                SI.bodyText,
+                sectionSubtitleSize,
+            )
 
     elif SI.blockType == "content":
         if (tocStyle != "") & (tocTitle == SI.titleText):
@@ -2419,7 +2586,9 @@ def createSlide(presentation, slideNumber, SI):
             )
     elif SI.blockType == "code":
         # Note: Somehow two newlines got prepended to the code
-        slide = createCodeSlide(presentation, slideNumber, SI.titleText, SI.bodyText[2:])
+        slide = createCodeSlide(
+            presentation, slideNumber, SI.titleText, SI.bodyText[2:]
+        )
 
     elif SI.blockType == "table":
         slide = createTableSlide(presentation, slideNumber, SI.titleText, SI.tableRows)
@@ -2711,7 +2880,7 @@ for line in input_file:
     elif in_comment is True:
         continue
 
-    elif ((line.lstrip()[:1] == "<") & (inCode is False)):
+    elif (line.lstrip()[:1] == "<") & (inCode is False):
         lineLstrip = line.lstrip()
         if startswithOneOf(lineLstrip, ["<a id=", "<span "]):
             # Line goes to post-metadata array
@@ -2730,7 +2899,7 @@ for line in input_file:
 
     elif line.startswith("```"):
         inCode = ~inCode
-        #afterMetadataAndHTML.append(line)
+        # afterMetadataAndHTML.append(line)
 
     elif line.lstrip()[:1] == "#":
         # Heading has triggered end of metadata and end of HTML
@@ -2756,8 +2925,6 @@ for line in input_file:
         # Line goes to post-metadata array
         afterMetadataAndHTML.append(line)
 
-for line in afterMetadataAndHTML:
-    print(line)
 want_numbers_headings = False
 want_numbers_content = False
 slideTemplateFile = ""
@@ -3144,7 +3311,7 @@ for line in afterMetadataAndHTML:
 
     elif line.startswith("```"):
         linesAfterConcatenation.append(line)
-        inCode =  not inCode
+        inCode = not inCode
 
     elif line == "\n":
         # This is a blank line so copy it over
@@ -3162,18 +3329,27 @@ for line in afterMetadataAndHTML:
         # This is an anchor line so keep it separate
         linesAfterConcatenation.append(line)
 
+    elif line.lstrip() == "":
+        # This is an empty line
+        linesAfterConcatenation.append(line)
 
     else:
         # Previous line was not blank and nor is this one so consider concatenation
         if line.lstrip()[0] not in "*#\|0123456789!":
-            if (previousLine[0:2] != "# ") & (previousLine[0:3] != "## ") & (previousLine[0:4] != '    ') & (inCode is False) & (inHTMLCode is False):
+            if (
+                (previousLine[0:2] != "# ")
+                & (previousLine[0:3] != "## ")
+                & (previousLine[0:4] != "    ")
+                & (inCode is False)
+                & (inHTMLCode is False)
+            ):
                 # Previous line was not Heading Level 1 or 2 and we're not in code so concatenate
                 linesAfterConcatenation[-1] = (
                     linesAfterConcatenation[-1].rstrip() + " " + line.lstrip()
                 )
             else:
                 linesAfterConcatenation.append(line)
-        
+
         else:
             linesAfterConcatenation.append(line)
 
@@ -3184,7 +3360,7 @@ for line in afterMetadataAndHTML:
 metadataLinenumber = 0
 for line in linesAfterConcatenation:
     line = line.rstrip()
-    if (m := footnoteDefinitionRegex.match(line)):
+    if (m := footnoteDefinitionRegex.match(line)) :
         fnRef = m.group(1).strip()
         fnText = m.group(2).strip()
         footnoteDefinitions.append([fnRef, fnText])
@@ -3203,12 +3379,12 @@ for line in linesAfterConcatenation:
         # Line was taken care of in the previous pass
         continue
 
-    if startswithOneOf(line,["<pre>", "<code>"]):
+    if startswithOneOf(line, ["<pre>", "<code>"]):
         code = []
         inCode = True
         inHTMLCode = True
-    
-    if startswithOneOf(line,["</pre>", "</code>"]):
+
+    if startswithOneOf(line, ["</pre>", "</code>"]):
         inCode = True
         inHTMLCode = False
 
@@ -3220,11 +3396,15 @@ for line in linesAfterConcatenation:
             blockType = "code"
         inFencedCode = not inFencedCode
 
-
     if inCode or inHTMLCode or inFencedCode:
         code.append(line)
 
-    if (line == "") & (inCode is True) & (inHTMLCode is False) & (inFencedCode is False):
+    if (
+        (line == "")
+        & (inCode is True)
+        & (inHTMLCode is False)
+        & (inFencedCode is False)
+    ):
         inCode = False
 
     if (line.startswith("    ")) & (inList is False):
@@ -3233,6 +3413,10 @@ for line in linesAfterConcatenation:
         blockType = "code"
         code.append(line[4:])
         inCode = True
+
+    # Rewrite horizontal rule as a heading 3 with non-breaking space
+    if startswithOneOf(line, ["<hr/>", "---", "***", "___"]):
+        line = "### &nbsp;"
 
     # Taskpaper task
     if line[:1] == "-":
@@ -3279,14 +3463,14 @@ for line in linesAfterConcatenation:
 
     elif line.startswith("<a id="):
         # Anchor on whatever slide we're on
-        if (hrefMatch := anchorRegex.match(line)):
+        if (hrefMatch := anchorRegex.match(line)) :
             href = hrefMatch.group(1)
             if (href != "") & (href in slideHrefs.keys()):
                 print(f"Heading Reference redefined: '{href}' for slide {slideNumber}")
 
     elif line.startswith("<!-- md2pptx: "):
         # Dynamic metadata line
-        if (DMMatch := dynamicMetadataRegex.match(line)):
+        if (DMMatch := dynamicMetadataRegex.match(line)) :
             metadataKey = DMMatch.group(1).lower()
             metadataValue = DMMatch.group(2).lower()
             if (metadataKey != "") & (metadataValue != ""):
@@ -3489,7 +3673,7 @@ for line in linesAfterConcatenation:
 
         notes_text = ""
 
-    elif (match := bulletRegex.match(line)):
+    elif (match := bulletRegex.match(line)) :
         # Bulleted inList
         bulletLine = match.group(3).lstrip()
         bulletLevel = int(match.start(2) / 2) + 1
@@ -3506,7 +3690,7 @@ for line in linesAfterConcatenation:
         inList = True
         inTable = False
 
-    elif (match := numberRegex.match(line)):
+    elif (match := numberRegex.match(line)) :
         bulletLine = match.group(3).lstrip()
         bulletLevel = int(match.start(2) / 2) + 1
         bulletType = "numbered"
@@ -3538,7 +3722,7 @@ for line in linesAfterConcatenation:
 
         if len(graphicRegex.findall(line)) == 2:
             # Two graphics - whether clickable or not - on same line
-            if (matches := bothClickableGraphicRegex.match(line)):
+            if (matches := bothClickableGraphicRegex.match(line)) :
                 leftGraphic = (
                     "[![" + matches[1] + "](" + matches[2] + ")](" + matches[3] + ")"
                 )
@@ -3547,14 +3731,14 @@ for line in linesAfterConcatenation:
                     "[![" + matches[5] + "](" + matches[6] + ")](" + matches[7] + ")"
                 )
 
-            elif (matches := leftClickableGraphicRegex.match(line)):
+            elif (matches := leftClickableGraphicRegex.match(line)) :
                 leftGraphic = (
                     "[![" + matches[1] + "](" + matches[2] + ")](" + matches[3] + ")"
                 )
 
                 rightGraphic = "![" + matches[5] + "](" + matches[6] + ")"
 
-            elif (matches := rightClickableGraphicRegex.match(line)):
+            elif (matches := rightClickableGraphicRegex.match(line)) :
                 leftGraphic = "![" + matches[1] + "](" + matches[2] + ")"
 
                 rightGraphic = (

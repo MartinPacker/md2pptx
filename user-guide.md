@@ -29,7 +29,14 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 		* [Special Case: One Graphic Above Another](#special-case-one-graphic-above-another)
 	* [Card Slides](#card-slides)
 	* [Code Slides](#code-slides)
+		* [`<code>`](#<code>)
+		* [Triple Backticks (```)](#triple-backticks-())
+		* [Indented Text](#indented-text)
+		* [`<pre>`](#<pre>)
 	* [Task List Slides](#task-list-slides)
+* [Slides Without Titles](#slides-without-titles)
+	* [Using A Horizontal Rule](#using-a-horizontal-rule)
+	* [Using A Level 3 Heading With `&nbsp;`](#using-a-level-3-heading-with-&nbsp;)
 * [Hyperlinks](#hyperlinks)
 	* [Coding A Heading Reference On A Target Slide](#coding-a-heading-reference-on-a-target-slide)
 	* [Coding A Hyperlink To Another Slide](#coding-a-hyperlink-to-another-slide)
@@ -198,6 +205,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|1.9.2|16&nbsp;March&nbsp;2021|Added `<pre>`&comma; `<code>`&comma; triple backtick - with `<span>` colouring for `<pre>`. Added ways to make a no-title slide.|
 |1.9.1|6&nbsp;March&nbsp;2021|Added `&check;` entity reference. Reworked internals with more consistent layout and `getContentRec` and title formatting improvements. Prereq Python 3.8.|
 |1.9|17&nbsp;February&nbsp;2021|Add support to specify which slide in master. Also numbersMargin|
 |1.8.1|10&nbsp;February&nbsp;2021|Card options: Rounded versus square corners. Titles above or in cards|
@@ -581,9 +589,44 @@ In the above example there has been a small amount of tweaking of the format, us
 ### Code Slides
 <a id="code-slides"></a>
 
-You can create a slide where the body is in a monospace font, without bullets.
+You can create a slide where the body is in a monospace font, without bullets, in a number of different ways:
 
-The heading for the slide is introduced with heading level 3 - `### `.
+* Where what you type appears exactly as you typed it - using `<code>`, triple backticks, or by indentation.
+* Where what you type can be coloured, using `<pre>` and `<span>` elements, together with `style.fgcolor` etc specifications.
+
+When we say "code", what you're displaying could be something like a terminal screen shot, of course. What's important is that it will be rendered in a fixed-pitch font.
+
+In each case, the heading for the slide is generally introduced with heading level 3 - `### `. However you can start a slide without a heading. See [Slides Without Titles](#slides-without-titles) for how to do this.
+
+#### `<code>`
+
+The HTML `<code>` element is supported. Surround the block of text by `<code>` and `</code`:
+
+	### This Is A Code Slide
+
+    <code>
+    for(i = 0; i < 10; i++){
+        alert(i)
+    }
+    </code>
+
+**Note:** It, as in HTML, does not support `<span>` elements.
+
+#### Triple Backticks (```)
+
+Triple backticks are supported. Surround the block of text by them:
+
+	### This Is A Code Slide
+
+    ```
+    for(i = 0; i < 10; i++){
+        alert(i)
+    }
+    ```
+
+**Note:** It does not support `<span>` elements.
+
+#### Indented Text
 
 Each line of the code fragment - to be displayed in a monospace font - is indented with 4 spaces:
 
@@ -591,6 +634,24 @@ Each line of the code fragment - to be displayed in a monospace font - is indent
 
 	    for i in range(10):
 	        print(i)
+
+**Note:** It does not support `<span>` elements.
+
+#### `<pre>`
+
+The HTML `<pre>` element is supported. Surround the block of text by `<pre>` and `</pre`:
+
+	### This Is A Code Slide
+
+    <pre>
+    for(i = 0; i < 10; i++){
+        alert(i)
+    }
+    </pre>
+
+**Note:** It, as in HTML, **does** support `<span>` elements. This is the best way to provide syntax colouring. You can use `style.fgcolor`, `style.bgcolor`, and `style.emphasis` to style the text. To do this you use the `class` attribute:
+
+    <span class="keyword">for</span> (i = 0; i < 10; i ++)
 
 
 ### Task List Slides
@@ -624,6 +685,33 @@ will cause a task to appear with title "Complete abstract", a due date of "2019-
 Task slides are paginated: Multiple task slides are created, each with the task slide number appended to the title, if there are more than a certain number of tasks.
 
 You can control task slide production by specifying `taskSlides` and `tasksPerSlide`. See [Controlling Task Slide Production With `taskSlides` and `tasksPerSlide`](#controlling-task-slide-production-with-taskslides-and-tasksperslide).
+
+## Slides Without Titles
+<a id="slides-without-titles"></a>
+
+Most slides have a title - and it's easy to see where such slides start. However, sometimes you want a slide without a title. For those cases you can start a slide in a two basic ways:
+
+* Use a horizontal rule
+* Use a level 3 heading with a non-breaking space:
+
+The most likely use case is for code slides, though you might continue a bulleted-list slide this way.
+
+### Using A Horizontal Rule
+
+You can code a horizontal rule in a number of ways - which all Markdown processors should be able to handle:
+
+* Code an HTML `<hr/>` element.
+* Code a line starting with `***`, `---` or `___`. You can continue these as far to the right as you like.
+
+Most of the time this is the technique you'll want to use but note other Markdown processors are likely to actually produce a horizontal rule.
+
+### Using A Level 3 Heading With `&nbsp;`
+
+Code the following on its own line:
+
+    ### &nbsp;
+
+This has the perhaps-useful side effect of not drawing a horizontal rule in most other Markdown processors.
 
 ## Hyperlinks
 <a id="hyperlinks"></a>
