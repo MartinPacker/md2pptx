@@ -84,6 +84,9 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 			* [Card Title Alignment - `CardTitleAlign`](#card-title-alignment-cardtitlealign)
 			* [Card Title Position - `CardTitlePosition`](#card-title-position-cardtitleposition)
 			* [Card Shape - `CardShape`](#card-shape-cardshape)
+	* [Code Slide Metadata](#code-slide-metadata)
+		* [Code Column Count - `CodeColumns`](#code-column-count-codecolumns)
+		* [Fixed Pitch Height To Width Ratio - `FPRatio`](#fixed-pitch-height-to-width-ratio-fpratio)
 	* [Dynamic Metadata](#dynamic-metadata)
 		* [`CompactTables`](#compacttables)
 		* [`CardPercent`](#cardpercent)
@@ -94,6 +97,8 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 		* [`PageTitleSize`](#pagetitlesize)
 		* [`BaseTextSize`](#basetextsize)
 		* [`BaseTextDecrement`](#basetextdecrement)
+		* [`CodeColumns`](#codecolumns)
+		* [`FPRatio`](#fpratio)
 * [Modifying The Slide Template](#modifying-the-slide-template)
 	* [Basics](#basics)
 	* [Slide Template Sequence](#slide-template-sequence)
@@ -205,6 +210,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|1.9.3|21&nbsp;March&nbsp;2021|Added controls on how many columns wide code is and fixed pitch height to width ratio.|
 |1.9.2|16&nbsp;March&nbsp;2021|Added `<pre>`&comma; `<code>`&comma; triple backtick - with `<span>` colouring for `<pre>`. Added ways to make a no-title slide.|
 |1.9.1|6&nbsp;March&nbsp;2021|Added `&check;` entity reference. Reworked internals with more consistent layout and `getContentRec` and title formatting improvements. Prereq Python 3.8.|
 |1.9|17&nbsp;February&nbsp;2021|Add support to specify which slide in master. Also numbersMargin|
@@ -597,6 +603,8 @@ You can create a slide where the body is in a monospace font, without bullets, i
 When we say "code", what you're displaying could be something like a terminal screen shot, of course. What's important is that it will be rendered in a fixed-pitch font.
 
 In each case, the heading for the slide is generally introduced with heading level 3 - `### `. However you can start a slide without a heading. See [Slides Without Titles](#slides-without-titles) for how to do this.
+
+**Note:** You can more precisely control how code slides are laid out with [Code Slide Metadata](#code-slide-metadata).
 
 #### `<code>`
 
@@ -1453,6 +1461,32 @@ The default value is `rounded`.
 
 You can override this value on a slide-by-slide basis with [Dynamic CardShape](#cardshape-dynamic).
 
+<a id="code-slide-metadata"></>
+### Code Slide Metadata
+
+You can adjust how code slides display their content.
+
+<a id="code-column-count-codecolumns"></a>
+#### Code Column Count - `CodeColumns`
+
+You can adjust how wide the text box the code is displayed in using `CodeColumns`. For example:
+
+    CodeColumns: 70
+
+The default value is 80.
+
+
+You can override this on a slide-by-slide basis with [Dynamic CodeColumns](#dynamic-codecolumns).
+
+<a id="fixed-pitch-height-to-width-ration-fpratio"></a>
+####  Fixed Pitch Height To Width Ratio - `FPRatio`
+
+md2pptx assumes the height of a column is 1.2 times its width. You can adjust this ratio with `FPRatio`:
+
+    FPRatio: 1.1
+
+You can override this on a slide-by-slide basis with [Dynamic FPRatio](#dynamic-fpratio).
+
 <a id="dynamic-metadata"></a>
 ### Dynamic Metadata
 
@@ -1542,6 +1576,26 @@ You can override the presentation [BaseTextDecrement](#specifying-text-size-with
     <!-- md2pptx: basetextdecrement: 0 -->
 
 The above stops each level of bullets having progressively smaller text.
+
+<a id="dynamic-codecolumns"></a>
+
+#### `CodeColumns`
+
+You can override the presentation [CodeColumns](#code-column-count-codecolumns) metadata value. For example:
+
+    <!-- md2pptx: codecolumns: 60 -->
+
+The above changes the `CodeColumns` value for this and subsequent slides to 60.
+
+<a id="dynamic-fpratio"></a>
+
+#### `FPRatio`
+
+You can override the presentation [FPRatio](#fixed-pitch-height-to-width-ration-fpratio) (fixed pitch font character height to width ratio) metadata value. For example:
+
+    <!-- md2pptx: fpratio: 1.3 -->
+
+The above changes the `FPRatio` value for this and subsequent slides to 1.3.
 
 ## Modifying The Slide Template
 <a id="modifying-the-slide-template"></a>

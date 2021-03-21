@@ -1108,6 +1108,11 @@ body .markdown-body
 </li>
 </ul>
 </li>
+<li><a href="#code-slide-metadata">Code Slide Metadata</a><ul>
+<li><a href="#code-column-count-codecolumns">Code Column Count - <code>CodeColumns</code></a></li>
+<li><a href="#fixed-pitch-height-to-width-ratio-fpratio">Fixed Pitch Height To Width Ratio - <code>FPRatio</code></a></li>
+</ul>
+</li>
 <li><a href="#dynamic-metadata">Dynamic Metadata</a><ul>
 <li><a href="#compacttables"><code>CompactTables</code></a></li>
 <li><a href="#cardpercent"><code>CardPercent</code></a></li>
@@ -1118,6 +1123,8 @@ body .markdown-body
 <li><a href="#pagetitlesize"><code>PageTitleSize</code></a></li>
 <li><a href="#basetextsize"><code>BaseTextSize</code></a></li>
 <li><a href="#basetextdecrement"><code>BaseTextDecrement</code></a></li>
+<li><a href="#codecolumns"><code>CodeColumns</code></a></li>
+<li><a href="#fpratio"><code>FPRatio</code></a></li>
 </ul>
 </li>
 </ul>
@@ -1224,6 +1231,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">1.9.3</td>
+<td align="right">21&nbsp;March&nbsp;2021</td>
+<td align="left">Added controls on how many columns wide code is and fixed pitch height to width ratio.</td>
+</tr>
 <tr>
 <td align="left">1.9.2</td>
 <td align="right">16&nbsp;March&nbsp;2021</td>
@@ -1662,6 +1674,7 @@ sectionTitleSize: 30
 </ul>
 <p>When we say &ldquo;code&rdquo;, what you&rsquo;re displaying could be something like a terminal screen shot, of course. What&rsquo;s important is that it will be rendered in a fixed-pitch font.</p>
 <p>In each case, the heading for the slide is generally introduced with heading level 3 - <code>###</code>. However you can start a slide without a heading. See <a href="#slides-without-titles">Slides Without Titles</a> for how to do this.</p>
+<p><strong>Note:</strong> You can more precisely control how code slides are laid out with <a href="#code-slide-metadata">Code Slide Metadata</a>.</p>
 <h4 id="code"><code>&lt;code&gt;</code><a class="headerlink" href="#code" title="Permanent link"></a></h4>
 <p>The HTML <code>&lt;code&gt;</code> element is supported. Surround the block of text by <code>&lt;code&gt;</code> and <code>&lt;/code</code>:</p>
 <pre><code>### This Is A Code Slide
@@ -2415,6 +2428,22 @@ baseTextDecrement: 1
 </code></pre>
 <p>The default value is <code>rounded</code>.</p>
 <p>You can override this value on a slide-by-slide basis with <a href="#cardshape-dynamic">Dynamic CardShape</a>.</p>
+<p><a id="code-slide-metadata"></></p>
+<h3 id="code-slide-metadata">Code Slide Metadata<a class="headerlink" href="#code-slide-metadata" title="Permanent link"></a></h3>
+<p>You can adjust how code slides display their content.</p>
+<p><a id="code-column-count-codecolumns"></a></p>
+<h4 id="code-column-count-codecolumns">Code Column Count - <code>CodeColumns</code><a class="headerlink" href="#code-column-count-codecolumns" title="Permanent link"></a></h4>
+<p>You can adjust how wide the text box the code is displayed in using <code>CodeColumns</code>. For example:</p>
+<pre><code>CodeColumns: 70
+</code></pre>
+<p>The default value is 80.</p>
+<p>You can override this on a slide-by-slide basis with <a href="#dynamic-codecolumns">Dynamic CodeColumns</a>.</p>
+<p><a id="fixed-pitch-height-to-width-ration-fpratio"></a></p>
+<h4 id="fixed-pitch-height-to-width-ratio-fpratio">Fixed Pitch Height To Width Ratio - <code>FPRatio</code><a class="headerlink" href="#fixed-pitch-height-to-width-ratio-fpratio" title="Permanent link"></a></h4>
+<p>md2pptx assumes the height of a column is 1.2 times its width. You can adjust this ratio with <code>FPRatio</code>:</p>
+<pre><code>FPRatio: 1.1
+</code></pre>
+<p>You can override this on a slide-by-slide basis with <a href="#dynamic-fpratio">Dynamic FPRatio</a>.</p>
 <p><a id="dynamic-metadata"></a></p>
 <h3 id="dynamic-metadata">Dynamic Metadata<a class="headerlink" href="#dynamic-metadata" title="Permanent link"></a></h3>
 <p>md2pptx can alter some in-effect settings, starting at a particular slide. Straight after the heading code a special form of comment like so:</p>
@@ -2478,6 +2507,18 @@ baseTextDecrement: 1
 <pre><code>&lt;!-- md2pptx: basetextdecrement: 0 --&gt;
 </code></pre>
 <p>The above stops each level of bullets having progressively smaller text.</p>
+<p><a id="dynamic-codecolumns"></a></p>
+<h4 id="codecolumns"><code>CodeColumns</code><a class="headerlink" href="#codecolumns" title="Permanent link"></a></h4>
+<p>You can override the presentation <a href="#code-column-count-codecolumns">CodeColumns</a> metadata value. For example:</p>
+<pre><code>&lt;!-- md2pptx: codecolumns: 60 --&gt;
+</code></pre>
+<p>The above changes the <code>CodeColumns</code> value for this and subsequent slides to 60.</p>
+<p><a id="dynamic-fpratio"></a></p>
+<h4 id="fpratio"><code>FPRatio</code><a class="headerlink" href="#fpratio" title="Permanent link"></a></h4>
+<p>You can override the presentation <a href="#fixed-pitch-height-to-width-ration-fpratio">FPRatio</a> (fixed pitch font character height to width ratio) metadata value. For example:</p>
+<pre><code>&lt;!-- md2pptx: fpratio: 1.3 --&gt;
+</code></pre>
+<p>The above changes the <code>FPRatio</code> value for this and subsequent slides to 1.3.</p>
 <h2 id="modifying-the-slide-template">Modifying The Slide Template<a class="headerlink" href="#modifying-the-slide-template" title="Permanent link"></a></h2>
 <p><a id="modifying-the-slide-template"></a></p>
 <p>The included template presentation - Martin Template.pptx - is what the author tested with and gives good results. However, you probably want to develop your own template from it.</p>

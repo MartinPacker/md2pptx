@@ -43,8 +43,8 @@ try:
 except:
     have_cairosvg = False
 
-md2pptx_level = "1.9.2"
-md2pptx_date = "16 March, 2021"
+md2pptx_level = "1.9.3"
+md2pptx_date = "21 March, 2021"
 
 
 class slideInfo:
@@ -1288,7 +1288,7 @@ def createCodeSlide(presentation, slideNumber, titleText, code):
     # Fill the code box with green
     fill = codeBox.fill
     fill.solid()
-    fill.fore_color.rgb = RGBColor(223, 255, 223)
+    fill.fore_color.rgb = RGBColor.from_string(codeBackground)
 
     # Get the sole paragraph
     p = codeBox.text_frame.paragraphs[0]
@@ -1302,6 +1302,25 @@ def createCodeSlide(presentation, slideNumber, titleText, code):
         p.font.size = int(Pt(baseTextSize) / divisor)
     else:
         p.font.size = int(Pt(defaultBaseTextSize) / divisor)
+
+    # Estimate how wide the code box would need to be at the current font size
+    # versus actual width
+    estimatedWidthVersusCodeboxWidth = (
+        p.font.size * codeColumns / codeBox.width / fixedPitchHeightWidthRatio
+    )
+    if estimatedWidthVersusCodeboxWidth > 1:
+        # The code is wider so shrink the font so the code fits
+        p.font.size = p.font.size / estimatedWidthVersusCodeboxWidth
+    else:
+        # The code is narrower so shrink the code textbox so the code just fits
+        # - assuming declared width is accurate
+        codeBox.width = int(p.font.size * codeColumns / fixedPitchHeightWidthRatio)
+
+        # Center the code box
+        codeBox.left = int((presentation.slide_width - codeBox.width) / 2)
+
+    # Use the code foreground colour - whether explicit or defaulted
+    p.font.color.rgb = RGBColor.from_string(codeForeground)
 
     # Adjust code box height based on lines
     codeBox.height = min(len(codeLines) * Pt(baseTextSize + 5), contentHeight)
@@ -2941,6 +2960,25 @@ defaultBaseTextDecrement = 2
 presBaseTextDecrement = defaultBaseTextDecrement
 baseTextDecrement = defaultBaseTextDecrement
 
+defaultCodeForeground = "000000"
+presCodeForeground = defaultCodeForeground
+codeForeground = defaultCodeForeground
+
+defaultCodeBackground = "DFFFDF"
+presCodeBackground = defaultCodeBackground
+codeBackground = defaultCodeBackground
+
+# Column count to work out if code should fit
+defaultCodeColumns = 80
+codeColumns = defaultCodeColumns
+presCodeColumns = defaultCodeColumns
+
+# Assume a fixed pitch character is this times as high as it is wide
+defaultFixedPitchHeightWidthRatio = 1.2
+fixedPitchHeightWidthRatio = defaultFixedPitchHeightWidthRatio
+presFixedPitchHeightWidthRatio = defaultFixedPitchHeightWidthRatio
+
+
 sectionTitleSize = 40
 sectionSubtitleSize = 28
 monoFont = "Courier"
@@ -3209,27 +3247,53 @@ for line in metadata_lines:
 
     elif name == "glossarytitle":
         glossaryTitle = value
+
     elif name == "glossaryterm":
         glossaryTerm = value
+
     elif name == "glossarymeaning":
         glossaryMeaning = value
+
     elif name == "glossarymeaningwidth":
         glossaryMeaningWidth = int(value)
+
     elif name == "glossarytermsperpage":
         glossaryTermsPerPage = int(value)
+
     elif name == "footnotesperpage":
         footnotesPerPage = int(value)
+
     elif name == "footnotestitle":
         footnotesTitle = value
+
     elif name.startswith("style.bgcolor."):
         spanClass = name[14:]
         bgcolors[spanClass] = value
+
     elif name.startswith("style.fgcolor."):
         spanClass = name[14:]
         fgcolors[spanClass] = value
+
     elif name.startswith("style.emphasis."):
         spanClass = name[15:]
         emphases[spanClass] = value
+
+    elif name == "codeforeground":
+        codeForeground = value
+        presCodeForeground = value
+
+    elif name == "codebackground":
+        codeBackground = value
+        presCodeBackground = value
+
+    elif name == "fpratio":
+        fixedPitchHeightWidthRatio = float(value)
+        presFixedPitchHeightWidthRatio = float(value)
+
+    elif name == "codecolumns":
+        codeColumns = int(value)
+        presCodeColumns = int(value)
+
 
 if slideTemplateFile != "":
     originalSlideTemplateFile = slideTemplateFile
@@ -3562,6 +3626,48 @@ for line in linesAfterConcatenation:
 
                     else:
                         cardTitlePosition = metadataValue
+
+                elif metadataKey == "codeforeground":
+                    # Code slide foreground
+                    if metadataValue == "default":
+                        codeForeground = defaultCodeForeground
+
+                    elif metadataValue == "pres":
+                        codeForeground = presCodeForeground
+
+                    else:
+                        codeForeground = metadataValue
+
+                elif metadataKey == "codebackground":
+                    # Code slide background
+                    if metadataValue == "default":
+                        codeBackground = defaultCodeBackground
+
+                    elif metadataValue == "pres":
+                        codeBackground = presCodeBackground
+
+                    else:
+                        codeBackground = metadataValue
+
+                elif metadataKey == "fpratio":
+                    # Fixed Pitch font height to width ratio
+                    if metadataValue == "default":
+                        fixedPitchHeightWidthRatio = defaultFixedPitchHeightWidthRatio
+
+                    elif metadataValue == "pres":
+                        fixedPitchHeightWidthRatio = presFixedPitchHeightWidthRatio
+
+                    else:
+                        fixedPitchHeightWidthRatio = float(metadataValue)
+
+                elif metadataKey == "codecolumns":
+                    # Code slide column count
+                    if metadataValue == "default":
+                        codeColumns = defaultCodeColumns
+                    elif metadataValue == "pres":
+                        codeColumns = presCodeColumns
+                    else:
+                        codeColumns = int(metadataValue)
 
                 else:
                     # Invalid dynamic metadata specification
