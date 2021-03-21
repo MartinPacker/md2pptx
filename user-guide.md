@@ -84,9 +84,11 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 			* [Card Title Alignment - `CardTitleAlign`](#card-title-alignment-cardtitlealign)
 			* [Card Title Position - `CardTitlePosition`](#card-title-position-cardtitleposition)
 			* [Card Shape - `CardShape`](#card-shape-cardshape)
-	* [Code Slide Metadata](#code-slide-metadata)
-		* [Code Column Count - `CodeColumns`](#code-column-count-codecolumns)
-		* [Fixed Pitch Height To Width Ratio - `FPRatio`](#fixed-pitch-height-to-width-ratio-fpratio)
+		* [Code Slide Metadata](#code-slide-metadata)
+			* [Code Column Count - `CodeColumns`](#code-column-count-codecolumns)
+			* [Fixed Pitch Height To Width Ratio - `FPRatio`](#fixed-pitch-height-to-width-ratio-fpratio)
+			* [Foreground Colour - `CodeForeground`](#foreground-colour-codeforeground)
+			* [Background Colour - `CodeBackground`](#background-colour-codebackground)
 	* [Dynamic Metadata](#dynamic-metadata)
 		* [`CompactTables`](#compacttables)
 		* [`CardPercent`](#cardpercent)
@@ -99,6 +101,8 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 		* [`BaseTextDecrement`](#basetextdecrement)
 		* [`CodeColumns`](#codecolumns)
 		* [`FPRatio`](#fpratio)
+		* [`CodeForeground`](#codeforeground)
+		* [`CodeBackground`](#codebackground)
 * [Modifying The Slide Template](#modifying-the-slide-template)
 	* [Basics](#basics)
 	* [Slide Template Sequence](#slide-template-sequence)
@@ -210,6 +214,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|1.9.4|21&nbsp;March&nbsp;2021|Added controls code slide foreground and background colour RGB values.|
 |1.9.3|21&nbsp;March&nbsp;2021|Added controls on how many columns wide code is and fixed pitch height to width ratio.|
 |1.9.2|16&nbsp;March&nbsp;2021|Added `<pre>`&comma; `<code>`&comma; triple backtick - with `<span>` colouring for `<pre>`. Added ways to make a no-title slide.|
 |1.9.1|6&nbsp;March&nbsp;2021|Added `&check;` entity reference. Reworked internals with more consistent layout and `getContentRec` and title formatting improvements. Prereq Python 3.8.|
@@ -604,7 +609,7 @@ When we say "code", what you're displaying could be something like a terminal sc
 
 In each case, the heading for the slide is generally introduced with heading level 3 - `### `. However you can start a slide without a heading. See [Slides Without Titles](#slides-without-titles) for how to do this.
 
-**Note:** You can more precisely control how code slides are laid out with [Code Slide Metadata](#code-slide-metadata).
+**Note:** You can more precisely control how code slides are laid out and their colours with [Code Slide Metadata](#code-slide-metadata).
 
 #### `<code>`
 
@@ -1462,12 +1467,12 @@ The default value is `rounded`.
 You can override this value on a slide-by-slide basis with [Dynamic CardShape](#cardshape-dynamic).
 
 <a id="code-slide-metadata"></>
-### Code Slide Metadata
+#### Code Slide Metadata
 
 You can adjust how code slides display their content.
 
 <a id="code-column-count-codecolumns"></a>
-#### Code Column Count - `CodeColumns`
+##### Code Column Count - `CodeColumns`
 
 You can adjust how wide the text box the code is displayed in using `CodeColumns`. For example:
 
@@ -1479,13 +1484,31 @@ The default value is 80.
 You can override this on a slide-by-slide basis with [Dynamic CodeColumns](#dynamic-codecolumns).
 
 <a id="fixed-pitch-height-to-width-ration-fpratio"></a>
-####  Fixed Pitch Height To Width Ratio - `FPRatio`
+##### Fixed Pitch Height To Width Ratio - `FPRatio`
 
 md2pptx assumes the height of a column is 1.2 times its width. You can adjust this ratio with `FPRatio`:
 
     FPRatio: 1.1
 
 You can override this on a slide-by-slide basis with [Dynamic FPRatio](#dynamic-fpratio).
+
+<a id="foreground-colour-codeforeground"></a>
+##### Foreground Colour - `CodeForeground`
+
+The default foreground colour for code slides is black (#000000 in RGB terms). You can override this by specifying an RGB colour, such as white:
+
+    CodeForeground: FFFFFF
+
+You can override this on a slide-by-slide basis with [Dynamic CodeForeground](#dynamic-codeforeground).
+
+<a id="background-colour-codebackground"></a>
+##### Background Colour - `CodeBackground`
+
+The default background colour for code slides is white (#FFFFFF in RGB terms). You can override this by specifying an RGB colour, such as black:
+
+    codeBackground: 000000
+
+You can override this on a slide-by-slide basis with [Dynamic codeBackground](#dynamic-codebackground).
 
 <a id="dynamic-metadata"></a>
 ### Dynamic Metadata
@@ -1596,6 +1619,20 @@ You can override the presentation [FPRatio](#fixed-pitch-height-to-width-ration-
     <!-- md2pptx: fpratio: 1.3 -->
 
 The above changes the `FPRatio` value for this and subsequent slides to 1.3.
+
+<a id="dynamic-codeforeground"></a>
+#### `CodeForeground`
+
+You can override the presentation [CodeForeground](#foreground-colour-codeforeground) code slide foreground colour on a slide-by-slide basis:
+
+    <!-- md2pptx: codeforeground: 000000 -->
+
+<a id="dynamic-codebackground"></a>
+#### `CodeBackground`
+
+You can override the presentation [CodeBackground](#background-colour-codebackground) code slide background colour on a slide-by-slide basis:
+
+    <!-- md2pptx: codebackground: FFFFFF -->
 
 ## Modifying The Slide Template
 <a id="modifying-the-slide-template"></a>

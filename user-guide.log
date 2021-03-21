@@ -5,7 +5,7 @@ mdpre Markdown Preprocessor v0.4.6 (26 January, 2021)
 Def mdpre_date = 26 January, 2021
 Def mdpre_level = 0.4.6
 Def userid = martinpacker
-Def time = 19&colon;43
+Def time = 20&colon;05
 Def date = 21 March&comma; 2021
 Def TOC = Table Of Contents
 Def md = Markdown
@@ -97,9 +97,11 @@ CSV Stop
 ..... ..... ..... .....  Card Title Alignment - `CardTitleAlign`
 ..... ..... ..... .....  Card Title Position - `CardTitlePosition`
 ..... ..... ..... .....  Card Shape - `CardShape`
-..... .....  Code Slide Metadata
-..... ..... .....  Code Column Count - `CodeColumns`
-..... ..... .....   Fixed Pitch Height To Width Ratio - `FPRatio`
+..... ..... .....  Code Slide Metadata
+..... ..... ..... .....  Code Column Count - `CodeColumns`
+..... ..... ..... .....  Fixed Pitch Height To Width Ratio - `FPRatio`
+..... ..... ..... .....  Foreground Colour - `CodeForeground`
+..... ..... ..... .....  Background Colour - `CodeBackground`
 ..... .....  Dynamic Metadata
 ..... ..... .....  `CompactTables`
 ..... ..... .....  `CardPercent`
@@ -112,6 +114,8 @@ CSV Stop
 ..... ..... .....  `BaseTextDecrement`
 ..... ..... .....  `CodeColumns`
 ..... ..... .....  `FPRatio`
+..... ..... .....  `CodeForeground`
+..... ..... .....  `CodeBackground`
 .....  Modifying The Slide Template
 ..... .....  Basics
 ..... .....  Slide Template Sequence
