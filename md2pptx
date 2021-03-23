@@ -43,8 +43,8 @@ try:
 except:
     have_cairosvg = False
 
-md2pptx_level = "1.9.4"
-md2pptx_date = "21 March, 2021"
+md2pptx_level = "1.9.5"
+md2pptx_date = "23 March, 2021"
 
 
 class slideInfo:
@@ -517,6 +517,7 @@ def parseText(text):
     text2 = text2.replace("&szlig;", "ß")
     text2 = text2.replace("&euro;", "€")
     text2 = text2.replace("&check;", "✓")
+    text2 = text2.replace("&hellip;", "…")
 
     # Replace any asterisks with spaces either side with entity reference
     text2 = text2.replace(" * ", " &lowast; ")
@@ -1601,9 +1602,9 @@ def createContentSlide(presentation, slideNumber, titleText, subtitleText, bulle
 
             # Calculate a card's horizontal position
             if cardLayout == "horizontal":
-                cardLeft.append(int(Inches(0.5) + c * (cardWidth + Inches(0.25))))
+                cardLeft.append(marginBase + c * (cardWidth + Inches(0.25)))
             else:
-                cardLeft.append(int(Inches(0.5)))
+                cardLeft.append(marginBase)
 
             # Card title modeled on slide title - but smaller
             cardTitleShape = addClonedShape(slide, title)
