@@ -1104,6 +1104,8 @@ body .markdown-body
 <li><a href="#card-title-alignment-cardtitlealign">Card Title Alignment - <code>CardTitleAlign</code></a></li>
 <li><a href="#card-title-position-cardtitleposition">Card Title Position - <code>CardTitlePosition</code></a></li>
 <li><a href="#card-shape-cardshape">Card Shape - <code>CardShape</code></a></li>
+<li><a href="#card-horizontal-gap-cardhorizontalgap">Card Horizontal Gap - <code>CardHorizontalGap</code></a></li>
+<li><a href="#card-vertical-gap-cardverticalgap">Card Vertical Gap - <code>CardVerticalGap</code></a></li>
 </ul>
 </li>
 <li><a href="#code-slide-metadata">Code Slide Metadata</a><ul>
@@ -1122,6 +1124,8 @@ body .markdown-body
 <li><a href="#cardtitlealign"><code>CardTitleAlign</code></a></li>
 <li><a href="#cardtitleposition"><code>CardTitlePosition</code></a></li>
 <li><a href="#cardshape"><code>CardShape</code></a></li>
+<li><a href="#cardhorizontalgap"><code>CardHorizontalGap</code></a></li>
+<li><a href="#cardverticalgap"><code>CardVerticalGap</code></a></li>
 <li><a href="#pagetitlesize"><code>PageTitleSize</code></a></li>
 <li><a href="#basetextsize"><code>BaseTextSize</code></a></li>
 <li><a href="#basetextdecrement"><code>BaseTextDecrement</code></a></li>
@@ -1235,6 +1239,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">1.9.5</td>
+<td align="right">26&nbsp;March&nbsp;2021</td>
+<td align="left">Added <code>&amp;hellip;</code>. Allow specification of gaps between cards.</td>
+</tr>
 <tr>
 <td align="left">1.9.4</td>
 <td align="right">21&nbsp;March&nbsp;2021</td>
@@ -1673,6 +1682,8 @@ sectionTitleSize: 30
 <li><a href="#title-alignment-cardtitlealign">Card Title Alignment</a></li>
 <li><a href="#card-title-position-cardtitleposition">Card Title Position</a></li>
 <li><a href="#card-shape-cardshape">Card Shape</a></li>
+<li><a href="#card-horizontal-gap-cardhorizontalgap">Card Horizontal Gap</a></li>
+<li><a href="#card-vertical-gap-cardverticalgap">Card Vertical Gap</a></li>
 </ul>
 <h3 id="code-slides">Code Slides<a class="headerlink" href="#code-slides" title="Permanent link"></a></h3>
 <p><a id="code-slides"></a></p>
@@ -1986,8 +1997,8 @@ To create an internal slide reference you need to do two things:</p>
 <td align="right">&lowast;</td>
 <td align="left"><code>&amp;searr;</code></td>
 <td align="left">&searr;</td>
-<td align="left"></td>
-<td align="left"></td>
+<td align="left"><code>&amp;hellip;</code></td>
+<td align="left">&hellip;</td>
 </tr>
 <tr>
 <td align="left"><code>&amp;semi;</code></td>
@@ -2437,6 +2448,20 @@ baseTextDecrement: 1
 </code></pre>
 <p>The default value is <code>rounded</code>.</p>
 <p>You can override this value on a slide-by-slide basis with <a href="#cardshape-dynamic">Dynamic CardShape</a>.</p>
+<p><a id="card-horizontal-gap-cardhorizontalgap"></a></p>
+<h5 id="card-horizontal-gap-cardhorizontalgap">Card Horizontal Gap - <code>CardHorizontalGap</code><a class="headerlink" href="#card-horizontal-gap-cardhorizontalgap" title="Permanent link"></a></h5>
+<p>You can adjust the horizontal space between cards that are laid out side by side using <code>CardHorizontalGap</code>. For example:</p>
+<pre><code>CardHorizontalGap: 0.2
+</code></pre>
+<p>The default is 0.25 inches.</p>
+<p>You can override this on a slide-by-slide basis with <a href="#dynamic-cardhorizontalgap">Dynamic Horizontal Gap</a>.</p>
+<p><a id="card-vertical-gap-cardverticalgap"></a></p>
+<h5 id="card-vertical-gap-cardverticalgap">Card Vertical Gap - <code>CardVerticalGap</code><a class="headerlink" href="#card-vertical-gap-cardverticalgap" title="Permanent link"></a></h5>
+<p>You can adjust the vertical space between cards that are laid out one above the other using <code>CardVerticalGap</code>. For example:</p>
+<pre><code>CardVerticalGap: 0.05
+</code></pre>
+<p>The default is 0.1 inches.</p>
+<p>You can override this on a slide-by-slide basis with <a href="#dynamic-cardverticalgap">Dynamic Vertical Gap</a>.</p>
 <p><a id="code-slide-metadata"></></p>
 <h4 id="code-slide-metadata">Code Slide Metadata<a class="headerlink" href="#code-slide-metadata" title="Permanent link"></a></h4>
 <p>You can adjust how code slides display their content.</p>
@@ -2510,6 +2535,16 @@ baseTextDecrement: 1
 <h4 id="cardshape"><code>CardShape</code><a class="headerlink" href="#cardshape" title="Permanent link"></a></h4>
 <p>You can override the presentation <a href="#card-shape-cardshape">CardShape</a> metadata value - perhaps to make an individual card slide&rsquo;s cards have square corners when most are rounded:</p>
 <pre><code>&lt;!-- md2pptx: cardshape: squared --&gt;
+</code></pre>
+<p><a id="dynamic-cardhorizontalgap"></a></p>
+<h4 id="cardhorizontalgap"><code>CardHorizontalGap</code><a class="headerlink" href="#cardhorizontalgap" title="Permanent link"></a></h4>
+<p>You can override the presentation <a href="#card-horizontal-gap-cardhorizontalgap">CardHorizontalGap</a> metadata value - perhaps to squeeze the gaps between cards:</p>
+<pre><code>&lt;!-- md2pptx: cardhorizontalgap: 0.05 --&gt;
+</code></pre>
+<p><a id="dynamic-cardverticalgap"></a></p>
+<h4 id="cardverticalgap"><code>CardVerticalGap</code><a class="headerlink" href="#cardverticalgap" title="Permanent link"></a></h4>
+<p>You can override the presentation <a href="#card-vertical-gap-cardverticalgap">CardVerticalGap</a> metadata value - perhaps to squeeze the gaps between cards:</p>
+<pre><code>&lt;!-- md2pptx: cardverticalgap: 0.05 --&gt;
 </code></pre>
 <p><a id="pagetitlesize-dynamic"></a></p>
 <h4 id="pagetitlesize"><code>PageTitleSize</code><a class="headerlink" href="#pagetitlesize" title="Permanent link"></a></h4>

@@ -84,6 +84,8 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 			* [Card Title Alignment - `CardTitleAlign`](#card-title-alignment-cardtitlealign)
 			* [Card Title Position - `CardTitlePosition`](#card-title-position-cardtitleposition)
 			* [Card Shape - `CardShape`](#card-shape-cardshape)
+			* [Card Horizontal Gap - `CardHorizontalGap`](#card-horizontal-gap-cardhorizontalgap)
+			* [Card Vertical Gap - `CardVerticalGap`](#card-vertical-gap-cardverticalgap)
 		* [Code Slide Metadata](#code-slide-metadata)
 			* [Code Column Count - `CodeColumns`](#code-column-count-codecolumns)
 			* [Fixed Pitch Height To Width Ratio - `FPRatio`](#fixed-pitch-height-to-width-ratio-fpratio)
@@ -96,6 +98,8 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 		* [`CardTitleAlign`](#cardtitlealign)
 		* [`CardTitlePosition`](#cardtitleposition)
 		* [`CardShape`](#cardshape)
+		* [`CardHorizontalGap`](#cardhorizontalgap)
+		* [`CardVerticalGap`](#cardverticalgap)
 		* [`PageTitleSize`](#pagetitlesize)
 		* [`BaseTextSize`](#basetextsize)
 		* [`BaseTextDecrement`](#basetextdecrement)
@@ -214,6 +218,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|1.9.5|26&nbsp;March&nbsp;2021|Added `&hellip;`. Allow specification of gaps between cards.|
 |1.9.4|21&nbsp;March&nbsp;2021|Added controls code slide foreground and background colour RGB values.|
 |1.9.3|21&nbsp;March&nbsp;2021|Added controls on how many columns wide code is and fixed pitch height to width ratio.|
 |1.9.2|16&nbsp;March&nbsp;2021|Added `<pre>`&comma; `<code>`&comma; triple backtick - with `<span>` colouring for `<pre>`. Added ways to make a no-title slide.|
@@ -596,7 +601,8 @@ In the above example there has been a small amount of tweaking of the format, us
 * [Card Title Alignment](#title-alignment-cardtitlealign)
 * [Card Title Position](#card-title-position-cardtitleposition)
 * [Card Shape](#card-shape-cardshape)
-
+* [Card Horizontal Gap](#card-horizontal-gap-cardhorizontalgap)
+* [Card Vertical Gap](#card-vertical-gap-cardverticalgap)
 ### Code Slides
 <a id="code-slides"></a>
 
@@ -882,7 +888,7 @@ md2pptx supports a few [HTML entity references](https://en.wikipedia.org/wiki/Li
 |`&Delta;`|&Delta;|`&varr;`|&varr;|`&Ouml;`|&Ouml;|
 |`&delta;`|&delta;|`&nearr;`|&nearr;|`&szlig;`|&szlig;|
 |`&sim;`|&sim;|`&nwarr;`|&nwarr;|`&euro;`|&euro;|
-|`&lowast;`|&lowast;|`&searr;`|&searr;|
+|`&lowast;`|&lowast;|`&searr;`|&searr;|`&hellip;`|&hellip;|
 |`&semi;`|&semi;|`&swarr;`|&swarr;|
 |`&colon;`|&colon;|`&lsqb;`|&lsqb;|
 |`&amp;`|&amp;|`&rsqb;`|&rsqb;|
@@ -1466,6 +1472,29 @@ The default value is `rounded`.
 
 You can override this value on a slide-by-slide basis with [Dynamic CardShape](#cardshape-dynamic).
 
+
+<a id="card-horizontal-gap-cardhorizontalgap"></a>
+##### Card Horizontal Gap - `CardHorizontalGap`
+
+You can adjust the horizontal space between cards that are laid out side by side using `CardHorizontalGap`. For example:
+
+    CardHorizontalGap: 0.2
+
+The default is 0.25 inches.
+
+You can override this on a slide-by-slide basis with [Dynamic Horizontal Gap](#dynamic-cardhorizontalgap).
+
+<a id="card-vertical-gap-cardverticalgap"></a>
+##### Card Vertical Gap - `CardVerticalGap`
+
+You can adjust the vertical space between cards that are laid out one above the other using `CardVerticalGap`. For example:
+
+    CardVerticalGap: 0.05
+
+The default is 0.1 inches.
+
+You can override this on a slide-by-slide basis with [Dynamic Vertical Gap](#dynamic-cardverticalgap).
+
 <a id="code-slide-metadata"></>
 #### Code Slide Metadata
 
@@ -1575,6 +1604,20 @@ You can override the presentation [CardShape](#card-shape-cardshape) metadata va
 
     <!-- md2pptx: cardshape: squared -->
 
+<a id="dynamic-cardhorizontalgap"></a>
+#### `CardHorizontalGap`
+
+You can override the presentation [CardHorizontalGap](#card-horizontal-gap-cardhorizontalgap) metadata value - perhaps to squeeze the gaps between cards:
+
+    <!-- md2pptx: cardhorizontalgap: 0.05 -->
+
+<a id="dynamic-cardverticalgap"></a>
+#### `CardVerticalGap`
+
+You can override the presentation [CardVerticalGap](#card-vertical-gap-cardverticalgap) metadata value - perhaps to squeeze the gaps between cards:
+
+    <!-- md2pptx: cardverticalgap: 0.05 -->
+
 <a id="pagetitlesize-dynamic"></a>
 #### `PageTitleSize`
 
@@ -1601,7 +1644,6 @@ You can override the presentation [BaseTextDecrement](#specifying-text-size-with
 The above stops each level of bullets having progressively smaller text.
 
 <a id="dynamic-codecolumns"></a>
-
 #### `CodeColumns`
 
 You can override the presentation [CodeColumns](#code-column-count-codecolumns) metadata value. For example:
@@ -1611,7 +1653,6 @@ You can override the presentation [CodeColumns](#code-column-count-codecolumns) 
 The above changes the `CodeColumns` value for this and subsequent slides to 60.
 
 <a id="dynamic-fpratio"></a>
-
 #### `FPRatio`
 
 You can override the presentation [FPRatio](#fixed-pitch-height-to-width-ration-fpratio) (fixed pitch font character height to width ratio) metadata value. For example:

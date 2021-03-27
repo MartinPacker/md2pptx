@@ -44,7 +44,7 @@ except:
     have_cairosvg = False
 
 md2pptx_level = "1.9.5"
-md2pptx_date = "23 March, 2021"
+md2pptx_date = "26 March, 2021"
 
 
 class slideInfo:
@@ -1544,7 +1544,9 @@ def createContentSlide(presentation, slideNumber, titleText, subtitleText, bulle
         # card width applies to card title, card background, card body
         if cardLayout == "horizontal":
             # Divide horizontal card space up
-            cardWidth = int((contentWidth - Inches(0.25) * (cardCount - 1)) / cardCount)
+            cardWidth = int(
+                (contentWidth - Inches(horizontalCardGap) * (cardCount - 1)) / cardCount
+            )
         else:
             # Card takes all the horizontal space
             cardWidth = int(contentWidth)
@@ -1575,9 +1577,9 @@ def createContentSlide(presentation, slideNumber, titleText, subtitleText, bulle
             # Card height is just a proportion of the card area height
 
             if cardTitlePosition == "above":
-                paddingFactor = Inches(0.1)
+                paddingFactor = Inches(verticalCardGap - 0.05)
             else:
-                paddingFactor = Inches(0.15)
+                paddingFactor = Inches(verticalCardGap)
 
             cardHeight = int((cardAreaHeight) / cardCount - paddingFactor)
 
@@ -1602,7 +1604,9 @@ def createContentSlide(presentation, slideNumber, titleText, subtitleText, bulle
 
             # Calculate a card's horizontal position
             if cardLayout == "horizontal":
-                cardLeft.append(marginBase + c * (cardWidth + Inches(0.25)))
+                cardLeft.append(
+                    marginBase + c * (cardWidth + Inches(horizontalCardGap))
+                )
             else:
                 cardLeft.append(marginBase)
 
@@ -3022,6 +3026,14 @@ defaultCardShape = "rounded"
 cardShape = defaultCardShape
 presCardShape = defaultCardShape
 
+defaultHorizontalCardGap = 0.25
+horizontalCardGap = defaultHorizontalCardGap
+presHorizontalCardGap = defaultHorizontalCardGap
+
+defaultVerticalCardGap = 0.15
+verticalCardGap = defaultVerticalCardGap
+presVerticalCardGap = defaultVerticalCardGap
+
 abstractTitle = ""
 
 taskSlides = "all"
@@ -3217,6 +3229,14 @@ for line in metadata_lines:
             presCardTitleAlign = cardTitleAlign
         else:
             print(f"CardAlign value '{value}' unsupported.")
+
+    elif name == "horizontalcardgap":
+        horizontalCardGap = float(value)
+        presHorizontalCardGap = horizontalCardGap
+
+    elif name == "verticalcardgap":
+        verticalCardGap = float(value)
+        presVerticalCardGap = verticalCardGap
 
     elif name == "taskslides":
         taskSlides = value
@@ -3627,6 +3647,28 @@ for line in linesAfterConcatenation:
 
                     else:
                         cardTitlePosition = metadataValue
+
+                elif metadataKey == "horizontalcardgap":
+                    # Gap between horizontally arranged cards
+                    if metadataValue == "default":
+                        horizontalCardGap = defaultHorizontalCardGap
+
+                    elif metadataValue == "pres":
+                        horizontalCardGap = presHorizontalCardGap
+
+                    else:
+                        horizontalCardGap = float(metadataValue)
+
+                elif metadataKey == "verticalcardgap":
+                    # Gap between vertically arranged cards
+                    if metadataValue == "default":
+                        verticalCardGap = defaultVerticalCardGap
+
+                    elif metadataValue == "pres":
+                        verticalCardGap = presVerticalCardGap
+
+                    else:
+                        verticalCardGap = float(metadataValue)
 
                 elif metadataKey == "codeforeground":
                     # Code slide foreground
