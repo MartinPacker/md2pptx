@@ -91,6 +91,7 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 			* [Fixed Pitch Height To Width Ratio - `FPRatio`](#fixed-pitch-height-to-width-ratio-fpratio)
 			* [Foreground Colour - `CodeForeground`](#foreground-colour-codeforeground)
 			* [Background Colour - `CodeBackground`](#background-colour-codebackground)
+		* [Slide Heading Levels - `TopHeadingLevel`](#slide-heading-levels-topheadinglevel)
 	* [Dynamic Metadata](#dynamic-metadata)
 		* [`CompactTables`](#compacttables)
 		* [`CardPercent`](#cardpercent)
@@ -218,7 +219,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
-|1.9.5|26&nbsp;March&nbsp;2021|Added `&hellip;`. Allow specification of gaps between cards.|
+|1.9.5|28&nbsp;March&nbsp;2021|Added `&hellip;`. Allow specification of gaps between cards. Allow specification of heading level for title slide.|
 |1.9.4|21&nbsp;March&nbsp;2021|Added controls code slide foreground and background colour RGB values.|
 |1.9.3|21&nbsp;March&nbsp;2021|Added controls on how many columns wide code is and fixed pitch height to width ratio.|
 |1.9.2|16&nbsp;March&nbsp;2021|Added `<pre>`&comma; `<code>`&comma; triple backtick - with `<span>` colouring for `<pre>`. Added ways to make a no-title slide.|
@@ -318,6 +319,8 @@ You code a presentation title slide with a Markdown Heading Level 1:
 
 If you type anything in subsequent lines - before a blank line - the text will appear as extra lines in the presentation title. You might use this, for example, to add the presentation authors' details.
 
+(You can adjust the Markdown heading level for this type of slide with [`TopHeadingLevel`](#slide-heading-levels-topheadinglevel).)
+
 ### Presentation Section Slides
 
 You code a presentation section slide with a Markdown Heading Level 2:
@@ -325,6 +328,8 @@ You code a presentation section slide with a Markdown Heading Level 2:
 	## This Is A Section
 
 You can code multiple lines, as with [Presentation Title slides](#presentation-title-slides).
+
+(You can adjust the Markdown heading level for this type of slide with [`TopHeadingLevel`](#slide-heading-levels-topheadinglevel).)
 
 ### Bullet Slides
 <a id="bullet-slides"></a>
@@ -1539,9 +1544,37 @@ The default background colour for code slides is white (#FFFFFF in RGB terms). Y
 
 You can override this on a slide-by-slide basis with [Dynamic codeBackground](#dynamic-codebackground).
 
+<a id="slide-heading-levels-topheadinglevel"></a>
+#### Slide Heading Levels - `TopHeadingLevel`
+
+The usual heading levels for different types of slides are as follows:
+
+|Level|Slide type|
+|-:|:-|
+|1|Presentation title|
+|2|Section title|
+|3|Content|
+|4|Card|
+
+However, you might need to "demote" all these slide types to, say:
+
+|Level|Slide type|
+|-:|:-|
+|2|Presentation title|
+|3|Section title|
+|4|Content|
+|5|Card|
+
+This might be, for example, because the same Markdown is destined for a formal publication, where the top level heading is reserved for the publication's title. To achieve this demotion you only need to specify the top level in the slide hierarchy:
+
+    TopHeadingLevel: 2
+
+The other heading levels will be adjusted accordingly.
+
+**Note:** You obviously need to code the Title Slide at Heading Level 2, for example.
+
 <a id="dynamic-metadata"></a>
 ### Dynamic Metadata
-
 
 md2pptx can alter some in-effect settings, starting at a particular slide. Straight after the heading code a special form of comment like so:
 
@@ -1701,7 +1734,7 @@ It's probably also not useful to add elements. Take care with moving and resizin
 The following table shows how each slide type is created.
 
 |Slide Type|Origin|Metadata<br/>Override|Non-Title Content|
-|:-|-:|:-|:-|
+|:-|:-|:-|:-|
 |Processing Summary|Original slide from Template||Metadata: Second Shape|
 |Presentation Title|Slide Layout 0|TitleSlideLayout|Subtitle: Second Shape|
 |Section|Slide Layout 1|SectionSlideLayout|Subtitle: Second Shape|

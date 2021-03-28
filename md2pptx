@@ -44,7 +44,7 @@ except:
     have_cairosvg = False
 
 md2pptx_level = "1.9.5"
-md2pptx_date = "26 March, 2021"
+md2pptx_date = "28 March, 2021"
 
 
 class slideInfo:
@@ -3034,6 +3034,11 @@ defaultVerticalCardGap = 0.15
 verticalCardGap = defaultVerticalCardGap
 presVerticalCardGap = defaultVerticalCardGap
 
+titleLevel = 1
+sectionLevel = 2
+contentLevel = 3
+cardLevel = 4
+
 abstractTitle = ""
 
 taskSlides = "all"
@@ -3314,6 +3319,12 @@ for line in metadata_lines:
     elif name == "codecolumns":
         codeColumns = int(value)
         presCodeColumns = int(value)
+
+    elif name == "topheadinglevel":
+        titleLevel = int(value)
+        sectionLevel = titleLevel + 1
+        contentLevel = sectionLevel + 1
+        cardLevel = contentLevel + 1
 
 
 if slideTemplateFile != "":
@@ -3716,111 +3727,68 @@ for line in linesAfterConcatenation:
                     # Invalid dynamic metadata specification
                     print(f"Invalid dynamic metadata key: '{metadataKey}' in '{line}'")
 
-    elif line[:4] == "####":
-        # Heading Level 4 - card on an existing slide
-        inCard = True
+    elif line.startswith("#"):
+        if line[:cardLevel] == "#" * cardLevel:
+            # Card on an existing slide
+            inCard = True
 
-        # If there is an outstanding href then store it
-        if href != "":
-            slideHrefs[href] = slideNumber + 1
-
-        # Get card title text and any href
-        cardName, href = parseTitleText(line[4:])
-        if (href != "") & (href in slideHrefs.keys()):
-            print(f"Heading Reference redefined: '{href}' for slide {slideNumber}")
-
-        # Create information about a card_title
-        cardBullets = []
-        cards.append([cardName])
-
-    elif line[:3] == "###":
-        # Heading Level 3 - slide
-        if inBlock is True:
-            # Create the previous slide
-            SI = slideInfo(slideTitle, slideSubtitle, blockType, bullets, tableRows)
-            slideNumber, slide = createSlide(prs, slideNumber, SI)
-
+            # If there is an outstanding href then store it
             if href != "":
-                slideHrefs[href] = slideNumber
+                slideHrefs[href] = slideNumber + 1
 
-        # Get slide title text and any href
-        slideTitle, href = parseTitleText(line[3:])
+            # Get card title text and any href
+            cardName, href = parseTitleText(line[cardLevel:])
+
+            # Create information about a card_title
+            cardBullets = []
+            cards.append([cardName])
+
+        else:
+            # One of Content, Section, or Title slide
+            if inBlock is True:
+                # Create the previous slide
+                SI = slideInfo(slideTitle, slideSubtitle, blockType, bullets, tableRows)
+                slideNumber, slide = createSlide(prs, slideNumber, SI)
+
+                # Register the previous slide's href - if there was one
+                if href != "":
+                    slideHrefs[href] = slideNumber
+
+            if line[:contentLevel] == "#" * contentLevel:
+                # Heading Level 3 - slide
+                thisLevel = contentLevel
+                blockType = "content"
+
+            elif line[:sectionLevel] == "#" * sectionLevel:
+                # Heading Level 2 - section
+                thisLevel = sectionLevel
+                blockType = "section"
+
+            elif line[:titleLevel] == "#" * titleLevel:
+                # Heading Level 1 - slide title
+                thisLevel = titleLevel
+                blockType = "title"
+
+            # Get slide title text and any href
+            slideTitle, href = parseTitleText(line[thisLevel:])
+
+            cards = []
+            inBlock = True
+            inList = False
+            inTable = False
+            inCard = False
+            notes_text = ""
+            slideSubtitle = ""
+            bullets = []
+
+            if (notes_text != "") & (slide != None):
+                notes_slide = slide.notes_slide
+                text_frame = notes_slide.notes_text_frame
+                text_frame.text = notes_text
+
+        # Check whether any heading reference is a duplicate
         if (href != "") & (href in slideHrefs.keys()):
             print(f"Heading Reference redefined: '{href}' for slide {slideNumber}")
-
-        inBlock = True
-        blockType = "content"
-        slideSubtitle = ""
-        bullets = []
-        inList = False
-        inTable = False
-        inCard = False
-        cards = []
-
-        if (notes_text != "") & (slide != None):
-            notes_slide = slide.notes_slide
-            text_frame = notes_slide.notes_text_frame
-            text_frame.text = notes_text
-
-        notes_text = ""
-
-    elif line[:2] == "##":
-        # Heading Level 2 - section
-        if inBlock is True:
-            SI = slideInfo(slideTitle, slideSubtitle, blockType, bullets, tableRows)
-            slideNumber, slide = createSlide(prs, slideNumber, SI)
-
-            if href != "":
-                slideHrefs[href] = slideNumber
-
-        # Get slide title text and any href
-        slideTitle, href = parseTitleText(line[2:])
-        if (href != "") & (href in slideHrefs.keys()):
-            print(f"Heading Reference redefined: '{href}' for slide {slideNumber}")
-
-        inBlock = True
-        blockType = "section"
-        slideSubtitle = ""
-        bullets = []
-        inList = False
-        inTable = False
-        inCard = False
-
-        if (notes_text != "") & (slide != None):
-            notes_slide = slide.notes_slide
-            text_frame = notes_slide.notes_text_frame
-            text_frame.text = notes_text
-
-        notes_text = ""
-
-    elif line[:1] == "#":
-        # Heading Level 1 - slide title
-        if inBlock is True:
-            SI = slideInfo(slideTitle, slideSubtitle, blockType, bullets, tableRows)
-            slideNumber, slide = createSlide(prs, slideNumber, SI)
-
-            if href != "":
-                slideHrefs[href] = slideNumber
-
-        # Get slide title text and any href
-        slideTitle, href = parseTitleText(line[1:])
-        if (href != "") & (href in slideHrefs.keys()):
-            print(f"Heading Reference redefined: '{href}' for slide {slideNumber}")
-
-        inBlock = True
-        blockType = "title"
-        slideSubtitle = ""
-        bullets = []
-        inList = False
-        inTable = False
-        inCard = False
-
-        if (notes_text != "") & (slide != None):
-            notes_slide = slide.notes_slide
-            text_frame = notes_slide.notes_text_frame
-            text_frame.text = notes_text
-
-        notes_text = ""
 
     elif (match := bulletRegex.match(line)) :
         # Bulleted inList

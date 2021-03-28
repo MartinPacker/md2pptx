@@ -1115,6 +1115,7 @@ body .markdown-body
 <li><a href="#background-colour-codebackground">Background Colour - <code>CodeBackground</code></a></li>
 </ul>
 </li>
+<li><a href="#slide-heading-levels-topheadinglevel">Slide Heading Levels - <code>TopHeadingLevel</code></a></li>
 </ul>
 </li>
 <li><a href="#dynamic-metadata">Dynamic Metadata</a><ul>
@@ -1241,8 +1242,8 @@ THE SOFTWARE.
 <tbody>
 <tr>
 <td align="left">1.9.5</td>
-<td align="right">26&nbsp;March&nbsp;2021</td>
-<td align="left">Added <code>&amp;hellip;</code>. Allow specification of gaps between cards.</td>
+<td align="right">28&nbsp;March&nbsp;2021</td>
+<td align="left">Added <code>&amp;hellip;</code>. Allow specification of gaps between cards. Allow specification of heading level for title slide.</td>
 </tr>
 <tr>
 <td align="left">1.9.4</td>
@@ -1485,11 +1486,13 @@ sectionTitleSize: 30
 <pre><code># This Is the Presentation Title Slide
 </code></pre>
 <p>If you type anything in subsequent lines - before a blank line - the text will appear as extra lines in the presentation title. You might use this, for example, to add the presentation authors&rsquo; details.</p>
+<p>(You can adjust the Markdown heading level for this type of slide with <a href="#slide-heading-levels-topheadinglevel"><code>TopHeadingLevel</code></a>.)</p>
 <h3 id="presentation-section-slides">Presentation Section Slides<a class="headerlink" href="#presentation-section-slides" title="Permanent link"></a></h3>
 <p>You code a presentation section slide with a Markdown Heading Level 2:</p>
 <pre><code>## This Is A Section
 </code></pre>
 <p>You can code multiple lines, as with <a href="#presentation-title-slides">Presentation Title slides</a>.</p>
+<p>(You can adjust the Markdown heading level for this type of slide with <a href="#slide-heading-levels-topheadinglevel"><code>TopHeadingLevel</code></a>.)</p>
 <h3 id="bullet-slides">Bullet Slides<a class="headerlink" href="#bullet-slides" title="Permanent link"></a></h3>
 <p><a id="bullet-slides"></a></p>
 <p>Bullet slides use Markdown bulleted lists, which can be nested. This example shows two levels of nesting.</p>
@@ -2490,6 +2493,67 @@ baseTextDecrement: 1
 <pre><code>codeBackground: 000000
 </code></pre>
 <p>You can override this on a slide-by-slide basis with <a href="#dynamic-codebackground">Dynamic codeBackground</a>.</p>
+<p><a id="slide-heading-levels-topheadinglevel"></a></p>
+<h4 id="slide-heading-levels-topheadinglevel">Slide Heading Levels - <code>TopHeadingLevel</code><a class="headerlink" href="#slide-heading-levels-topheadinglevel" title="Permanent link"></a></h4>
+<p>The usual heading levels for different types of slides are as follows:</p>
+<table>
+<thead>
+<tr>
+<th align="right">Level</th>
+<th align="left">Slide type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="right">1</td>
+<td align="left">Presentation title</td>
+</tr>
+<tr>
+<td align="right">2</td>
+<td align="left">Section title</td>
+</tr>
+<tr>
+<td align="right">3</td>
+<td align="left">Content</td>
+</tr>
+<tr>
+<td align="right">4</td>
+<td align="left">Card</td>
+</tr>
+</tbody>
+</table>
+<p>However, you might need to &ldquo;demote&rdquo; all these slide types to, say:</p>
+<table>
+<thead>
+<tr>
+<th align="right">Level</th>
+<th align="left">Slide type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="right">2</td>
+<td align="left">Presentation title</td>
+</tr>
+<tr>
+<td align="right">3</td>
+<td align="left">Section title</td>
+</tr>
+<tr>
+<td align="right">4</td>
+<td align="left">Content</td>
+</tr>
+<tr>
+<td align="right">5</td>
+<td align="left">Card</td>
+</tr>
+</tbody>
+</table>
+<p>This might be, for example, because the same Markdown is destined for a formal publication, where the top level heading is reserved for the publication&rsquo;s title. To achieve this demotion you only need to specify the top level in the slide hierarchy:</p>
+<pre><code>TopHeadingLevel: 2
+</code></pre>
+<p>The other heading levels will be adjusted accordingly.</p>
+<p><strong>Note:</strong> You obviously need to code the Title Slide at Heading Level 2, for example.</p>
 <p><a id="dynamic-metadata"></a></p>
 <h3 id="dynamic-metadata">Dynamic Metadata<a class="headerlink" href="#dynamic-metadata" title="Permanent link"></a></h3>
 <p>md2pptx can alter some in-effect settings, starting at a particular slide. Straight after the heading code a special form of comment like so:</p>
@@ -2604,7 +2668,7 @@ baseTextDecrement: 1
 <thead>
 <tr>
 <th align="left">Slide Type</th>
-<th align="right">Origin</th>
+<th align="left">Origin</th>
 <th align="left">Metadata<br/>Override</th>
 <th align="left">Non-Title Content</th>
 </tr>
@@ -2612,55 +2676,55 @@ baseTextDecrement: 1
 <tbody>
 <tr>
 <td align="left">Processing Summary</td>
-<td align="right">Original slide from Template</td>
+<td align="left">Original slide from Template</td>
 <td align="left"></td>
 <td align="left">Metadata: Second Shape</td>
 </tr>
 <tr>
 <td align="left">Presentation Title</td>
-<td align="right">Slide Layout 0</td>
+<td align="left">Slide Layout 0</td>
 <td align="left">TitleSlideLayout</td>
 <td align="left">Subtitle: Second Shape</td>
 </tr>
 <tr>
 <td align="left">Section</td>
-<td align="right">Slide Layout 1</td>
+<td align="left">Slide Layout 1</td>
 <td align="left">SectionSlideLayout</td>
 <td align="left">Subtitle: Second Shape</td>
 </tr>
 <tr>
 <td align="left">Graphic With Title</td>
-<td align="right">Slide Layout 5</td>
+<td align="left">Slide Layout 5</td>
 <td align="left">TitleOnlyLayout</td>
 <td align="left">Graphic: New Shape</td>
 </tr>
 <tr>
 <td align="left">Graphic Without Title</td>
-<td align="right">Slide Layout 6</td>
+<td align="left">Slide Layout 6</td>
 <td align="left">BlankLayout</td>
 <td align="left">Graphic: New Shape</td>
 </tr>
 <tr>
 <td align="left">Code</td>
-<td align="right">Slide Layout 5</td>
+<td align="left">Slide Layout 5</td>
 <td align="left">TitleOnlyLayout</td>
 <td align="left">Code: New Shape</td>
 </tr>
 <tr>
 <td align="left">Content</td>
-<td align="right">Slide Layout 2</td>
+<td align="left">Slide Layout 2</td>
 <td align="left">ContentSlideLayout</td>
 <td align="left">Bulleted List: Second Shape</td>
 </tr>
 <tr>
 <td align="left">Table</td>
-<td align="right">Slide Layout 5</td>
+<td align="left">Slide Layout 5</td>
 <td align="left">TitleOnlyLayout</td>
 <td align="left">Table: New Shape</td>
 </tr>
 <tr>
 <td align="left">Tasks</td>
-<td align="right">Slide Layout 2</td>
+<td align="left">Slide Layout 2</td>
 <td align="left">ContentSlideLayout</td>
 <td align="left">Bulleted List: Second Shape</td>
 </tr>
