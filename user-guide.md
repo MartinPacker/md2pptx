@@ -34,6 +34,7 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 		* [Indented Text](#indented-text)
 		* [`<pre>`](#<pre>)
 	* [Task List Slides](#task-list-slides)
+	* [Slides With More Than One Type Of Content](#slides-with-more-than-one-type-of-content)
 * [Slides Without Titles](#slides-without-titles)
 	* [Using A Horizontal Rule](#using-a-horizontal-rule)
 	* [Using A Level 3 Heading With `&nbsp;`](#using-a-level-3-heading-with-&nbsp;)
@@ -92,6 +93,9 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 			* [Foreground Colour - `CodeForeground`](#foreground-colour-codeforeground)
 			* [Background Colour - `CodeBackground`](#background-colour-codebackground)
 		* [Slide Heading Levels - `TopHeadingLevel`](#slide-heading-levels-topheadinglevel)
+		* [Slides With Multiple Content Blocks](#slides-with-multiple-content-blocks)
+			* [Horizontal Or Vertical Split - `ContentSplitDirection`](#horizontal-or-vertical-split-contentsplitdirection)
+			* [Split Proportions - `ContentSplit`](#split-proportions-contentsplit)
 	* [Dynamic Metadata](#dynamic-metadata)
 		* [`CompactTables`](#compacttables)
 		* [`CardPercent`](#cardpercent)
@@ -108,6 +112,8 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 		* [`FPRatio`](#fpratio)
 		* [`CodeForeground`](#codeforeground)
 		* [`CodeBackground`](#codebackground)
+		* [`ContentSplitDirection`](#contentsplitdirection)
+		* [`ContentSplit`](#contentsplit)
 * [Modifying The Slide Template](#modifying-the-slide-template)
 	* [Basics](#basics)
 	* [Slide Template Sequence](#slide-template-sequence)
@@ -219,6 +225,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|2.0|11&nbsp;April&nbsp;2021|Two slide content elements on a slide&comma; involving a major restructuring of the slide layout engine.|
 |1.9.5|28&nbsp;March&nbsp;2021|Added `&hellip;`. Allow specification of gaps between cards. Allow specification of heading level for title slide.|
 |1.9.4|21&nbsp;March&nbsp;2021|Added controls code slide foreground and background colour RGB values.|
 |1.9.3|21&nbsp;March&nbsp;2021|Added controls on how many columns wide code is and fixed pitch height to width ratio.|
@@ -709,6 +716,35 @@ will cause a task to appear with title "Complete abstract", a due date of "2019-
 Task slides are paginated: Multiple task slides are created, each with the task slide number appended to the title, if there are more than a certain number of tasks.
 
 You can control task slide production by specifying `taskSlides` and `tasksPerSlide`. See [Controlling Task Slide Production With `taskSlides` and `tasksPerSlide`](#controlling-task-slide-production-with-taskslides-and-tasksperslide).
+
+<a id="slides-with-more-than-one-type-of-content"></a>
+### Slides With More Than One Type Of Content
+
+For a limited number of content types you can create a slide with more than one type of content, in addition to the title: You can create a slide with a numbered or bulleted list and a table or else some graphics.
+
+You code them as you would for regular Markdown.
+Here is an example:
+
+    ### Here Is A title
+
+    * Here is a bullet
+      * Here is a sub-bullet
+
+    ![](my-graphic.png)
+
+The order in which, in this example, the bulleted list and the graphics blocks appear matters:
+
+* For horizontal layout the bulleted list would appear **to the left** of the graphic.
+* For vertical layout the bulleted list would appear **above** the graphic.
+
+In a text editor it's simple to reverse the order of these two blocks of content.
+
+You can specify two aspects of splitting a slide between the two blocks of content:
+
+* Whether the split is horizontal or vertical, the default being vertical.
+* What proportion of the content space is the first block, and what proportion is the second.
+
+These controls are described in [Slides With Multiple Content Blocks](#slides-with-multiple-content-blocks).
 
 ## Slides Without Titles
 <a id="slides-without-titles"></a>
@@ -1573,6 +1609,43 @@ The other heading levels will be adjusted accordingly.
 
 **Note:** You obviously need to code the Title Slide at Heading Level 2, for example.
 
+<a id="slides-with-multiple-content-blocks"></a>
+#### Slides With Multiple Content Blocks
+
+This section describes how you can control the layout of slides with multiple blocks of content.
+
+See [Slides With More Than One Type Of Content](slides-with-more-than-one-type-of-content) for how to specify multiple blocks of content on a slide
+
+<a id="horizontal-or-vertical-split-contentsplitdirection"></a>
+##### Horizontal Or Vertical Split - `ContentSplitDirection`
+
+You can specify whether the blocks of content are to be vertically or horizontally arranged with
+
+    ContentSplitDirection: vertical
+
+or
+
+    ContentSplitDirection: horizontal
+
+You can use `h` or `v` for short. You can also use `ContentSplitDirn`.
+
+You can override this on a slide-by-slide basis with [Dynamic ContentSplitDirection](#dynamic-contentsplitdirection).
+
+The default value is `vertical`.
+
+<a id="split-proportions-contentsplit"></a>
+##### Split Proportions - `ContentSplit`
+
+You specify the split between the two blocks as proportions. For example:
+
+    ContentSplit: 1 4
+
+will make the first block a quarter the height (or width) of the second. Specify two integers.
+
+You can override this on a slide-by-slide basis with [Dynamic ContentSplit](#dynamic-contentsplit).
+
+The default value is `1 3`.
+
 <a id="dynamic-metadata"></a>
 ### Dynamic Metadata
 
@@ -1707,6 +1780,20 @@ You can override the presentation [CodeForeground](#foreground-colour-codeforegr
 You can override the presentation [CodeBackground](#background-colour-codebackground) code slide background colour on a slide-by-slide basis:
 
     <!-- md2pptx: codebackground: FFFFFF -->
+
+<a id="dynamic-contentsplitdirection"></a>
+#### `ContentSplitDirection`
+
+You can override the presentation [ContentSplitDirection](#horizontal-or-vertical-split-contentsplitdirection) value on a slide-by-slide basis:
+
+    <!-- md2pptx: contentsplitdirection: v -->
+
+<a id="dynamic-contentsplit"></a>
+#### `ContentSplit`
+
+You can override the presentation [ContentSplit](#split-proportions-contentsplit) specification on a slide-by-slide basis:
+
+    <!-- md2pptx: contentsplit: 1 1 -->
 
 ## Modifying The Slide Template
 <a id="modifying-the-slide-template"></a>

@@ -1044,6 +1044,7 @@ body .markdown-body
 </ul>
 </li>
 <li><a href="#task-list-slides">Task List Slides</a></li>
+<li><a href="#slides-with-more-than-one-type-of-content">Slides With More Than One Type Of Content</a></li>
 </ul>
 </li>
 <li><a href="#slides-without-titles">Slides Without Titles</a><ul>
@@ -1116,6 +1117,11 @@ body .markdown-body
 </ul>
 </li>
 <li><a href="#slide-heading-levels-topheadinglevel">Slide Heading Levels - <code>TopHeadingLevel</code></a></li>
+<li><a href="#slides-with-multiple-content-blocks">Slides With Multiple Content Blocks</a><ul>
+<li><a href="#horizontal-or-vertical-split-contentsplitdirection">Horizontal Or Vertical Split - <code>ContentSplitDirection</code></a></li>
+<li><a href="#split-proportions-contentsplit">Split Proportions - <code>ContentSplit</code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#dynamic-metadata">Dynamic Metadata</a><ul>
@@ -1134,6 +1140,8 @@ body .markdown-body
 <li><a href="#fpratio"><code>FPRatio</code></a></li>
 <li><a href="#codeforeground"><code>CodeForeground</code></a></li>
 <li><a href="#codebackground"><code>CodeBackground</code></a></li>
+<li><a href="#contentsplitdirection"><code>ContentSplitDirection</code></a></li>
+<li><a href="#contentsplit"><code>ContentSplit</code></a></li>
 </ul>
 </li>
 </ul>
@@ -1240,6 +1248,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">2.0</td>
+<td align="right">11&nbsp;April&nbsp;2021</td>
+<td align="left">Two slide content elements on a slide&comma; involving a major restructuring of the slide layout engine.</td>
+</tr>
 <tr>
 <td align="left">1.9.5</td>
 <td align="right">28&nbsp;March&nbsp;2021</td>
@@ -1763,6 +1776,30 @@ for(i = 0; i &lt; 10; i++){
 <p>will cause a task to appear with title &ldquo;Complete abstract&rdquo;, a due date of &ldquo;2019-01-11&rdquo;, and tags &ldquo;Anna,Martin&rdquo;. In this case the task has implicitly not been completed. (It would be possible to achieve the same effect by coding <code>@done()</code>.)</p>
 <p>Task slides are paginated: Multiple task slides are created, each with the task slide number appended to the title, if there are more than a certain number of tasks.</p>
 <p>You can control task slide production by specifying <code>taskSlides</code> and <code>tasksPerSlide</code>. See <a href="#controlling-task-slide-production-with-taskslides-and-tasksperslide">Controlling Task Slide Production With <code>taskSlides</code> and <code>tasksPerSlide</code></a>.</p>
+<p><a id="slides-with-more-than-one-type-of-content"></a></p>
+<h3 id="slides-with-more-than-one-type-of-content">Slides With More Than One Type Of Content<a class="headerlink" href="#slides-with-more-than-one-type-of-content" title="Permanent link"></a></h3>
+<p>For a limited number of content types you can create a slide with more than one type of content, in addition to the title: You can create a slide with a numbered or bulleted list and a table or else some graphics.</p>
+<p>You code them as you would for regular Markdown.
+Here is an example:</p>
+<pre><code>### Here Is A title
+
+* Here is a bullet
+  * Here is a sub-bullet
+
+![](my-graphic.png)
+</code></pre>
+<p>The order in which, in this example, the bulleted list and the graphics blocks appear matters:</p>
+<ul>
+<li>For horizontal layout the bulleted list would appear <strong>to the left</strong> of the graphic.</li>
+<li>For vertical layout the bulleted list would appear <strong>above</strong> the graphic.</li>
+</ul>
+<p>In a text editor it&rsquo;s simple to reverse the order of these two blocks of content.</p>
+<p>You can specify two aspects of splitting a slide between the two blocks of content:</p>
+<ul>
+<li>Whether the split is horizontal or vertical, the default being vertical.</li>
+<li>What proportion of the content space is the first block, and what proportion is the second.</li>
+</ul>
+<p>These controls are described in <a href="#slides-with-multiple-content-blocks">Slides With Multiple Content Blocks</a>.</p>
 <h2 id="slides-without-titles">Slides Without Titles<a class="headerlink" href="#slides-without-titles" title="Permanent link"></a></h2>
 <p><a id="slides-without-titles"></a></p>
 <p>Most slides have a title - and it&rsquo;s easy to see where such slides start. However, sometimes you want a slide without a title. For those cases you can start a slide in a two basic ways:</p>
@@ -2554,6 +2591,29 @@ baseTextDecrement: 1
 </code></pre>
 <p>The other heading levels will be adjusted accordingly.</p>
 <p><strong>Note:</strong> You obviously need to code the Title Slide at Heading Level 2, for example.</p>
+<p><a id="slides-with-multiple-content-blocks"></a></p>
+<h4 id="slides-with-multiple-content-blocks">Slides With Multiple Content Blocks<a class="headerlink" href="#slides-with-multiple-content-blocks" title="Permanent link"></a></h4>
+<p>This section describes how you can control the layout of slides with multiple blocks of content.</p>
+<p>See <a href="/Users/martinpacker/md2pptx/slides-with-more-than-one-type-of-content">Slides With More Than One Type Of Content</a> for how to specify multiple blocks of content on a slide</p>
+<p><a id="horizontal-or-vertical-split-contentsplitdirection"></a></p>
+<h5 id="horizontal-or-vertical-split-contentsplitdirection">Horizontal Or Vertical Split - <code>ContentSplitDirection</code><a class="headerlink" href="#horizontal-or-vertical-split-contentsplitdirection" title="Permanent link"></a></h5>
+<p>You can specify whether the blocks of content are to be vertically or horizontally arranged with</p>
+<pre><code>ContentSplitDirection: vertical
+</code></pre>
+<p>or</p>
+<pre><code>ContentSplitDirection: horizontal
+</code></pre>
+<p>You can use <code>h</code> or <code>v</code> for short. You can also use <code>ContentSplitDirn</code>.</p>
+<p>You can override this on a slide-by-slide basis with <a href="#dynamic-contentsplitdirection">Dynamic ContentSplitDirection</a>.</p>
+<p>The default value is <code>vertical</code>.</p>
+<p><a id="split-proportions-contentsplit"></a></p>
+<h5 id="split-proportions-contentsplit">Split Proportions - <code>ContentSplit</code><a class="headerlink" href="#split-proportions-contentsplit" title="Permanent link"></a></h5>
+<p>You specify the split between the two blocks as proportions. For example:</p>
+<pre><code>ContentSplit: 1 4
+</code></pre>
+<p>will make the first block a quarter the height (or width) of the second. Specify two integers.</p>
+<p>You can override this on a slide-by-slide basis with <a href="#dynamic-contentsplit">Dynamic ContentSplit</a>.</p>
+<p>The default value is <code>1 3</code>.</p>
 <p><a id="dynamic-metadata"></a></p>
 <h3 id="dynamic-metadata">Dynamic Metadata<a class="headerlink" href="#dynamic-metadata" title="Permanent link"></a></h3>
 <p>md2pptx can alter some in-effect settings, starting at a particular slide. Straight after the heading code a special form of comment like so:</p>
@@ -2648,6 +2708,16 @@ baseTextDecrement: 1
 <h4 id="codebackground"><code>CodeBackground</code><a class="headerlink" href="#codebackground" title="Permanent link"></a></h4>
 <p>You can override the presentation <a href="#background-colour-codebackground">CodeBackground</a> code slide background colour on a slide-by-slide basis:</p>
 <pre><code>&lt;!-- md2pptx: codebackground: FFFFFF --&gt;
+</code></pre>
+<p><a id="dynamic-contentsplitdirection"></a></p>
+<h4 id="contentsplitdirection"><code>ContentSplitDirection</code><a class="headerlink" href="#contentsplitdirection" title="Permanent link"></a></h4>
+<p>You can override the presentation <a href="#horizontal-or-vertical-split-contentsplitdirection">ContentSplitDirection</a> value on a slide-by-slide basis:</p>
+<pre><code>&lt;!-- md2pptx: contentsplitdirection: v --&gt;
+</code></pre>
+<p><a id="dynamic-contentsplit"></a></p>
+<h4 id="contentsplit"><code>ContentSplit</code><a class="headerlink" href="#contentsplit" title="Permanent link"></a></h4>
+<p>You can override the presentation <a href="#split-proportions-contentsplit">ContentSplit</a> specification on a slide-by-slide basis:</p>
+<pre><code>&lt;!-- md2pptx: contentsplit: 1 1 --&gt;
 </code></pre>
 <h2 id="modifying-the-slide-template">Modifying The Slide Template<a class="headerlink" href="#modifying-the-slide-template" title="Permanent link"></a></h2>
 <p><a id="modifying-the-slide-template"></a></p>

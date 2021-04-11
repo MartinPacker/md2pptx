@@ -5,8 +5,8 @@ mdpre Markdown Preprocessor v0.4.6 (26 January, 2021)
 Def mdpre_date = 26 January, 2021
 Def mdpre_level = 0.4.6
 Def userid = martinpacker
-Def time = 21&colon;08
-Def date = 28 March&comma; 2021
+Def time = 15&colon;20
+Def date = 11 April&comma; 2021
 Def TOC = Table Of Contents
 Def md = Markdown
 Def pp = Powerpoint
@@ -43,6 +43,7 @@ CSV Stop
 ..... ..... .....  Indented Text
 ..... ..... .....  `<pre>`
 ..... .....  Task List Slides
+..... .....  Slides With More Than One Type Of Content
 .....  Slides Without Titles
 ..... .....  Using A Horizontal Rule
 ..... .....  Using A Level 3 Heading With `&nbsp;`
@@ -111,6 +112,9 @@ CSV Stop
 Column Alignment - spec 'r l'
 CSV Start
 CSV Stop
+..... ..... .....  Slides With Multiple Content Blocks
+..... ..... ..... .....  Horizontal Or Vertical Split - `ContentSplitDirection`
+..... ..... ..... .....  Split Proportions - `ContentSplit`
 ..... .....  Dynamic Metadata
 ..... ..... .....  `CompactTables`
 ..... ..... .....  `CardPercent`
@@ -127,6 +131,8 @@ CSV Stop
 ..... ..... .....  `FPRatio`
 ..... ..... .....  `CodeForeground`
 ..... ..... .....  `CodeBackground`
+..... ..... .....  `ContentSplitDirection`
+..... ..... .....  `ContentSplit`
 .....  Modifying The Slide Template
 ..... .....  Basics
 ..... .....  Slide Template Sequence

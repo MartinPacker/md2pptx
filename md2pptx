@@ -43,17 +43,30 @@ try:
 except:
     have_cairosvg = False
 
-md2pptx_level = "1.9.5"
-md2pptx_date = "28 March, 2021"
+md2pptx_level = "2.0"
+md2pptx_date = "8 April, 2021"
 
 
-class slideInfo:
-    def __init__(self, titleText, bodyText, blockType, bulletsOrFilename, tableRows):
+class SlideInfo:
+    def __init__(
+        self, titleText, bodyText, blockType, bullets, tableRows, cards, sequence
+    ):
         self.titleText = titleText
         self.bodyText = bodyText
         self.blockType = blockType
-        self.bulletsOrFilename = bulletsOrFilename
+        self.bullets = bullets
         self.tableRows = tableRows
+        self.cards = cards
+        self.sequence = sequence
+
+
+# Expected units are those of md2pptx
+class Rectangle:
+    def __init__(self, top, left, height, width):
+        self.top = top
+        self.left = left
+        self.height = height
+        self.width = width
 
 
 def startswithOneOf(haystack, needleList):
@@ -62,6 +75,27 @@ def startswithOneOf(haystack, needleList):
             return True
 
     return False
+
+
+# Calculate picture dimensions given its natural height and bounds
+def scalePicture(maxPicWidth, maxPicHeight, imageWidth, imageHeight):
+    heightIfWidthUsed = maxPicWidth * imageHeight / imageWidth
+    widthIfHeightUsed = maxPicHeight * imageWidth / imageHeight
+
+    if heightIfWidthUsed > maxPicHeight:
+        # Use the height to scale
+        usingHeightToScale = True
+
+        picWidth = widthIfHeightUsed
+        picHeight = maxPicHeight
+
+    else:
+        # Use the width to scale
+        usingHeightToScale = False
+
+        picWidth = maxPicWidth
+        picHeight = heightIfWidthUsed
+    return (picWidth, picHeight, usingHeightToScale)
 
 
 # Send a shape to the back on a slide
@@ -351,8 +385,8 @@ def get_image_size(fname):
         return -1, -1
 
 
-# Takes a inList of bullets and applies it to a text shape
-def populateTextBlock(shape, bullets):
+# Render a list of bullets
+def renderText(shape, bullets):
     tf = shape.text_frame
 
     bulletNumber = 0
@@ -383,6 +417,11 @@ def populateTextBlock(shape, bullets):
     tf.auto_size = MSO_AUTO_SIZE.TEXT_TO_FIT_SHAPE
 
 
+# Render an array of table rows
+def renderTable(shape, bounds, tableRows):
+    x = 1
+
+
 def findSlideTitle(slide):
     if slide.shapes.title == None:
         # Have to use first shape as title
@@ -401,23 +440,18 @@ def findBodyShape(slide):
 
 
 # Returns a top, left, width, height for content to be rendered into
-def getContentRect(presentation, slide, topOfContent):
+def getContentRect(presentation, slide, topOfContent, margin):
     # Left and right are always defined by the margins
-    rectLeft = marginBase
-    rectWidth = presentation.slide_width - 2 * marginBase
-
+    rectLeft = margin
+    rectWidth = presentation.slide_width - 2 * margin
     if topOfContent == 0:
         # There is no title on this slide
-        rectTop = marginBase
-        rectHeight = (
-            presentation.slide_height - marginBase - max(marginBase, numbersHeight)
-        )
+        rectTop = margin
+        rectHeight = presentation.slide_height - margin - max(margin, numbersHeight)
     else:
         # There is a title on this slide
-        rectTop = topOfContent + marginBase
-        rectHeight = (
-            presentation.slide_height - rectTop - max(marginBase, numbersHeight)
-        )
+        rectTop = topOfContent + margin
+        rectHeight = presentation.slide_height - rectTop - max(margin, numbersHeight)
 
     return (rectLeft, rectWidth, rectTop, rectHeight)
 
@@ -1077,7 +1111,7 @@ def createProcessingSummarySlide(presentation, metadata):
 
     # Get the rectangle the content will draw in
     contentLeft, contentWidth, contentTop, contentHeight = getContentRect(
-        presentation, slide, slideTitleBottom
+        presentation, slide, slideTitleBottom, tableMargin
     )
 
     tableHeight = min(contentHeight, Inches(0.25) * rows)
@@ -1259,7 +1293,7 @@ def createCodeSlide(presentation, slideNumber, titleText, code):
 
     # Get the rectangle the content will draw in
     contentLeft, contentWidth, contentTop, contentHeight = getContentRect(
-        presentation, slide, slideTitleBottom
+        presentation, slide, slideTitleBottom, marginBase
     )
 
     # Split the code into lines
@@ -1440,7 +1474,7 @@ def createAbstractSlide(presentation, slideNumber, titleText, subtitleText, para
 
     # Get the rectangle the content will draw in
     contentLeft, contentWidth, contentTop, contentHeight = getContentRect(
-        presentation, slide, slideTitleBottom
+        presentation, slide, slideTitleBottom, marginBase
     )
 
     # Add abstract text
@@ -1479,57 +1513,156 @@ def createAbstractSlide(presentation, slideNumber, titleText, subtitleText, para
     return slide
 
 
-def createContentSlide(presentation, slideNumber, titleText, subtitleText, bullets):
-    slide = presentation.slides.add_slide(
-        presentation.slide_layouts[contentSlideLayout]
-    )
+# Unified creation of a table or a content slide
+def createContentOrTableSlide(presentation, slideNumber, slideInfo):
+    # Create the slide
+    if (slideInfo.bullets == []) & (slideInfo.cards == []):
+        slideLayout = titleOnlyLayout
+        haveBulletsCards = False
+    else:
+        slideLayout = contentSlideLayout
+        haveBulletsCards = True
+    slide = presentation.slides.add_slide(presentation.slide_layouts[slideLayout])
 
-    shapes = slide.shapes
-
-    # Add title
+    if slideInfo.tableRows == []:
+        haveTableGraphics = False
+    else:
+        haveTableGraphics = True
+    # Add slide title
+    titleText = slideInfo.titleText
     slideTitleBottom, title, flattenedTitle = formatTitle(
         presentation, slide, titleText, pageTitleSize
     )
 
-    print(str(slideNumber).rjust(4) + "     " + flattenedTitle)
+    # Log slide's title
+    print(str(slideNumber).rjust(4) + "     " + flattenedTitle.ljust(40))
 
-    # Get the rectangle the content will draw in
+    ####################################################################
+    # Get the dimensions of the content area to place all content in   #
+    ####################################################################
     contentLeft, contentWidth, contentTop, contentHeight = getContentRect(
-        presentation, slide, slideTitleBottom
+        presentation, slide, slideTitleBottom, marginBase
     )
 
+    ####################################################################
+    # Get the dimensions of the rectangle we'll place the graphics in  #
+    ####################################################################
+    if haveBulletsCards:
+        # There is some bullets / cards content to render
+        if haveTableGraphics:
+            # Have both types of content on one slide
+            # Split according to percentage of vertical space
+            allContentSplit = sum(contentSplit)
+
+            if contentSplitDirection == "vertical":
+                # Rectangles are vertically arranged
+                topHeight = int(contentHeight * contentSplit[0] / allContentSplit)
+                bottomHeight = int(contentHeight * contentSplit[1] / allContentSplit)
+
+                # Top of the content area
+                topRenderingRectangle = Rectangle(
+                    contentTop, contentLeft, topHeight, contentWidth
+                )
+
+                # bottom of the content area
+                bottomRenderingRectangle = Rectangle(
+                    int(contentTop + topHeight),
+                    contentLeft,
+                    int(bottomHeight),
+                    contentWidth,
+                )
+
+                if sequence[0] == "table":
+                    tableRenderingRectangle = topRenderingRectangle
+                    bulletsRenderingRectangle = bottomRenderingRectangle
+                else:
+                    bulletsRenderingRectangle = topRenderingRectangle
+                    tableRenderingRectangle = bottomRenderingRectangle
+            else:
+                # Rectangles are horizontally arranged
+                leftWidth = int(contentWidth * contentSplit[0] / allContentSplit)
+                rightWidth = int(contentWidth * contentSplit[1] / allContentSplit)
+
+                # Left of the content area
+                leftRenderingRectangle = Rectangle(
+                    contentTop, contentLeft, contentHeight, leftWidth
+                )
+
+                # Right of the content area
+                rightRenderingRectangle = Rectangle(
+                    contentTop, contentLeft + leftWidth, contentHeight, rightWidth
+                )
+
+                if sequence[0] == "table":
+                    tableRenderingRectangle = leftRenderingRectangle
+                    bulletsRenderingRectangle = rightRenderingRectangle
+                else:
+                    bulletsRenderingRectangle = leftRenderingRectangle
+                    tableRenderingRectangle = rightRenderingRectangle
+
+        else:
+            # bullets / cards can take up all the content area
+            bulletsRenderingRectangle = Rectangle(
+                contentTop, contentLeft, contentHeight, contentWidth
+            )
+    else:
+        # Table / graphics can take up all the content area
+        tableRenderingRectangle = Rectangle(
+            contentTop, contentLeft, contentHeight, contentWidth
+        )
+
+    # Populate the slide
+    if haveTableGraphics:
+        createTableBlock(
+            presentation, slideNumber, slideInfo, slide, tableRenderingRectangle
+        )
+
+    if haveBulletsCards:
+        createContentBlock(
+            presentation, slideNumber, slideInfo, slide, bulletsRenderingRectangle
+        )
+
+    if want_numbers_content is True:
+        addFooter(presentation, slideNumber, slide)
+
+    return slide
+
+
+def createContentBlock(presentation, slideNumber, slideInfo, slide, renderingRectangle):
     # Get bulleted text shape - either for bullets above cards or first card's body shape
     bulletsShape = findBodyShape(slide)
 
     # Set bulleted shape top, left, width
-    bulletsShape.top = contentTop
-    bulletsShape.left = contentLeft
-    bulletsShape.width = contentWidth
+    bulletsShape.top = renderingRectangle.top
+    bulletsShape.left = renderingRectangle.left
+    bulletsShape.width = renderingRectangle.width
 
-    bulletCount = len(bullets)
+    bulletCount = len(slideInfo.bullets)
 
     # Set bulleted text height - depending on whether there's a card
     # Remainder is card area height - if there are cards
-    if inCard:
+    if slideInfo.cards == []:
+        # Bullets shape takes the whole content area
+        bulletsShape.height = renderingRectangle.height
+
+        # There are no cards so the card area is zero height
+        cardAreaHeight = 0
+        cardCount = 0
+    else:
         if bulletCount > 0:
             # Bullets shape vertically shortened
-            bulletsShape.height = int(contentHeight * (100 - cardPercent) / 100)
+            bulletsShape.height = int(
+                renderingRectangle.height * (100 - cardPercent) / 100
+            )
 
             # Card area takes the rest of the content area
-            cardAreaHeight = int(contentHeight) - bulletsShape.height
+            cardAreaHeight = int(renderingRectangle.height) - bulletsShape.height
         else:
             # No bullets so content is all cards
             bulletsShape.height = 0
 
-            cardAreaHeight = contentHeight
-    else:
-        # Bullets shape takes the whole content area
-        bulletsShape.height = contentHeight
+            cardAreaHeight = renderingRectangle.height
 
-        # There are no cards so the card area is zero height
-        cardAreaHeight = 0
-
-    if inCard:
         cardBackgroundShapes = []
         cardBodyShapes = []
         cardTitleShapes = []
@@ -1539,17 +1672,18 @@ def createContentSlide(presentation, slideNumber, titleText, subtitleText, bulle
         cardBackgroundTop = []
         cardTitleTop = []
 
-        cardCount = len(cards)
+        cardCount = len(slideInfo.cards)
 
         # card width applies to card title, card background, card body
         if cardLayout == "horizontal":
             # Divide horizontal card space up
             cardWidth = int(
-                (contentWidth - Inches(horizontalCardGap) * (cardCount - 1)) / cardCount
+                (renderingRectangle.width - Inches(horizontalCardGap) * (cardCount - 1))
+                / cardCount
             )
         else:
             # Card takes all the horizontal space
-            cardWidth = int(contentWidth)
+            cardWidth = int(renderingRectangle.width)
 
         # Calculate title top and height - horizontal layout
         if want_card_title_size:
@@ -1564,11 +1698,11 @@ def createContentSlide(presentation, slideNumber, titleText, subtitleText, bulle
 
         if bulletCount > 0:
             # Bullets so cards and their titles occupy less than whole height
-            cardAreaTop = bulletsShape.height + slideTitleBottom + Inches(0.25)
+            cardAreaTop = bulletsShape.height + renderingRectangle.top
 
         else:
             # No bullets so cards and their titles occupy whole height
-            cardAreaTop = slideTitleBottom + Inches(0.25)
+            cardAreaTop = renderingRectangle.top
 
         if cardLayout == "horizontal":
             # Card takes up all the card area, vertically
@@ -1611,7 +1745,7 @@ def createContentSlide(presentation, slideNumber, titleText, subtitleText, bulle
                 cardLeft.append(marginBase)
 
             # Card title modeled on slide title - but smaller
-            cardTitleShape = addClonedShape(slide, title)
+            cardTitleShape = addClonedShape(slide, slide.shapes.title)
 
             cardTitleShapes.append(cardTitleShape)
 
@@ -1629,7 +1763,7 @@ def createContentSlide(presentation, slideNumber, titleText, subtitleText, bulle
                     pageTitleSize * 2 / 3
                 )
 
-            # Titles are centred
+            # Titles are aligned one of three ways
             if cardTitleAlign == "l":
                 cardTitleShape.text_frame.paragraphs[0].alignment = PP_ALIGN.LEFT
             elif cardTitleAlign == "c":
@@ -1638,7 +1772,6 @@ def createContentSlide(presentation, slideNumber, titleText, subtitleText, bulle
                 cardTitleShape.text_frame.paragraphs[0].alignment = PP_ALIGN.RIGHT
 
             # Create card background and make sure it's behind the card body (and maybe card title)
-
             if cardShape == "rounded":
                 # Rounded Rectangle for card
                 cardBackgroundShape = slide.shapes.add_shape(
@@ -1663,9 +1796,9 @@ def createContentSlide(presentation, slideNumber, titleText, subtitleText, bulle
                 )
 
             cardBackgroundShapes.append(cardBackgroundShape)
-            sendToBack(shapes, cardBackgroundShape)
+            sendToBack(slide.shapes, cardBackgroundShape)
 
-            # Card shape modeled on bulleted inList
+            # Card shape modeled on bulleted list
             if (bulletCount > 0) | (c > 0):
                 cardBodyShape = addClonedShape(slide, bulletsShape)
             else:
@@ -1683,15 +1816,12 @@ def createContentSlide(presentation, slideNumber, titleText, subtitleText, bulle
                 fill.solid()
                 fill.fore_color.theme_color = card_colour
 
-    else:
-        cardCount = 0
-
     # Adjust bullets shape height - and calculate verticals for any cards
 
     bulletsShape.bottom = bulletsShape.top + bulletsShape.height
 
     # Fill in the main bullets shape
-    populateTextBlock(bulletsShape, bullets)
+    renderText(bulletsShape, slideInfo.bullets)
 
     for c in range(cardCount):
         # Get the shapes for this card
@@ -1728,7 +1858,7 @@ def createContentSlide(presentation, slideNumber, titleText, subtitleText, bulle
         cardBodyShape.height = cardBodyHeight
 
         if len(cards[c]) > 1:
-            populateTextBlock(cardBodyShape, cards[c][1])
+            renderText(cardBodyShape, slideInfo.cards[c][1])
 
         lf = cardBackgroundShape.line
 
@@ -1741,139 +1871,31 @@ def createContentSlide(presentation, slideNumber, titleText, subtitleText, bulle
         if want_card_shadow:
             createShadow(cardBackgroundShape)
 
-    if want_numbers_content is True:
-        addFooter(presentation, slideNumber, slide)
     return slide
 
 
-def delinkify(text):
-    if (linkMatch := linkRegex.match(text)) :
-        linkText = linkMatch.group(1)
-        linkURL = linkMatch.group(2)
-
-        return linkText
-    else:
-        return text
-
-
-def createChevron(chevronText, x, y, width, height, filled, shapes):
-    shape = shapes.add_shape(MSO_SHAPE.CHEVRON, x, y, width, height)
-    shape.text = chevronText
-    tf = shape.text_frame
-    p = tf.paragraphs[0]
-    f = p.font
-    f.size = Pt(14)
-    shape.line.color.rgb = RGBColor(0, 0, 0)
-    f.color.rgb = RGBColor(0, 0, 0)
-    shape.line.width = Pt(1.0)
-
-    if filled is False:
-        shape.fill.background()
-
-
-def createTOCSlide(presentation, slideNumber, titleText, subtitleText, bullets):
-    print(
-        str(slideNumber).rjust(4)
-        + '     Table Of Contents (Style: "'
-        + tocStyle
-        + '") '
-        + titleText
-    )
-
-    slide = presentation.slides.add_slide(presentation.slide_layouts[titleOnlyLayout])
-
-    shapes = slide.shapes
-
-    # Add title
-    if titleText == tocTitle:
-        useTitle = tocTitle
-    else:
-        useTitle = ""
-
-    slideTitleBottom, title, flattenedTitle = formatTitle(
-        presentation, slide, useTitle, pageTitleSize
-    )
-
-    # Get the rectangle the content will draw in
-    contentLeft, contentWidth, contentTop, contentHeight = getContentRect(
-        presentation, slide, slideTitleBottom
-    )
-
-    width = Inches(3)
-    height = Inches(1)
-    rowGap = Inches(0.75)
-
-    chevronsPerRow = 4
-
-    # Create global inList of TOC entries
-    for bullet in bullets:
-        bulletLevel, bulletText, bulletType = bullet
-        if bulletLevel == 1:
-            tocEntries.append(delinkify(bulletText))
-
-    rowCount = 1 + len(tocEntries) / chevronsPerRow
-
-    # Calculate actual TOC height so it can be vertically centred
-    TOCHeight = (rowCount * height) + ((rowCount - 1) * rowGap)
-
-    TOCtop = slideTitleBottom + (contentHeight - TOCHeight + height) / 2
-
-    # Calculate actual TOC width
-    TOCWidth = chevronsPerRow * (width - Inches(0.5)) + Inches(0.5)
-    TOCleft = (presentation.slide_width - TOCWidth) / 2
-
-    x = TOCleft
-    y = TOCtop
-    chevronNumber = 1
-    for bulletText in tocEntries:
-        if bulletText == titleText:
-            wantFilled = False
-        else:
-            wantFilled = True
-
-        createChevron(bulletText, x, y, width, height, wantFilled, shapes)
-        x = x + width - Inches(0.5)
-        chevronNumber = chevronNumber + 1
-        if chevronNumber == chevronsPerRow + 1:
-            x = TOCleft
-            y = y + rowGap + height
-            chevronNumber = 1
-
-    if want_numbers_content is True:
-        addFooter(presentation, slideNumber, slide)
-
-    return slide
-
-
-def createTableSlide(presentation, slideNumber, titleText, table):
-    slide = presentation.slides.add_slide(presentation.slide_layouts[titleOnlyLayout])
-
-    shapes = slide.shapes
+def createTableBlock(presentation, slideNumber, slideInfo, slide, renderingRectangle):
+    tableRows = slideInfo.tableRows
 
     printableTopLeftGraphicFilename = ""
     printableTopRightGraphicFilename = ""
     printableBottomLeftGraphicFilename = ""
     printableBottomRightGraphicFilename = ""
 
-    # Add title
-    slideTitleBottom, title, flattenedTitle = formatTitle(
-        presentation, slide, titleText, pageTitleSize
-    )
-
     # Handle table body
-    if (len(table) <= 2) & (len(table[0]) <= 2):
+    if (len(slideInfo.tableRows) <= 2) & (len(tableRows[0]) <= 2):
         # This is a table with 1 or 2 rows and 1 or 2 columns
         isGraphicsGrid = True
-        gridRows = len(table)
+        gridRows = len(slideInfo.tableRows)
         if gridRows == 1:
-            gridColumns = len(table[0])
+            gridColumns = len(slideInfo.tableRows[0])
         else:
-            gridColumns = max(len(table[0]), len(table[1]))
+            gridColumns = max(len(slideInfo.tableRows[0]), len(slideInfo.tableRows[1]))
         isThreeUp = False
         topGraphicCount = 0
 
         # Attempt to retrieve filename for left side - top row
-        topLeftSide = table[0][0]
+        topLeftSide = slideInfo.tableRows[0][0]
         if (graphicRegex.match(topLeftSide) != None) | (
             clickableGraphicRegex.match(topLeftSide) != None
         ):
@@ -1901,8 +1923,8 @@ def createTableSlide(presentation, slideNumber, titleText, table):
 
         # Attempt to retrieve filename for right side - top row
         if gridColumns == 2:
-            if len(table[0]) == 2:
-                topRightSide = table[0][1]
+            if len(slideInfo.tableRows[0]) == 2:
+                topRightSide = slideInfo.tableRows[0][1]
             else:
                 topRightSide = ""
             if (graphicRegex.match(topRightSide) != None) | (
@@ -1942,7 +1964,7 @@ def createTableSlide(presentation, slideNumber, titleText, table):
         if gridRows == 2:
             # Attempt to retrieve filename for left side - bottom row
             bottomGraphicCount = 0
-            bottomLeftSide = table[1][0]
+            bottomLeftSide = slideInfo.tableRows[1][0]
             if (graphicRegex.match(bottomLeftSide) != None) | (
                 clickableGraphicRegex.match(bottomLeftSide) != None
             ):
@@ -1972,14 +1994,14 @@ def createTableSlide(presentation, slideNumber, titleText, table):
 
             # Attempt to retrieve filename for right side - bottom row
             if gridColumns == 2:
-                if len(table[1]) == 1:
+                if len(slideInfo.tableRows[1]) == 1:
                     # There is one cell in bottom row so this is centred "3-up"
                     isThreeUp = True
                     bottomRightGraphicFilename = ""
                 else:
                     # There is a bottom right so this is "4-up", though one or OTHER_MEMBERS
                     # bottom cells might be empty
-                    bottomRightSide = table[1][1]
+                    bottomRightSide = slideInfo.tableRows[1][1]
                     if (graphicRegex.match(bottomRightSide) != None) | (
                         clickableGraphicRegex.match(bottomRightSide) != None
                     ):
@@ -2025,49 +2047,36 @@ def createTableSlide(presentation, slideNumber, titleText, table):
         isGraphicsGrid = False
 
     if isGraphicsGrid == True:
+        ####################################################################
+        # Print the graphic filenames                                      #
+        ####################################################################
         if gridColumns == 2:
             # Doing 1- or 2-row side-by-side graphics slide
             print(
-                str(slideNumber).rjust(4)
-                + "     "
-                + flattenedTitle.ljust(50)
-                + "   --> "
+                "           --> "
                 + printableTopLeftGraphicFilename.ljust(30)
                 + " , "
                 + printableTopRightGraphicFilename
             )
         else:
             # Doing 2 row, single column graphics slide
-            print(
-                str(slideNumber).rjust(4)
-                + "     "
-                + flattenedTitle.ljust(50)
-                + "   --> "
-                + printableTopLeftGraphicFilename.ljust(30)
-            )
+            print("           --> " + printableTopLeftGraphicFilename.ljust(30))
 
         if gridRows == 2:
             # Second row of filenames
             if gridColumns == 2:
                 print(
-                    " ".rjust(4)
-                    + "     "
-                    + " ".ljust(50)
-                    + "   --> "
+                    "           --> "
                     + printableBottomLeftGraphicFilename.ljust(30)
                     + " , "
                     + printableBottomRightGraphicFilename
                 )
             else:
-                print(
-                    " ".rjust(4)
-                    + "     "
-                    + " ".ljust(50)
-                    + "   --> "
-                    + printableBottomLeftGraphicFilename.ljust(30)
-                )
+                print("           --> " + printableBottomLeftGraphicFilename.ljust(30))
 
-        # Get top left image dimensions
+        ####################################################################
+        # Get the image dimensions                                         #
+        ####################################################################
         if topLeftGraphicFilename != "":
             topLeftImgWidth, topLeftImgHeight = get_image_size(topLeftGraphicFilename)
             if topLeftImgWidth == -1:
@@ -2131,61 +2140,51 @@ def createTableSlide(presentation, slideNumber, titleText, table):
                             )
                             return slide
 
-        # Figure out graphic height on slide
-        maxPicHeight = (
-            presentation.slide_height - slideTitleBottom - numbersContentMargin
-        )
-
+        # Calculate maximum picture height on slide
+        maxPicHeight = renderingRectangle.height
         if gridRows == 2:
-            # gridRows adjusted if two rows
+            # Adjusted if two rows
             maxPicHeight = maxPicHeight / 2 + Inches(0.2)
 
-        # Middle of slide
-        midSlideX = presentation.slide_width / 2
-
-        # Figure out picture width - with 0.5 inch margin plus 0.25 inch other margin
-        # (Unaffected by whether gridRows is 1 or 2)
+        # Calculate maximum picture width on slide
+        maxPicWidth = renderingRectangle.width
         if gridColumns == 2:
-            maxPicWidth = midSlideX - marginBase * 3
-        else:
-            maxPicWidth = presentation.slide_width - marginBase * 2
+            # Adjusted if two columns
+            maxPicWidth = maxPicWidth / 2 - marginBase
 
-        # Top Left Picture
+        # Calculate horizontal middle of graphics space
+        midGraphicsSpaceX = renderingRectangle.left + renderingRectangle.width / 2
+
+        ####################################################################
+        # Calculate the size of each graphic - scaled by the above rect    #
+        ####################################################################
         if topLeftGraphicFilename != "":
-            topLeftHeightIfWidthUsed = maxPicWidth * topLeftImgHeight / topLeftImgWidth
-            topLeftWidthIfHeightUsed = maxPicHeight * topLeftImgWidth / topLeftImgHeight
+            (topLeftPicWidth, topLeftPicHeight, usingHeightToScale,) = scalePicture(
+                maxPicWidth, maxPicHeight, topLeftImgWidth, topLeftImgHeight
+            )
 
-            if topLeftHeightIfWidthUsed > maxPicHeight:
-                # Use the height to scale
-                topLeftPicWidth = topLeftWidthIfHeightUsed
-                topLeftPicHeight = maxPicHeight
-
+            if usingHeightToScale:
                 # Calculate horizontal start
                 if gridColumns == 2:
                     # Align top left picture to the left
                     topLeftPicX = (
-                        marginBase + (midSlideX - marginBase - topLeftPicWidth) / 2
+                        renderingRectangle.left
+                        + (midGraphicsSpaceX - marginBase - topLeftPicWidth) / 2
                     )
                 else:
                     # Center sole top picture
-                    topLeftPicX = midSlideX - topLeftPicWidth / 2
+                    topLeftPicX = midGraphicsSpaceX - topLeftPicWidth / 2
             else:
-                # Use the width to scale
-                topLeftPicWidth = maxPicWidth
-                topLeftPicHeight = topLeftHeightIfWidthUsed
-
                 # Calculate horizontal start
                 if (gridColumns == 2) & (topRightGraphicFilename != ""):
                     # Align top left picture to the left
-                    topLeftPicX = marginBase
+                    topLeftPicX = renderingRectangle.left
                 else:
                     # Center sole top picture
-                    topLeftPicX = midSlideX - topLeftPicWidth / 2
+                    topLeftPicX = midGraphicsSpaceX - topLeftPicWidth / 2
 
             # Calculate vertical start
-            topLeftPicY = (
-                slideTitleBottom + marginBase + (maxPicHeight - topLeftPicHeight) / 2
-            )
+            topLeftPicY = renderingRectangle.top + (maxPicHeight - topLeftPicHeight) / 2
 
             if gridRows == 2:
                 topLeftPicY -= Inches(0.2)
@@ -2208,43 +2207,28 @@ def createTableSlide(presentation, slideNumber, titleText, table):
         if gridColumns == 2:
             # Top Right Picture
             if topRightGraphicFilename != "":
-                topRightHeightIfWidthUsed = (
-                    maxPicWidth * topRightImgHeight / topRightImgWidth
-                )
-                topRightWidthIfHeightUsed = (
-                    maxPicHeight * topRightImgWidth / topRightImgHeight
+                (
+                    topRightPicWidth,
+                    topRightPicHeight,
+                    usingHeightToScale,
+                ) = scalePicture(
+                    maxPicWidth, maxPicHeight, topRightImgWidth, topRightImgHeight
                 )
 
-                if topRightHeightIfWidthUsed > maxPicHeight:
-                    # Use the height to scale
-                    topRightPicWidth = topRightWidthIfHeightUsed
-                    topRightPicHeight = maxPicHeight
-
+                if usingHeightToScale:
                     # Calculate horizontal start
                     topRightPicX = (
-                        presentation.slide_width
-                        + midSlideX
-                        - topRightPicWidth
-                        - marginBase
+                        renderingRectangle.width + midGraphicsSpaceX - topRightPicWidth
                     ) / 2
                 else:
-                    # Use the width to scale
-                    topRightPicWidth = maxPicWidth
-                    topRightPicHeight = topRightHeightIfWidthUsed
-
                     # Calculate horizontal start
                     topRightPicX = (
-                        presentation.slide_width
-                        + midSlideX
-                        - topRightPicWidth
-                        - marginBase
+                        renderingRectangle.width + midGraphicsSpaceX - topRightPicWidth
                     ) / 2
 
                 # Calculate vertical start
                 topRightPicY = (
-                    slideTitleBottom
-                    + marginBase
-                    + (maxPicHeight - topRightPicHeight) / 2
+                    renderingRectangle.top + (maxPicHeight - topRightPicHeight) / 2
                 )
 
                 if gridRows == 2:
@@ -2269,44 +2253,35 @@ def createTableSlide(presentation, slideNumber, titleText, table):
             # Need second row of pictures
             # Bottom Left Picture
             if bottomLeftGraphicFilename != "":
-                bottomLeftHeightIfWidthUsed = (
-                    maxPicWidth * bottomLeftImgHeight / bottomLeftImgWidth
-                )
-                bottomLeftWidthIfHeightUsed = (
-                    maxPicHeight * bottomLeftImgWidth / bottomLeftImgHeight
+                (
+                    bottomLeftPicWidth,
+                    bottomLeftPicHeight,
+                    usingHeightToScale,
+                ) = scalePicture(
+                    maxPicWidth, maxPicHeight, bottomLeftImgWidth, bottomLeftImgHeight
                 )
 
-                if bottomLeftHeightIfWidthUsed > maxPicHeight:
-                    # Use the height to scale
-                    bottomLeftPicWidth = bottomLeftWidthIfHeightUsed
-                    bottomLeftPicHeight = maxPicHeight
-
+                if usingHeightToScale:
                     # Calculate horizontal start
                     if (gridColumns == 2) & (bottomRightGraphicFilename != ""):
                         bottomLeftPicX = (
                             marginBase
-                            + (midSlideX - marginBase - bottomLeftPicWidth) / 2
+                            + (midGraphicsSpaceX - marginBase - bottomLeftPicWidth) / 2
                         )
                     else:
-                        bottomLeftPicX = midSlideX - bottomLeftPicWidth / 2
+                        bottomLeftPicX = midGraphicsSpaceX - bottomLeftPicWidth / 2
                 else:
-                    # Use the width to scale
-                    bottomLeftPicWidth = maxPicWidth
-                    bottomLeftPicHeight = bottomLeftHeightIfWidthUsed
-
                     # Calculate horizontal start
                     if (gridColumns == 2) and (isThreeUp == False):
                         # Align top left picture to the left
                         bottomLeftPicX = marginBase
                     else:
                         # Center sole top picture
-                        bottomLeftPicX = midSlideX - bottomLeftPicWidth / 2
+                        bottomLeftPicX = midGraphicsSpaceX - bottomLeftPicWidth / 2
 
                 # Calculate vertical start
                 bottomLeftPicY = (
-                    slideTitleBottom
-                    + marginBase
-                    + (maxPicHeight + bottomLeftPicHeight) / 2
+                    renderingRectangle.top + (maxPicHeight + bottomLeftPicHeight) / 2
                 )
 
                 if gridRows == 2:
@@ -2329,44 +2304,39 @@ def createTableSlide(presentation, slideNumber, titleText, table):
 
             if gridColumns == 2:
                 # Bottom Right Picture
+
                 if bottomRightGraphicFilename != "":
-                    bottomRightHeightIfWidthUsed = (
-                        maxPicWidth * bottomRightImgHeight / bottomRightImgWidth
-                    )
-                    bottomRightWidthIfHeightUsed = (
-                        maxPicHeight * bottomRightImgWidth / bottomRightImgHeight
+                    (
+                        bottomRightPicWidth,
+                        bottomRightPicHeight,
+                        usingHeightToScale,
+                    ) = scalePicture(
+                        maxPicWidth,
+                        maxPicHeight,
+                        bottomRightImgWidth,
+                        bottomRightImgHeight,
                     )
 
-                    if bottomRightHeightIfWidthUsed > maxPicHeight:
-                        # Use the height to scale
-                        bottomRightPicWidth = bottomRightWidthIfHeightUsed
-                        bottomRightPicHeight = maxPicHeight
-
+                    if usingHeightToScale:
                         # Calculate horizontal start
                         bottomRightPicX = (
-                            presentation.slide_width
-                            + midSlideX
+                            renderingRectangle.width
+                            + midGraphicsSpaceX
                             - bottomRightPicWidth
-                            - marginBase
                         ) / 2
 
                     else:
                         # Use the width to scale
-                        bottomRightPicWidth = maxPicWidth
-                        bottomRightPicHeight = bottomRightHeightIfWidthUsed
-
                         # Calculate horizontal start
                         bottomRightPicX = (
-                            presentation.slide_width
-                            + midSlideX
+                            renderingRectangle.width
+                            + midGraphicsSpaceX
                             - bottomRightPicWidth
-                            - marginBase
                         ) / 2
 
                     # Calculate vertical start
                     bottomRightPicY = (
-                        slideTitleBottom
-                        + marginBase
+                        renderingRectangle.top
                         + (maxPicHeight + bottomRightPicHeight) / 2
                     )
 
@@ -2398,15 +2368,15 @@ def createTableSlide(presentation, slideNumber, titleText, table):
 
         # Calculate maximum number of columns - as this is how wide we'll make the table
         columns = 0
-        for row in table:
+        for row in slideInfo.tableRows:
             columns = max(columns, len(row))
 
         alignments = []
         widths = []
 
         # Adjust table if it contains a dash line as it's second line
-        if len(table) > 1:
-            firstCellSecondRow = table[1][0]
+        if len(slideInfo.tableRows) > 1:
+            firstCellSecondRow = slideInfo.tableRows[1][0]
             if (firstCellSecondRow.startswith("-")) | (
                 firstCellSecondRow.startswith(":-")
             ):
@@ -2420,7 +2390,7 @@ def createTableSlide(presentation, slideNumber, titleText, table):
             # Has table heading
             tableHeadingBlurb = " with heading"
             # Figure out alignments of cells
-            for cell in table[1]:
+            for cell in slideInfo.tableRows[1]:
                 if cell.startswith(":-"):
                     if cell.endswith("-:"):
                         alignments.append("c")
@@ -2433,7 +2403,7 @@ def createTableSlide(presentation, slideNumber, titleText, table):
 
                 widths.append(cell.count("-"))
             widths_total = sum(widths)
-            del table[1]
+            del slideInfo.tableRows[1]
             wantTableHeading = True
         else:
             # No table heading
@@ -2449,38 +2419,24 @@ def createTableSlide(presentation, slideNumber, titleText, table):
             widths_total = columns
 
         # Calculate number of rows
-        rows = len(table)
+        rows = len(slideInfo.tableRows)
         alignments_count = len(alignments)
 
-        # Figure out table height
-        maxTableHeight = (
-            presentation.slide_height
-            - slideTitleBottom
-            - numbersContentMargin
-            - marginBase
-        )
-        tableHeight = min(maxTableHeight, Inches(0.25) * rows)
-
-        # Figure out table top
-        # tableTop = slideTitleBottom + marginBase + (maxTableHeight - tableHeight ) / 2
-        tableTop = slideTitleBottom + Inches(0.5)
-
-        # Figure out table width
-        tableWidth = presentation.slide_width - 2 * tableMargin
-
         # Create the table with the above number of rows and columns
-        newTable = shapes.add_table(
-            rows, columns, tableMargin, tableTop, tableWidth, tableHeight
-        ).table
+        newTableShape = slide.shapes.add_table(rows, columns, 0, 0, 0, 0)
+        newTable = newTableShape.table
+
+        newTableShape.top = renderingRectangle.top
+        newTableShape.left = renderingRectangle.left + tableMargin - marginBase
+        newTableShape.height = min(renderingRectangle.height, Inches(0.25) * rows)
+        newTableShape.width = renderingRectangle.width - 2 * (tableMargin - marginBase)
+        shapeWidth = newTableShape.width
 
         # Set whether first row is not special
         newTable.first_row = wantTableHeading
 
         print(
-            str(slideNumber).rjust(4)
-            + "     "
-            + flattenedTitle.ljust(40)
-            + "             --> "
+            "           --> "
             + str(rows)
             + " x "
             + str(columns)
@@ -2491,12 +2447,12 @@ def createTableSlide(presentation, slideNumber, titleText, table):
         # Set column widths
         cols = newTable.columns
         for colno in range(columns):
-            cols[colno].width = int(tableWidth * widths[colno] / widths_total)
+            cols[colno].width = int(shapeWidth * widths[colno] / widths_total)
 
         # Fill in the cells
         rowNumber = 0
 
-        for row in table:
+        for row in slideInfo.tableRows:
             columnNumber = 0
 
             # Add dummy cells to the end of the row so that there are as many
@@ -2542,84 +2498,184 @@ def createTableSlide(presentation, slideNumber, titleText, table):
 
             rowNumber += 1
 
+    return slide
+
+
+def createChevron(chevronText, x, y, width, height, filled, shapes):
+    shape = shapes.add_shape(MSO_SHAPE.CHEVRON, x, y, width, height)
+    shape.text = chevronText
+    tf = shape.text_frame
+    p = tf.paragraphs[0]
+    f = p.font
+    f.size = Pt(14)
+    shape.line.color.rgb = RGBColor(0, 0, 0)
+    f.color.rgb = RGBColor(0, 0, 0)
+    shape.line.width = Pt(1.0)
+
+    if filled is False:
+        shape.fill.background()
+
+
+def delinkify(text):
+    if (linkMatch := linkRegex.match(text)) :
+        linkText = linkMatch.group(1)
+        linkURL = linkMatch.group(2)
+
+        return linkText
+    else:
+        return text
+
+
+def createTOCSlide(presentation, slideNumber, titleText, subtitleText, bullets):
+    print(
+        str(slideNumber).rjust(4)
+        + '     Table Of Contents (Style: "'
+        + tocStyle
+        + '") '
+        + titleText
+    )
+
+    slide = presentation.slides.add_slide(presentation.slide_layouts[titleOnlyLayout])
+
+    shapes = slide.shapes
+
+    # Add title
+    if titleText == tocTitle:
+        useTitle = tocTitle
+    else:
+        useTitle = ""
+
+    slideTitleBottom, title, flattenedTitle = formatTitle(
+        presentation, slide, useTitle, pageTitleSize
+    )
+
+    # Get the rectangle the content will draw in
+    contentLeft, contentWidth, contentTop, contentHeight = getContentRect(
+        presentation, slide, slideTitleBottom, marginBase
+    )
+
+    width = Inches(3)
+    height = Inches(1)
+    rowGap = Inches(0.75)
+
+    chevronsPerRow = 4
+
+    # Create global inList of TOC entries
+    for bullet in bullets:
+        bulletLevel, bulletText, bulletType = bullet
+        if bulletLevel == 1:
+            tocEntries.append(delinkify(bulletText))
+
+    rowCount = 1 + len(tocEntries) / chevronsPerRow
+
+    # Calculate actual TOC height so it can be vertically centred
+    TOCHeight = (rowCount * height) + ((rowCount - 1) * rowGap)
+
+    TOCtop = slideTitleBottom + (contentHeight - TOCHeight + height) / 2
+
+    # Calculate actual TOC width
+    TOCWidth = chevronsPerRow * (width - Inches(0.5)) + Inches(0.5)
+    TOCleft = (presentation.slide_width - TOCWidth) / 2
+
+    x = TOCleft
+    y = TOCtop
+    chevronNumber = 1
+    for bulletText in tocEntries:
+        if bulletText == titleText:
+            wantFilled = False
+        else:
+            wantFilled = True
+
+        createChevron(bulletText, x, y, width, height, wantFilled, shapes)
+        x = x + width - Inches(0.5)
+        chevronNumber = chevronNumber + 1
+        if chevronNumber == chevronsPerRow + 1:
+            x = TOCleft
+            y = y + rowGap + height
+            chevronNumber = 1
+
     if want_numbers_content is True:
         addFooter(presentation, slideNumber, slide)
 
     return slide
 
 
-def createSlide(presentation, slideNumber, SI):
-    if SI.blockType == "title":
+def createSlide(presentation, slideNumber, slideInfo):
+    # Work out whether it's 0, 1, or 2 items to render
+    itemsToRender = (0 if slideInfo.bullets == [] else 1) + (
+        0 if slideInfo.tableRows == [] else 1
+    )
+
+    if slideInfo.blockType == "title":
         slide = createTitleOrSectionSlide(
             presentation,
             slideNumber,
-            SI.titleText,
+            slideInfo.titleText,
             titleSlideLayout,
             sectionTitleSize,
-            SI.bodyText,
+            slideInfo.bodyText,
             sectionSubtitleSize,
         )
 
-    elif SI.blockType == "section":
+    elif slideInfo.blockType == "section":
         if tocStyle != "":
             # This is a section slide in TOC style
             slide = createTOCSlide(
                 presentation,
                 slideNumber,
-                SI.titleText,
-                SI.bodyText,
-                SI.bulletsOrFilename,
+                slideInfo.titleText,
+                slideInfo.bodyText,
+                slideInfo.bullets,
             )
         else:
             slide = createTitleOrSectionSlide(
                 presentation,
                 slideNumber,
-                SI.titleText,
+                slideInfo.titleText,
                 sectionSlideLayout,
                 sectionTitleSize,
-                SI.bodyText,
+                slideInfo.bodyText,
                 sectionSubtitleSize,
             )
 
-    elif SI.blockType == "content":
-        if (tocStyle != "") & (tocTitle == SI.titleText):
+    elif slideInfo.blockType == "content":
+        if (tocStyle != "") & (tocTitle == slideInfo.titleText):
             # This is a Table Of Contents slide
             slide = createTOCSlide(
                 presentation,
                 slideNumber,
-                SI.titleText,
-                SI.bodyText,
-                SI.bulletsOrFilename,
+                slideInfo.titleText,
+                slideInfo.bodyText,
+                slideInfo.bullets,
             )
-        elif (abstractTitle != "") & (abstractTitle == SI.titleText):
+        elif (abstractTitle != "") & (abstractTitle == slideInfo.titleText):
             # This is an abstract slide
             slide = createAbstractSlide(
                 presentation,
                 slideNumber,
-                SI.titleText,
-                SI.bodyText,
-                SI.bulletsOrFilename,
+                slideInfo.titleText,
+                slideInfo.bodyText,
+                slideInfo.bullets,
             )
         else:
-            slide = createContentSlide(
+            slide = createContentOrTableSlide(
                 presentation,
                 slideNumber,
-                SI.titleText,
-                SI.bodyText,
-                SI.bulletsOrFilename,
+                slideInfo,
             )
-    elif SI.blockType == "code":
+    elif slideInfo.blockType == "code":
         # Note: Somehow two newlines got prepended to the code
         slide = createCodeSlide(
-            presentation, slideNumber, SI.titleText, SI.bodyText[2:]
+            presentation, slideNumber, slideInfo.titleText, slideInfo.bodyText[2:]
         )
 
-    elif SI.blockType == "table":
-        slide = createTableSlide(presentation, slideNumber, SI.titleText, SI.tableRows)
+    elif slideInfo.blockType == "table":
+        slide = createContentOrTableSlide(presentation, slideNumber, slideInfo)
 
     slideNumber = slideNumber + 1
 
-    return [slideNumber, slide]
+    sequence = []
+    return [slideNumber, slide, sequence]
 
 
 def createTaskSlides(prs, slideNumber, tasks, titleStem):
@@ -2641,11 +2697,12 @@ def createTaskSlides(prs, slideNumber, tasks, titleStem):
                     # Only one task page
                     title = titleStem
 
-                slide = createTableSlide(prs, slideNumber, title, tableRows)
+                slideInfo = SlideInfo(title, "", "table", [], taskRows, [])
+                slide = createContentOrTableSlide(prs, slideNumber, slideInfo)
                 slideNumber += 1
 
-            tableRows = [["Slide", "Due", "Task", "Tags", "Done"]]
-            tableRows.append(["-:", ":--:", ":----", ":----", ":--:"])
+            taskRows = [["Slide", "Due", "Task", "Tags", "Done"]]
+            taskRows.append(["-:", ":--:", ":----", ":----", ":--:"])
             old_sNum = 0
 
         sNum, taskText, dueDate, tags, done = task
@@ -2657,9 +2714,9 @@ def createTaskSlides(prs, slideNumber, tasks, titleStem):
             tags = str.join(",", sortedTagList)
 
         if sNum != old_sNum:
-            tableRows.append([str(sNum), dueDate, taskText, tags, done])
+            taskRows.append([str(sNum), dueDate, taskText, tags, done])
         else:
-            tableRows.append(["", dueDate, taskText, tags, done])
+            taskRows.append(["", dueDate, taskText, tags, done])
         old_sNum = sNum
 
         taskNumber += 1
@@ -2671,7 +2728,8 @@ def createTaskSlides(prs, slideNumber, tasks, titleStem):
     else:
         title = titleStem
 
-    slide = createTableSlide(prs, slideNumber, title, tableRows)
+    slideInfo = SlideInfo(title, "", "table", [], taskRows, [])
+    slide = createContentOrTableSlide(prs, slideNumber, slideInfo)
 
     # Fix up references to be active links to the slide where the task
     # was declared
@@ -2707,17 +2765,21 @@ def createGlossarySlides(prs, slideNumber, abbrevDictionary):
                     # Only one glossary page
                     title = glossaryTerm
 
-                slide = createTableSlide(prs, slideNumber, title, tableRows)
+                slideInfo = SlideInfo(
+                    title, "", "table", [], glossaryRows, [], ["table"]
+                )
+                slide = createContentOrTableSlide(prs, slideNumber, slideInfo)
+
                 glossarySlides.append(slide)
                 slideNumber += 1
 
-            tableRows = [[glossaryTerm, glossaryMeaning]]
-            tableRows.append([":-", ":" + ("-" * glossaryMeaningWidth)])
+            glossaryRows = [[glossaryTerm, glossaryMeaning]]
+            glossaryRows.append([":-", ":" + ("-" * glossaryMeaningWidth)])
             old_sNum = 0
 
         meaning = abbrevDictionary.get(term)
 
-        tableRows.append([term, meaning])
+        glossaryRows.append([term, meaning])
 
         termNumber += 1
 
@@ -2730,7 +2792,8 @@ def createGlossarySlides(prs, slideNumber, abbrevDictionary):
         # Only one glossary page
         title = glossaryTitle
 
-    slide = createTableSlide(prs, slideNumber, title, tableRows)
+    slideInfo = SlideInfo(title, "", "table", [], glossaryRows, [], ["table"])
+    slide = createContentOrTableSlide(prs, slideNumber, slideInfo)
     glossarySlides.append(slide)
     slideNumber += 1
 
@@ -2757,7 +2820,11 @@ def createFootnoteSlides(prs, slideNumber, footnoteDefinitions):
                     # Only one footnotes page
                     title = footnotesTitle
 
-                slide = createContentSlide(prs, slideNumber, title, "", bullets)
+                slideInfo = SlideInfo(
+                    title, "", "content", bullets, [], cards, ["bullets"]
+                )
+                slideNumber, slide, sequence = createSlide(prs, slideNumber, slideInfo)
+
                 footnoteSlides.append(slide)
 
                 # Turn off bulleting
@@ -2768,7 +2835,11 @@ def createFootnoteSlides(prs, slideNumber, footnoteDefinitions):
             old_sNum = 0
 
         bullets.append(
-            [1, str(footnoteNumber + 1) + ". " + footnoteDefinitions[footnoteNumber][1]]
+            [
+                1,
+                str(footnoteNumber + 1) + ". " + footnoteDefinitions[footnoteNumber][1],
+                "bullet",
+            ]
         )
 
         footnoteNumber += 1
@@ -2779,10 +2850,12 @@ def createFootnoteSlides(prs, slideNumber, footnoteDefinitions):
         # More than one footnotes page
         title = footnotesTitle + " - " + str(footnotesSlideNumber)
     else:
-        # Only one glossary page
+        # Only one footnotes page
         title = footnotesTitle
 
-    slide = createContentSlide(prs, slideNumber, title, "", bullets)
+    slideInfo = SlideInfo(title, "", "content", bullets, [], cards, ["bullets"])
+    slideNumber, slide, sequence = createSlide(prs, slideNumber, slideInfo)
+
     footnoteSlides.append(slide)
 
     # Turn off bulleting
@@ -3034,6 +3107,14 @@ defaultVerticalCardGap = 0.15
 verticalCardGap = defaultVerticalCardGap
 presVerticalCardGap = defaultVerticalCardGap
 
+defaultContentSplit = [1, 3]
+contentSplit = defaultContentSplit
+presContentSplit = defaultContentSplit
+
+defaultContentSplitDirection = "vertical"
+contentSplitDirection = defaultContentSplitDirection
+presContentSplitDirection = defaultContentSplitDirection
+
 titleLevel = 1
 sectionLevel = 2
 contentLevel = 3
@@ -3243,6 +3324,26 @@ for line in metadata_lines:
         verticalCardGap = float(value)
         presVerticalCardGap = verticalCardGap
 
+    elif name == "contentsplit":
+        splitValue = value.split()
+        contentSplit = [int(splitValue[0]), int(splitValue[1])]
+        presContentSplit = contentSplit
+
+    elif name in ["contentsplitdirection", "contentsplitdirn"]:
+        if value in ["vertical", "horizontal", "v", "h"]:
+            if value in ["vertical", "horizontal"]:
+                adjustedValue = value
+            elif value == "v":
+                adjustedValue = "vertical"
+            else:
+                adjustedValue = "horizontal"
+            contentSplitDirection = adjustedValue
+            presContentSplitDirection = adjustedValue
+        else:
+            print(
+                f'contentSplitDirection value \'{value}\' unsupported. "vertical" or "horizontal" required.'
+            )
+
     elif name == "taskslides":
         taskSlides = value
 
@@ -3377,12 +3478,14 @@ slideTitle = ""
 slideSubtitle = ""
 bullets = []
 tableRows = []
+cards = []
 inCode = False
 inHTMLCode = False
 inFencedCode = False
 notes_text = ""
 slide = None
 tasks = []
+sequence = []
 
 slideHrefs = {}
 href_runs = {}
@@ -3681,6 +3784,31 @@ for line in linesAfterConcatenation:
                     else:
                         verticalCardGap = float(metadataValue)
 
+                elif metadataKey == "contentsplit":
+                    # Proportions for each content element on a slide
+                    if metadataValue == "default":
+                        contentSplit = defaultContentSplit
+                    elif metadataValue == "pres":
+                        contentSplit = presContentSplit
+                    else:
+                        splitValue = metadataValue.split()
+                        contentSplit = [int(splitValue[0]), int(splitValue[1])]
+
+                elif metadataKey in ["contentsplitdirection", "contentsplitdirn"]:
+                    if metadataValue in ["vertical", "horizontal", "v", "h"]:
+                        if metadataValue in ["vertical", "horizontal"]:
+                            adjustedValue = metadataValue
+                        elif metadataValue == "v":
+                            adjustedValue = "vertical"
+                        else:
+                            adjustedValue = "horizontal"
+                        contentSplitDirection = adjustedValue
+                        presContentSplitDirection = adjustedValue
+                    else:
+                        print(
+                            f'contentSplitDirection value \'{metadataValue}\' unsupported. "vertical" or "horizontal" required.'
+                        )
+
                 elif metadataKey == "codeforeground":
                     # Code slide foreground
                     if metadataValue == "default":
@@ -3747,8 +3875,16 @@ for line in linesAfterConcatenation:
             # One of Content, Section, or Title slide
             if inBlock is True:
                 # Create the previous slide
-                SI = slideInfo(slideTitle, slideSubtitle, blockType, bullets, tableRows)
-                slideNumber, slide = createSlide(prs, slideNumber, SI)
+                slideInfo = SlideInfo(
+                    slideTitle,
+                    slideSubtitle,
+                    blockType,
+                    bullets,
+                    tableRows,
+                    cards,
+                    sequence,
+                )
+                slideNumber, slide, sequence = createSlide(prs, slideNumber, slideInfo)
 
                 # Register the previous slide's href - if there was one
                 if href != "":
@@ -3772,7 +3908,6 @@ for line in linesAfterConcatenation:
             # Get slide title text and any href
             slideTitle, href = parseTitleText(line[thisLevel:])
 
-            cards = []
             inBlock = True
             inList = False
             inTable = False
@@ -3780,6 +3915,8 @@ for line in linesAfterConcatenation:
             notes_text = ""
             slideSubtitle = ""
             bullets = []
+            tableRows = []
+            cards = []
 
             if (notes_text != "") & (slide != None):
                 notes_slide = slide.notes_slide
@@ -3804,6 +3941,8 @@ for line in linesAfterConcatenation:
                 cards[cardsLength - 1][1] = cardBullets
         else:
             bullets.append([bulletLevel, bulletLine, bulletType])
+        if inList is False:
+            sequence.append("bullets")
         inList = True
         inTable = False
 
@@ -3820,6 +3959,8 @@ for line in linesAfterConcatenation:
                 cards[cardsLength - 1][1] = cardBullets
         else:
             bullets.append([bulletLevel, bulletLine, bulletType])
+        if inList is False:
+            sequence.append("bullets")
         inList = True
         inTable = False
 
@@ -3831,6 +3972,7 @@ for line in linesAfterConcatenation:
             blockType = "table"
             tableRows = []
             inTable = True
+            sequence.append("table")
             inList = False
             inCard = False
 
@@ -3885,6 +4027,7 @@ for line in linesAfterConcatenation:
             blockType = "table"
             tableRows = []
             inTable = True
+            sequence.append("table")
             inList = False
             inCard = False
 
@@ -3911,8 +4054,10 @@ for line in linesAfterConcatenation:
 
 #  Finish off last slide
 if (inBlock is True) | (inCode is True) | (inTable is True):
-    SI = slideInfo(slideTitle, slideSubtitle, blockType, bullets, tableRows)
-    slideNumber, slide = createSlide(prs, slideNumber, SI)
+    slideInfo = SlideInfo(
+        slideTitle, slideSubtitle, blockType, bullets, tableRows, cards, sequence
+    )
+    slideNumber, slide, sequence = createSlide(prs, slideNumber, slideInfo)
 
     if href != "":
         slideHrefs[href] = slideNumber
