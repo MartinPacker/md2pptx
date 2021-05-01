@@ -225,6 +225,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|2.0.1|1&nbsp;May&nbsp;2021|Added `&times;`&comma; `&percnt;`&comma; `&divide;`&comma; `&forall;`&comma; `&exist;`. Fixed 'three up graphic' layout bug.|
 |2.0|11&nbsp;April&nbsp;2021|Two slide content elements on a slide&comma; involving a major restructuring of the slide layout engine.|
 |1.9.5|28&nbsp;March&nbsp;2021|Added `&hellip;`. Allow specification of gaps between cards. Allow specification of heading level for title slide.|
 |1.9.4|21&nbsp;March&nbsp;2021|Added controls code slide foreground and background colour RGB values.|
@@ -930,11 +931,11 @@ md2pptx supports a few [HTML entity references](https://en.wikipedia.org/wiki/Li
 |`&delta;`|&delta;|`&nearr;`|&nearr;|`&szlig;`|&szlig;|
 |`&sim;`|&sim;|`&nwarr;`|&nwarr;|`&euro;`|&euro;|
 |`&lowast;`|&lowast;|`&searr;`|&searr;|`&hellip;`|&hellip;|
-|`&semi;`|&semi;|`&swarr;`|&swarr;|
-|`&colon;`|&colon;|`&lsqb;`|&lsqb;|
-|`&amp;`|&amp;|`&rsqb;`|&rsqb;|
-|`&comma;`|&comma;|`&infin;`|&infin;|
-|`&check;`|&check;|
+|`&semi;`|&semi;|`&swarr;`|&swarr;|`&percnt;`|&percnt;|
+|`&colon;`|&colon;|`&lsqb;`|&lsqb;|`&divide;`|&divide;|
+|`&amp;`|&amp;|`&rsqb;`|&rsqb;|`&forall;`|&forall;|
+|`&comma;`|&comma;|`&infin;`|&infin;|`&exist;`|&exist;|
+|`&check;`|&check;|`&times;`|&times;|
 
 ### Numeric Character References
 <a id="numeric-character-references"></a>
