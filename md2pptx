@@ -43,8 +43,8 @@ try:
 except:
     have_cairosvg = False
 
-md2pptx_level = "2.0"
-md2pptx_date = "8 April, 2021"
+md2pptx_level = "2.0.1"
+md2pptx_date = "1 May, 2021"
 
 
 class SlideInfo:
@@ -552,6 +552,11 @@ def parseText(text):
     text2 = text2.replace("&euro;", "€")
     text2 = text2.replace("&check;", "✓")
     text2 = text2.replace("&hellip;", "…")
+    text2 = text2.replace("&times;", "×")
+    text2 = text2.replace("&percnt;", "%")
+    text2 = text2.replace("&divide;", "÷")
+    text2 = text2.replace("&forall;", "∀")
+    text2 = text2.replace("&exist;", "∃")
 
     # Replace any asterisks with spaces either side with entity reference
     text2 = text2.replace(" * ", " &lowast; ")
@@ -1891,7 +1896,6 @@ def createTableBlock(presentation, slideNumber, slideInfo, slide, renderingRecta
             gridColumns = len(slideInfo.tableRows[0])
         else:
             gridColumns = max(len(slideInfo.tableRows[0]), len(slideInfo.tableRows[1]))
-        isThreeUp = False
         topGraphicCount = 0
 
         # Attempt to retrieve filename for left side - top row
@@ -1996,7 +2000,6 @@ def createTableBlock(presentation, slideNumber, slideInfo, slide, renderingRecta
             if gridColumns == 2:
                 if len(slideInfo.tableRows[1]) == 1:
                     # There is one cell in bottom row so this is centred "3-up"
-                    isThreeUp = True
                     bottomRightGraphicFilename = ""
                 else:
                     # There is a bottom right so this is "4-up", though one or OTHER_MEMBERS
@@ -2124,7 +2127,7 @@ def createTableBlock(presentation, slideNumber, slideInfo, slide, renderingRecta
                     return slide
 
             if gridColumns == 2:
-                if isThreeUp is True:
+                if bottomRightGraphicFilename == "":
                     bottomRightImgWidth = 0
                     bottomRightImgHeight = 0
                 else:
@@ -2165,7 +2168,7 @@ def createTableBlock(presentation, slideNumber, slideInfo, slide, renderingRecta
 
             if usingHeightToScale:
                 # Calculate horizontal start
-                if gridColumns == 2:
+                if (gridColumns == 2) and (topRightGraphicFilename != ""):
                     # Align top left picture to the left
                     topLeftPicX = (
                         renderingRectangle.left
@@ -2272,11 +2275,11 @@ def createTableBlock(presentation, slideNumber, slideInfo, slide, renderingRecta
                         bottomLeftPicX = midGraphicsSpaceX - bottomLeftPicWidth / 2
                 else:
                     # Calculate horizontal start
-                    if (gridColumns == 2) and (isThreeUp == False):
-                        # Align top left picture to the left
+                    if (gridColumns == 2) and (bottomRightGraphicFilename != ""):
+                        # Align bottom left picture to the left
                         bottomLeftPicX = marginBase
                     else:
-                        # Center sole top picture
+                        # Center sole bottom picture
                         bottomLeftPicX = midGraphicsSpaceX - bottomLeftPicWidth / 2
 
                 # Calculate vertical start
@@ -2343,7 +2346,7 @@ def createTableBlock(presentation, slideNumber, slideInfo, slide, renderingRecta
                     if gridRows == 2:
                         bottomRightPicY -= Inches(0.2)
 
-                    if isThreeUp == False:
+                    if bottomRightGraphicFilename != "":
                         bottomRightPicture = slide.shapes.add_picture(
                             bottomRightGraphicFilename,
                             bottomRightPicX,
