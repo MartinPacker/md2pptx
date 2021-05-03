@@ -43,8 +43,8 @@ try:
 except:
     have_cairosvg = False
 
-md2pptx_level = "2.0.1"
-md2pptx_date = "1 May, 2021"
+md2pptx_level = "2.0.2"
+md2pptx_date = "3 May, 2021"
 
 
 class SlideInfo:
@@ -1264,7 +1264,10 @@ def handleWhateverGraphicType(graphicFilename):
     return graphicFilename, printableGraphicFilename
 
 
-def createCodeSlide(presentation, slideNumber, titleText, code):
+def createCodeBlock(presentation, slideNumber, slideInfo, slide, renderingRectangle):
+    # A variable number of newlines appear before the actual code
+    code = slideInfo.bodyText.lstrip("\n")
+
     # Figure out code slide type
     if code.startswith("<pre"):
         codeType = "pre"
@@ -1274,32 +1277,6 @@ def createCodeSlide(presentation, slideNumber, titleText, code):
         codeType = "backticks"
     else:
         codeType = "indented"
-
-    if titleText != "":
-        slide = presentation.slides.add_slide(
-            presentation.slide_layouts[titleOnlyLayout]
-        )
-
-        # Add title and constrain its size and placement
-        slideTitleBottom, title, flattenedTitle = formatTitle(
-            presentation, slide, titleText, pageTitleSize
-        )
-
-        print(str(slideNumber).rjust(4) + "     " + flattenedTitle)
-
-    else:
-        print(str(slideNumber).rjust(4) + "   " + graphicFilename)
-
-        slide = presentation.slides.add_slide(presentation.slide_layouts[blankLayout])
-
-        slideTitleBottom = Inches(marginBase)
-
-        # Add code
-
-    # Get the rectangle the content will draw in
-    contentLeft, contentWidth, contentTop, contentHeight = getContentRect(
-        presentation, slide, slideTitleBottom, marginBase
-    )
 
     # Split the code into lines
     codeLines = code.split("\n")
@@ -1317,7 +1294,10 @@ def createCodeSlide(presentation, slideNumber, titleText, code):
         codeLines.pop(-1)
 
     codeBox = slide.shapes.add_textbox(
-        contentLeft, contentTop, contentWidth, contentHeight
+        renderingRectangle.left,
+        renderingRectangle.top,
+        renderingRectangle.width,
+        renderingRectangle.height,
     )
 
     # Try to control text frame but SHAPE_TO_FIT_TEXT doesn't seem to work
@@ -1363,7 +1343,9 @@ def createCodeSlide(presentation, slideNumber, titleText, code):
     p.font.color.rgb = RGBColor.from_string(codeForeground)
 
     # Adjust code box height based on lines
-    codeBox.height = min(len(codeLines) * Pt(baseTextSize + 5), contentHeight)
+    codeBox.height = min(
+        len(codeLines) * Pt(baseTextSize + 5), renderingRectangle.height
+    )
 
     # Add code
     if codeType == "pre":
@@ -1518,9 +1500,16 @@ def createAbstractSlide(presentation, slideNumber, titleText, subtitleText, para
     return slide
 
 
-# Unified creation of a table or a content slide
-def createContentOrTableSlide(presentation, slideNumber, slideInfo):
-    # Create the slide
+# Unified creation of a table or a code or a content slide
+def createContentSlide(presentation, slideNumber, slideInfo):
+    # slideInfo's body text is only filled in if there is code - and that's
+    # where the code - plus preamble and postamble is.
+    if slideInfo.bodyText != "":
+        haveCode = True
+    else:
+        haveCode = False
+
+    # Create the slide and check for bullets and/or cards
     if (slideInfo.bullets == []) & (slideInfo.cards == []):
         slideLayout = titleOnlyLayout
         haveBulletsCards = False
@@ -1529,10 +1518,17 @@ def createContentOrTableSlide(presentation, slideNumber, slideInfo):
         haveBulletsCards = True
     slide = presentation.slides.add_slide(presentation.slide_layouts[slideLayout])
 
+    # Check for table / graphics content
     if slideInfo.tableRows == []:
         haveTableGraphics = False
     else:
         haveTableGraphics = True
+
+    ####################################################################
+    # At this point haveCode, haveBulletsCards, haveTableGraphics have #
+    # been appropriately set                                           #
+    ####################################################################
+
     # Add slide title
     titleText = slideInfo.titleText
     slideTitleBottom, title, flattenedTitle = formatTitle(
@@ -1550,82 +1546,60 @@ def createContentOrTableSlide(presentation, slideNumber, slideInfo):
     )
 
     ####################################################################
-    # Get the dimensions of the rectangle we'll place the graphics in  #
+    # Check whether there are too many elements in the sequence to     #
+    # render - and warn if there are. Then calculate how many to render#
     ####################################################################
-    if haveBulletsCards:
-        # There is some bullets / cards content to render
-        if haveTableGraphics:
-            # Have both types of content on one slide
-            # Split according to percentage of vertical space
-            allContentSplit = sum(contentSplit)
+    maxBlocks = 2
+    if len(sequence) > maxBlocks:
+        print(
+            "Too many blocks to render. Only " + str(maxBlocks) + " will be rendered."
+        )
+    blocksToRender = min(maxBlocks, len(sequence))
 
-            if contentSplitDirection == "vertical":
-                # Rectangles are vertically arranged
-                topHeight = int(contentHeight * contentSplit[0] / allContentSplit)
-                bottomHeight = int(contentHeight * contentSplit[1] / allContentSplit)
+    ####################################################################
+    # Get the dimensions of the rectangles we'll place the graphics in #
+    # and their top left corner coordinates
+    ####################################################################
+    allContentSplit = 0
+    for b in range(blocksToRender):
+        allContentSplit = allContentSplit + contentSplit[b]
 
-                # Top of the content area
-                topRenderingRectangle = Rectangle(
-                    contentTop, contentLeft, topHeight, contentWidth
-                )
+    verticalCursor = contentTop
+    horizontalCursor = contentLeft
 
-                # bottom of the content area
-                bottomRenderingRectangle = Rectangle(
-                    int(contentTop + topHeight),
-                    contentLeft,
-                    int(bottomHeight),
-                    contentWidth,
-                )
+    for b in range(blocksToRender):
+        if contentSplitDirection == "vertical":
+            # Height and top
+            blockHeight = int(contentHeight * contentSplit[b] / allContentSplit)
+            blockTop = verticalCursor
+            verticalCursor = verticalCursor + blockHeight
 
-                if sequence[0] == "table":
-                    tableRenderingRectangle = topRenderingRectangle
-                    bulletsRenderingRectangle = bottomRenderingRectangle
-                else:
-                    bulletsRenderingRectangle = topRenderingRectangle
-                    tableRenderingRectangle = bottomRenderingRectangle
-            else:
-                # Rectangles are horizontally arranged
-                leftWidth = int(contentWidth * contentSplit[0] / allContentSplit)
-                rightWidth = int(contentWidth * contentSplit[1] / allContentSplit)
-
-                # Left of the content area
-                leftRenderingRectangle = Rectangle(
-                    contentTop, contentLeft, contentHeight, leftWidth
-                )
-
-                # Right of the content area
-                rightRenderingRectangle = Rectangle(
-                    contentTop, contentLeft + leftWidth, contentHeight, rightWidth
-                )
-
-                if sequence[0] == "table":
-                    tableRenderingRectangle = leftRenderingRectangle
-                    bulletsRenderingRectangle = rightRenderingRectangle
-                else:
-                    bulletsRenderingRectangle = leftRenderingRectangle
-                    tableRenderingRectangle = rightRenderingRectangle
-
+            # Width and left
+            blockWidth = contentWidth
+            blockLeft = contentLeft
         else:
-            # bullets / cards can take up all the content area
-            bulletsRenderingRectangle = Rectangle(
-                contentTop, contentLeft, contentHeight, contentWidth
+            # Height and top
+            blockHeight = contentHeight
+            blockTop = contentTop
+
+            # Width and left
+            blockWidth = int(contentWidth * contentSplit[b] / allContentSplit)
+            horizontalCursor = horizontalCursor + blockWidth
+
+        renderingRectangle = Rectangle(blockTop, blockLeft, blockHeight, blockWidth)
+
+        if sequence[b] == "table":
+            createTableBlock(
+                presentation, slideNumber, slideInfo, slide, renderingRectangle
             )
-    else:
-        # Table / graphics can take up all the content area
-        tableRenderingRectangle = Rectangle(
-            contentTop, contentLeft, contentHeight, contentWidth
-        )
-
-    # Populate the slide
-    if haveTableGraphics:
-        createTableBlock(
-            presentation, slideNumber, slideInfo, slide, tableRenderingRectangle
-        )
-
-    if haveBulletsCards:
-        createContentBlock(
-            presentation, slideNumber, slideInfo, slide, bulletsRenderingRectangle
-        )
+        elif sequence[b] == "list":
+            createListBlock(
+                presentation, slideNumber, slideInfo, slide, renderingRectangle
+            )
+        else:
+            createCodeBlock(
+                presentation, slideNumber, slideInfo, slide, renderingRectangle
+            )
 
     if want_numbers_content is True:
         addFooter(presentation, slideNumber, slide)
@@ -1633,7 +1607,7 @@ def createContentOrTableSlide(presentation, slideNumber, slideInfo):
     return slide
 
 
-def createContentBlock(presentation, slideNumber, slideInfo, slide, renderingRectangle):
+def createListBlock(presentation, slideNumber, slideInfo, slide, renderingRectangle):
     # Get bulleted text shape - either for bullets above cards or first card's body shape
     bulletsShape = findBodyShape(slide)
 
@@ -2661,19 +2635,21 @@ def createSlide(presentation, slideNumber, slideInfo):
                 slideInfo.bullets,
             )
         else:
-            slide = createContentOrTableSlide(
+            slide = createContentSlide(
                 presentation,
                 slideNumber,
                 slideInfo,
             )
     elif slideInfo.blockType == "code":
         # Note: Somehow two newlines got prepended to the code
-        slide = createCodeSlide(
-            presentation, slideNumber, slideInfo.titleText, slideInfo.bodyText[2:]
+        slide = createContentSlide(
+            presentation,
+            slideNumber,
+            slideInfo,
         )
 
     elif slideInfo.blockType == "table":
-        slide = createContentOrTableSlide(presentation, slideNumber, slideInfo)
+        slide = createContentSlide(presentation, slideNumber, slideInfo)
 
     slideNumber = slideNumber + 1
 
@@ -2701,7 +2677,7 @@ def createTaskSlides(prs, slideNumber, tasks, titleStem):
                     title = titleStem
 
                 slideInfo = SlideInfo(title, "", "table", [], taskRows, [])
-                slide = createContentOrTableSlide(prs, slideNumber, slideInfo)
+                slide = createContentSlide(prs, slideNumber, slideInfo)
                 slideNumber += 1
 
             taskRows = [["Slide", "Due", "Task", "Tags", "Done"]]
@@ -2732,7 +2708,7 @@ def createTaskSlides(prs, slideNumber, tasks, titleStem):
         title = titleStem
 
     slideInfo = SlideInfo(title, "", "table", [], taskRows, [])
-    slide = createContentOrTableSlide(prs, slideNumber, slideInfo)
+    slide = createContentSlide(prs, slideNumber, slideInfo)
 
     # Fix up references to be active links to the slide where the task
     # was declared
@@ -2771,7 +2747,7 @@ def createGlossarySlides(prs, slideNumber, abbrevDictionary):
                 slideInfo = SlideInfo(
                     title, "", "table", [], glossaryRows, [], ["table"]
                 )
-                slide = createContentOrTableSlide(prs, slideNumber, slideInfo)
+                slide = createContentSlide(prs, slideNumber, slideInfo)
 
                 glossarySlides.append(slide)
                 slideNumber += 1
@@ -2796,7 +2772,7 @@ def createGlossarySlides(prs, slideNumber, abbrevDictionary):
         title = glossaryTitle
 
     slideInfo = SlideInfo(title, "", "table", [], glossaryRows, [], ["table"])
-    slide = createContentOrTableSlide(prs, slideNumber, slideInfo)
+    slide = createContentSlide(prs, slideNumber, slideInfo)
     glossarySlides.append(slide)
     slideNumber += 1
 
@@ -2824,7 +2800,7 @@ def createFootnoteSlides(prs, slideNumber, footnoteDefinitions):
                     title = footnotesTitle
 
                 slideInfo = SlideInfo(
-                    title, "", "content", bullets, [], cards, ["bullets"]
+                    title, "", "content", bullets, [], cards, ["list"]
                 )
                 slideNumber, slide, sequence = createSlide(prs, slideNumber, slideInfo)
 
@@ -2856,7 +2832,7 @@ def createFootnoteSlides(prs, slideNumber, footnoteDefinitions):
         # Only one footnotes page
         title = footnotesTitle
 
-    slideInfo = SlideInfo(title, "", "content", bullets, [], cards, ["bullets"])
+    slideInfo = SlideInfo(title, "", "content", bullets, [], cards, ["list"])
     slideNumber, slide, sequence = createSlide(prs, slideNumber, slideInfo)
 
     footnoteSlides.append(slide)
@@ -3587,7 +3563,7 @@ for line in linesAfterConcatenation:
         inHTMLCode = True
 
     if startswithOneOf(line, ["</pre>", "</code>"]):
-        inCode = True
+        inCode = False
         inHTMLCode = False
 
     if line.startswith("```"):
@@ -3600,6 +3576,10 @@ for line in linesAfterConcatenation:
 
     if inCode or inHTMLCode or inFencedCode:
         code.append(line)
+
+        # If first line of code then mark the current sequence entry as "code"
+        if len(code) == 1:
+            sequence.append("code")
 
     if (
         (line == "")
@@ -3945,7 +3925,7 @@ for line in linesAfterConcatenation:
         else:
             bullets.append([bulletLevel, bulletLine, bulletType])
         if inList is False:
-            sequence.append("bullets")
+            sequence.append("list")
         inList = True
         inTable = False
 
@@ -3963,7 +3943,7 @@ for line in linesAfterConcatenation:
         else:
             bullets.append([bulletLevel, bulletLine, bulletType])
         if inList is False:
-            sequence.append("bullets")
+            sequence.append("list")
         inList = True
         inTable = False
 

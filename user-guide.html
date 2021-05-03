@@ -1249,6 +1249,11 @@ THE SOFTWARE.
 </thead>
 <tbody>
 <tr>
+<td align="left">2.0.2</td>
+<td align="right">3&nbsp;May&nbsp;2021</td>
+<td align="left">A single code block can share a slide with a list block or a table / graphics block</td>
+</tr>
+<tr>
 <td align="left">2.0.1</td>
 <td align="right">1&nbsp;May&nbsp;2021</td>
 <td align="left">Added <code>&amp;times;</code>&comma; <code>&amp;percnt;</code>&comma; <code>&amp;divide;</code>&comma; <code>&amp;forall;</code>&comma; <code>&amp;exist;</code>. Fixed &lsquo;three up graphic&rsquo; layout bug.</td>
@@ -1783,7 +1788,12 @@ for(i = 0; i &lt; 10; i++){
 <p>You can control task slide production by specifying <code>taskSlides</code> and <code>tasksPerSlide</code>. See <a href="#controlling-task-slide-production-with-taskslides-and-tasksperslide">Controlling Task Slide Production With <code>taskSlides</code> and <code>tasksPerSlide</code></a>.</p>
 <p><a id="slides-with-more-than-one-type-of-content"></a></p>
 <h3 id="slides-with-more-than-one-type-of-content">Slides With More Than One Type Of Content<a class="headerlink" href="#slides-with-more-than-one-type-of-content" title="Permanent link"></a></h3>
-<p>For a limited number of content types you can create a slide with more than one type of content, in addition to the title: You can create a slide with a numbered or bulleted list and a table or else some graphics.</p>
+<p>For a limited number of content types you can create a slide with two types of content (in addition to the title). The pair of content blocks must be one each of:</p>
+<ul>
+<li>A numbered or bulleted list</li>
+<li>A table or else some graphics</li>
+<li>A block of code</li>
+</ul>
 <p>You code them as you would for regular Markdown.
 Here is an example:</p>
 <pre><code>### Here Is A title
@@ -1805,6 +1815,7 @@ Here is an example:</p>
 <li>What proportion of the content space is the first block, and what proportion is the second.</li>
 </ul>
 <p>These controls are described in <a href="#slides-with-multiple-content-blocks">Slides With Multiple Content Blocks</a>.</p>
+<p><strong>Note:</strong> You can&rsquo;t specify two blocks of the same type on a single slide, for example two code blocks. (For graphics, you can specify more than one graphic - and this will count as a single block.)</p>
 <h2 id="slides-without-titles">Slides Without Titles<a class="headerlink" href="#slides-without-titles" title="Permanent link"></a></h2>
 <p><a id="slides-without-titles"></a></p>
 <p>Most slides have a title - and it&rsquo;s easy to see where such slides start. However, sometimes you want a slide without a title. For those cases you can start a slide in a two basic ways:</p>

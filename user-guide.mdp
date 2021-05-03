@@ -127,6 +127,7 @@ To quote from the python-pptx license statement:
 =colalign l r l
 =csv
 Level,Date,What
+2.0.2,3&nbsp;May&nbsp;2021,A single code block can share a slide with a list block or a table / graphics block
 2.0.1,1&nbsp;May&nbsp;2021,Added `&times;`&comma; `&percnt;`&comma; `&divide;`&comma; `&forall;`&comma; `&exist;`. Fixed 'three up graphic' layout bug.
 2.0,11&nbsp;April&nbsp;2021,Two slide content elements on a slide&comma; involving a major restructuring of the slide layout engine.
 1.9.5,28&nbsp;March&nbsp;2021,Added `&hellip;`. Allow specification of gaps between cards. Allow specification of heading level for title slide.
@@ -686,8 +687,12 @@ You can control task slide production by specifying `taskSlides` and `tasksPerSl
 <a id="slides-with-more-than-one-type-of-content"></a>
 ### Slides With More Than One Type Of Content
 
-For a limited number of content types you can create a slide with more than one type of content, in addition to the title: \
-You can create a slide with a numbered or bulleted list and a table or else some graphics.
+For a limited number of content types you can create a slide with two types of content (in addition to the title). \
+The pair of content blocks must be one each of:
+
+* A numbered or bulleted list
+* A table or else some graphics
+* A block of code
 
 You code them as you would for regular Markdown. \
 
@@ -714,6 +719,8 @@ You can specify two aspects of splitting a slide between the two blocks of conte
 
 These controls are described in [Slides With Multiple Content Blocks](#slides-with-multiple-content-blocks).
 
+**Note:** You can't specify two blocks of the same type on a single slide, for example two code blocks. \
+(For graphics, you can specify more than one graphic - and this will count as a single block.)
 ## Slides Without Titles
 <a id="slides-without-titles"></a>
 
