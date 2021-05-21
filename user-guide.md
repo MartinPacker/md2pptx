@@ -34,7 +34,7 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 		* [Indented Text](#indented-text)
 		* [`<pre>`](#<pre>)
 	* [Task List Slides](#task-list-slides)
-	* [Slides With More Than One Type Of Content](#slides-with-more-than-one-type-of-content)
+	* [Slides With More Than One Content Block](#slides-with-more-than-one-content-block)
 * [Slides Without Titles](#slides-without-titles)
 	* [Using A Horizontal Rule](#using-a-horizontal-rule)
 	* [Using A Level 3 Heading With `&nbsp;`](#using-a-level-3-heading-with-&nbsp;)
@@ -225,6 +225,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|2.1|21&nbsp;May&nbsp;2021|Added `&lambda;`&comma; `&mu;`&comma; `&nu;`&comma; `&pi`&comma; `&rho`. Allow more than one table or code block on a slide.|
 |2.0.2|3&nbsp;May&nbsp;2021|A single code block can share a slide with a list block or a table / graphics block|
 |2.0.1|1&nbsp;May&nbsp;2021|Added `&times;`&comma; `&percnt;`&comma; `&divide;`&comma; `&forall;`&comma; `&exist;`. Fixed 'three up graphic' layout bug.|
 |2.0|11&nbsp;April&nbsp;2021|Two slide content elements on a slide&comma; involving a major restructuring of the slide layout engine.|
@@ -719,17 +720,18 @@ Task slides are paginated: Multiple task slides are created, each with the task 
 
 You can control task slide production by specifying `taskSlides` and `tasksPerSlide`. See [Controlling Task Slide Production With `taskSlides` and `tasksPerSlide`](#controlling-task-slide-production-with-taskslides-and-tasksperslide).
 
-<a id="slides-with-more-than-one-type-of-content"></a>
-### Slides With More Than One Type Of Content
+<a id="slides-with-more-than-one-content-block"></a>
+### Slides With More Than One Content Block
 
-For a limited number of content types you can create a slide with two types of content (in addition to the title). The pair of content blocks must be one each of:
+md2pptx started with a very simple layout scheme: A single content block on a slide (in addition to the title). Those content blocks are:
 
-* A numbered or bulleted list
+* A numbered or bulleted list, perhaps with cards
 * A table or else some graphics
 * A block of code
 
-You code them as you would for regular Markdown.
-Here is an example:
+Beginning with md2pptx 2.0, this restriction has been gradually relieved.
+
+You can code, for example, two blocks. Write them as you would for regular Markdown. Here is an example:
 
     ### Here Is A title
 
@@ -743,16 +745,24 @@ The order in which, in this example, the bulleted list and the graphics blocks a
 * For horizontal layout the bulleted list would appear **to the left** of the graphic.
 * For vertical layout the bulleted list would appear **above** the graphic.
 
+You can still only code one list block, with its optional set of cards. You can code multiple code blocks, and multiple tables.
+
+You can code up to 10 content blocks, though in practice such a slide would probably be overcrowded.
+
 In a text editor it's simple to reverse the order of these two blocks of content.
 
-You can specify two aspects of splitting a slide between the two blocks of content:
+You can specify two aspects of splitting a slide between the various blocks of content:
 
 * Whether the split is horizontal or vertical, the default being vertical.
 * What proportion of the content space is the first block, and what proportion is the second.
 
 These controls are described in [Slides With Multiple Content Blocks](#slides-with-multiple-content-blocks).
 
-**Note:** You can't specify two blocks of the same type on a single slide, for example two code blocks. (For graphics, you can specify more than one graphic - and this will count as a single block.)
+**Notes:**
+
+1. You can't specify two list / card blocks on a single slide.
+1. For graphics, if you specify more than one graphic this will count as a single block. For example, two graphics side by side is a single block.
+
 ## Slides Without Titles
 <a id="slides-without-titles"></a>
 
@@ -941,7 +951,9 @@ md2pptx supports a few [HTML entity references](https://en.wikipedia.org/wiki/Li
 |`&colon;`|&colon;|`&lsqb;`|&lsqb;|`&divide;`|&divide;|
 |`&amp;`|&amp;|`&rsqb;`|&rsqb;|`&forall;`|&forall;|
 |`&comma;`|&comma;|`&infin;`|&infin;|`&exist;`|&exist;|
-|`&check;`|&check;|`&times;`|&times;|
+|`&check;`|&check;|`&times;`|&times;|`&lambda;`|&lambda;|
+|`&mu;`|&mu;|`&nu;`|&nu;|`&pi;`|&pi;|
+|`&rho;`|&rho;|
 
 ### Numeric Character References
 <a id="numeric-character-references"></a>
@@ -1621,7 +1633,7 @@ The other heading levels will be adjusted accordingly.
 
 This section describes how you can control the layout of slides with multiple blocks of content.
 
-See [Slides With More Than One Type Of Content](slides-with-more-than-one-type-of-content) for how to specify multiple blocks of content on a slide
+See [Slides With More Than One Content Block](#slides-with-more-than-one-content-block) for how to specify multiple blocks of content on a slide
 
 <a id="horizontal-or-vertical-split-contentsplitdirection"></a>
 ##### Horizontal Or Vertical Split - `ContentSplitDirection`
@@ -1643,15 +1655,15 @@ The default value is `vertical`.
 <a id="split-proportions-contentsplit"></a>
 ##### Split Proportions - `ContentSplit`
 
-You specify the split between the two blocks as proportions. For example:
+You specify the split between the blocks as proportions. For example:
 
     ContentSplit: 1 4
 
-will make the first block a quarter the height (or width) of the second. Specify two integers.
+will make the first block a quarter the height (or width) of the second. Specify proportions using integers.
 
 You can override this on a slide-by-slide basis with [Dynamic ContentSplit](#dynamic-contentsplit).
 
-The default value is `1 3`.
+The default value is such as to make each block have equal space.
 
 <a id="dynamic-metadata"></a>
 ### Dynamic Metadata
@@ -1800,7 +1812,7 @@ You can override the presentation [ContentSplitDirection](#horizontal-or-vertica
 
 You can override the presentation [ContentSplit](#split-proportions-contentsplit) specification on a slide-by-slide basis:
 
-    <!-- md2pptx: contentsplit: 1 1 -->
+    <!-- md2pptx: contentsplit: 1 1 3 -->
 
 ## Modifying The Slide Template
 <a id="modifying-the-slide-template"></a>

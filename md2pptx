@@ -43,20 +43,21 @@ try:
 except:
     have_cairosvg = False
 
-md2pptx_level = "2.0.2"
-md2pptx_date = "3 May, 2021"
+md2pptx_level = "2.1"
+md2pptx_date = "21 May, 2021"
 
 
 class SlideInfo:
     def __init__(
-        self, titleText, bodyText, blockType, bullets, tableRows, cards, sequence
+        self, titleText, subtitleText, blockType, bullets, tableRows, cards, code, sequence
     ):
         self.titleText = titleText
-        self.bodyText = bodyText
+        self.subtitleText = subtitleText
         self.blockType = blockType
         self.bullets = bullets
         self.tableRows = tableRows
         self.cards = cards
+        self.code = code
         self.sequence = sequence
 
 
@@ -67,7 +68,6 @@ class Rectangle:
         self.left = left
         self.height = height
         self.width = width
-
 
 def startswithOneOf(haystack, needleList):
     for needle in needleList:
@@ -389,8 +389,7 @@ def get_image_size(fname):
 def renderText(shape, bullets):
     tf = shape.text_frame
 
-    bulletNumber = 0
-    for bullet in bullets:
+    for bulletNumber, bullet in enumerate(bullets):
         para0 = tf.paragraphs[0]
 
         if bulletNumber == 0:
@@ -412,8 +411,6 @@ def renderText(shape, bullets):
         if bullet[2] == "numbered":
             makeNumberedListItem(p)
 
-        bulletNumber = bulletNumber + 1
-
     tf.auto_size = MSO_AUTO_SIZE.TEXT_TO_FIT_SHAPE
 
 
@@ -422,7 +419,7 @@ def renderTable(shape, bounds, tableRows):
     x = 1
 
 
-def findSlideTitle(slide):
+def findTitleShape(slide):
     if slide.shapes.title == None:
         # Have to use first shape as title
         return slide.shapes[0]
@@ -460,7 +457,7 @@ def getContentRect(presentation, slide, topOfContent, margin):
 # flattened title
 def formatTitle(presentation, slide, titleText, titleFontSize):
     # Find title
-    title = findSlideTitle(slide)
+    title = findTitleShape(slide)
 
     if titleText == "&nbsp;":
         deleteSimpleShape(title)
@@ -557,6 +554,11 @@ def parseText(text):
     text2 = text2.replace("&divide;", "÷")
     text2 = text2.replace("&forall;", "∀")
     text2 = text2.replace("&exist;", "∃")
+    text2 = text2.replace("&lambda;", "λ")
+    text2 = text2.replace("&mu;", "μ")
+    text2 = text2.replace("&nu;", "ν")
+    text2 = text2.replace("&pi;", "π")
+    text2 = text2.replace("&rho;", "ρ")
 
     # Replace any asterisks with spaces either side with entity reference
     text2 = text2.replace(" * ", " &lowast; ")
@@ -1167,7 +1169,7 @@ def createTitleOrSectionSlide(
     slide = presentation.slides.add_slide(presentation.slide_layouts[layout])
 
     # Add title
-    title = findSlideTitle(slide)
+    title = findTitleShape(slide)
     flattenedTitle = addFormattedText(title.text_frame.paragraphs[0], titleText)
 
     title.text_frame.paragraphs[0].font.size = Pt(titleSize)
@@ -1264,22 +1266,19 @@ def handleWhateverGraphicType(graphicFilename):
     return graphicFilename, printableGraphicFilename
 
 
-def createCodeBlock(presentation, slideNumber, slideInfo, slide, renderingRectangle):
+def createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber):
     # A variable number of newlines appear before the actual code
-    code = slideInfo.bodyText.lstrip("\n")
+    codeLines = slideInfo.code[codeBlockNumber]
 
     # Figure out code slide type
-    if code.startswith("<pre"):
+    if codeLines[0].startswith("<pre"):
         codeType = "pre"
-    elif code.startswith("<code"):
+    elif codeLines[0].startswith("<code"):
         codeType = "code"
-    elif code.startswith("```"):
+    elif codeLines[0].startswith("```"):
         codeType = "backticks"
     else:
         codeType = "indented"
-
-    # Split the code into lines
-    codeLines = code.split("\n")
 
     # Handle any trailing empty lines
     while codeLines[-1] == "":
@@ -1352,13 +1351,11 @@ def createCodeBlock(presentation, slideNumber, slideInfo, slide, renderingRectan
         # span elements want special handling
         for codeLine in codeLines:
             # Split the line - and maybe there are spans
-            cursor = 0
             spanFragments = codeLine.split("<span ")
             if len(spanFragments) > 1:
                 textArray = []
                 # Break line down into what will become runs
-                fragmentNumber = 0
-                for fragment in spanFragments:
+                for fragmentNumber, fragment in enumerate(spanFragments):
 
                     if fragmentNumber > 0:
                         classNameStartsAt = fragment.index('"')
@@ -1383,7 +1380,6 @@ def createCodeBlock(presentation, slideNumber, slideInfo, slide, renderingRectan
                             fragment = spanText
                     else:
                         textArray.append(["Normal", fragment])
-                    fragmentNumber += 1
 
                 # Now we have a text array we can add the runs for the line
                 for textArrayItem in textArray:
@@ -1441,13 +1437,10 @@ def createCodeBlock(presentation, slideNumber, slideInfo, slide, renderingRectan
             font = run.font
             font.name = monoFont
 
-    if want_numbers_content is True:
-        addFooter(presentation, slideNumber, slide)
-
     return slide
 
 
-def createAbstractSlide(presentation, slideNumber, titleText, subtitleText, paragraphs):
+def createAbstractSlide(presentation, slideNumber, titleText, paragraphs):
     slide = presentation.slides.add_slide(presentation.slide_layouts[titleOnlyLayout])
 
     shapes = slide.shapes
@@ -1471,15 +1464,15 @@ def createAbstractSlide(presentation, slideNumber, titleText, subtitleText, para
         contentWidth,
         contentHeight,
     )
+
     p = abstractBox.text_frame.paragraphs[0]
-    para = 1
     tf = abstractBox.text_frame
     f = p.font
     f.size = Pt(22)
-    for abstractParagraph in paragraphs:
+    for para, abstractParagraph in enumerate(paragraphs):
         paragraphLevel, paragraphText, paragraphType = abstractParagraph
-        if para > 1:
 
+        if para > 0:
             # Spacer paragraph
             p = tf.add_paragraph()
             f = p.font
@@ -1490,7 +1483,6 @@ def createAbstractSlide(presentation, slideNumber, titleText, subtitleText, para
             f = p.font
             f.size = Pt(22)
         addFormattedText(p, paragraphText)
-        para = para + 1
 
     tf.word_wrap = True
 
@@ -1504,7 +1496,7 @@ def createAbstractSlide(presentation, slideNumber, titleText, subtitleText, para
 def createContentSlide(presentation, slideNumber, slideInfo):
     # slideInfo's body text is only filled in if there is code - and that's
     # where the code - plus preamble and postamble is.
-    if slideInfo.bodyText != "":
+    if slideInfo.code != "":
         haveCode = True
     else:
         haveCode = False
@@ -1549,12 +1541,12 @@ def createContentSlide(presentation, slideNumber, slideInfo):
     # Check whether there are too many elements in the sequence to     #
     # render - and warn if there are. Then calculate how many to render#
     ####################################################################
-    maxBlocks = 2
-    if len(sequence) > maxBlocks:
+    maxBlocks = 4
+    if len(slideInfo.sequence) > maxBlocks:
         print(
             "Too many blocks to render. Only " + str(maxBlocks) + " will be rendered."
         )
-    blocksToRender = min(maxBlocks, len(sequence))
+    blocksToRender = min(maxBlocks, len(slideInfo.sequence))
 
     ####################################################################
     # Get the dimensions of the rectangles we'll place the graphics in #
@@ -1566,6 +1558,9 @@ def createContentSlide(presentation, slideNumber, slideInfo):
 
     verticalCursor = contentTop
     horizontalCursor = contentLeft
+
+    codeBlockNumber = 0
+    tableBlockNumber = 0
 
     for b in range(blocksToRender):
         if contentSplitDirection == "vertical":
@@ -1588,18 +1583,21 @@ def createContentSlide(presentation, slideNumber, slideInfo):
 
         renderingRectangle = Rectangle(blockTop, blockLeft, blockHeight, blockWidth)
 
-        if sequence[b] == "table":
+        if slideInfo.sequence[b] == "table":
             createTableBlock(
-                presentation, slideNumber, slideInfo, slide, renderingRectangle
+                slideInfo, slide, renderingRectangle, tableBlockNumber
             )
-        elif sequence[b] == "list":
+            tableBlockNumber += 1
+
+        elif slideInfo.sequence[b] == "list":
             createListBlock(
-                presentation, slideNumber, slideInfo, slide, renderingRectangle
+                slideInfo, slide, renderingRectangle
             )
         else:
             createCodeBlock(
-                presentation, slideNumber, slideInfo, slide, renderingRectangle
+                slideInfo, slide, renderingRectangle, codeBlockNumber
             )
+            codeBlockNumber += 1
 
     if want_numbers_content is True:
         addFooter(presentation, slideNumber, slide)
@@ -1607,7 +1605,7 @@ def createContentSlide(presentation, slideNumber, slideInfo):
     return slide
 
 
-def createListBlock(presentation, slideNumber, slideInfo, slide, renderingRectangle):
+def createListBlock(slideInfo, slide, renderingRectangle):
     # Get bulleted text shape - either for bullets above cards or first card's body shape
     bulletsShape = findBodyShape(slide)
 
@@ -1695,6 +1693,9 @@ def createListBlock(presentation, slideNumber, slideInfo, slide, renderingRectan
                 paddingFactor = Inches(verticalCardGap)
 
             cardHeight = int((cardAreaHeight) / cardCount - paddingFactor)
+            
+        # Store slide title shape for cloning
+        slideTitleShape = findTitleShape(slide)
 
         for c in range(cardCount):
             # Calculate a card's vertical position
@@ -1724,7 +1725,7 @@ def createListBlock(presentation, slideNumber, slideInfo, slide, renderingRectan
                 cardLeft.append(marginBase)
 
             # Card title modeled on slide title - but smaller
-            cardTitleShape = addClonedShape(slide, slide.shapes.title)
+            cardTitleShape = addClonedShape(slide, slideTitleShape)
 
             cardTitleShapes.append(cardTitleShape)
 
@@ -1853,8 +1854,8 @@ def createListBlock(presentation, slideNumber, slideInfo, slide, renderingRectan
     return slide
 
 
-def createTableBlock(presentation, slideNumber, slideInfo, slide, renderingRectangle):
-    tableRows = slideInfo.tableRows
+def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
+    tableRows = slideInfo.tableRows[tableBlockNumber]
 
     printableTopLeftGraphicFilename = ""
     printableTopRightGraphicFilename = ""
@@ -1862,18 +1863,18 @@ def createTableBlock(presentation, slideNumber, slideInfo, slide, renderingRecta
     printableBottomRightGraphicFilename = ""
 
     # Handle table body
-    if (len(slideInfo.tableRows) <= 2) & (len(tableRows[0]) <= 2):
+    if (len(tableRows) <= 2) & (len(tableRows[0]) <= 2):
         # This is a table with 1 or 2 rows and 1 or 2 columns
         isGraphicsGrid = True
-        gridRows = len(slideInfo.tableRows)
+        gridRows = len(tableRows)
         if gridRows == 1:
-            gridColumns = len(slideInfo.tableRows[0])
+            gridColumns = len(tableRows[0])
         else:
-            gridColumns = max(len(slideInfo.tableRows[0]), len(slideInfo.tableRows[1]))
+            gridColumns = max(len(tableRows[0]), len(tableRows[1]))
         topGraphicCount = 0
 
         # Attempt to retrieve filename for left side - top row
-        topLeftSide = slideInfo.tableRows[0][0]
+        topLeftSide = tableRows[0][0]
         if (graphicRegex.match(topLeftSide) != None) | (
             clickableGraphicRegex.match(topLeftSide) != None
         ):
@@ -1901,8 +1902,8 @@ def createTableBlock(presentation, slideNumber, slideInfo, slide, renderingRecta
 
         # Attempt to retrieve filename for right side - top row
         if gridColumns == 2:
-            if len(slideInfo.tableRows[0]) == 2:
-                topRightSide = slideInfo.tableRows[0][1]
+            if len(tableRows[0]) == 2:
+                topRightSide = tableRows[0][1]
             else:
                 topRightSide = ""
             if (graphicRegex.match(topRightSide) != None) | (
@@ -1942,7 +1943,7 @@ def createTableBlock(presentation, slideNumber, slideInfo, slide, renderingRecta
         if gridRows == 2:
             # Attempt to retrieve filename for left side - bottom row
             bottomGraphicCount = 0
-            bottomLeftSide = slideInfo.tableRows[1][0]
+            bottomLeftSide = tableRows[1][0]
             if (graphicRegex.match(bottomLeftSide) != None) | (
                 clickableGraphicRegex.match(bottomLeftSide) != None
             ):
@@ -1972,13 +1973,13 @@ def createTableBlock(presentation, slideNumber, slideInfo, slide, renderingRecta
 
             # Attempt to retrieve filename for right side - bottom row
             if gridColumns == 2:
-                if len(slideInfo.tableRows[1]) == 1:
+                if len(tableRows[1]) == 1:
                     # There is one cell in bottom row so this is centred "3-up"
                     bottomRightGraphicFilename = ""
                 else:
                     # There is a bottom right so this is "4-up", though one or OTHER_MEMBERS
                     # bottom cells might be empty
-                    bottomRightSide = slideInfo.tableRows[1][1]
+                    bottomRightSide = tableRows[1][1]
                     if (graphicRegex.match(bottomRightSide) != None) | (
                         clickableGraphicRegex.match(bottomRightSide) != None
                     ):
@@ -2345,15 +2346,15 @@ def createTableBlock(presentation, slideNumber, slideInfo, slide, renderingRecta
 
         # Calculate maximum number of columns - as this is how wide we'll make the table
         columns = 0
-        for row in slideInfo.tableRows:
+        for row in tableRows:
             columns = max(columns, len(row))
-
+        
         alignments = []
         widths = []
 
         # Adjust table if it contains a dash line as it's second line
-        if len(slideInfo.tableRows) > 1:
-            firstCellSecondRow = slideInfo.tableRows[1][0]
+        if len(tableRows) > 1:
+            firstCellSecondRow = tableRows[1][0]
             if (firstCellSecondRow.startswith("-")) | (
                 firstCellSecondRow.startswith(":-")
             ):
@@ -2366,8 +2367,9 @@ def createTableBlock(presentation, slideNumber, slideInfo, slide, renderingRecta
         if haveTableHeading is True:
             # Has table heading
             tableHeadingBlurb = " with heading"
+            
             # Figure out alignments of cells
-            for cell in slideInfo.tableRows[1]:
+            for cell in tableRows[1]:
                 if cell.startswith(":-"):
                     if cell.endswith("-:"):
                         alignments.append("c")
@@ -2379,8 +2381,17 @@ def createTableBlock(presentation, slideNumber, slideInfo, slide, renderingRecta
                     alignments.append("l")
 
                 widths.append(cell.count("-"))
+            
+            # Default any missing columns to left / single width
+            if len(tableRows[1]) < columns:
+                for _ in range(columns - len(tableRows[1])):
+                    alignments.append("l")
+                    widths.append(1)
+            
             widths_total = sum(widths)
-            del slideInfo.tableRows[1]
+            
+            # Remove this alignment / widths row from the table
+            del tableRows[1]
             wantTableHeading = True
         else:
             # No table heading
@@ -2396,7 +2407,7 @@ def createTableBlock(presentation, slideNumber, slideInfo, slide, renderingRecta
             widths_total = columns
 
         # Calculate number of rows
-        rows = len(slideInfo.tableRows)
+        rows = len(tableRows)
         alignments_count = len(alignments)
 
         # Create the table with the above number of rows and columns
@@ -2426,19 +2437,15 @@ def createTableBlock(presentation, slideNumber, slideInfo, slide, renderingRecta
         for colno in range(columns):
             cols[colno].width = int(shapeWidth * widths[colno] / widths_total)
 
+
         # Fill in the cells
-        rowNumber = 0
-
-        for row in slideInfo.tableRows:
-            columnNumber = 0
-
+        for rowNumber, row in enumerate(tableRows):
             # Add dummy cells to the end of the row so that there are as many
             # cells in the row as there are columns in the table
             cellCount = len(row)
             for c in range(cellCount, columns):
                 row.append("")
-
-            for cell in row:
+            for columnNumber, cell in enumerate(row):
                 newCell = newTable.cell(rowNumber, columnNumber)
 
                 # For compact table remove the margins around the text
@@ -2471,10 +2478,6 @@ def createTableBlock(presentation, slideNumber, slideInfo, slide, renderingRecta
 
                 addFormattedText(p, cell)
 
-                columnNumber += 1
-
-            rowNumber += 1
-
     return slide
 
 
@@ -2503,7 +2506,7 @@ def delinkify(text):
         return text
 
 
-def createTOCSlide(presentation, slideNumber, titleText, subtitleText, bullets):
+def createTOCSlide(presentation, slideNumber, titleText, bullets):
     print(
         str(slideNumber).rjust(4)
         + '     Table Of Contents (Style: "'
@@ -2578,21 +2581,30 @@ def createTOCSlide(presentation, slideNumber, titleText, subtitleText, bullets):
 
 
 def createSlide(presentation, slideNumber, slideInfo):
-    # Work out whether it's 0, 1, or 2 items to render
-    itemsToRender = (0 if slideInfo.bullets == [] else 1) + (
-        0 if slideInfo.tableRows == [] else 1
-    )
-
-    if slideInfo.blockType == "title":
-        slide = createTitleOrSectionSlide(
-            presentation,
-            slideNumber,
-            slideInfo.titleText,
-            titleSlideLayout,
-            sectionTitleSize,
-            slideInfo.bodyText,
-            sectionSubtitleSize,
-        )
+    if slideInfo.blockType in ["content", "code", "table"]:
+        if (tocStyle != "") & (tocTitle == slideInfo.titleText):
+            # This is a Table Of Contents slide
+            slide = createTOCSlide(
+                presentation,
+                slideNumber,
+                slideInfo.titleText,
+                slideInfo.bullets,
+            )
+        elif (abstractTitle != "") & (abstractTitle == slideInfo.titleText):
+            # This is an abstract slide
+            slide = createAbstractSlide(
+                presentation,
+                slideNumber,
+                slideInfo.titleText,
+                slideInfo.bullets,
+            )
+        else:
+            # This is an ordinary contents slide
+            slide = createContentSlide(
+                presentation,
+                slideNumber,
+                slideInfo,
+            )
 
     elif slideInfo.blockType == "section":
         if tocStyle != "":
@@ -2601,7 +2613,6 @@ def createSlide(presentation, slideNumber, slideInfo):
                 presentation,
                 slideNumber,
                 slideInfo.titleText,
-                slideInfo.bodyText,
                 slideInfo.bullets,
             )
         else:
@@ -2611,45 +2622,20 @@ def createSlide(presentation, slideNumber, slideInfo):
                 slideInfo.titleText,
                 sectionSlideLayout,
                 sectionTitleSize,
-                slideInfo.bodyText,
+                slideInfo.subtitleText,
                 sectionSubtitleSize,
             )
 
-    elif slideInfo.blockType == "content":
-        if (tocStyle != "") & (tocTitle == slideInfo.titleText):
-            # This is a Table Of Contents slide
-            slide = createTOCSlide(
-                presentation,
-                slideNumber,
-                slideInfo.titleText,
-                slideInfo.bodyText,
-                slideInfo.bullets,
-            )
-        elif (abstractTitle != "") & (abstractTitle == slideInfo.titleText):
-            # This is an abstract slide
-            slide = createAbstractSlide(
-                presentation,
-                slideNumber,
-                slideInfo.titleText,
-                slideInfo.bodyText,
-                slideInfo.bullets,
-            )
-        else:
-            slide = createContentSlide(
-                presentation,
-                slideNumber,
-                slideInfo,
-            )
-    elif slideInfo.blockType == "code":
-        # Note: Somehow two newlines got prepended to the code
-        slide = createContentSlide(
+    elif slideInfo.blockType == "title":
+        slide = createTitleOrSectionSlide(
             presentation,
             slideNumber,
-            slideInfo,
+            slideInfo.titleText,
+            titleSlideLayout,
+            sectionTitleSize,
+            slideInfo.subtitleText,
+            sectionSubtitleSize,
         )
-
-    elif slideInfo.blockType == "table":
-        slide = createContentSlide(presentation, slideNumber, slideInfo)
 
     slideNumber = slideNumber + 1
 
@@ -2658,12 +2644,10 @@ def createSlide(presentation, slideNumber, slideInfo):
 
 
 def createTaskSlides(prs, slideNumber, tasks, titleStem):
-    taskNumber = 0
     taskSlideNumber = 0
 
     taskCount = len(tasks)
-
-    for task in tasks:
+    for taskNumber, task in enumerate(tasks):
         if taskNumber % tasksPerPage == 0:
             # Is first task in a page
             if taskNumber > 0:
@@ -2676,8 +2660,23 @@ def createTaskSlides(prs, slideNumber, tasks, titleStem):
                     # Only one task page
                     title = titleStem
 
-                slideInfo = SlideInfo(title, "", "table", [], taskRows, [])
+                taskBlock = [taskRows]
+                
+                slideInfo = SlideInfo(title, "", "table", [], taskBlock, [], [], ["table"])
                 slide = createContentSlide(prs, slideNumber, slideInfo)
+                
+                # Fix up references to be active links to the slide where the task
+                # was declared
+                table = findBodyShape(slide).table
+                for row in table.rows:
+                    cell0Text = row.cells[0].text
+                    if cell0Text not in ["Slide", ""]:
+                        # First cell refers to a specific slide number - so link to it
+                        run = row.cells[0].text_frame.paragraphs[0].runs[0]
+                        createRunHyperlinkOrTooltip(
+                            run, prs.slides[int(cell0Text) - 2 + templateSlideCount], ""
+                        )
+
                 slideNumber += 1
 
             taskRows = [["Slide", "Due", "Task", "Tags", "Done"]]
@@ -2698,8 +2697,6 @@ def createTaskSlides(prs, slideNumber, tasks, titleStem):
             taskRows.append(["", dueDate, taskText, tags, done])
         old_sNum = sNum
 
-        taskNumber += 1
-
     # Print a final "tasks" slide
     taskSlideNumber += 1
     if taskCount > tasksPerPage:
@@ -2707,7 +2704,8 @@ def createTaskSlides(prs, slideNumber, tasks, titleStem):
     else:
         title = titleStem
 
-    slideInfo = SlideInfo(title, "", "table", [], taskRows, [])
+    taskBlock = [taskRows]
+    slideInfo = SlideInfo(title, "", "table", [], taskBlock, [], [], ["table"])
     slide = createContentSlide(prs, slideNumber, slideInfo)
 
     # Fix up references to be active links to the slide where the task
@@ -2716,6 +2714,7 @@ def createTaskSlides(prs, slideNumber, tasks, titleStem):
     for row in table.rows:
         cell0Text = row.cells[0].text
         if cell0Text not in ["Slide", ""]:
+            # First cell refers to a specific slide number - so link to it
             run = row.cells[0].text_frame.paragraphs[0].runs[0]
             createRunHyperlinkOrTooltip(
                 run, prs.slides[int(cell0Text) - 2 + templateSlideCount], ""
@@ -2725,13 +2724,12 @@ def createTaskSlides(prs, slideNumber, tasks, titleStem):
 
 
 def createGlossarySlides(prs, slideNumber, abbrevDictionary):
-    termNumber = 0
     termSlideNumber = 0
     glossarySlides = []
 
     termCount = len(abbrevDictionary)
 
-    for term in sorted(abbrevDictionary.keys()):
+    for termNumber, term in enumerate(sorted(abbrevDictionary.keys())):
         if termNumber % glossaryTermsPerPage == 0:
             # Is first glossary term in a page
             if termNumber > 0:
@@ -2744,8 +2742,9 @@ def createGlossarySlides(prs, slideNumber, abbrevDictionary):
                     # Only one glossary page
                     title = glossaryTerm
 
+                glossaryBlock = [glossaryRows]
                 slideInfo = SlideInfo(
-                    title, "", "table", [], glossaryRows, [], ["table"]
+                    title, "", "table", [], glossaryBlock, [], [], ["table"]
                 )
                 slide = createContentSlide(prs, slideNumber, slideInfo)
 
@@ -2760,7 +2759,6 @@ def createGlossarySlides(prs, slideNumber, abbrevDictionary):
 
         glossaryRows.append([term, meaning])
 
-        termNumber += 1
 
     # Print a final "glossary" slide
     termSlideNumber += 1
@@ -2771,7 +2769,8 @@ def createGlossarySlides(prs, slideNumber, abbrevDictionary):
         # Only one glossary page
         title = glossaryTitle
 
-    slideInfo = SlideInfo(title, "", "table", [], glossaryRows, [], ["table"])
+    glossaryBlock = [glossaryRows]
+    slideInfo = SlideInfo(title, "", "table", [], glossaryBlock, [], [], ["table"])
     slide = createContentSlide(prs, slideNumber, slideInfo)
     glossarySlides.append(slide)
     slideNumber += 1
@@ -2780,13 +2779,12 @@ def createGlossarySlides(prs, slideNumber, abbrevDictionary):
 
 
 def createFootnoteSlides(prs, slideNumber, footnoteDefinitions):
-    footnoteNumber = 0
     footnotesSlideNumber = 0
     footnoteSlides = []
 
     footnoteCount = len(footnoteDefinitions)
 
-    for footnote in footnoteDefinitions:
+    for footnoteNumber, footnote in enumerate(footnoteDefinitions):
         if footnoteNumber % footnotesPerPage == 0:
             # Is first footnote in a page
             if footnoteNumber > 0:
@@ -2800,7 +2798,7 @@ def createFootnoteSlides(prs, slideNumber, footnoteDefinitions):
                     title = footnotesTitle
 
                 slideInfo = SlideInfo(
-                    title, "", "content", bullets, [], cards, ["list"]
+                    title, "", "content", bullets, [], cards, [], ["list"]
                 )
                 slideNumber, slide, sequence = createSlide(prs, slideNumber, slideInfo)
 
@@ -2821,8 +2819,6 @@ def createFootnoteSlides(prs, slideNumber, footnoteDefinitions):
             ]
         )
 
-        footnoteNumber += 1
-
     # Print a final "footnote" slide
     footnotesSlideNumber += 1
     if footnoteCount > footnotesPerPage:
@@ -2832,7 +2828,7 @@ def createFootnoteSlides(prs, slideNumber, footnoteDefinitions):
         # Only one footnotes page
         title = footnotesTitle
 
-    slideInfo = SlideInfo(title, "", "content", bullets, [], cards, ["list"])
+    slideInfo = SlideInfo(title, "", "content", bullets, [], cards, [], ["list"])
     slideNumber, slide, sequence = createSlide(prs, slideNumber, slideInfo)
 
     footnoteSlides.append(slide)
@@ -2935,6 +2931,7 @@ in_comment = False
 inHTML = False
 inCode = False
 
+# Pass 1: Strip out comments and metadata, storing the latter
 for line in input_file:
     if line.lstrip().startswith("<!-- md2pptx: "):
         # md2pptx dynamic metadata so keep it
@@ -3086,7 +3083,7 @@ defaultVerticalCardGap = 0.15
 verticalCardGap = defaultVerticalCardGap
 presVerticalCardGap = defaultVerticalCardGap
 
-defaultContentSplit = [1, 3]
+defaultContentSplit = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 contentSplit = defaultContentSplit
 presContentSplit = defaultContentSplit
 
@@ -3458,6 +3455,7 @@ slideSubtitle = ""
 bullets = []
 tableRows = []
 cards = []
+code = []
 inCode = False
 inHTMLCode = False
 inFencedCode = False
@@ -3472,7 +3470,7 @@ href_runs = {}
 # Each of these is a picture, then a href, then a tooltip - as a tuple
 pictureInfos = []
 
-# Pass to concatenate lines with continuations
+# Pass 2: Concatenate lines with continuations
 previousLine = "\n"
 linesAfterConcatenation = []
 
@@ -3534,7 +3532,7 @@ for line in afterMetadataAndHTML:
     # Store previous line to see if it was H1 or blank
     previousLine = line
 
-# Pass to get footnote definitions
+# Pass 3: Get footnote definitions
 metadataLinenumber = 0
 for line in linesAfterConcatenation:
     line = line.rstrip()
@@ -3547,7 +3545,7 @@ for line in linesAfterConcatenation:
         linesAfterConcatenation[metadataLinenumber] = "<ignoreme>"
     metadataLinenumber += 1
 
-# Main pass over the input file, now that footnote
+# Pass 4: Main pass over the input file, now that footnote
 # references have been gathered
 for line in linesAfterConcatenation:
     line = line.rstrip()
@@ -3558,9 +3556,10 @@ for line in linesAfterConcatenation:
         continue
 
     if startswithOneOf(line, ["<pre>", "<code>"]):
-        code = []
+        code.append([])
         inCode = True
         inHTMLCode = True
+        inTable = False
 
     if startswithOneOf(line, ["</pre>", "</code>"]):
         inCode = False
@@ -3570,15 +3569,21 @@ for line in linesAfterConcatenation:
         inCode = not inCode
         if inCode:
             # Just entered code
-            code = []
+            code.append([])
             blockType = "code"
+            inTable = False
+        else:
+            # Just exited code - but add closing line
+            code[-1].append(line)
         inFencedCode = not inFencedCode
 
     if inCode or inHTMLCode or inFencedCode:
-        code.append(line)
+        if len(code) == 0:
+            code.append([])
+        code[-1].append(line)
 
         # If first line of code then mark the current sequence entry as "code"
-        if len(code) == 1:
+        if len(code[-1]) == 1:
             sequence.append("code")
 
     if (
@@ -3590,11 +3595,12 @@ for line in linesAfterConcatenation:
         inCode = False
 
     if (line.startswith("    ")) & (inList is False):
+        # Only list items and code can be indented by 4 characters
         if inCode is False:
-            code = []
-        blockType = "code"
-        code.append(line[4:])
-        inCode = True
+            code.append([])
+            blockType = "code"
+            code[-1].append(line[4:])
+            inCode = True
 
     # Rewrite horizontal rule as a heading 3 with non-breaking space
     if startswithOneOf(line, ["<hr/>", "---", "***", "___"]):
@@ -3865,6 +3871,7 @@ for line in linesAfterConcatenation:
                     bullets,
                     tableRows,
                     cards,
+                    code,
                     sequence,
                 )
                 slideNumber, slide, sequence = createSlide(prs, slideNumber, slideInfo)
@@ -3953,7 +3960,7 @@ for line in linesAfterConcatenation:
         # There is at least one graphic in the line - whether clickable or not
         if inTable is False:
             blockType = "table"
-            tableRows = []
+            tableRows.append([])
             inTable = True
             sequence.append("table")
             inList = False
@@ -4002,13 +4009,13 @@ for line in linesAfterConcatenation:
             tableRow.append(line)
 
         # Add table row to saved table rows
-        tableRows.append(tableRow)
+        tableRows[-1].append(tableRow)
 
     elif line[:1] == "|":
         # Table or side-by-side
         if inTable is False:
             blockType = "table"
-            tableRows = []
+            tableRows.append([])
             inTable = True
             sequence.append("table")
             inList = False
@@ -4027,18 +4034,25 @@ for line in linesAfterConcatenation:
         if cell == "":
             tableRow.pop()
 
-        # Add clean table row (inList of cells) to saved table rows
-        tableRows.append(tableRow)
+        # Add clean table row to saved table rows
+        tableRows[-1].append(tableRow)
 
     else:
+        # Not in a table
+        inTable = False
+        
         # Must be a slide note line
         slideSubtitle = slideSubtitle + "\n" + line
         notes_text = notes_text + "\n" + line
 
-#  Finish off last slide
+######################################################################################
+#                                                                                    #
+# Finish off last slide                                                              #
+#                                                                                    #
+######################################################################################
 if (inBlock is True) | (inCode is True) | (inTable is True):
     slideInfo = SlideInfo(
-        slideTitle, slideSubtitle, blockType, bullets, tableRows, cards, sequence
+        slideTitle, slideSubtitle, blockType, bullets, tableRows, cards, code, sequence
     )
     slideNumber, slide, sequence = createSlide(prs, slideNumber, slideInfo)
 
@@ -4052,7 +4066,11 @@ if (inBlock is True) | (inCode is True) | (inTable is True):
 
     notes_text = ""
 
-# Add a footnotes slide - if there were any footnote definitions
+######################################################################################
+#                                                                                    #
+# Add a footnotes slide - if there were any footnote definitions                     #
+#                                                                                    #
+######################################################################################
 if len(footnoteDefinitions) > 0:
     slideNumber, footnoteSlides = createFootnoteSlides(
         prs, slideNumber, footnoteDefinitions
@@ -4067,8 +4085,11 @@ if len(footnoteDefinitions) > 0:
         footnoteSlideNumber = int(footnoteNumber / footnotesPerPage)
         createRunHyperlinkOrTooltip(run, footnoteSlides[footnoteSlideNumber], "")
 
-
-# Add a dictionary slide - if there were any abbr elements encountered
+######################################################################################
+#                                                                                    #
+# Add a dictionary slide - if there were any abbr elements encountered               #
+#                                                                                    #
+######################################################################################
 if len(abbrevDictionary) > 0:
     slideNumber, glossarySlides = createGlossarySlides(
         prs, slideNumber, abbrevDictionary
@@ -4085,8 +4106,11 @@ if len(abbrevDictionary) > 0:
                 run, glossarySlides[glossarySlideNumber], abbrevDictionary[abbreviation]
             )
 
-
-# Add final slide - or more than one - with any Taskpaper tasks in
+######################################################################################
+#                                                                                    #
+# Add final slide - or more than one - with any Taskpaper tasks in                   #
+#                                                                                    #
+######################################################################################
 if (len(tasks) > 0) & (taskSlides != "none"):
     # Turn tasks into a table slide
 
@@ -4119,7 +4143,11 @@ if (len(tasks) > 0) & (taskSlides != "none"):
             createTaskSlides(prs, slideNumber, complete, "Completed Tasks")
             createTaskSlides(prs, slideNumber, incomplete, "Incomplete Tasks")
 
-# Fix up any internal links
+######################################################################################
+#                                                                                    #
+# Fix up any internal links                                                          #
+#                                                                                    #
+######################################################################################
 xrefCheck_errors = False
 for href in href_runs.keys():
     run = href_runs[href]
