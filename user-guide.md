@@ -74,6 +74,7 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 		* [Controlling Task Slide Production With `taskSlides` and `tasksPerSlide`](#controlling-task-slide-production-with-taskslides-and-tasksperslide)
 		* [Controlling Glossary Slide Production With `glossaryTitle`, `glossaryTerm`, `glossaryMeaning`,`glossaryMeaningWidth`, and `glossaryTermsPerPage`](#controlling-glossary-slide-production-with-glossarytitle-glossaryterm-glossarymeaningglossarymeaningwidth-and-glossarytermsperpage)
 		* [Specifying How Much Space To Reserve For Slide Numbers With `NumbersHeight`](#specifying-how-much-space-to-reserve-for-slide-numbers-with-numbersheight)
+		* [Specifying How Many Spaces Represent An Indentation Level With `IndentSpaces`](#specifying-how-many-spaces-represent-an-indentation-level-with-indentspaces)
 		* [Card Slide Metadata](#card-slide-metadata)
 			* [Card Background Colour - `CardColour`](#card-background-colour-cardcolour)
 			* [Card Border Colour - `CardBorderColour`](#card-border-colour-cardbordercolour)
@@ -114,6 +115,7 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 		* [`CodeBackground`](#codebackground)
 		* [`ContentSplitDirection`](#contentsplitdirection)
 		* [`ContentSplit`](#contentsplit)
+		* [`IndentSpaces`](#indentspaces)
 * [Modifying The Slide Template](#modifying-the-slide-template)
 	* [Basics](#basics)
 	* [Slide Template Sequence](#slide-template-sequence)
@@ -225,6 +227,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|2.2|20&nbsp;June&nbsp;2021|Added IndentSpaces - to control&comma; including dynamically&comma; how many spaces represent a single level of list indentation.|
 |2.1|21&nbsp;May&nbsp;2021|Added `&lambda;`&comma; `&mu;`&comma; `&nu;`&comma; `&pi`&comma; `&rho`. Allow more than one table or code block on a slide.|
 |2.0.2|3&nbsp;May&nbsp;2021|A single code block can share a slide with a list block or a table / graphics block|
 |2.0.1|1&nbsp;May&nbsp;2021|Added `&times;`&comma; `&percnt;`&comma; `&divide;`&comma; `&forall;`&comma; `&exist;`. Fixed 'three up graphic' layout bug.|
@@ -364,6 +367,8 @@ Bulleted list items are introduced by an asterisk.
 To nest bullets use a tab character or 2 spaces to indent the sub-bullets. md2pptx doesn't have a limit on the level of nesting but Powerpoint probably does.
 
 Terminate the bulleted list slide with a blank line.
+
+**NOTE:** You can alter the number of spaces that represent each level of indenting. See [Specifying How Many Spaces Represent An Indentation Level With `IndentSpaces`](#specifying-how-many-spaces-represent-an-indentation-level-with-indentspaces). If you use tabs they will be converted to the the appropriate number of spaces internally.
 
 #### Numbered List Items
 <a id="numbered-items"></a>
@@ -1421,6 +1426,14 @@ You can override the default space left at the bottom of the slides - for slide 
 
 This specifies to reserve 1.0 inches of vertical space. The default is 0.4 inches.
 
+#### Specifying How Many Spaces Represent An Indentation Level With `IndentSpaces`
+
+While the default for signifying each level of indentation for bullets is two spaces, you can change it by coding `IndentSpaces` for metadata. For example:
+
+    IndentSpaces: 4
+
+You can change the value of `IndentSpaces` on a slide-by-slide basis, perhaps because you are including material from elsewhere that uses a different value. See [Dynamic IndentSpaces](#indentspaces-dynamic).
+
 #### Card Slide Metadata
 ##### Card Background Colour - `CardColour`
 <a id="card-background-colour-cardcolour"></a>
@@ -1813,6 +1826,13 @@ You can override the presentation [ContentSplitDirection](#horizontal-or-vertica
 You can override the presentation [ContentSplit](#split-proportions-contentsplit) specification on a slide-by-slide basis:
 
     <!-- md2pptx: contentsplit: 1 1 3 -->
+
+<a id="indentspaces-dynamic"></a>
+#### `IndentSpaces`
+
+You can override the presentation [IndentSpaces](#specifying-how-many-spaces-represent-an-indentation-level-with-indentspaces) specification on a slide-by-slide basis:
+
+    <!-- md2pptx: indentspaces: 4 -->
 
 ## Modifying The Slide Template
 <a id="modifying-the-slide-template"></a>

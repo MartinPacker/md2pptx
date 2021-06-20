@@ -1094,6 +1094,7 @@ body .markdown-body
 <li><a href="#controlling-task-slide-production-with-taskslides-and-tasksperslide">Controlling Task Slide Production With <code>taskSlides</code> and <code>tasksPerSlide</code></a></li>
 <li><a href="#controlling-glossary-slide-production-with-glossarytitle-glossaryterm-glossarymeaningglossarymeaningwidth-and-glossarytermsperpage">Controlling Glossary Slide Production With <code>glossaryTitle</code>, <code>glossaryTerm</code>, <code>glossaryMeaning</code>,<code>glossaryMeaningWidth</code>, and <code>glossaryTermsPerPage</code></a></li>
 <li><a href="#specifying-how-much-space-to-reserve-for-slide-numbers-with-numbersheight">Specifying How Much Space To Reserve For Slide Numbers With <code>NumbersHeight</code></a></li>
+<li><a href="#specifying-how-many-spaces-represent-an-indentation-level-with-indentspaces">Specifying How Many Spaces Represent An Indentation Level With <code>IndentSpaces</code></a></li>
 <li><a href="#card-slide-metadata">Card Slide Metadata</a><ul>
 <li><a href="#card-background-colour-cardcolour">Card Background Colour - <code>CardColour</code></a></li>
 <li><a href="#card-border-colour-cardbordercolour">Card Border Colour - <code>CardBorderColour</code></a></li>
@@ -1142,6 +1143,7 @@ body .markdown-body
 <li><a href="#codebackground"><code>CodeBackground</code></a></li>
 <li><a href="#contentsplitdirection"><code>ContentSplitDirection</code></a></li>
 <li><a href="#contentsplit"><code>ContentSplit</code></a></li>
+<li><a href="#indentspaces"><code>IndentSpaces</code></a></li>
 </ul>
 </li>
 </ul>
@@ -1248,6 +1250,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">2.2</td>
+<td align="right">20&nbsp;June&nbsp;2021</td>
+<td align="left">Added IndentSpaces - to control&comma; including dynamically&comma; how many spaces represent a single level of list indentation.</td>
+</tr>
 <tr>
 <td align="left">2.1</td>
 <td align="right">21&nbsp;May&nbsp;2021</td>
@@ -1537,6 +1544,7 @@ sectionTitleSize: 30
 <p><strong>NOTE:</strong> Some dialects of Markdown allow other bullet markers but md2pptx doesn&rsquo;t. You can be sure by coding <code>*</code> you have valid Markdown that md2pptx can also process correctly. For an explanation of why you have to stick to <code>*</code> see <a href="#task-list-slides">here</a>.</p>
 <p>To nest bullets use a tab character or 2 spaces to indent the sub-bullets. md2pptx doesn&rsquo;t have a limit on the level of nesting but Powerpoint probably does.</p>
 <p>Terminate the bulleted list slide with a blank line.</p>
+<p><strong>NOTE:</strong> You can alter the number of spaces that represent each level of indenting. See <a href="#specifying-how-many-spaces-represent-an-indentation-level-with-indentspaces">Specifying How Many Spaces Represent An Indentation Level With <code>IndentSpaces</code></a>. If you use tabs they will be converted to the the appropriate number of spaces internally.</p>
 <h4 id="numbered-list-items">Numbered List Items<a class="headerlink" href="#numbered-list-items" title="Permanent link"></a></h4>
 <p><a id="numbered-items"></a></p>
 <p>Within a bullet slide you can have numbered items. Here is an example of a slide with mixed numbers and bullets:</p>
@@ -2459,6 +2467,11 @@ baseTextDecrement: 1
 <pre><code>NumbersHeight: 1.0
 </code></pre>
 <p>This specifies to reserve 1.0 inches of vertical space. The default is 0.4 inches.</p>
+<h4 id="specifying-how-many-spaces-represent-an-indentation-level-with-indentspaces">Specifying How Many Spaces Represent An Indentation Level With <code>IndentSpaces</code><a class="headerlink" href="#specifying-how-many-spaces-represent-an-indentation-level-with-indentspaces" title="Permanent link"></a></h4>
+<p>While the default for signifying each level of indentation for bullets is two spaces, you can change it by coding <code>IndentSpaces</code> for metadata. For example:</p>
+<pre><code>IndentSpaces: 4
+</code></pre>
+<p>You can change the value of <code>IndentSpaces</code> on a slide-by-slide basis, perhaps because you are including material from elsewhere that uses a different value. See <a href="#indentspaces-dynamic">Dynamic IndentSpaces</a>.</p>
 <h4 id="card-slide-metadata">Card Slide Metadata<a class="headerlink" href="#card-slide-metadata" title="Permanent link"></a></h4>
 <h5 id="card-background-colour-cardcolour">Card Background Colour - <code>CardColour</code><a class="headerlink" href="#card-background-colour-cardcolour" title="Permanent link"></a></h5>
 <p><a id="card-background-colour-cardcolour"></a></p>
@@ -2761,6 +2774,11 @@ baseTextDecrement: 1
 <h4 id="contentsplit"><code>ContentSplit</code><a class="headerlink" href="#contentsplit" title="Permanent link"></a></h4>
 <p>You can override the presentation <a href="#split-proportions-contentsplit">ContentSplit</a> specification on a slide-by-slide basis:</p>
 <pre><code>&lt;!-- md2pptx: contentsplit: 1 1 3 --&gt;
+</code></pre>
+<p><a id="indentspaces-dynamic"></a></p>
+<h4 id="indentspaces"><code>IndentSpaces</code><a class="headerlink" href="#indentspaces" title="Permanent link"></a></h4>
+<p>You can override the presentation <a href="#specifying-how-many-spaces-represent-an-indentation-level-with-indentspaces">IndentSpaces</a> specification on a slide-by-slide basis:</p>
+<pre><code>&lt;!-- md2pptx: indentspaces: 4 --&gt;
 </code></pre>
 <h2 id="modifying-the-slide-template">Modifying The Slide Template<a class="headerlink" href="#modifying-the-slide-template" title="Permanent link"></a></h2>
 <p><a id="modifying-the-slide-template"></a></p>

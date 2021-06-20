@@ -5,8 +5,8 @@ mdpre Markdown Preprocessor v0.4.6 (26 January, 2021)
 Def mdpre_date = 26 January, 2021
 Def mdpre_level = 0.4.6
 Def userid = martinpacker
-Def time = 21&colon;06
-Def date = 20 May&comma; 2021
+Def time = 17&colon;07
+Def date = 20 June&comma; 2021
 Def TOC = Table Of Contents
 Def md = Markdown
 Def pp = Powerpoint
@@ -87,6 +87,7 @@ CSV Stop
 ..... ..... .....  Controlling Task Slide Production With `taskSlides` and `tasksPerSlide`
 ..... ..... .....  Controlling Glossary Slide Production With `glossaryTitle`, `glossaryTerm`, `glossaryMeaning`,`glossaryMeaningWidth`, and `glossaryTermsPerPage`
 ..... ..... .....  Specifying How Much Space To Reserve For Slide Numbers With `NumbersHeight`
+..... ..... .....  Specifying How Many Spaces Represent An Indentation Level With `IndentSpaces`
 ..... ..... .....  Card Slide Metadata
 ..... ..... ..... .....  Card Background Colour - `CardColour`
 ..... ..... ..... .....  Card Border Colour - `CardBorderColour`
@@ -133,6 +134,7 @@ CSV Stop
 ..... ..... .....  `CodeBackground`
 ..... ..... .....  `ContentSplitDirection`
 ..... ..... .....  `ContentSplit`
+..... ..... .....  `IndentSpaces`
 .....  Modifying The Slide Template
 ..... .....  Basics
 ..... .....  Slide Template Sequence
