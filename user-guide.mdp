@@ -127,7 +127,8 @@ To quote from the python-pptx license statement:
 =colalign l r l
 =csv
 Level,Date,What
-2.2,20&nbsp;June&nbsp;2021,Added IndentSpaces - to control&comma; including dynamically&comma; how many spaces represent a single level of list indentation.
+2.2.1,19&nbsp;July&nbsp;2021,Added `AdjustTitles` - to control whether md2pptx adjusts slide title positions and sizes. Made slide notes work again.
+2.2,20&nbsp;June&nbsp;2021,Added `IndentSpaces` - to control&comma; including dynamically&comma; how many spaces represent a single level of list indentation.
 2.1,21&nbsp;May&nbsp;2021,Added `&lambda;`&comma; `&mu;`&comma; `&nu;`&comma; `&pi`&comma; `&rho`. Allow more than one table or code block on a slide.
 2.0.2,3&nbsp;May&nbsp;2021,A single code block can share a slide with a list block or a table / graphics block
 2.0.1,1&nbsp;May&nbsp;2021,Added `&times;`&comma; `&percnt;`&comma; `&divide;`&comma; `&forall;`&comma; `&exist;`. Fixed 'three up graphic' layout bug.
@@ -735,6 +736,19 @@ These controls are described in [Slides With Multiple Content Blocks](#slides-wi
 1. You can't specify two list / card blocks on a single slide.
 1. For graphics, if you specify more than one graphic this will count as a single block. For example, two graphics side by side is a single block.
 
+### Adding Slide Notes
+<a id="adding-slide-notes"></a>
+
+You can add notes to slides. \
+In Powerpoint these appear below the main slide (and aren't shown when projecting a slide presentation).
+
+To add a slide note leave a blank line after the slide's contents. \
+Then add paragraphs of text. \
+
+While you can use entity references, such as `&percnt;` you can't use any markup other than plain text paragraphs, separated by blank lines. \
+In particular hyperlinks aren't supported. \
+Further, it would be confusing to support bulleted lists in slide notes.
+
 ## Slides Without Titles
 <a id="slides-without-titles"></a>
 
@@ -1153,7 +1167,20 @@ Example:
 
 	marginBase: 0.5
 
-The default is 0.2 (inches).
+The default is `0.2` (inches).
+
+#### Controlling Adjusting Title Positions And Sizes - `AdjustTitles`
+<a id="controlling-adjusting-title-positions-and-sizes-adjusttitles"></a>
+
+By default md2pptx will adjust the positions and sizes of slide elements - to create a uniform, tidy experience. \
+Sometimes, though, you might not want this adjustment to happen. \
+For elements other than titles this is unlikely to be the case - as that would interfere with multi-element layouts.
+
+You can disable adjusting the positions and sizes of slide titles:
+
+    AdjustTitles: no
+
+The default is `yes`.
 
 #### Associating A Class Name with A Background Colour With `style.bgcolor`
 <a id="associating-a-class-name-with-a-background-color-with-style-bgcolor"></a>

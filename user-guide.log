@@ -5,8 +5,8 @@ mdpre Markdown Preprocessor v0.4.6 (26 January, 2021)
 Def mdpre_date = 26 January, 2021
 Def mdpre_level = 0.4.6
 Def userid = martinpacker
-Def time = 17&colon;07
-Def date = 20 June&comma; 2021
+Def time = 17&colon;18
+Def date = 19 July&comma; 2021
 Def TOC = Table Of Contents
 Def md = Markdown
 Def pp = Powerpoint
@@ -44,6 +44,7 @@ CSV Stop
 ..... ..... .....  `<pre>`
 ..... .....  Task List Slides
 ..... .....  Slides With More Than One Content Block
+..... .....  Adding Slide Notes
 .....  Slides Without Titles
 ..... .....  Using A Horizontal Rule
 ..... .....  Using A Level 3 Heading With `&nbsp;`
@@ -74,6 +75,7 @@ CSV Stop
 ..... ..... .....  Section Subtitle Size - `sectionSubtitleSize`
 ..... ..... .....  Monospace Font - `monoFont`
 ..... ..... .....  Margin size - `marginBase` and `tableMargin`
+..... ..... .....  Controlling Adjusting Title Positions And Sizes - `AdjustTitles`
 ..... ..... .....  Associating A Class Name with A Background Colour With `style.bgcolor`
 ..... ..... .....  Associating A Class Name with A Foreground Colour With `style.fgcolor`
 ..... ..... .....  Associating A Class Name With Text Emphasis With `style.emphasis`

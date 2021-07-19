@@ -1045,6 +1045,7 @@ body .markdown-body
 </li>
 <li><a href="#task-list-slides">Task List Slides</a></li>
 <li><a href="#slides-with-more-than-one-content-block">Slides With More Than One Content Block</a></li>
+<li><a href="#adding-slide-notes">Adding Slide Notes</a></li>
 </ul>
 </li>
 <li><a href="#slides-without-titles">Slides Without Titles</a><ul>
@@ -1081,6 +1082,7 @@ body .markdown-body
 <li><a href="#section-subtitle-size-sectionsubtitlesize">Section Subtitle Size - <code>sectionSubtitleSize</code></a></li>
 <li><a href="#monospace-font-monofont">Monospace Font - <code>monoFont</code></a></li>
 <li><a href="#margin-size-marginbase-and-tablemargin">Margin size - <code>marginBase</code> and <code>tableMargin</code></a></li>
+<li><a href="#controlling-adjusting-title-positions-and-sizes-adjusttitles">Controlling Adjusting Title Positions And Sizes - <code>AdjustTitles</code></a></li>
 <li><a href="#associating-a-class-name-with-a-background-colour-with-stylebgcolor">Associating A Class Name with A Background Colour With <code>style.bgcolor</code></a></li>
 <li><a href="#associating-a-class-name-with-a-foreground-colour-with-stylefgcolor">Associating A Class Name with A Foreground Colour With <code>style.fgcolor</code></a></li>
 <li><a href="#associating-a-class-name-with-text-emphasis-with-styleemphasis">Associating A Class Name With Text Emphasis With <code>style.emphasis</code></a></li>
@@ -1251,9 +1253,14 @@ THE SOFTWARE.
 </thead>
 <tbody>
 <tr>
+<td align="left">2.2.1</td>
+<td align="right">19&nbsp;July&nbsp;2021</td>
+<td align="left">Added <code>AdjustTitles</code> - to control whether md2pptx adjusts slide title positions and sizes. Made slide notes work again.</td>
+</tr>
+<tr>
 <td align="left">2.2</td>
 <td align="right">20&nbsp;June&nbsp;2021</td>
-<td align="left">Added IndentSpaces - to control&comma; including dynamically&comma; how many spaces represent a single level of list indentation.</td>
+<td align="left">Added <code>IndentSpaces</code> - to control&comma; including dynamically&comma; how many spaces represent a single level of list indentation.</td>
 </tr>
 <tr>
 <td align="left">2.1</td>
@@ -1835,6 +1842,11 @@ for(i = 0; i &lt; 10; i++){
 <li>You can&rsquo;t specify two list / card blocks on a single slide.</li>
 <li>For graphics, if you specify more than one graphic this will count as a single block. For example, two graphics side by side is a single block.</li>
 </ol>
+<h3 id="adding-slide-notes">Adding Slide Notes<a class="headerlink" href="#adding-slide-notes" title="Permanent link"></a></h3>
+<p><a id="adding-slide-notes"></a></p>
+<p>You can add notes to slides. In Powerpoint these appear below the main slide (and aren&rsquo;t shown when projecting a slide presentation).</p>
+<p>To add a slide note leave a blank line after the slide&rsquo;s contents. Then add paragraphs of text.
+While you can use entity references, such as <code>&amp;percnt;</code> you can&rsquo;t use any markup other than plain text paragraphs, separated by blank lines. In particular hyperlinks aren&rsquo;t supported. Further, it would be confusing to support bulleted lists in slide notes.</p>
 <h2 id="slides-without-titles">Slides Without Titles<a class="headerlink" href="#slides-without-titles" title="Permanent link"></a></h2>
 <p><a id="slides-without-titles"></a></p>
 <p>Most slides have a title - and it&rsquo;s easy to see where such slides start. However, sometimes you want a slide without a title. For those cases you can start a slide in a two basic ways:</p>
@@ -2273,7 +2285,14 @@ For everything else use <code>marginBase</code>.</p>
 <p>Example:</p>
 <pre><code>marginBase: 0.5
 </code></pre>
-<p>The default is 0.2 (inches).</p>
+<p>The default is <code>0.2</code> (inches).</p>
+<h4 id="controlling-adjusting-title-positions-and-sizes-adjusttitles">Controlling Adjusting Title Positions And Sizes - <code>AdjustTitles</code><a class="headerlink" href="#controlling-adjusting-title-positions-and-sizes-adjusttitles" title="Permanent link"></a></h4>
+<p><a id="controlling-adjusting-title-positions-and-sizes-adjusttitles"></a></p>
+<p>By default md2pptx will adjust the positions and sizes of slide elements - to create a uniform, tidy experience. Sometimes, though, you might not want this adjustment to happen. For elements other than titles this is unlikely to be the case - as that would interfere with multi-element layouts.</p>
+<p>You can disable adjusting the positions and sizes of slide titles:</p>
+<pre><code>AdjustTitles: no
+</code></pre>
+<p>The default is <code>yes</code>.</p>
 <h4 id="associating-a-class-name-with-a-background-colour-with-stylebgcolor">Associating A Class Name with A Background Colour With <code>style.bgcolor</code><a class="headerlink" href="#associating-a-class-name-with-a-background-colour-with-stylebgcolor" title="Permanent link"></a></h4>
 <p><a id="associating-a-class-name-with-a-background-color-with-style-bgcolor"></a></p>
 <p>You can use HTML <code>&lt;span&gt;</code> elements to set the background colour, as described in <a href="#using-html-ltstylegt-elements-to-specify-text-colours-and-underlining">Using HTML &lt;style&gt; Elements To Specify Text Colours And Underlining</a>.</p>
