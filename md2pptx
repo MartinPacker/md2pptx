@@ -2838,8 +2838,8 @@ def createSlideNotes(slide, notes_text):
         notes_slide = slide.notes_slide
         text_frame = notes_slide.notes_text_frame
 
-        # parseText here handles translation of eg entity references
-        text_frame.text = parseText(notes_text)[0][1]
+        # addFormattedText handles eg hyperlinks and entity references
+        addFormattedText(text_frame.paragraphs[0], notes_text)
 
 
 def createFootnoteSlides(prs, slideNumber, footnoteDefinitions):
