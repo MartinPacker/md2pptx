@@ -43,8 +43,8 @@ try:
 except:
     have_cairosvg = False
 
-md2pptx_level = "2.2"
-md2pptx_date = "20 June, 2021"
+md2pptx_level = "2.2.1"
+md2pptx_date = "19 July, 2021"
 
 
 class SlideInfo:
@@ -498,9 +498,10 @@ def formatTitle(presentation, slide, titleText, titleFontSize):
 
         return (marginBase, None, "<No title>")
 
-    title.top = marginBase
-    title.left = marginBase
-    title.width = presentation.slide_width - marginBase * 2
+    if adjustTitles:
+        title.top = marginBase
+        title.left = marginBase
+        title.width = presentation.slide_width - marginBase * 2
 
     # Figure out how many lines title will need (ignoring overflow)
     titleLineCount = len(titleText.split("<br/>"))
@@ -508,7 +509,9 @@ def formatTitle(presentation, slide, titleText, titleFontSize):
     # Add the title text to the first paragraph
     flattenedTitle = addFormattedText(title.text_frame.paragraphs[0], titleText)
 
-    title.height = Pt(titleFontSize) * titleLineCount
+    if adjustTitles:
+        title.height = Pt(titleFontSize) * titleLineCount
+
     title.text_frame.paragraphs[0].font.size = Pt(titleFontSize)
     title.text_frame.vertical_anchor = MSO_ANCHOR.TOP
 
@@ -1198,7 +1201,14 @@ def createProcessingSummarySlide(presentation, metadata):
 
 # Note: This doesn't use formatTitle()
 def createTitleOrSectionSlide(
-    presentation, slideNumber, titleText, layout, titleSize, subtitleText, subtitleSize
+    presentation,
+    slideNumber,
+    titleText,
+    layout,
+    titleSize,
+    subtitleText,
+    subtitleSize,
+    notes_text,
 ):
     slide = presentation.slides.add_slide(presentation.slide_layouts[layout])
 
@@ -1209,9 +1219,13 @@ def createTitleOrSectionSlide(
     title.text_frame.paragraphs[0].font.size = Pt(titleSize)
 
     # Add subtitle - if there is one
-    subtitleText = subtitleText.strip()
-    if subtitleText != "":
+    if (subtitleText.strip() != "") & (subtitleText[0:2] != "\n\n"):
         # There is a subtitle
+        chunks = subtitleText.strip().split("\n\n")
+        subtitleText = chunks[0]
+        notes_text = "\n\n".join(chunks[1:])
+        createSlideNotes(slide, notes_text)
+
         subtitleShape = findBodyShape(slide)
         if subtitleShape != None:
             addFormattedText(subtitleShape.text_frame.paragraphs[0], subtitleText)
@@ -2654,6 +2668,7 @@ def createSlide(presentation, slideNumber, slideInfo):
                 sectionTitleSize,
                 slideInfo.subtitleText,
                 sectionSubtitleSize,
+                notes_text,
             )
 
     elif slideInfo.blockType == "title":
@@ -2665,6 +2680,7 @@ def createSlide(presentation, slideNumber, slideInfo):
             sectionTitleSize,
             slideInfo.subtitleText,
             sectionSubtitleSize,
+            notes_text,
         )
 
     slideNumber = slideNumber + 1
@@ -2807,6 +2823,23 @@ def createGlossarySlides(prs, slideNumber, abbrevDictionary):
     slideNumber += 1
 
     return slideNumber, glossarySlides
+
+
+def createSlideNotes(slide, notes_text):
+    # Remove surrounding white space
+    notes_text = notes_text.strip()
+
+    if slide.notes_slide.notes_text_frame.text != "":
+        # Notes already filled in
+        return
+
+    if notes_text != "":
+        # There is substantive slide note text so create the note
+        notes_slide = slide.notes_slide
+        text_frame = notes_slide.notes_text_frame
+
+        # parseText here handles translation of eg entity references
+        text_frame.text = parseText(notes_text)[0][1]
 
 
 def createFootnoteSlides(prs, slideNumber, footnoteDefinitions):
@@ -3091,6 +3124,9 @@ defaultContentSplit, contentSplit, presContentSplit = setOptionValues(
 
 # Number of spaces a single level of indentation is
 defaultIndentSpaces, indentSpaces, presIndentSpaces = setOptionValues(2)
+
+# Whether titles are adjusted or not
+defaultAdjustTitles, adjustTitles, presAdjustTitles = setOptionValues(True)
 
 sectionTitleSize = 40
 sectionSubtitleSize = 28
@@ -3428,6 +3464,10 @@ for line in metadata_lines:
 
     elif name == "indentspaces":
         _, indentSpaces, presIndentSpaces = setOptionValues(int(value))
+
+    elif name == "adjusttitles":
+        if value == "no":
+            _, adjustTitles, presAdjustTitles = setOptionValues(False)
 
 
 if slideTemplateFile != "":
@@ -3898,16 +3938,15 @@ for line in linesAfterConcatenation:
             inList = False
             inTable = False
             inCard = False
-            notes_text = ""
             slideSubtitle = ""
             bullets = []
             tableRows = []
             cards = []
 
             if (notes_text != "") & (slide != None):
-                notes_slide = slide.notes_slide
-                text_frame = notes_slide.notes_text_frame
-                text_frame.text = notes_text
+                createSlideNotes(slide, notes_text)
+
+            notes_text = ""
 
         # Check whether any heading reference is a duplicate
         if (href != "") & (href in slideHrefs.keys()):
@@ -4057,9 +4096,7 @@ if (inBlock is True) | (inCode is True) | (inTable is True):
         slideHrefs[href] = slideNumber
 
     if (notes_text != "") & (slide != None):
-        notes_slide = slide.notes_slide
-        text_frame = notes_slide.notes_text_frame
-        text_frame.text = notes_text
+        createSlideNotes(slide, notes_text)
 
     notes_text = ""
 
