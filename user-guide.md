@@ -776,8 +776,21 @@ These controls are described in [Slides With Multiple Content Blocks](#slides-wi
 
 You can add notes to slides. In Powerpoint these appear below the main slide (and aren't shown when projecting a slide presentation).
 
-To add a slide note leave a blank line after the slide's contents. Then add paragraphs of text.
-While you can use entity references, such as `&percnt;` you can't use any markup other than plain text paragraphs, separated by blank lines. In particular hyperlinks aren't supported. Further, it would be confusing to support bulleted lists in slide notes.
+To add a slide note leave a blank line after the slide's contents. Then add paragraphs of text. Plain text paragraphs are separated by blank lines, as is standard in Markdown.
+
+You can use entity references, such as `&percnt;`.
+You can also use some other kinds of markup, such as hyperlinks and `<abbr>` elements.
+
+Using hyperlinks when viewing slide notes in the Powerpoint application is cumbersome - as there is no equivalent for slide notes of Slide Show Mode. To follow a hyperlink in slide notes:
+
+1. Right click on the hyperlink.
+2. Select the Hyperlink menu item.
+3. Select Open Hyperlink.
+
+It should then open in your browser.
+
+
+**Note:** It would be confusing (to the parser) to support structured items such as bulleted lists in slide notes. For this reason they are not supported.
 
 ## Slides Without Titles
 <a id="slides-without-titles"></a>

@@ -1845,8 +1845,17 @@ for(i = 0; i &lt; 10; i++){
 <h3 id="adding-slide-notes">Adding Slide Notes<a class="headerlink" href="#adding-slide-notes" title="Permanent link"></a></h3>
 <p><a id="adding-slide-notes"></a></p>
 <p>You can add notes to slides. In Powerpoint these appear below the main slide (and aren&rsquo;t shown when projecting a slide presentation).</p>
-<p>To add a slide note leave a blank line after the slide&rsquo;s contents. Then add paragraphs of text.
-While you can use entity references, such as <code>&amp;percnt;</code> you can&rsquo;t use any markup other than plain text paragraphs, separated by blank lines. In particular hyperlinks aren&rsquo;t supported. Further, it would be confusing to support bulleted lists in slide notes.</p>
+<p>To add a slide note leave a blank line after the slide&rsquo;s contents. Then add paragraphs of text. Plain text paragraphs are separated by blank lines, as is standard in Markdown.</p>
+<p>You can use entity references, such as <code>&amp;percnt;</code>.
+You can also use some other kinds of markup, such as hyperlinks and <code>&lt;abbr&gt;</code> elements.</p>
+<p>Using hyperlinks when viewing slide notes in the Powerpoint application is cumbersome - as there is no equivalent for slide notes of Slide Show Mode. To follow a hyperlink in slide notes:</p>
+<ol>
+<li>Right click on the hyperlink.</li>
+<li>Select the Hyperlink menu item.</li>
+<li>Select Open Hyperlink.</li>
+</ol>
+<p>It should then open in your browser.</p>
+<p><strong>Note:</strong> It would be confusing (to the parser) to support structured items such as bulleted lists in slide notes. For this reason they are not supported.</p>
 <h2 id="slides-without-titles">Slides Without Titles<a class="headerlink" href="#slides-without-titles" title="Permanent link"></a></h2>
 <p><a id="slides-without-titles"></a></p>
 <p>Most slides have a title - and it&rsquo;s easy to see where such slides start. However, sometimes you want a slide without a title. For those cases you can start a slide in a two basic ways:</p>
