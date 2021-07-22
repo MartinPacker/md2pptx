@@ -43,8 +43,8 @@ try:
 except:
     have_cairosvg = False
 
-md2pptx_level = "2.2.1"
-md2pptx_date = "19 July, 2021"
+md2pptx_level = "2.2.2"
+md2pptx_date = "22 July, 2021"
 
 
 class SlideInfo:
@@ -3942,6 +3942,7 @@ for line in linesAfterConcatenation:
             bullets = []
             tableRows = []
             cards = []
+            code = []
 
             if (notes_text != "") & (slide != None):
                 createSlideNotes(slide, notes_text)
