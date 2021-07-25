@@ -229,6 +229,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|2.2.3|25&nbsp;July&nbsp;2021|Code etc blocks can include numeric character and entity references|
 |2.2.2|22&nbsp;July&nbsp;2021|Fixed bug where code blocks not initialised to none on starting a new slide|
 |2.2.1|19&nbsp;July&nbsp;2021|Added `AdjustTitles` - to control whether md2pptx adjusts slide title positions and sizes. Made slide notes work again.|
 |2.2|20&nbsp;June&nbsp;2021|Added `IndentSpaces` - to control&comma; including dynamically&comma; how many spaces represent a single level of list indentation.|
@@ -638,6 +639,9 @@ You can create a slide where the body is in a monospace font, without bullets, i
 When we say "code", what you're displaying could be something like a terminal screen shot, of course. What's important is that it will be rendered in a fixed-pitch font.
 
 In each case, the heading for the slide is generally introduced with heading level 3 - `### `. However you can start a slide without a heading. See [Slides Without Titles](#slides-without-titles) for how to do this.
+
+You can include [HTML entity references](#html-entity-references) and [numeric character references](#numeric-character-references). For example you might code `&#x2776;` to place &#x2776; next to a line of code. You could then code the same thing in a table below the code fragment, where each row explains a line of code.
+
 
 **Note:** You can more precisely control how code slides are laid out and their colours with [Code Slide Metadata](#code-slide-metadata).
 

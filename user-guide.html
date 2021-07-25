@@ -1253,6 +1253,11 @@ THE SOFTWARE.
 </thead>
 <tbody>
 <tr>
+<td align="left">2.2.3</td>
+<td align="right">25&nbsp;July&nbsp;2021</td>
+<td align="left">Code etc blocks can include numeric character and entity references</td>
+</tr>
+<tr>
 <td align="left">2.2.2</td>
 <td align="right">22&nbsp;July&nbsp;2021</td>
 <td align="left">Fixed bug where code blocks not initialised to none on starting a new slide</td>
@@ -1745,6 +1750,7 @@ sectionTitleSize: 30
 </ul>
 <p>When we say &ldquo;code&rdquo;, what you&rsquo;re displaying could be something like a terminal screen shot, of course. What&rsquo;s important is that it will be rendered in a fixed-pitch font.</p>
 <p>In each case, the heading for the slide is generally introduced with heading level 3 - <code>###</code>. However you can start a slide without a heading. See <a href="#slides-without-titles">Slides Without Titles</a> for how to do this.</p>
+<p>You can include <a href="#html-entity-references">HTML entity references</a> and <a href="#numeric-character-references">numeric character references</a>. For example you might code <code>&amp;#x2776;</code> to place &#x2776; next to a line of code. You could then code the same thing in a table below the code fragment, where each row explains a line of code.</p>
 <p><strong>Note:</strong> You can more precisely control how code slides are laid out and their colours with <a href="#code-slide-metadata">Code Slide Metadata</a>.</p>
 <h4 id="code"><code>&lt;code&gt;</code><a class="headerlink" href="#code" title="Permanent link"></a></h4>
 <p>The HTML <code>&lt;code&gt;</code> element is supported. Surround the block of text by <code>&lt;code&gt;</code> and <code>&lt;/code</code>:</p>
