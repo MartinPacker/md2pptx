@@ -2920,8 +2920,8 @@ def createGlossarySlides(prs, slideNumber, abbrevDictionary):
 
 
 def createSlideNotes(slide, notes_text):
-    # Remove surrounding white space
-    notes_text = notes_text.strip()
+    # Remove surrounding white space and any triple backticks
+    notes_text = notes_text.replace("```","").strip()
 
     if slide.notes_slide.notes_text_frame.text != "":
         # Notes already filled in
@@ -4178,9 +4178,11 @@ for line in linesAfterConcatenation:
         # Not in a table
         inTable = False
 
-        # Must be a slide note line
+        # Must be a slide note line or subtitle line or a code line
+
         slideSubtitle = slideSubtitle + "\n" + line
-        notes_text = notes_text + "\n" + line
+        if (inCode is False) & ("\n" + line != slideSubtitle):
+            notes_text = notes_text + "\n" + line
 
 ######################################################################################
 #                                                                                    #
@@ -4196,7 +4198,7 @@ if (inBlock is True) | (inCode is True) | (inTable is True):
     if href != "":
         slideHrefs[href] = slideNumber
 
-    if (notes_text != "") & (slide != None):
+    if (notes_text.strip() != "") & (slide != None):
         createSlideNotes(slide, notes_text)
 
     notes_text = ""
