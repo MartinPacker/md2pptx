@@ -43,8 +43,8 @@ try:
 except:
     have_cairosvg = False
 
-md2pptx_level = "2.2.3"
-md2pptx_date = "24 July, 2021"
+md2pptx_level = "2.2.4"
+md2pptx_date = "28 July, 2021"
 
 
 class SlideInfo:
@@ -149,6 +149,87 @@ def resolveSymbols(text):
     
     return text2
 
+def _applyCellBorderStyling(tcPr, linePosition):
+    if linePosition == "l":
+        elementName = "a:lnL"
+    elif linePosition == "r":
+        elementName = "a:lnR"
+    elif linePosition == "t":
+        elementName = "a:lnT"
+    else:
+        elementName = "a:lnB"
+
+    lnX = OxmlElement(elementName)
+
+    lnX.attrib.update({"w": "12700", "cap": 'flat', "cmpd": 'sng', "algn": 
+    'ctr'})
+
+
+    solidFill = OxmlElement("a:solidFill")
+    srgbClr = OxmlElement("a:srgbClr")
+    srgbClr.attrib.update({"val" : "000000"})
+    
+    solidFill.append(srgbClr)
+    lnX.append(solidFill)
+
+    tcPr.append(lnX)
+
+def applyCellBorderStyling(cell, cellBorderStyling):
+    print(cellBorderStyling)
+    if cellBorderStyling == "":
+        # No cell border styling required
+        return
+
+    # Get any existing cell properties element - or make one
+    tc = cell._tc
+    tcPr = tc.get_or_add_tcPr()
+    
+    # Draw any cell borders. More than one might apply
+    if cellBorderStyling.find("l") > -1:
+        _applyCellBorderStyling(tcPr, "l")
+    if cellBorderStyling.find("r") > -1:
+        _applyCellBorderStyling(tcPr, "r")
+    if cellBorderStyling.find("t") > -1:
+        _applyCellBorderStyling(tcPr, "t")
+    if cellBorderStyling.find("b") > -1:
+        _applyCellBorderStyling(tcPr, "b")
+
+# Apply table border styling
+def applyTableBorderStyling(table, borderStyling):
+    lastRow = len(table.rows) - 1
+    if borderStyling == "no":
+        return
+
+    elif borderStyling == "box":
+        # Line around the table
+        for rowNumber,row in enumerate(table.rows):
+            # Figure out whether row is top, middle, or bottom
+            if rowNumber == 0:
+                RowStyling = "t"
+            elif rowNumber == lastRow:
+                RowStyling = "b"
+            else:
+                RowStyling = ""
+
+            lastColumn = len(row.cells) - 1
+            
+            for columnNumber, cell in enumerate(row.cells):
+                if columnNumber == 0:
+                    ColumnStyling = "l"
+                elif columnNumber == lastColumn:
+                    ColumnStyling = "r"
+                else:
+                    ColumnStyling = ""
+                applyCellBorderStyling(cell, RowStyling + ColumnStyling)
+
+    elif borderStyling == "all":
+        # All edges of all cells have lines
+        for rowNumber, row in enumerate(table.rows):
+            lastColumn = len(row.cells) - 1
+            
+            for columnNumber, cell in enumerate(row.cells):
+                applyCellBorderStyling(cell, "tlbr")
+    
 # Return current, default and presentation values for an option
 def setOptionValues(optionValue):
     return optionValue, optionValue, optionValue
@@ -2529,6 +2610,10 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
 
                 addFormattedText(p, cell)
 
+        # Apply table border styling - whether there is any or not
+        applyTableBorderStyling(newTable, addTableLines)
+    
+
     return slide
 
 
@@ -3138,6 +3223,10 @@ defaultIndentSpaces, indentSpaces, presIndentSpaces = setOptionValues(2)
 # Whether titles are adjusted or not
 defaultAdjustTitles, adjustTitles, presAdjustTitles = setOptionValues(True)
 
+
+# Whether tables have lines added or not
+defaultAddTableLines, addTableLines, presAddTableLines = setOptionValues("no")
+
 sectionTitleSize = 40
 sectionSubtitleSize = 28
 monoFont = "Courier"
@@ -3479,6 +3568,8 @@ for line in metadata_lines:
         if value == "no":
             _, adjustTitles, presAdjustTitles = setOptionValues(False)
 
+    elif name == "addtablelines":
+        _, addTableLines, presAddTableLines = setOptionValues(value)
 
 if slideTemplateFile != "":
     originalSlideTemplateFile = slideTemplateFile
