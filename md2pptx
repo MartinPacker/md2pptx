@@ -44,7 +44,7 @@ except:
     have_cairosvg = False
 
 md2pptx_level = "2.2.4"
-md2pptx_date = "28 July, 2021"
+md2pptx_date = "30 July, 2021"
 
 
 class SlideInfo:
@@ -175,7 +175,6 @@ def _applyCellBorderStyling(tcPr, linePosition):
     tcPr.append(lnX)
 
 def applyCellBorderStyling(cell, cellBorderStyling):
-    print(cellBorderStyling)
     if cellBorderStyling == "":
         # No cell border styling required
         return
