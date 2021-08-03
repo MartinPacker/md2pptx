@@ -202,8 +202,9 @@ def applyCellBorderStyling(cell, cellBorderStyling):
 
 
 # Apply table border styling
-def applyTableBorderStyling(table, borderStyling):
-    print(addTableColumnLines)
+def applyTableBorderStyling(table, borderStyling, linedColumns, linedRows):
+    print(linedColumns)
+    print(linedRows)
     lastRow = len(table.rows) - 1
     if borderStyling == "no":
         return
@@ -2615,7 +2616,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                 addFormattedText(p, cell)
 
         # Apply table border styling - whether there is any or not
-        applyTableBorderStyling(newTable, addTableLines)
+        applyTableBorderStyling(newTable, addTableLines, addTableColumnLines, addTableRowLines)
 
     return slide
 
@@ -3230,11 +3231,18 @@ defaultAdjustTitles, adjustTitles, presAdjustTitles = setOptionValues(True)
 # Whether tables have lines added or not
 defaultAddTableLines, addTableLines, presAddTableLines = setOptionValues("no")
 
-# Which table columns to put a vertical line afterMetadataAndHTML
+# Which table columns to put a vertical line after
 (
     defaultAddTableColumnLines,
     addTableColumnLines,
     presAddTableColumnLines,
+) = setOptionValues([])
+
+# Which table rows to put a vertical line after
+(
+    defaultAddTableRowLines,
+    addTableRowLines,
+    presAddTableRowLines,
 ) = setOptionValues([])
 
 sectionTitleSize = 40
@@ -3583,6 +3591,11 @@ for line in metadata_lines:
 
     elif name == "addtablecolumnlines":
         _, addTableColumnLines, presAddTableColumnLines = setOptionValues(
+            sortedNumericList(value)
+        )
+
+    elif name == "addtablerowlines":
+        _, addTableRowLines, presAddTableRowLines = setOptionValues(
             sortedNumericList(value)
         )
 
