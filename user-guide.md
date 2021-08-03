@@ -72,12 +72,14 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 		* [Specifying Text Size With `baseTextSize` And `baseTextDecrement`](#specifying-text-size-with-basetextsize-and-basetextdecrement)
 		* [Specifying Bold And Italic Text Colour With `BoldColour` And `ItalicColour`](#specifying-bold-and-italic-text-colour-with-boldcolour-and-italiccolour)
 		* [Specifying Bold And Italic Text Effects With `BoldBold` And `ItalicItalic`](#specifying-bold-and-italic-text-effects-with-boldbold-and-italicitalic)
-		* [Shrinking Tables With `compactTables`](#shrinking-tables-with-compacttables)
 		* [Controlling Task Slide Production With `taskSlides` and `tasksPerSlide`](#controlling-task-slide-production-with-taskslides-and-tasksperslide)
 		* [Controlling Glossary Slide Production With `glossaryTitle`, `glossaryTerm`, `glossaryMeaning`,`glossaryMeaningWidth`, and `glossaryTermsPerPage`](#controlling-glossary-slide-production-with-glossarytitle-glossaryterm-glossarymeaningglossarymeaningwidth-and-glossarytermsperpage)
 		* [Specifying How Much Space To Reserve For Slide Numbers With `NumbersHeight`](#specifying-how-much-space-to-reserve-for-slide-numbers-with-numbersheight)
 		* [Specifying How Many Spaces Represent An Indentation Level With `IndentSpaces`](#specifying-how-many-spaces-represent-an-indentation-level-with-indentspaces)
-		* [Card Slide Metadata](#card-slide-metadata)
+		* [Table Metadata](#table-metadata)
+			* [Shrinking Tables With `compactTables`](#shrinking-tables-with-compacttables)
+			* [Adding Lines Round Tables And Cells With `addTableLines`](#adding-lines-round-tables-and-cells-with-addtablelines)
+		* [Card Metadata](#card-metadata)
 			* [Card Background Colour - `CardColour`](#card-background-colour-cardcolour)
 			* [Card Border Colour - `CardBorderColour`](#card-border-colour-cardbordercolour)
 			* [Card Border Width - `CardBorderWidth`](#card-border-width-cardborderwidth)
@@ -90,7 +92,7 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 			* [Card Shape - `CardShape`](#card-shape-cardshape)
 			* [Card Horizontal Gap - `CardHorizontalGap`](#card-horizontal-gap-cardhorizontalgap)
 			* [Card Vertical Gap - `CardVerticalGap`](#card-vertical-gap-cardverticalgap)
-		* [Code Slide Metadata](#code-slide-metadata)
+		* [Code Metadata](#code-metadata)
 			* [Code Column Count - `CodeColumns`](#code-column-count-codecolumns)
 			* [Fixed Pitch Height To Width Ratio - `FPRatio`](#fixed-pitch-height-to-width-ratio-fpratio)
 			* [Foreground Colour - `CodeForeground`](#foreground-colour-codeforeground)
@@ -229,6 +231,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|2.2.4|30&nbsp;July&nbsp;2021|You can turn on a border round a table or all cells with `addTableLines`. Fixed bug where slide notes appeared containing code fragments and subtitles.|
 |2.2.3|25&nbsp;July&nbsp;2021|Code etc blocks can include numeric character and entity references|
 |2.2.2|22&nbsp;July&nbsp;2021|Fixed bug where code blocks not initialised to none on starting a new slide|
 |2.2.1|19&nbsp;July&nbsp;2021|Added `AdjustTitles` - to control whether md2pptx adjusts slide title positions and sizes. Made slide notes work again.|
@@ -643,7 +646,7 @@ In each case, the heading for the slide is generally introduced with heading lev
 You can include [HTML entity references](#html-entity-references) and [numeric character references](#numeric-character-references). For example you might code `&#x2776;` to place &#x2776; next to a line of code. You could then code the same thing in a table below the code fragment, where each row explains a line of code.
 
 
-**Note:** You can more precisely control how code slides are laid out and their colours with [Code Slide Metadata](#code-slide-metadata).
+**Note:** You can more precisely control how code slides are laid out and their colours with [Code Metadata](#code-metadata).
 
 #### `<code>`
 
@@ -1384,20 +1387,6 @@ The default for both of these is, of course, `yes` so that bold text is bold and
 
 These options were added so that `BoldColour` and `ItalicColour` could just become colour effects. See [here](#specifying-bold-and-italic-text-colour-with-boldcolour-and-italiccolour).
 
-#### Shrinking Tables With `compactTables`
-<a id="shrinking-tables-with-compacttables"></a>
-
-You can reduce the size of a table on the slide with `compactTables`. If you specify a value larger than 0 two things will happen:
-
-* The font will use whatever point size you specify.
-* The margins around the text in a cell will be reduced to 0.
-
-For example, to remove the margins and reduce the font size to 16pt code
-
-    compactTables: 16
-
-You can override this value with [Dynamic Metadata](#compacttables-dynamic).
-
 #### Controlling Task Slide Production With `taskSlides` and `tasksPerSlide`
 <a id="controlling-task-slide-production-with-taskslides-and-tasksperslide"></a>
 
@@ -1474,7 +1463,44 @@ While the default for signifying each level of indentation for bullets is two sp
 
 You can change the value of `IndentSpaces` on a slide-by-slide basis, perhaps because you are including material from elsewhere that uses a different value. See [Dynamic IndentSpaces](#indentspaces-dynamic).
 
-#### Card Slide Metadata
+#### Table Metadata
+
+##### Shrinking Tables With `compactTables`
+<a id="shrinking-tables-with-compacttables"></a>
+
+You can reduce the size of a table on the slide with `compactTables`. If you specify a value larger than 0 two things will happen:
+
+* The font will use whatever point size you specify.
+* The margins around the text in a cell will be reduced to 0.
+
+For example, to remove the margins and reduce the font size to 16pt code
+
+    compactTables: 16
+
+You can override this value with [Dynamic Metadata](#compacttables-dynamic).
+
+
+##### Adding Lines Round Tables And Cells With `addTableLines`
+<a id="adding-lines-round-tables-and-cells-with-addtablelines"></a>
+
+You can add lines to tables in two ways:
+
+    addTableLines: box
+
+will add a black border round the entire table.
+
+    addTableLines: both
+
+will add a black border round all the cells, and effectively the table.
+
+The default is `addTableLines: no` which doesn't add any table lines.
+
+This metadata affects the whole presentation - to provide styling consistency.
+
+**Note:** This capability never removes lines - for example if they are present in the template presentation.
+
+#### Card Metadata
+
 ##### Card Background Colour - `CardColour`
 <a id="card-background-colour-cardcolour"></a>
 
@@ -1608,8 +1634,8 @@ The default is 0.1 inches.
 
 You can override this on a slide-by-slide basis with [Dynamic Vertical Gap](#dynamic-cardverticalgap).
 
-<a id="code-slide-metadata"></>
-#### Code Slide Metadata
+<a id="code-metadata"></>
+#### Code Metadata
 
 You can adjust how code slides display their content.
 

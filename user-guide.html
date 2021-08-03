@@ -1092,12 +1092,16 @@ body .markdown-body
 <li><a href="#specifying-text-size-with-basetextsize-and-basetextdecrement">Specifying Text Size With <code>baseTextSize</code> And <code>baseTextDecrement</code></a></li>
 <li><a href="#specifying-bold-and-italic-text-colour-with-boldcolour-and-italiccolour">Specifying Bold And Italic Text Colour With <code>BoldColour</code> And <code>ItalicColour</code></a></li>
 <li><a href="#specifying-bold-and-italic-text-effects-with-boldbold-and-italicitalic">Specifying Bold And Italic Text Effects With <code>BoldBold</code> And <code>ItalicItalic</code></a></li>
-<li><a href="#shrinking-tables-with-compacttables">Shrinking Tables With <code>compactTables</code></a></li>
 <li><a href="#controlling-task-slide-production-with-taskslides-and-tasksperslide">Controlling Task Slide Production With <code>taskSlides</code> and <code>tasksPerSlide</code></a></li>
 <li><a href="#controlling-glossary-slide-production-with-glossarytitle-glossaryterm-glossarymeaningglossarymeaningwidth-and-glossarytermsperpage">Controlling Glossary Slide Production With <code>glossaryTitle</code>, <code>glossaryTerm</code>, <code>glossaryMeaning</code>,<code>glossaryMeaningWidth</code>, and <code>glossaryTermsPerPage</code></a></li>
 <li><a href="#specifying-how-much-space-to-reserve-for-slide-numbers-with-numbersheight">Specifying How Much Space To Reserve For Slide Numbers With <code>NumbersHeight</code></a></li>
 <li><a href="#specifying-how-many-spaces-represent-an-indentation-level-with-indentspaces">Specifying How Many Spaces Represent An Indentation Level With <code>IndentSpaces</code></a></li>
-<li><a href="#card-slide-metadata">Card Slide Metadata</a><ul>
+<li><a href="#table-metadata">Table Metadata</a><ul>
+<li><a href="#shrinking-tables-with-compacttables">Shrinking Tables With <code>compactTables</code></a></li>
+<li><a href="#adding-lines-round-tables-and-cells-with-addtablelines">Adding Lines Round Tables And Cells With <code>addTableLines</code></a></li>
+</ul>
+</li>
+<li><a href="#card-metadata">Card Metadata</a><ul>
 <li><a href="#card-background-colour-cardcolour">Card Background Colour - <code>CardColour</code></a></li>
 <li><a href="#card-border-colour-cardbordercolour">Card Border Colour - <code>CardBorderColour</code></a></li>
 <li><a href="#card-border-width-cardborderwidth">Card Border Width - <code>CardBorderWidth</code></a></li>
@@ -1112,7 +1116,7 @@ body .markdown-body
 <li><a href="#card-vertical-gap-cardverticalgap">Card Vertical Gap - <code>CardVerticalGap</code></a></li>
 </ul>
 </li>
-<li><a href="#code-slide-metadata">Code Slide Metadata</a><ul>
+<li><a href="#code-metadata">Code Metadata</a><ul>
 <li><a href="#code-column-count-codecolumns">Code Column Count - <code>CodeColumns</code></a></li>
 <li><a href="#fixed-pitch-height-to-width-ratio-fpratio">Fixed Pitch Height To Width Ratio - <code>FPRatio</code></a></li>
 <li><a href="#foreground-colour-codeforeground">Foreground Colour - <code>CodeForeground</code></a></li>
@@ -1252,6 +1256,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">2.2.4</td>
+<td align="right">30&nbsp;July&nbsp;2021</td>
+<td align="left">You can turn on a border round a table or all cells with <code>addTableLines</code>. Fixed bug where slide notes appeared containing code fragments and subtitles.</td>
+</tr>
 <tr>
 <td align="left">2.2.3</td>
 <td align="right">25&nbsp;July&nbsp;2021</td>
@@ -1751,7 +1760,7 @@ sectionTitleSize: 30
 <p>When we say &ldquo;code&rdquo;, what you&rsquo;re displaying could be something like a terminal screen shot, of course. What&rsquo;s important is that it will be rendered in a fixed-pitch font.</p>
 <p>In each case, the heading for the slide is generally introduced with heading level 3 - <code>###</code>. However you can start a slide without a heading. See <a href="#slides-without-titles">Slides Without Titles</a> for how to do this.</p>
 <p>You can include <a href="#html-entity-references">HTML entity references</a> and <a href="#numeric-character-references">numeric character references</a>. For example you might code <code>&amp;#x2776;</code> to place &#x2776; next to a line of code. You could then code the same thing in a table below the code fragment, where each row explains a line of code.</p>
-<p><strong>Note:</strong> You can more precisely control how code slides are laid out and their colours with <a href="#code-slide-metadata">Code Slide Metadata</a>.</p>
+<p><strong>Note:</strong> You can more precisely control how code slides are laid out and their colours with <a href="#code-metadata">Code Metadata</a>.</p>
 <h4 id="code"><code>&lt;code&gt;</code><a class="headerlink" href="#code" title="Permanent link"></a></h4>
 <p>The HTML <code>&lt;code&gt;</code> element is supported. Surround the block of text by <code>&lt;code&gt;</code> and <code>&lt;/code</code>:</p>
 <pre><code>### This Is A Code Slide
@@ -2448,17 +2457,6 @@ baseTextDecrement: 1
 </code></pre>
 <p>The default for both of these is, of course, <code>yes</code> so that bold text is bold and italic text is italic.</p>
 <p>These options were added so that <code>BoldColour</code> and <code>ItalicColour</code> could just become colour effects. See <a href="#specifying-bold-and-italic-text-colour-with-boldcolour-and-italiccolour">here</a>.</p>
-<h4 id="shrinking-tables-with-compacttables">Shrinking Tables With <code>compactTables</code><a class="headerlink" href="#shrinking-tables-with-compacttables" title="Permanent link"></a></h4>
-<p><a id="shrinking-tables-with-compacttables"></a></p>
-<p>You can reduce the size of a table on the slide with <code>compactTables</code>. If you specify a value larger than 0 two things will happen:</p>
-<ul>
-<li>The font will use whatever point size you specify.</li>
-<li>The margins around the text in a cell will be reduced to 0.</li>
-</ul>
-<p>For example, to remove the margins and reduce the font size to 16pt code</p>
-<pre><code>compactTables: 16
-</code></pre>
-<p>You can override this value with <a href="#compacttables-dynamic">Dynamic Metadata</a>.</p>
 <h4 id="controlling-task-slide-production-with-taskslides-and-tasksperslide">Controlling Task Slide Production With <code>taskSlides</code> and <code>tasksPerSlide</code><a class="headerlink" href="#controlling-task-slide-production-with-taskslides-and-tasksperslide" title="Permanent link"></a></h4>
 <p><a id="controlling-task-slide-production-with-taskslides-and-tasksperslide"></a></p>
 <p>Before unleashing your presentation on the world you probably want to remove the Task List slides from it. You can control what tasks are shown, if any, with <code>taskSlides</code>. It can take four different values:</p>
@@ -2511,7 +2509,31 @@ baseTextDecrement: 1
 <pre><code>IndentSpaces: 4
 </code></pre>
 <p>You can change the value of <code>IndentSpaces</code> on a slide-by-slide basis, perhaps because you are including material from elsewhere that uses a different value. See <a href="#indentspaces-dynamic">Dynamic IndentSpaces</a>.</p>
-<h4 id="card-slide-metadata">Card Slide Metadata<a class="headerlink" href="#card-slide-metadata" title="Permanent link"></a></h4>
+<h4 id="table-metadata">Table Metadata<a class="headerlink" href="#table-metadata" title="Permanent link"></a></h4>
+<h5 id="shrinking-tables-with-compacttables">Shrinking Tables With <code>compactTables</code><a class="headerlink" href="#shrinking-tables-with-compacttables" title="Permanent link"></a></h5>
+<p><a id="shrinking-tables-with-compacttables"></a></p>
+<p>You can reduce the size of a table on the slide with <code>compactTables</code>. If you specify a value larger than 0 two things will happen:</p>
+<ul>
+<li>The font will use whatever point size you specify.</li>
+<li>The margins around the text in a cell will be reduced to 0.</li>
+</ul>
+<p>For example, to remove the margins and reduce the font size to 16pt code</p>
+<pre><code>compactTables: 16
+</code></pre>
+<p>You can override this value with <a href="#compacttables-dynamic">Dynamic Metadata</a>.</p>
+<h5 id="adding-lines-round-tables-and-cells-with-addtablelines">Adding Lines Round Tables And Cells With <code>addTableLines</code><a class="headerlink" href="#adding-lines-round-tables-and-cells-with-addtablelines" title="Permanent link"></a></h5>
+<p><a id="adding-lines-round-tables-and-cells-with-addtablelines"></a></p>
+<p>You can add lines to tables in two ways:</p>
+<pre><code>addTableLines: box
+</code></pre>
+<p>will add a black border round the entire table.</p>
+<pre><code>addTableLines: both
+</code></pre>
+<p>will add a black border round all the cells, and effectively the table.</p>
+<p>The default is <code>addTableLines: no</code> which doesn&rsquo;t add any table lines.</p>
+<p>This metadata affects the whole presentation - to provide styling consistency.</p>
+<p><strong>Note:</strong> This capability never removes lines - for example if they are present in the template presentation.</p>
+<h4 id="card-metadata">Card Metadata<a class="headerlink" href="#card-metadata" title="Permanent link"></a></h4>
 <h5 id="card-background-colour-cardcolour">Card Background Colour - <code>CardColour</code><a class="headerlink" href="#card-background-colour-cardcolour" title="Permanent link"></a></h5>
 <p><a id="card-background-colour-cardcolour"></a></p>
 <p>You can specify which of the theme colours to use for the background of each card in a <a href="#card-slides">Card Slide</a> - using <code>CardColour</code> (or <code>CardColor</code>). For example:</p>
@@ -2597,8 +2619,8 @@ baseTextDecrement: 1
 </code></pre>
 <p>The default is 0.1 inches.</p>
 <p>You can override this on a slide-by-slide basis with <a href="#dynamic-cardverticalgap">Dynamic Vertical Gap</a>.</p>
-<p><a id="code-slide-metadata"></></p>
-<h4 id="code-slide-metadata">Code Slide Metadata<a class="headerlink" href="#code-slide-metadata" title="Permanent link"></a></h4>
+<p><a id="code-metadata"></></p>
+<h4 id="code-metadata">Code Metadata<a class="headerlink" href="#code-metadata" title="Permanent link"></a></h4>
 <p>You can adjust how code slides display their content.</p>
 <p><a id="code-column-count-codecolumns"></a></p>
 <h5 id="code-column-count-codecolumns">Code Column Count - <code>CodeColumns</code><a class="headerlink" href="#code-column-count-codecolumns" title="Permanent link"></a></h5>
