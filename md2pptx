@@ -6,7 +6,6 @@ md2pptx - Converts (a subset of) Markdown to Powerpoint (PPTX)
 First argument is file to write to
 
 Reads from stdin
-
 """
 
 import re
@@ -43,8 +42,8 @@ try:
 except:
     have_cairosvg = False
 
-md2pptx_level = "2.2.4"
-md2pptx_date = "28 July, 2021"
+md2pptx_level = "2.2.5"
+md2pptx_date = "3 August, 2021"
 
 
 class SlideInfo:
@@ -84,6 +83,11 @@ def startswithOneOf(haystack, needleList):
             return True
 
     return False
+
+# Splits a string into words, converting each word to an integer. Returns them as a
+# sorted list
+def sortedNumericList(string):
+	return list(map(int, set(string.split())))
 
 # Resolve symbols and unescape any numeric character references
 def resolveSymbols(text):
@@ -3227,6 +3231,9 @@ defaultAdjustTitles, adjustTitles, presAdjustTitles = setOptionValues(True)
 # Whether tables have lines added or not
 defaultAddTableLines, addTableLines, presAddTableLines = setOptionValues("no")
 
+# Which table columns to put a vertical line afterMetadataAndHTML
+defaultAddTableColumnLines, addTableColumnLines, presAddTableColumnLines = setOptionValues([])
+
 sectionTitleSize = 40
 sectionSubtitleSize = 28
 monoFont = "Courier"
@@ -3570,6 +3577,9 @@ for line in metadata_lines:
 
     elif name == "addtablelines":
         _, addTableLines, presAddTableLines = setOptionValues(value)
+
+    elif name == "addtablecolumnlines":
+    	_, addTableColumnLines, presAddTableColumnLines = setOptionValues(sortedNumericList(value))
 
 if slideTemplateFile != "":
     originalSlideTemplateFile = slideTemplateFile
