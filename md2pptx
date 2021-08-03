@@ -84,16 +84,18 @@ def startswithOneOf(haystack, needleList):
 
     return False
 
+
 # Splits a string into words, converting each word to an integer. Returns them as a
 # sorted list
 def sortedNumericList(string):
-	return list(map(int, set(string.split())))
+    return sorted(list(map(int, set(string.split()))))
+
 
 # Resolve symbols and unescape any numeric character references
 def resolveSymbols(text):
     h = html.parser.HTMLParser()
 
-    textSplit = re.split("(&\#x?[0-9a-f]{2,6};)", text , flags=re.IGNORECASE)
+    textSplit = re.split("(&\#x?[0-9a-f]{2,6};)", text, flags=re.IGNORECASE)
     text2 = ""
     for t in textSplit:
         if t == "":
@@ -150,8 +152,9 @@ def resolveSymbols(text):
     text2 = text2.replace("&nu;", "ν")
     text2 = text2.replace("&pi;", "π")
     text2 = text2.replace("&rho;", "ρ")
-    
+
     return text2
+
 
 def _applyCellBorderStyling(tcPr, linePosition):
     if linePosition == "l":
@@ -165,18 +168,17 @@ def _applyCellBorderStyling(tcPr, linePosition):
 
     lnX = OxmlElement(elementName)
 
-    lnX.attrib.update({"w": "12700", "cap": 'flat', "cmpd": 'sng', "algn": 
-    'ctr'})
-
+    lnX.attrib.update({"w": "12700", "cap": "flat", "cmpd": "sng", "algn": "ctr"})
 
     solidFill = OxmlElement("a:solidFill")
     srgbClr = OxmlElement("a:srgbClr")
-    srgbClr.attrib.update({"val" : "000000"})
-    
+    srgbClr.attrib.update({"val": "000000"})
+
     solidFill.append(srgbClr)
     lnX.append(solidFill)
 
     tcPr.append(lnX)
+
 
 def applyCellBorderStyling(cell, cellBorderStyling):
     print(cellBorderStyling)
@@ -187,7 +189,7 @@ def applyCellBorderStyling(cell, cellBorderStyling):
     # Get any existing cell properties element - or make one
     tc = cell._tc
     tcPr = tc.get_or_add_tcPr()
-    
+
     # Draw any cell borders. More than one might apply
     if cellBorderStyling.find("l") > -1:
         _applyCellBorderStyling(tcPr, "l")
@@ -198,15 +200,17 @@ def applyCellBorderStyling(cell, cellBorderStyling):
     if cellBorderStyling.find("b") > -1:
         _applyCellBorderStyling(tcPr, "b")
 
+
 # Apply table border styling
 def applyTableBorderStyling(table, borderStyling):
+    print(addTableColumnLines)
     lastRow = len(table.rows) - 1
     if borderStyling == "no":
         return
 
     elif borderStyling == "box":
         # Line around the table
-        for rowNumber,row in enumerate(table.rows):
+        for rowNumber, row in enumerate(table.rows):
             # Figure out whether row is top, middle, or bottom
             if rowNumber == 0:
                 RowStyling = "t"
@@ -216,7 +220,7 @@ def applyTableBorderStyling(table, borderStyling):
                 RowStyling = ""
 
             lastColumn = len(row.cells) - 1
-            
+
             for columnNumber, cell in enumerate(row.cells):
                 if columnNumber == 0:
                     ColumnStyling = "l"
@@ -230,13 +234,15 @@ def applyTableBorderStyling(table, borderStyling):
         # All edges of all cells have lines
         for rowNumber, row in enumerate(table.rows):
             lastColumn = len(row.cells) - 1
-            
+
             for columnNumber, cell in enumerate(row.cells):
                 applyCellBorderStyling(cell, "tlbr")
-    
+
+
 # Return current, default and presentation values for an option
 def setOptionValues(optionValue):
     return optionValue, optionValue, optionValue
+
 
 # Set an option value on the fly, based on default, presentation setting, or dynamic Value
 # with conversion determined by optional fourth parameter
@@ -672,7 +678,7 @@ def parseTitleText(titleLineString):
     # Get rid of any cruft on the line
     slideTitleWithPossibleHref = titleLineString.strip().rstrip("#").rstrip()
 
-    if (hrefMatch := slideHrefRegex.match(slideTitleWithPossibleHref)) :
+    if hrefMatch := slideHrefRegex.match(slideTitleWithPossibleHref):
         slideTitle = hrefMatch.group(1)
         href = hrefMatch.group(2)
     else:
@@ -1489,7 +1495,7 @@ def createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber):
         for codeLine in codeLines:
             # Resolve eg entity references
             codeLine = resolveSymbols(codeLine)
-            
+
             # Split the line - and maybe there are spans
             spanFragments = codeLine.split("<span ")
             if len(spanFragments) > 1:
@@ -1574,7 +1580,7 @@ def createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber):
         for codeLine in codeLines:
             # Resolve eg entity references
             codeLine = resolveSymbols(codeLine)
-            
+
             run = p.add_run()
             run.text = codeLine + "\n"
             font = run.font
@@ -2015,7 +2021,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
         if (graphicRegex.match(topLeftSide) != None) | (
             clickableGraphicRegex.match(topLeftSide) != None
         ):
-            if (clickableGraphicMatch := clickableGraphicRegex.match(topLeftSide)) :
+            if clickableGraphicMatch := clickableGraphicRegex.match(topLeftSide):
                 # Clickable graphic case
                 topLeftGraphicTitle = clickableGraphicMatch.group(1)
                 topLeftGraphicFilename = clickableGraphicMatch.group(2)
@@ -2046,9 +2052,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
             if (graphicRegex.match(topRightSide) != None) | (
                 clickableGraphicRegex.match(topRightSide) != None
             ):
-                if (
-                    clickableGraphicMatch := clickableGraphicRegex.match(topRightSide)
-                ) :
+                if clickableGraphicMatch := clickableGraphicRegex.match(topRightSide):
                     # Clickable graphic case
                     topRightGraphicTitle = clickableGraphicMatch.group(1)
                     topRightGraphicFilename = clickableGraphicMatch.group(2)
@@ -2084,9 +2088,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
             if (graphicRegex.match(bottomLeftSide) != None) | (
                 clickableGraphicRegex.match(bottomLeftSide) != None
             ):
-                if (
-                    clickableGraphicMatch := clickableGraphicRegex.match(bottomLeftSide)
-                ) :
+                if clickableGraphicMatch := clickableGraphicRegex.match(bottomLeftSide):
                     # Clickable graphic case
                     bottomLeftGraphicTitle = clickableGraphicMatch.group(1)
                     bottomLeftGraphicFilename = clickableGraphicMatch.group(2)
@@ -2120,11 +2122,9 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                     if (graphicRegex.match(bottomRightSide) != None) | (
                         clickableGraphicRegex.match(bottomRightSide) != None
                     ):
-                        if (
-                            clickableGraphicMatch := clickableGraphicRegex.match(
-                                bottomRightSide
-                            )
-                        ) :
+                        if clickableGraphicMatch := clickableGraphicRegex.match(
+                            bottomRightSide
+                        ):
                             # Clickable graphic case
                             bottomRightGraphicTitle = clickableGraphicMatch.group(1)
                             bottomRightGraphicFilename = clickableGraphicMatch.group(2)
@@ -2616,7 +2616,6 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
 
         # Apply table border styling - whether there is any or not
         applyTableBorderStyling(newTable, addTableLines)
-    
 
     return slide
 
@@ -2637,7 +2636,7 @@ def createChevron(chevronText, x, y, width, height, filled, shapes):
 
 
 def delinkify(text):
-    if (linkMatch := linkRegex.match(text)) :
+    if linkMatch := linkRegex.match(text):
         linkText = linkMatch.group(1)
         linkURL = linkMatch.group(2)
 
@@ -3232,7 +3231,11 @@ defaultAdjustTitles, adjustTitles, presAdjustTitles = setOptionValues(True)
 defaultAddTableLines, addTableLines, presAddTableLines = setOptionValues("no")
 
 # Which table columns to put a vertical line afterMetadataAndHTML
-defaultAddTableColumnLines, addTableColumnLines, presAddTableColumnLines = setOptionValues([])
+(
+    defaultAddTableColumnLines,
+    addTableColumnLines,
+    presAddTableColumnLines,
+) = setOptionValues([])
 
 sectionTitleSize = 40
 sectionSubtitleSize = 28
@@ -3579,7 +3582,9 @@ for line in metadata_lines:
         _, addTableLines, presAddTableLines = setOptionValues(value)
 
     elif name == "addtablecolumnlines":
-    	_, addTableColumnLines, presAddTableColumnLines = setOptionValues(sortedNumericList(value))
+        _, addTableColumnLines, presAddTableColumnLines = setOptionValues(
+            sortedNumericList(value)
+        )
 
 if slideTemplateFile != "":
     originalSlideTemplateFile = slideTemplateFile
@@ -3715,7 +3720,7 @@ for line in afterMetadataAndHTML:
 metadataLinenumber = 0
 for line in linesAfterConcatenation:
     line = line.rstrip()
-    if (m := footnoteDefinitionRegex.match(line)) :
+    if m := footnoteDefinitionRegex.match(line):
         fnRef = m.group(1).strip()
         fnText = m.group(2).strip()
         footnoteDefinitions.append([fnRef, fnText])
@@ -3830,14 +3835,14 @@ for line in linesAfterConcatenation:
 
     elif line.startswith("<a id="):
         # Anchor on whatever slide we're on
-        if (hrefMatch := anchorRegex.match(line)) :
+        if hrefMatch := anchorRegex.match(line):
             href = hrefMatch.group(1)
             if (href != "") & (href in slideHrefs.keys()):
                 print(f"Heading Reference redefined: '{href}' for slide {slideNumber}")
 
     elif line.startswith("<!-- md2pptx: "):
         # Dynamic metadata line
-        if (DMMatch := dynamicMetadataRegex.match(line)) :
+        if DMMatch := dynamicMetadataRegex.match(line):
             metadataKey = DMMatch.group(1).lower()
             metadataValue = DMMatch.group(2).lower()
             if (metadataKey != "") & (metadataValue != ""):
@@ -4064,7 +4069,7 @@ for line in linesAfterConcatenation:
         if (href != "") & (href in slideHrefs.keys()):
             print(f"Heading Reference redefined: '{href}' for slide {slideNumber}")
 
-    elif (match := bulletRegex.match(line)) :
+    elif match := bulletRegex.match(line):
         # Bulleted list
         bulletLine = match.group(3).lstrip()
         bulletLevel = calculateIndentationLevel(match.start(2), indentSpaces)
@@ -4083,7 +4088,7 @@ for line in linesAfterConcatenation:
         inList = True
         inTable = False
 
-    elif (match := numberRegex.match(line)) :
+    elif match := numberRegex.match(line):
         # Numbered list
         bulletLine = match.group(3).lstrip()
         bulletLevel = calculateIndentationLevel(match.start(2), indentSpaces)
@@ -4119,7 +4124,7 @@ for line in linesAfterConcatenation:
 
         if len(graphicRegex.findall(line)) == 2:
             # Two graphics - whether clickable or not - on same line
-            if (matches := bothClickableGraphicRegex.match(line)) :
+            if matches := bothClickableGraphicRegex.match(line):
                 leftGraphic = (
                     "[![" + matches[1] + "](" + matches[2] + ")](" + matches[3] + ")"
                 )
@@ -4128,14 +4133,14 @@ for line in linesAfterConcatenation:
                     "[![" + matches[5] + "](" + matches[6] + ")](" + matches[7] + ")"
                 )
 
-            elif (matches := leftClickableGraphicRegex.match(line)) :
+            elif matches := leftClickableGraphicRegex.match(line):
                 leftGraphic = (
                     "[![" + matches[1] + "](" + matches[2] + ")](" + matches[3] + ")"
                 )
 
                 rightGraphic = "![" + matches[5] + "](" + matches[6] + ")"
 
-            elif (matches := rightClickableGraphicRegex.match(line)) :
+            elif matches := rightClickableGraphicRegex.match(line):
                 leftGraphic = "![" + matches[1] + "](" + matches[2] + ")"
 
                 rightGraphic = (
