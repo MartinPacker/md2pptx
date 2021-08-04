@@ -43,7 +43,7 @@ except:
     have_cairosvg = False
 
 md2pptx_level = "2.2.5"
-md2pptx_date = "3 August, 2021"
+md2pptx_date = "4 August, 2021"
 
 
 class SlideInfo:
@@ -156,7 +156,18 @@ def resolveSymbols(text):
     return text2
 
 
-def _applyCellBorderStyling(tcPr, linePosition):
+def _applyCellBorderStyling(
+    tcPr, linePosition, lineWidthMultiplier=1, lineCount=1, lineColour="000000"
+):
+    # How wide, relatively speaking to make the lines
+    lineWidth = int(12700 * lineWidthMultiplier)
+
+    # Whether the line should be single or double
+    if lineCount == 2:
+        lineCountValue = "dbl"
+    else:
+        lineCountValue = "sng"
+
     if linePosition == "l":
         elementName = "a:lnL"
     elif linePosition == "r":
@@ -168,11 +179,13 @@ def _applyCellBorderStyling(tcPr, linePosition):
 
     lnX = OxmlElement(elementName)
 
-    lnX.attrib.update({"w": "12700", "cap": "flat", "cmpd": "sng", "algn": "ctr"})
+    lnX.attrib.update(
+        {"w": str(lineWidth), "cap": "flat", "cmpd": lineCountValue, "algn": "ctr"}
+    )
 
     solidFill = OxmlElement("a:solidFill")
     srgbClr = OxmlElement("a:srgbClr")
-    srgbClr.attrib.update({"val": "000000"})
+    srgbClr.attrib.update({"val": lineColour})
 
     solidFill.append(srgbClr)
     lnX.append(solidFill)
@@ -180,8 +193,9 @@ def _applyCellBorderStyling(tcPr, linePosition):
     tcPr.append(lnX)
 
 
-def applyCellBorderStyling(cell, cellBorderStyling):
-    print(cellBorderStyling)
+def applyCellBorderStyling(
+    cell, cellBorderStyling, lineWidthMultiplier, lineCount, lineColour
+):
     if cellBorderStyling == "":
         # No cell border styling required
         return
@@ -192,52 +206,104 @@ def applyCellBorderStyling(cell, cellBorderStyling):
 
     # Draw any cell borders. More than one might apply
     if cellBorderStyling.find("l") > -1:
-        _applyCellBorderStyling(tcPr, "l")
+        _applyCellBorderStyling(tcPr, "l", lineWidthMultiplier, lineCount, lineColour)
     if cellBorderStyling.find("r") > -1:
-        _applyCellBorderStyling(tcPr, "r")
+        _applyCellBorderStyling(tcPr, "r", lineWidthMultiplier, lineCount, lineColour)
     if cellBorderStyling.find("t") > -1:
-        _applyCellBorderStyling(tcPr, "t")
+        _applyCellBorderStyling(tcPr, "t", lineWidthMultiplier, lineCount, lineColour)
     if cellBorderStyling.find("b") > -1:
-        _applyCellBorderStyling(tcPr, "b")
+        _applyCellBorderStyling(tcPr, "b", lineWidthMultiplier, lineCount, lineColour)
 
 
-# Apply table border styling
-def applyTableBorderStyling(table, borderStyling, linedColumns, linedRows):
-    print(linedColumns)
-    print(linedRows)
+# Apply table line styling
+def applyTableLineStyling(table, wholeTableLineStyling, linedColumns, linedRows):
     lastRow = len(table.rows) - 1
-    if borderStyling == "no":
-        return
 
-    elif borderStyling == "box":
+    # Create blank cell styling matrix
+    cellStyling = []
+    for rowNumber, row in enumerate(table.rows):
+        rowStyling = []
+        for cell in row.cells:
+            rowStyling.append("")
+        cellStyling.append(rowStyling)
+
+    # apply any "whole table" styling - from addTableLines
+    if wholeTableLineStyling == "box":
         # Line around the table
         for rowNumber, row in enumerate(table.rows):
             # Figure out whether row is top, middle, or bottom
             if rowNumber == 0:
-                RowStyling = "t"
+                rowStyling = "t"
             elif rowNumber == lastRow:
-                RowStyling = "b"
+                rowStyling = "b"
             else:
-                RowStyling = ""
+                rowStyling = ""
 
             lastColumn = len(row.cells) - 1
 
             for columnNumber, cell in enumerate(row.cells):
                 if columnNumber == 0:
-                    ColumnStyling = "l"
+                    columnStyling = "l"
                 elif columnNumber == lastColumn:
-                    ColumnStyling = "r"
+                    columnStyling = "r"
                 else:
-                    ColumnStyling = ""
-                applyCellBorderStyling(cell, RowStyling + ColumnStyling)
+                    columnStyling = ""
+                cellStyling[rowNumber][columnNumber] = rowStyling + columnStyling
 
-    elif borderStyling == "all":
+    elif wholeTableLineStyling == "all":
         # All edges of all cells have lines
         for rowNumber, row in enumerate(table.rows):
             lastColumn = len(row.cells) - 1
 
             for columnNumber, cell in enumerate(row.cells):
-                applyCellBorderStyling(cell, "tlbr")
+                cellStyling[rowNumber][columnNumber] = "tlbr"
+
+    # Apply any row styling - from addTableColumnLines
+    for rowNumber, row in enumerate(table.rows):
+        if rowNumber + 1 in linedRows:
+            # Line after this row so below
+            for columnNumber, cell in enumerate(row.cells):
+                cellStyling[rowNumber][columnNumber] = (
+                    cellStyling[rowNumber][columnNumber] + "b"
+                )
+
+        elif rowNumber in linedRows:
+            # Line before this row so above
+            for columnNumber, cell in enumerate(row.cells):
+                cellStyling[rowNumber][columnNumber] = (
+                    cellStyling[rowNumber][columnNumber] + "t"
+                )
+
+    # Apply any column styling - from addTableRowLines
+    for rowNumber, row in enumerate(table.rows):
+        for columnNumber, cell in enumerate(row.cells):
+            if columnNumber + 1 in linedColumns:
+                # Line after this column so to right
+                cellStyling[rowNumber][columnNumber] = (
+                    cellStyling[rowNumber][columnNumber] + "r"
+                )
+
+            elif columnNumber + 1 in linedColumns:
+                # Line after this column so to left
+                cellStyling[rowNumber][columnNumber] = (
+                    cellStyling[rowNumber][columnNumber] + "r"
+                )
+
+    # The following control what the lines look like
+    lineWidthMultiplier = 1
+    lineCount = 1
+    lineColour = "000000"
+
+    # Apply the styling from the matrix to all cells
+    for rowNumber, row in enumerate(table.rows):
+        for columnNumber, cell in enumerate(row.cells):
+            applyCellBorderStyling(
+                cell,
+                cellStyling[rowNumber][columnNumber],
+                lineWidthMultiplier,
+                lineCount,
+                lineColour,
+            )
 
 
 # Return current, default and presentation values for an option
@@ -250,12 +316,19 @@ def setOptionValues(optionValue):
 def dynamicallySetOption(optionValue, defaultValue, presentationValue, conversion=""):
     if optionValue == "default":
         return defaultValue
+
     elif optionValue == "pres":
         return presentationValue
+
     elif conversion == "":
         return optionValue
+
     elif conversion == "float":
         return float(optionValue)
+
+    elif conversion == "sortednumericlist":
+        return sortedNumericList(optionValue)
+
     elif conversion == "int":
         return int(optionValue)
 
@@ -2616,7 +2689,9 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                 addFormattedText(p, cell)
 
         # Apply table border styling - whether there is any or not
-        applyTableBorderStyling(newTable, addTableLines, addTableColumnLines, addTableRowLines)
+        applyTableLineStyling(
+            newTable, addTableLines, addTableColumnLines, addTableRowLines
+        )
 
     return slide
 
@@ -4003,6 +4078,30 @@ for line in linesAfterConcatenation:
                     # Spaces representing a single indentation level
                     indentSpaces = dynamicallySetOption(
                         metadataValue, defaultIndentSpaces, presIndentSpaces, "int"
+                    )
+
+                elif metadataKey == "addtablelines":
+                    # Table level lines
+                    addTableLines = dynamicallySetOption(
+                        metadataValue, defaultAddTableLines, presAddTableLines, ""
+                    )
+
+                elif metadataKey == "addtablecolumnlines":
+                    # Table column lines
+                    addTableColumnLines = dynamicallySetOption(
+                        metadataValue,
+                        defaultAddTableColumnLines,
+                        presAddTableColumnLines,
+                        "sortednumericlist",
+                    )
+
+                elif metadataKey == "addtablerowlines":
+                    # Table row lines
+                    addTableRowLines = dynamicallySetOption(
+                        metadataValue,
+                        defaultAddTableRowLines,
+                        presAddTableRowLines,
+                        "sortednumericlist",
                     )
 
                 else:
