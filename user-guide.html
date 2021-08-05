@@ -1000,6 +1000,69 @@ body .markdown-body
     page-break-after: avoid;
   }
 }
+</style><style>/*GitHub*/
+.highlight {background-color:#fff;color:#333333;}
+.highlight .hll {background-color:#ffffcc;}
+.highlight .c{color:#999988;font-style:italic}
+.highlight .err{color:#a61717;background-color:#e3d2d2}
+.highlight .k{font-weight:bold}
+.highlight .o{font-weight:bold}
+.highlight .cm{color:#999988;font-style:italic}
+.highlight .cp{color:#999999;font-weight:bold}
+.highlight .c1{color:#999988;font-style:italic}
+.highlight .cs{color:#999999;font-weight:bold;font-style:italic}
+.highlight .gd{color:#000000;background-color:#ffdddd}
+.highlight .ge{font-style:italic}
+.highlight .gr{color:#aa0000}
+.highlight .gh{color:#999999}
+.highlight .gi{color:#000000;background-color:#ddffdd}
+.highlight .go{color:#888888}
+.highlight .gp{color:#555555}
+.highlight .gs{font-weight:bold}
+.highlight .gu{color:#800080;font-weight:bold}
+.highlight .gt{color:#aa0000}
+.highlight .kc{font-weight:bold}
+.highlight .kd{font-weight:bold}
+.highlight .kn{font-weight:bold}
+.highlight .kp{font-weight:bold}
+.highlight .kr{font-weight:bold}
+.highlight .kt{color:#445588;font-weight:bold}
+.highlight .m{color:#009999}
+.highlight .s{color:#dd1144}
+.highlight .n{color:#333333}
+.highlight .na{color:teal}
+.highlight .nb{color:#0086b3}
+.highlight .nc{color:#445588;font-weight:bold}
+.highlight .no{color:teal}
+.highlight .ni{color:purple}
+.highlight .ne{color:#990000;font-weight:bold}
+.highlight .nf{color:#990000;font-weight:bold}
+.highlight .nn{color:#555555}
+.highlight .nt{color:navy}
+.highlight .nv{color:teal}
+.highlight .ow{font-weight:bold}
+.highlight .w{color:#bbbbbb}
+.highlight .mf{color:#009999}
+.highlight .mh{color:#009999}
+.highlight .mi{color:#009999}
+.highlight .mo{color:#009999}
+.highlight .sb{color:#dd1144}
+.highlight .sc{color:#dd1144}
+.highlight .sd{color:#dd1144}
+.highlight .s2{color:#dd1144}
+.highlight .se{color:#dd1144}
+.highlight .sh{color:#dd1144}
+.highlight .si{color:#dd1144}
+.highlight .sx{color:#dd1144}
+.highlight .sr{color:#009926}
+.highlight .s1{color:#dd1144}
+.highlight .ss{color:#990073}
+.highlight .bp{color:#999999}
+.highlight .vc{color:teal}
+.highlight .vg{color:teal}
+.highlight .vi{color:teal}
+.highlight .il{color:#009999}
+.highlight .gc{color:#999;background-color:#EAF2F5}
 </style><title>user-guide</title></head><body><article class="markdown-body"><h1 id="markdown-to-powerpoint-user-guide">Markdown To Powerpoint User Guide<a class="headerlink" href="#markdown-to-powerpoint-user-guide" title="Permanent link"></a></h1>
 <p>This document describes the md2pptx Markdown preprocessor, which turns Markdown text into a Powerpoint pptx presentation.</p>
 <p>In this document we&rsquo;ll refer to it as &ldquo;md2pptx&rdquo;, pronounced &ldquo;em dee to pee pee tee ex&rdquo;.</p>
@@ -1099,6 +1162,7 @@ body .markdown-body
 <li><a href="#table-metadata">Table Metadata</a><ul>
 <li><a href="#shrinking-tables-with-compacttables">Shrinking Tables With <code>compactTables</code></a></li>
 <li><a href="#adding-lines-round-tables-and-cells-with-addtablelines">Adding Lines Round Tables And Cells With <code>addTableLines</code></a></li>
+<li><a href="#adding-lines-after-table-rows-and-columns-with-addtablerowlines-and-addtablecolumnlines">Adding Lines After Table Rows And Columns With <code>addTableRowLines</code> And <code>addTableColumnLines</code></a></li>
 </ul>
 </li>
 <li><a href="#card-metadata">Card Metadata</a><ul>
@@ -1150,6 +1214,8 @@ body .markdown-body
 <li><a href="#contentsplitdirection"><code>ContentSplitDirection</code></a></li>
 <li><a href="#contentsplit"><code>ContentSplit</code></a></li>
 <li><a href="#indentspaces"><code>IndentSpaces</code></a></li>
+<li><a href="#addtablelines"><code>addTableLines</code></a></li>
+<li><a href="#addtablecolumnlines-and-addtablerowlines"><code>addTableColumnLines</code> And <code>addTableRowLines</code></a></li>
 </ul>
 </li>
 </ul>
@@ -1256,6 +1322,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">2.2.5</td>
+<td align="right">5&nbsp;August&nbsp;2021</td>
+<td align="left">You can turn on lines after table rows and columns with <code>addTableRowLines</code> and <code>addTableColumnLines</code>. You can also do <code>addTableLines</code> on a slide-by-slide basis.</td>
+</tr>
 <tr>
 <td align="left">2.2.4</td>
 <td align="right">30&nbsp;July&nbsp;2021</td>
@@ -2531,7 +2602,20 @@ baseTextDecrement: 1
 </code></pre>
 <p>will add a black border round all the cells, and effectively the table.</p>
 <p>The default is <code>addTableLines: no</code> which doesn&rsquo;t add any table lines.</p>
-<p>This metadata affects the whole presentation - to provide styling consistency.</p>
+<p>You can override this metadata item with <a href="#addtablelines-dynamic">Dynamic Metadata</a>.</p>
+<p><strong>Note:</strong> This capability never removes lines - for example if they are present in the template presentation.</p>
+<h5 id="adding-lines-after-table-rows-and-columns-with-addtablerowlines-and-addtablecolumnlines">Adding Lines After Table Rows And Columns With <code>addTableRowLines</code> And <code>addTableColumnLines</code><a class="headerlink" href="#adding-lines-after-table-rows-and-columns-with-addtablerowlines-and-addtablecolumnlines" title="Permanent link"></a></h5>
+<p><a id="adding-lines-after-table-rows-and-columns-with-addtablerowlines-and-addtablecolumnlines"></a></p>
+<p>You can add lines to the right of specific columns and below specific rows with <code>addTableColumnLines</code> and <code>addTableRowLines</code>, respectively.
+For example</p>
+<pre><code>addTableColumnLines: 1 3
+</code></pre>
+<p>specifies tables will have vertical lines to the right of the first and third columns. (Column numbers start at 1.)</p>
+<p>Similarly</p>
+<pre><code>addTableRowLines: 1
+</code></pre>
+<p>specifies tables will have horizontal lines below the first row (often a header).</p>
+<p>You can override both these metadata items with <a href="#addtablecolumnlines-and-addtablerowlines-dynamic">Dynamic Metadata</a>.</p>
 <p><strong>Note:</strong> This capability never removes lines - for example if they are present in the template presentation.</p>
 <h4 id="card-metadata">Card Metadata<a class="headerlink" href="#card-metadata" title="Permanent link"></a></h4>
 <h5 id="card-background-colour-cardcolour">Card Background Colour - <code>CardColour</code><a class="headerlink" href="#card-background-colour-cardcolour" title="Permanent link"></a></h5>
@@ -2840,6 +2924,20 @@ baseTextDecrement: 1
 <h4 id="indentspaces"><code>IndentSpaces</code><a class="headerlink" href="#indentspaces" title="Permanent link"></a></h4>
 <p>You can override the presentation <a href="#specifying-how-many-spaces-represent-an-indentation-level-with-indentspaces">IndentSpaces</a> specification on a slide-by-slide basis:</p>
 <pre><code>&lt;!-- md2pptx: indentspaces: 4 --&gt;
+</code></pre>
+<p><a id="addtablelines-dynamic"></a></p>
+<h4 id="addtablelines"><code>addTableLines</code><a class="headerlink" href="#addtablelines" title="Permanent link"></a></h4>
+<p>You can override the presentation <a href="#adding-lines-round-tables-and-cells-with-addtablelines">AddTableLines</a> specification on a table-by-table basis:</p>
+<pre><code>&lt;!-- md2pptx: addtablelines: box --&gt;
+</code></pre>
+<p><a id="addtablecolumnlines-and-addtablerowlines-dynamic"></a></p>
+<h4 id="addtablecolumnlines-and-addtablerowlines"><code>addTableColumnLines</code> And <code>addTableRowLines</code><a class="headerlink" href="#addtablecolumnlines-and-addtablerowlines" title="Permanent link"></a></h4>
+<p>You can override the presentation <a href="#adding-lines-after-table-rows-and-columns-with-addtablerowlines-and-addtablecolumnlines">AddTableRowLines</a> and <a href="#adding-lines-after-table-rows-and-columns-with-addtablerowlines-and-addtablecolumnlines">AddTableColumnLines</a> specifications on a table-by-table basis:</p>
+<p>Here is an example of adding horizontal lines below rows 1 and 4:</p>
+<pre><code>&lt;!-- md2pptx: addtablerowlines: 1 4 --&gt;
+</code></pre>
+<p>Here is an example of adding vertical liness to the right of column 2:</p>
+<pre><code>&lt;!-- md2pptx: addtablecolumnlines: 2 --&gt;
 </code></pre>
 <h2 id="modifying-the-slide-template">Modifying The Slide Template<a class="headerlink" href="#modifying-the-slide-template" title="Permanent link"></a></h2>
 <p><a id="modifying-the-slide-template"></a></p>

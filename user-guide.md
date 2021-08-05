@@ -79,6 +79,7 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 		* [Table Metadata](#table-metadata)
 			* [Shrinking Tables With `compactTables`](#shrinking-tables-with-compacttables)
 			* [Adding Lines Round Tables And Cells With `addTableLines`](#adding-lines-round-tables-and-cells-with-addtablelines)
+			* [Adding Lines After Table Rows And Columns With `addTableRowLines` And `addTableColumnLines`](#adding-lines-after-table-rows-and-columns-with-addtablerowlines-and-addtablecolumnlines)
 		* [Card Metadata](#card-metadata)
 			* [Card Background Colour - `CardColour`](#card-background-colour-cardcolour)
 			* [Card Border Colour - `CardBorderColour`](#card-border-colour-cardbordercolour)
@@ -120,6 +121,8 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 		* [`ContentSplitDirection`](#contentsplitdirection)
 		* [`ContentSplit`](#contentsplit)
 		* [`IndentSpaces`](#indentspaces)
+		* [`addTableLines`](#addtablelines)
+		* [`addTableColumnLines` And `addTableRowLines`](#addtablecolumnlines-and-addtablerowlines)
 * [Modifying The Slide Template](#modifying-the-slide-template)
 	* [Basics](#basics)
 	* [Slide Template Sequence](#slide-template-sequence)
@@ -231,6 +234,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|2.2.5|5&nbsp;August&nbsp;2021|You can turn on lines after table rows and columns with `addTableRowLines` and `addTableColumnLines`. You can also do `addTableLines` on a slide-by-slide basis.|
 |2.2.4|30&nbsp;July&nbsp;2021|You can turn on a border round a table or all cells with `addTableLines`. Fixed bug where slide notes appeared containing code fragments and subtitles.|
 |2.2.3|25&nbsp;July&nbsp;2021|Code etc blocks can include numeric character and entity references|
 |2.2.2|22&nbsp;July&nbsp;2021|Fixed bug where code blocks not initialised to none on starting a new slide|
@@ -1495,7 +1499,27 @@ will add a black border round all the cells, and effectively the table.
 
 The default is `addTableLines: no` which doesn't add any table lines.
 
-This metadata affects the whole presentation - to provide styling consistency.
+You can override this metadata item with [Dynamic Metadata](#addtablelines-dynamic).
+
+**Note:** This capability never removes lines - for example if they are present in the template presentation.
+
+##### Adding Lines After Table Rows And Columns With `addTableRowLines` And `addTableColumnLines`
+<a id="adding-lines-after-table-rows-and-columns-with-addtablerowlines-and-addtablecolumnlines"></a>
+
+You can add lines to the right of specific columns and below specific rows with `addTableColumnLines` and `addTableRowLines`, respectively.
+For example
+
+	addTableColumnLines: 1 3
+
+specifies tables will have vertical lines to the right of the first and third columns. (Column numbers start at 1.)
+
+Similarly
+
+	addTableRowLines: 1
+
+specifies tables will have horizontal lines below the first row (often a header).
+
+You can override both these metadata items with [Dynamic Metadata](#addtablecolumnlines-and-addtablerowlines-dynamic).
 
 **Note:** This capability never removes lines - for example if they are present in the template presentation.
 
@@ -1899,6 +1923,26 @@ You can override the presentation [ContentSplit](#split-proportions-contentsplit
 You can override the presentation [IndentSpaces](#specifying-how-many-spaces-represent-an-indentation-level-with-indentspaces) specification on a slide-by-slide basis:
 
     <!-- md2pptx: indentspaces: 4 -->
+
+<a id="addtablelines-dynamic"></a>
+#### `addTableLines`
+
+You can override the presentation [AddTableLines](#adding-lines-round-tables-and-cells-with-addtablelines) specification on a table-by-table basis:
+
+    <!-- md2pptx: addtablelines: box -->
+
+<a id="addtablecolumnlines-and-addtablerowlines-dynamic"></a>
+#### `addTableColumnLines` And `addTableRowLines`
+
+You can override the presentation [AddTableRowLines](#adding-lines-after-table-rows-and-columns-with-addtablerowlines-and-addtablecolumnlines) and [AddTableColumnLines](#adding-lines-after-table-rows-and-columns-with-addtablerowlines-and-addtablecolumnlines) specifications on a table-by-table basis:
+
+Here is an example of adding horizontal lines below rows 1 and 4:
+
+    <!-- md2pptx: addtablerowlines: 1 4 -->
+
+Here is an example of adding vertical liness to the right of column 2:
+
+    <!-- md2pptx: addtablecolumnlines: 2 -->
 
 ## Modifying The Slide Template
 <a id="modifying-the-slide-template"></a>
