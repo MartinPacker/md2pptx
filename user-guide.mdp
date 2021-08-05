@@ -127,7 +127,7 @@ To quote from the python-pptx license statement:
 =colalign l r l
 =csv
 Level,Date,What
-2.2.5,5&nbsp;August&nbsp;2021,You can turn on lines after table rows and columns with `addTableRowLines` and `addTableColumnLines`. You can also do `addTableLines` on a slide-by-slide basis.
+2.2.5,5&nbsp;August&nbsp;2021,You can turn on lines after table rows and columns with `addTableRowLines` and `addTableColumnLines`. You can also do `addTableLines` on a slide-by-slide basis. Also `addTableLineColour`&comma; `addTableLineWidth`&comma; and `addTableLineCount`.
 2.2.4,30&nbsp;July&nbsp;2021,You can turn on a border round a table or all cells with `addTableLines`. Fixed bug where slide notes appeared containing code fragments and subtitles.
 2.2.3,25&nbsp;July&nbsp;2021,Code etc blocks can include numeric character and entity references
 2.2.2,22&nbsp;July&nbsp;2021,Fixed bug where code blocks not initialised to none on starting a new slide
@@ -1541,6 +1541,31 @@ You can override both these metadata items with [Dynamic Metadata](#addtablecolu
 
 **Note:** This capability never removes lines - for example if they are present in the template presentation.
 
+##### Specifying What The Added Table Lines Look Like With `addTableLineColour`, `addTableLineCount` and `addTableLineWidth`
+<a id="specifying-what-the-added-table-lines-look-like-with-addtablelinecolour-addtablelinecount-and-addtablelinewidth"></a>
+
+By default added table lines are black, narrow, and consist of a single line. \
+You can change all three of these.
+
+To change the colour specify the RGB value like this:
+
+	addTableLineColour: FF00FF
+
+which will make the added lines purple. \
+(This example is full-on red and full-on blue mixed to make purple.)
+
+To double the width of the added lines specify a width multiplier (in this case `2`) like this:
+
+	addTableLineWidth: 2
+
+To make the added lines pairs specify:
+
+	addTableLineCount: 2
+
+In this case the only valid values are `1` and `2`x.
+
+You can specify all three of these on a table-by-table basis. See [Dynamic Metadata](#addtablelinesattributes-dynamic).
+
 #### Card Metadata
 
 ##### Card Background Colour - `CardColour`
@@ -1834,22 +1859,63 @@ If you dynamically change a metadata value the new value will remain in effect f
 
 **Note:** After tweaking a slide you might well want to revert to your presentation's overall value (or even the md2pptx default).
 
+#### Tables
+
 <a id="compacttables-dynamic"></a>
-#### `CompactTables`
+##### `CompactTables`
 
 You can override the presentation [CompactTables](#shrinking-tables-with-compacttables) metadata value - perhaps to decrease the font size for a particularly crowded table slide:
 
     <!-- md2pptx: compacttables: 12 -->
 
+<a id="addtablelines-dynamic"></a>
+##### `addTableLines`
+
+You can override the presentation [AddTableLines](#adding-lines-round-tables-and-cells-with-addtablelines) specification on a table-by-table basis:
+
+    <!-- md2pptx: addtablelines: box -->
+
+<a id="addtablecolumnlines-and-addtablerowlines-dynamic"></a>
+##### `addTableColumnLines` And `addTableRowLines`
+
+You can override the presentation [AddTableRowLines](#adding-lines-after-table-rows-and-columns-with-addtablerowlines-and-addtablecolumnlines) and [AddTableColumnLines](#adding-lines-after-table-rows-and-columns-with-addtablerowlines-and-addtablecolumnlines) specifications on a table-by-table basis:
+
+Here is an example of adding horizontal lines below rows 1 and 4:
+
+    <!-- md2pptx: addtablerowlines: 1 4 -->
+
+Here is an example of adding vertical liness to the right of column 2:
+
+    <!-- md2pptx: addtablecolumnlines: 2 -->
+
+<a id="addtablelinesattributes-dynamic"></a>
+##### Added Table Line Attributes
+
+You can override the presentation [Added Table Line Attributes](#specifying-what-the-added-table-lines-look-like-with-addtablelinecolour-addtablelinecount-and-addtablelinewidth) on a table-by-table basis. Here are some examples:
+
+    <!-- md2pptx: addtablelinecolour: 00FF00 -->
+    
+turns the added lines green.
+
+    <!-- md2pptx: addtablelinewidth: 4 -->
+
+makes the added lines 4 times wider than normal.
+
+    <!-- md2pptx: addtablelinecount: 2 -->
+
+makes the added lines each appear as a pair of lines.
+    
+#### Cards
+
 <a id="cardpercent-dynamic"></a>
-#### `CardPercent`
+##### `CardPercent`
 
 You can override the presentation [CardPercent](#card-size-cardpercent) metadata value - perhaps to allow room for more card content:
 
     <!-- md2pptx: cardpercent: 90 -->
 
 <a id="cardlayout-dynamic"></a>
-#### `CardLayout`
+##### `CardLayout`
 
 You can override the presentation [CardLayout](#card-layout-direction-cardlayout) metadata value - perhaps to make an individual card slide vertical when most are horizontal:
 
@@ -1858,39 +1924,75 @@ Either `vertical` or `horizontal` can be specified.
     <!-- md2pptx: cardlayout: vertical -->
 
 <a id="cardtitlealign-dynamic"></a>
-#### `CardTitleAlign`
+##### `CardTitleAlign`
 
 You can override the presentation [CardTitleAlign](#card-title-alignment-cardtitlealign) metadata value - perhaps to make an individual card slide's titles left-aligned when most are centred:
 
     <!-- md2pptx: cardtitlealign: l -->
 
 <a id="cardtitleposition-dynamic"></a>
-#### `CardTitlePosition`
+##### `CardTitlePosition`
 
 You can override the presentation [CardTitlePosition](#card-title-position-cardtitleposition) metadata value - perhaps to make an individual card slide's titles inside the cards when most are above:
 
     <!-- md2pptx: cardtitleposition: insde -->
 
 <a id="cardshape-dynamic"></a>
-#### `CardShape`
+##### `CardShape`
 
 You can override the presentation [CardShape](#card-shape-cardshape) metadata value - perhaps to make an individual card slide's cards have square corners when most are rounded:
 
     <!-- md2pptx: cardshape: squared -->
 
 <a id="dynamic-cardhorizontalgap"></a>
-#### `CardHorizontalGap`
+##### `CardHorizontalGap`
 
 You can override the presentation [CardHorizontalGap](#card-horizontal-gap-cardhorizontalgap) metadata value - perhaps to squeeze the gaps between cards:
 
     <!-- md2pptx: cardhorizontalgap: 0.05 -->
 
 <a id="dynamic-cardverticalgap"></a>
-#### `CardVerticalGap`
+##### `CardVerticalGap`
 
 You can override the presentation [CardVerticalGap](#card-vertical-gap-cardverticalgap) metadata value - perhaps to squeeze the gaps between cards:
 
     <!-- md2pptx: cardverticalgap: 0.05 -->
+
+#### Code
+
+<a id="dynamic-codecolumns"></a>
+##### `CodeColumns`
+
+You can override the presentation [CodeColumns](#code-column-count-codecolumns) metadata value. \
+For example:
+
+    <!-- md2pptx: codecolumns: 60 -->
+
+The above changes the `CodeColumns` value for this and subsequent slides to 60.
+
+<a id="dynamic-fpratio"></a>
+##### `FPRatio`
+
+You can override the presentation [FPRatio](#fixed-pitch-height-to-width-ration-fpratio) (fixed pitch font character height to width ratio) metadata value. \
+For example:
+
+    <!-- md2pptx: fpratio: 1.3 -->
+
+The above changes the `FPRatio` value for this and subsequent slides to 1.3.
+
+<a id="dynamic-codeforeground"></a>
+##### `CodeForeground`
+
+You can override the presentation [CodeForeground](#foreground-colour-codeforeground) code slide foreground colour on a slide-by-slide basis:
+
+    <!-- md2pptx: codeforeground: 000000 -->
+
+<a id="dynamic-codebackground"></a>
+##### `CodeBackground`
+
+You can override the presentation [CodeBackground](#background-colour-codebackground) code slide background colour on a slide-by-slide basis:
+
+    <!-- md2pptx: codebackground: FFFFFF -->
 
 <a id="pagetitlesize-dynamic"></a>
 #### `PageTitleSize`
@@ -1917,40 +2019,6 @@ You can override the presentation [BaseTextDecrement](#specifying-text-size-with
 
 The above stops each level of bullets having progressively smaller text.
 
-<a id="dynamic-codecolumns"></a>
-#### `CodeColumns`
-
-You can override the presentation [CodeColumns](#code-column-count-codecolumns) metadata value. \
-For example:
-
-    <!-- md2pptx: codecolumns: 60 -->
-
-The above changes the `CodeColumns` value for this and subsequent slides to 60.
-
-<a id="dynamic-fpratio"></a>
-#### `FPRatio`
-
-You can override the presentation [FPRatio](#fixed-pitch-height-to-width-ration-fpratio) (fixed pitch font character height to width ratio) metadata value. \
-For example:
-
-    <!-- md2pptx: fpratio: 1.3 -->
-
-The above changes the `FPRatio` value for this and subsequent slides to 1.3.
-
-<a id="dynamic-codeforeground"></a>
-#### `CodeForeground`
-
-You can override the presentation [CodeForeground](#foreground-colour-codeforeground) code slide foreground colour on a slide-by-slide basis:
-
-    <!-- md2pptx: codeforeground: 000000 -->
-
-<a id="dynamic-codebackground"></a>
-#### `CodeBackground`
-
-You can override the presentation [CodeBackground](#background-colour-codebackground) code slide background colour on a slide-by-slide basis:
-
-    <!-- md2pptx: codebackground: FFFFFF -->
-
 <a id="dynamic-contentsplitdirection"></a>
 #### `ContentSplitDirection`
 
@@ -1972,25 +2040,6 @@ You can override the presentation [IndentSpaces](#specifying-how-many-spaces-rep
 
     <!-- md2pptx: indentspaces: 4 -->
 
-<a id="addtablelines-dynamic"></a>
-#### `addTableLines`
-
-You can override the presentation [AddTableLines](#adding-lines-round-tables-and-cells-with-addtablelines) specification on a table-by-table basis:
-
-    <!-- md2pptx: addtablelines: box -->
-
-<a id="addtablecolumnlines-and-addtablerowlines-dynamic"></a>
-#### `addTableColumnLines` And `addTableRowLines`
-
-You can override the presentation [AddTableRowLines](#adding-lines-after-table-rows-and-columns-with-addtablerowlines-and-addtablecolumnlines) and [AddTableColumnLines](#adding-lines-after-table-rows-and-columns-with-addtablerowlines-and-addtablecolumnlines) specifications on a table-by-table basis:
-
-Here is an example of adding horizontal lines below rows 1 and 4:
-
-    <!-- md2pptx: addtablerowlines: 1 4 -->
-
-Here is an example of adding vertical liness to the right of column 2:
-
-    <!-- md2pptx: addtablecolumnlines: 2 -->
 
 ## Modifying The Slide Template
 <a id="modifying-the-slide-template"></a>

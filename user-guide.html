@@ -1163,6 +1163,7 @@ body .markdown-body
 <li><a href="#shrinking-tables-with-compacttables">Shrinking Tables With <code>compactTables</code></a></li>
 <li><a href="#adding-lines-round-tables-and-cells-with-addtablelines">Adding Lines Round Tables And Cells With <code>addTableLines</code></a></li>
 <li><a href="#adding-lines-after-table-rows-and-columns-with-addtablerowlines-and-addtablecolumnlines">Adding Lines After Table Rows And Columns With <code>addTableRowLines</code> And <code>addTableColumnLines</code></a></li>
+<li><a href="#specifying-what-the-added-table-lines-look-like-with-addtablelinecolour-addtablelinecount-and-addtablelinewidth">Specifying What The Added Table Lines Look Like With <code>addTableLineColour</code>, <code>addTableLineCount</code> and <code>addTableLineWidth</code></a></li>
 </ul>
 </li>
 <li><a href="#card-metadata">Card Metadata</a><ul>
@@ -1196,7 +1197,14 @@ body .markdown-body
 </ul>
 </li>
 <li><a href="#dynamic-metadata">Dynamic Metadata</a><ul>
+<li><a href="#tables">Tables</a><ul>
 <li><a href="#compacttables"><code>CompactTables</code></a></li>
+<li><a href="#addtablelines"><code>addTableLines</code></a></li>
+<li><a href="#addtablecolumnlines-and-addtablerowlines"><code>addTableColumnLines</code> And <code>addTableRowLines</code></a></li>
+<li><a href="#added-table-line-attributes">Added Table Line Attributes</a></li>
+</ul>
+</li>
+<li><a href="#cards">Cards</a><ul>
 <li><a href="#cardpercent"><code>CardPercent</code></a></li>
 <li><a href="#cardlayout"><code>CardLayout</code></a></li>
 <li><a href="#cardtitlealign"><code>CardTitleAlign</code></a></li>
@@ -1204,18 +1212,21 @@ body .markdown-body
 <li><a href="#cardshape"><code>CardShape</code></a></li>
 <li><a href="#cardhorizontalgap"><code>CardHorizontalGap</code></a></li>
 <li><a href="#cardverticalgap"><code>CardVerticalGap</code></a></li>
-<li><a href="#pagetitlesize"><code>PageTitleSize</code></a></li>
-<li><a href="#basetextsize"><code>BaseTextSize</code></a></li>
-<li><a href="#basetextdecrement"><code>BaseTextDecrement</code></a></li>
+</ul>
+</li>
+<li><a href="#code">Code</a><ul>
 <li><a href="#codecolumns"><code>CodeColumns</code></a></li>
 <li><a href="#fpratio"><code>FPRatio</code></a></li>
 <li><a href="#codeforeground"><code>CodeForeground</code></a></li>
 <li><a href="#codebackground"><code>CodeBackground</code></a></li>
+</ul>
+</li>
+<li><a href="#pagetitlesize"><code>PageTitleSize</code></a></li>
+<li><a href="#basetextsize"><code>BaseTextSize</code></a></li>
+<li><a href="#basetextdecrement"><code>BaseTextDecrement</code></a></li>
 <li><a href="#contentsplitdirection"><code>ContentSplitDirection</code></a></li>
 <li><a href="#contentsplit"><code>ContentSplit</code></a></li>
 <li><a href="#indentspaces"><code>IndentSpaces</code></a></li>
-<li><a href="#addtablelines"><code>addTableLines</code></a></li>
-<li><a href="#addtablecolumnlines-and-addtablerowlines"><code>addTableColumnLines</code> And <code>addTableRowLines</code></a></li>
 </ul>
 </li>
 </ul>
@@ -1325,7 +1336,7 @@ THE SOFTWARE.
 <tr>
 <td align="left">2.2.5</td>
 <td align="right">5&nbsp;August&nbsp;2021</td>
-<td align="left">You can turn on lines after table rows and columns with <code>addTableRowLines</code> and <code>addTableColumnLines</code>. You can also do <code>addTableLines</code> on a slide-by-slide basis.</td>
+<td align="left">You can turn on lines after table rows and columns with <code>addTableRowLines</code> and <code>addTableColumnLines</code>. You can also do <code>addTableLines</code> on a slide-by-slide basis. Also <code>addTableLineColour</code>&comma; <code>addTableLineWidth</code>&comma; and <code>addTableLineCount</code>.</td>
 </tr>
 <tr>
 <td align="left">2.2.4</td>
@@ -2617,6 +2628,21 @@ For example</p>
 <p>specifies tables will have horizontal lines below the first row (often a header).</p>
 <p>You can override both these metadata items with <a href="#addtablecolumnlines-and-addtablerowlines-dynamic">Dynamic Metadata</a>.</p>
 <p><strong>Note:</strong> This capability never removes lines - for example if they are present in the template presentation.</p>
+<h5 id="specifying-what-the-added-table-lines-look-like-with-addtablelinecolour-addtablelinecount-and-addtablelinewidth">Specifying What The Added Table Lines Look Like With <code>addTableLineColour</code>, <code>addTableLineCount</code> and <code>addTableLineWidth</code><a class="headerlink" href="#specifying-what-the-added-table-lines-look-like-with-addtablelinecolour-addtablelinecount-and-addtablelinewidth" title="Permanent link"></a></h5>
+<p><a id="specifying-what-the-added-table-lines-look-like-with-addtablelinecolour-addtablelinecount-and-addtablelinewidth"></a></p>
+<p>By default added table lines are black, narrow, and consist of a single line. You can change all three of these.</p>
+<p>To change the colour specify the RGB value like this:</p>
+<pre><code>addTableLineColour: FF00FF
+</code></pre>
+<p>which will make the added lines purple. (This example is full-on red and full-on blue mixed to make purple.)</p>
+<p>To double the width of the added lines specify a width multiplier (in this case <code>2</code>) like this:</p>
+<pre><code>addTableLineWidth: 2
+</code></pre>
+<p>To make the added lines pairs specify:</p>
+<pre><code>addTableLineCount: 2
+</code></pre>
+<p>In this case the only valid values are <code>1</code> and <code>2</code>x.</p>
+<p>You can specify all three of these on a table-by-table basis. See <a href="#addtablelinesattributes-dynamic">Dynamic Metadata</a>.</p>
 <h4 id="card-metadata">Card Metadata<a class="headerlink" href="#card-metadata" title="Permanent link"></a></h4>
 <h5 id="card-background-colour-cardcolour">Card Background Colour - <code>CardColour</code><a class="headerlink" href="#card-background-colour-cardcolour" title="Permanent link"></a></h5>
 <p><a id="card-background-colour-cardcolour"></a></p>
@@ -2830,46 +2856,97 @@ For example</p>
 </ul>
 <p>If you dynamically change a metadata value the new value will remain in effect for the remainder of the presentation, unless changed again.</p>
 <p><strong>Note:</strong> After tweaking a slide you might well want to revert to your presentation&rsquo;s overall value (or even the md2pptx default).</p>
+<h4 id="tables">Tables<a class="headerlink" href="#tables" title="Permanent link"></a></h4>
 <p><a id="compacttables-dynamic"></a></p>
-<h4 id="compacttables"><code>CompactTables</code><a class="headerlink" href="#compacttables" title="Permanent link"></a></h4>
+<h5 id="compacttables"><code>CompactTables</code><a class="headerlink" href="#compacttables" title="Permanent link"></a></h5>
 <p>You can override the presentation <a href="#shrinking-tables-with-compacttables">CompactTables</a> metadata value - perhaps to decrease the font size for a particularly crowded table slide:</p>
 <pre><code>&lt;!-- md2pptx: compacttables: 12 --&gt;
 </code></pre>
+<p><a id="addtablelines-dynamic"></a></p>
+<h5 id="addtablelines"><code>addTableLines</code><a class="headerlink" href="#addtablelines" title="Permanent link"></a></h5>
+<p>You can override the presentation <a href="#adding-lines-round-tables-and-cells-with-addtablelines">AddTableLines</a> specification on a table-by-table basis:</p>
+<pre><code>&lt;!-- md2pptx: addtablelines: box --&gt;
+</code></pre>
+<p><a id="addtablecolumnlines-and-addtablerowlines-dynamic"></a></p>
+<h5 id="addtablecolumnlines-and-addtablerowlines"><code>addTableColumnLines</code> And <code>addTableRowLines</code><a class="headerlink" href="#addtablecolumnlines-and-addtablerowlines" title="Permanent link"></a></h5>
+<p>You can override the presentation <a href="#adding-lines-after-table-rows-and-columns-with-addtablerowlines-and-addtablecolumnlines">AddTableRowLines</a> and <a href="#adding-lines-after-table-rows-and-columns-with-addtablerowlines-and-addtablecolumnlines">AddTableColumnLines</a> specifications on a table-by-table basis:</p>
+<p>Here is an example of adding horizontal lines below rows 1 and 4:</p>
+<pre><code>&lt;!-- md2pptx: addtablerowlines: 1 4 --&gt;
+</code></pre>
+<p>Here is an example of adding vertical liness to the right of column 2:</p>
+<pre><code>&lt;!-- md2pptx: addtablecolumnlines: 2 --&gt;
+</code></pre>
+<p><a id="addtablelinesattributes-dynamic"></a></p>
+<h5 id="added-table-line-attributes">Added Table Line Attributes<a class="headerlink" href="#added-table-line-attributes" title="Permanent link"></a></h5>
+<p>You can override the presentation <a href="#specifying-what-the-added-table-lines-look-like-with-addtablelinecolour-addtablelinecount-and-addtablelinewidth">Added Table Line Attributes</a> on a table-by-table basis. Here are some examples:</p>
+<pre><code>&lt;!-- md2pptx: addtablelinecolour: 00FF00 --&gt;
+</code></pre>
+<p>turns the added lines green.</p>
+<pre><code>&lt;!-- md2pptx: addtablelinewidth: 4 --&gt;
+</code></pre>
+<p>makes the added lines 4 times wider than normal.</p>
+<pre><code>&lt;!-- md2pptx: addtablelinecount: 2 --&gt;
+</code></pre>
+<p>makes the added lines each appear as a pair of lines.</p>
+<h4 id="cards">Cards<a class="headerlink" href="#cards" title="Permanent link"></a></h4>
 <p><a id="cardpercent-dynamic"></a></p>
-<h4 id="cardpercent"><code>CardPercent</code><a class="headerlink" href="#cardpercent" title="Permanent link"></a></h4>
+<h5 id="cardpercent"><code>CardPercent</code><a class="headerlink" href="#cardpercent" title="Permanent link"></a></h5>
 <p>You can override the presentation <a href="#card-size-cardpercent">CardPercent</a> metadata value - perhaps to allow room for more card content:</p>
 <pre><code>&lt;!-- md2pptx: cardpercent: 90 --&gt;
 </code></pre>
 <p><a id="cardlayout-dynamic"></a></p>
-<h4 id="cardlayout"><code>CardLayout</code><a class="headerlink" href="#cardlayout" title="Permanent link"></a></h4>
+<h5 id="cardlayout"><code>CardLayout</code><a class="headerlink" href="#cardlayout" title="Permanent link"></a></h5>
 <p>You can override the presentation <a href="#card-layout-direction-cardlayout">CardLayout</a> metadata value - perhaps to make an individual card slide vertical when most are horizontal:</p>
 <p>Either <code>vertical</code> or <code>horizontal</code> can be specified.</p>
 <pre><code>&lt;!-- md2pptx: cardlayout: vertical --&gt;
 </code></pre>
 <p><a id="cardtitlealign-dynamic"></a></p>
-<h4 id="cardtitlealign"><code>CardTitleAlign</code><a class="headerlink" href="#cardtitlealign" title="Permanent link"></a></h4>
+<h5 id="cardtitlealign"><code>CardTitleAlign</code><a class="headerlink" href="#cardtitlealign" title="Permanent link"></a></h5>
 <p>You can override the presentation <a href="#card-title-alignment-cardtitlealign">CardTitleAlign</a> metadata value - perhaps to make an individual card slide&rsquo;s titles left-aligned when most are centred:</p>
 <pre><code>&lt;!-- md2pptx: cardtitlealign: l --&gt;
 </code></pre>
 <p><a id="cardtitleposition-dynamic"></a></p>
-<h4 id="cardtitleposition"><code>CardTitlePosition</code><a class="headerlink" href="#cardtitleposition" title="Permanent link"></a></h4>
+<h5 id="cardtitleposition"><code>CardTitlePosition</code><a class="headerlink" href="#cardtitleposition" title="Permanent link"></a></h5>
 <p>You can override the presentation <a href="#card-title-position-cardtitleposition">CardTitlePosition</a> metadata value - perhaps to make an individual card slide&rsquo;s titles inside the cards when most are above:</p>
 <pre><code>&lt;!-- md2pptx: cardtitleposition: insde --&gt;
 </code></pre>
 <p><a id="cardshape-dynamic"></a></p>
-<h4 id="cardshape"><code>CardShape</code><a class="headerlink" href="#cardshape" title="Permanent link"></a></h4>
+<h5 id="cardshape"><code>CardShape</code><a class="headerlink" href="#cardshape" title="Permanent link"></a></h5>
 <p>You can override the presentation <a href="#card-shape-cardshape">CardShape</a> metadata value - perhaps to make an individual card slide&rsquo;s cards have square corners when most are rounded:</p>
 <pre><code>&lt;!-- md2pptx: cardshape: squared --&gt;
 </code></pre>
 <p><a id="dynamic-cardhorizontalgap"></a></p>
-<h4 id="cardhorizontalgap"><code>CardHorizontalGap</code><a class="headerlink" href="#cardhorizontalgap" title="Permanent link"></a></h4>
+<h5 id="cardhorizontalgap"><code>CardHorizontalGap</code><a class="headerlink" href="#cardhorizontalgap" title="Permanent link"></a></h5>
 <p>You can override the presentation <a href="#card-horizontal-gap-cardhorizontalgap">CardHorizontalGap</a> metadata value - perhaps to squeeze the gaps between cards:</p>
 <pre><code>&lt;!-- md2pptx: cardhorizontalgap: 0.05 --&gt;
 </code></pre>
 <p><a id="dynamic-cardverticalgap"></a></p>
-<h4 id="cardverticalgap"><code>CardVerticalGap</code><a class="headerlink" href="#cardverticalgap" title="Permanent link"></a></h4>
+<h5 id="cardverticalgap"><code>CardVerticalGap</code><a class="headerlink" href="#cardverticalgap" title="Permanent link"></a></h5>
 <p>You can override the presentation <a href="#card-vertical-gap-cardverticalgap">CardVerticalGap</a> metadata value - perhaps to squeeze the gaps between cards:</p>
 <pre><code>&lt;!-- md2pptx: cardverticalgap: 0.05 --&gt;
+</code></pre>
+<h4 id="code_1">Code<a class="headerlink" href="#code_1" title="Permanent link"></a></h4>
+<p><a id="dynamic-codecolumns"></a></p>
+<h5 id="codecolumns"><code>CodeColumns</code><a class="headerlink" href="#codecolumns" title="Permanent link"></a></h5>
+<p>You can override the presentation <a href="#code-column-count-codecolumns">CodeColumns</a> metadata value. For example:</p>
+<pre><code>&lt;!-- md2pptx: codecolumns: 60 --&gt;
+</code></pre>
+<p>The above changes the <code>CodeColumns</code> value for this and subsequent slides to 60.</p>
+<p><a id="dynamic-fpratio"></a></p>
+<h5 id="fpratio"><code>FPRatio</code><a class="headerlink" href="#fpratio" title="Permanent link"></a></h5>
+<p>You can override the presentation <a href="#fixed-pitch-height-to-width-ration-fpratio">FPRatio</a> (fixed pitch font character height to width ratio) metadata value. For example:</p>
+<pre><code>&lt;!-- md2pptx: fpratio: 1.3 --&gt;
+</code></pre>
+<p>The above changes the <code>FPRatio</code> value for this and subsequent slides to 1.3.</p>
+<p><a id="dynamic-codeforeground"></a></p>
+<h5 id="codeforeground"><code>CodeForeground</code><a class="headerlink" href="#codeforeground" title="Permanent link"></a></h5>
+<p>You can override the presentation <a href="#foreground-colour-codeforeground">CodeForeground</a> code slide foreground colour on a slide-by-slide basis:</p>
+<pre><code>&lt;!-- md2pptx: codeforeground: 000000 --&gt;
+</code></pre>
+<p><a id="dynamic-codebackground"></a></p>
+<h5 id="codebackground"><code>CodeBackground</code><a class="headerlink" href="#codebackground" title="Permanent link"></a></h5>
+<p>You can override the presentation <a href="#background-colour-codebackground">CodeBackground</a> code slide background colour on a slide-by-slide basis:</p>
+<pre><code>&lt;!-- md2pptx: codebackground: FFFFFF --&gt;
 </code></pre>
 <p><a id="pagetitlesize-dynamic"></a></p>
 <h4 id="pagetitlesize"><code>PageTitleSize</code><a class="headerlink" href="#pagetitlesize" title="Permanent link"></a></h4>
@@ -2888,28 +2965,6 @@ For example</p>
 <pre><code>&lt;!-- md2pptx: basetextdecrement: 0 --&gt;
 </code></pre>
 <p>The above stops each level of bullets having progressively smaller text.</p>
-<p><a id="dynamic-codecolumns"></a></p>
-<h4 id="codecolumns"><code>CodeColumns</code><a class="headerlink" href="#codecolumns" title="Permanent link"></a></h4>
-<p>You can override the presentation <a href="#code-column-count-codecolumns">CodeColumns</a> metadata value. For example:</p>
-<pre><code>&lt;!-- md2pptx: codecolumns: 60 --&gt;
-</code></pre>
-<p>The above changes the <code>CodeColumns</code> value for this and subsequent slides to 60.</p>
-<p><a id="dynamic-fpratio"></a></p>
-<h4 id="fpratio"><code>FPRatio</code><a class="headerlink" href="#fpratio" title="Permanent link"></a></h4>
-<p>You can override the presentation <a href="#fixed-pitch-height-to-width-ration-fpratio">FPRatio</a> (fixed pitch font character height to width ratio) metadata value. For example:</p>
-<pre><code>&lt;!-- md2pptx: fpratio: 1.3 --&gt;
-</code></pre>
-<p>The above changes the <code>FPRatio</code> value for this and subsequent slides to 1.3.</p>
-<p><a id="dynamic-codeforeground"></a></p>
-<h4 id="codeforeground"><code>CodeForeground</code><a class="headerlink" href="#codeforeground" title="Permanent link"></a></h4>
-<p>You can override the presentation <a href="#foreground-colour-codeforeground">CodeForeground</a> code slide foreground colour on a slide-by-slide basis:</p>
-<pre><code>&lt;!-- md2pptx: codeforeground: 000000 --&gt;
-</code></pre>
-<p><a id="dynamic-codebackground"></a></p>
-<h4 id="codebackground"><code>CodeBackground</code><a class="headerlink" href="#codebackground" title="Permanent link"></a></h4>
-<p>You can override the presentation <a href="#background-colour-codebackground">CodeBackground</a> code slide background colour on a slide-by-slide basis:</p>
-<pre><code>&lt;!-- md2pptx: codebackground: FFFFFF --&gt;
-</code></pre>
 <p><a id="dynamic-contentsplitdirection"></a></p>
 <h4 id="contentsplitdirection"><code>ContentSplitDirection</code><a class="headerlink" href="#contentsplitdirection" title="Permanent link"></a></h4>
 <p>You can override the presentation <a href="#horizontal-or-vertical-split-contentsplitdirection">ContentSplitDirection</a> value on a slide-by-slide basis:</p>
@@ -2924,20 +2979,6 @@ For example</p>
 <h4 id="indentspaces"><code>IndentSpaces</code><a class="headerlink" href="#indentspaces" title="Permanent link"></a></h4>
 <p>You can override the presentation <a href="#specifying-how-many-spaces-represent-an-indentation-level-with-indentspaces">IndentSpaces</a> specification on a slide-by-slide basis:</p>
 <pre><code>&lt;!-- md2pptx: indentspaces: 4 --&gt;
-</code></pre>
-<p><a id="addtablelines-dynamic"></a></p>
-<h4 id="addtablelines"><code>addTableLines</code><a class="headerlink" href="#addtablelines" title="Permanent link"></a></h4>
-<p>You can override the presentation <a href="#adding-lines-round-tables-and-cells-with-addtablelines">AddTableLines</a> specification on a table-by-table basis:</p>
-<pre><code>&lt;!-- md2pptx: addtablelines: box --&gt;
-</code></pre>
-<p><a id="addtablecolumnlines-and-addtablerowlines-dynamic"></a></p>
-<h4 id="addtablecolumnlines-and-addtablerowlines"><code>addTableColumnLines</code> And <code>addTableRowLines</code><a class="headerlink" href="#addtablecolumnlines-and-addtablerowlines" title="Permanent link"></a></h4>
-<p>You can override the presentation <a href="#adding-lines-after-table-rows-and-columns-with-addtablerowlines-and-addtablecolumnlines">AddTableRowLines</a> and <a href="#adding-lines-after-table-rows-and-columns-with-addtablerowlines-and-addtablecolumnlines">AddTableColumnLines</a> specifications on a table-by-table basis:</p>
-<p>Here is an example of adding horizontal lines below rows 1 and 4:</p>
-<pre><code>&lt;!-- md2pptx: addtablerowlines: 1 4 --&gt;
-</code></pre>
-<p>Here is an example of adding vertical liness to the right of column 2:</p>
-<pre><code>&lt;!-- md2pptx: addtablecolumnlines: 2 --&gt;
 </code></pre>
 <h2 id="modifying-the-slide-template">Modifying The Slide Template<a class="headerlink" href="#modifying-the-slide-template" title="Permanent link"></a></h2>
 <p><a id="modifying-the-slide-template"></a></p>
