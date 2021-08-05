@@ -43,7 +43,7 @@ except:
     have_cairosvg = False
 
 md2pptx_level = "2.2.5"
-md2pptx_date = "4 August, 2021"
+md2pptx_date = "5 August, 2021"
 
 
 class SlideInfo:
@@ -216,7 +216,15 @@ def applyCellBorderStyling(
 
 
 # Apply table line styling
-def applyTableLineStyling(table, wholeTableLineStyling, linedColumns, linedRows):
+def applyTableLineStyling(
+    table,
+    wholeTableLineStyling,
+    linedColumns,
+    linedRows,
+    lineWidthMultiplier,
+    lineCount,
+    lineColour,
+):
     lastRow = len(table.rows) - 1
 
     # Create blank cell styling matrix
@@ -288,11 +296,6 @@ def applyTableLineStyling(table, wholeTableLineStyling, linedColumns, linedRows)
                 cellStyling[rowNumber][columnNumber] = (
                     cellStyling[rowNumber][columnNumber] + "r"
                 )
-
-    # The following control what the lines look like
-    lineWidthMultiplier = 1
-    lineCount = 1
-    lineColour = "000000"
 
     # Apply the styling from the matrix to all cells
     for rowNumber, row in enumerate(table.rows):
@@ -2690,7 +2693,13 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
 
         # Apply table border styling - whether there is any or not
         applyTableLineStyling(
-            newTable, addTableLines, addTableColumnLines, addTableRowLines
+            newTable,
+            addTableLines,
+            addTableColumnLines,
+            addTableRowLines,
+            addTableLineWidth,
+            addTableLineCount,
+            addTableLineColour,
         )
 
     return slide
@@ -3320,6 +3329,15 @@ defaultAddTableLines, addTableLines, presAddTableLines = setOptionValues("no")
     presAddTableRowLines,
 ) = setOptionValues([])
 
+# How wide the added table lines are, relatively speaking
+defaultAddTableLineWidth, addTableLineWidth, presAddTableLineWidth = setOptionValues(1)
+
+# Whether the lines are drawn singly or doubly
+defaultAddTableLineCount, addTableLineCount, presAddTableLineCount = setOptionValues(1)
+
+# RGB value of colour table lines will be added with
+defaultAddTableLineColour, addTableLineColour, presAddTableLineColour = setOptionValues("000000")
+
 sectionTitleSize = 40
 sectionSubtitleSize = 28
 monoFont = "Courier"
@@ -3673,6 +3691,17 @@ for line in metadata_lines:
         _, addTableRowLines, presAddTableRowLines = setOptionValues(
             sortedNumericList(value)
         )
+
+    elif name == "addtablelinecount":
+        _, addTableLineCount, presAddTableLineCount = setOptionValues(int(value)
+        )
+
+    elif name == "addtablelinewidth":
+        _, addTableLineWidth, presAddTableLineWidth = setOptionValues(int(value)
+        )
+    elif name == "addtablelinecolour":
+        _, addTableLineColour, presAddTableLineColour = setOptionValues(value)
+
 
 if slideTemplateFile != "":
     originalSlideTemplateFile = slideTemplateFile
@@ -4102,6 +4131,33 @@ for line in linesAfterConcatenation:
                         defaultAddTableRowLines,
                         presAddTableRowLines,
                         "sortednumericlist",
+                    )
+
+                elif metadataKey == "addtablelinecount":
+                    # Table lines' multiplicity
+                    addTableLineCount = dynamicallySetOption(
+                        metadataValue,
+                        defaultAddTableLineCount,
+                        presAddTableLineCount,
+                        "int",
+                    )
+
+                elif metadataKey == "addtablelinewidth":
+                    # Table lines' width
+                    addTableLineWidth = dynamicallySetOption(
+                        metadataValue,
+                        defaultAddTableLineWidth,
+                        presAddTableLineWidth,
+                        "int",
+                    )
+
+                elif metadataKey == "addtablelinecolour":
+                    # Table lines' colour - RGB
+                    addTableLineColour = dynamicallySetOption(
+                        metadataValue,
+                        defaultAddTableLineColour,
+                        presAddTableLineColour,
+                        "",
                     )
 
                 else:
