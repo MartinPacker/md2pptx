@@ -239,7 +239,8 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
-|2.3|21&nbsp;August&nbsp;2021|Fixed "slide title as heading reference bug". Added Python release to runtime output. Refactored metadata handling.|
+|2.3.1|21&nbsp;August&nbsp;2021|Forgot to mention "prev" / "pop" in documentation for 2.3.|
+|2.3|21&nbsp;August&nbsp;2021|Fixed "slide title as heading reference bug". Added Python release to runtime output. Refactored metadata handling.sublim|
 |2.2.5|5&nbsp;August&nbsp;2021|You can turn on lines after table rows and columns with `addTableRowLines` and `addTableColumnLines`. You can also do `addTableLines` on a slide-by-slide basis. Also `addTableLineColour`&comma; `addTableLineWidth`&comma; and `addTableLineCount`.|
 |2.2.4|30&nbsp;July&nbsp;2021|You can turn on a border round a table or all cells with `addTableLines`. Fixed bug where slide notes appeared containing code fragments and subtitles.|
 |2.2.3|25&nbsp;July&nbsp;2021|Code etc blocks can include numeric character and entity references|
@@ -1800,7 +1801,7 @@ The default value is such as to make each block have equal space.
 <a id="dynamic-metadata"></a>
 ### Dynamic Metadata
 
-md2pptx can alter some in-effect settings, starting at a particular slide. Straight after the heading code a special form of comment like so:
+md2pptx can alter some in-effect settings, starting at a particular slide. Straight after the heading code a special form of (HTML) comment like so:
 
     ### Origins Of Mainframe, Performance, Topics Podcast
     <!-- md2pptx: compacttables: 14 -->
@@ -1811,11 +1812,12 @@ Here are the values you can specify for the metadata:
 
 * `pres` - revert to the presentations's value (if specified). If, at the beginning of the presentation, you didn't specify a value for this metadata item it will be the md2pptx default that will be in effect.
 * `default` - revert to the md2pptx default.
+* `prev` or `pop` - use the previous value, popping the stack as you do.
 * Any other value - used literally.
 
 If you dynamically change a metadata value the new value will remain in effect for the remainder of the presentation, unless changed again.
 
-**Note:** After tweaking a slide you might well want to revert to your presentation's overall value (or even the md2pptx default).
+**Note:** After tweaking a slide you might well want to revert to your presentation's overall value (or even the md2pptx default). Instead of this you might use `prev` or`pop`, though these are destructive.
 
 #### Tables
 

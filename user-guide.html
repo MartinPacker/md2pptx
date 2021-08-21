@@ -1334,9 +1334,14 @@ THE SOFTWARE.
 </thead>
 <tbody>
 <tr>
+<td align="left">2.3.1</td>
+<td align="right">21&nbsp;August&nbsp;2021</td>
+<td align="left">Forgot to mention &ldquo;prev&rdquo; / &ldquo;pop&rdquo; in documentation for 2.3.</td>
+</tr>
+<tr>
 <td align="left">2.3</td>
 <td align="right">21&nbsp;August&nbsp;2021</td>
-<td align="left">Fixed &ldquo;slide title as heading reference bug&rdquo;. Added Python release to runtime output. Refactored metadata handling.</td>
+<td align="left">Fixed &ldquo;slide title as heading reference bug&rdquo;. Added Python release to runtime output. Refactored metadata handling.sublim</td>
 </tr>
 <tr>
 <td align="left">2.2.5</td>
@@ -2848,7 +2853,7 @@ For example</p>
 <p>The default value is such as to make each block have equal space.</p>
 <p><a id="dynamic-metadata"></a></p>
 <h3 id="dynamic-metadata">Dynamic Metadata<a class="headerlink" href="#dynamic-metadata" title="Permanent link"></a></h3>
-<p>md2pptx can alter some in-effect settings, starting at a particular slide. Straight after the heading code a special form of comment like so:</p>
+<p>md2pptx can alter some in-effect settings, starting at a particular slide. Straight after the heading code a special form of (HTML) comment like so:</p>
 <pre><code>### Origins Of Mainframe, Performance, Topics Podcast
 &lt;!-- md2pptx: compacttables: 14 --&gt;
 </code></pre>
@@ -2857,10 +2862,11 @@ For example</p>
 <ul>
 <li><code>pres</code> - revert to the presentations&rsquo;s value (if specified). If, at the beginning of the presentation, you didn&rsquo;t specify a value for this metadata item it will be the md2pptx default that will be in effect.</li>
 <li><code>default</code> - revert to the md2pptx default.</li>
+<li><code>prev</code> or <code>pop</code> - use the previous value, popping the stack as you do.</li>
 <li>Any other value - used literally.</li>
 </ul>
 <p>If you dynamically change a metadata value the new value will remain in effect for the remainder of the presentation, unless changed again.</p>
-<p><strong>Note:</strong> After tweaking a slide you might well want to revert to your presentation&rsquo;s overall value (or even the md2pptx default).</p>
+<p><strong>Note:</strong> After tweaking a slide you might well want to revert to your presentation&rsquo;s overall value (or even the md2pptx default). Instead of this you might use <code>prev</code> or<code>pop</code>, though these are destructive.</p>
 <h4 id="tables">Tables<a class="headerlink" href="#tables" title="Permanent link"></a></h4>
 <p><a id="compacttables-dynamic"></a></p>
 <h5 id="compacttables"><code>CompactTables</code><a class="headerlink" href="#compacttables" title="Permanent link"></a></h5>

@@ -43,7 +43,7 @@ try:
 except:
     have_cairosvg = False
 
-md2pptx_level = "2.3"
+md2pptx_level = "2.3.1"
 md2pptx_date = "21 August, 2021"
 
 
