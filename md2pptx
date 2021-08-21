@@ -29,6 +29,7 @@ from pathlib import Path
 import urllib.request
 import tempfile
 import copy
+import platform
 
 # import xml.etree
 from lxml import etree
@@ -42,8 +43,8 @@ try:
 except:
     have_cairosvg = False
 
-md2pptx_level = "2.2.5"
-md2pptx_date = "5 August, 2021"
+md2pptx_level = "2.3"
+md2pptx_date = "21 August, 2021"
 
 
 class SlideInfo:
@@ -75,6 +76,82 @@ class Rectangle:
         self.left = left
         self.height = height
         self.width = width
+
+
+# Note: Options stored with lower case keys
+class ProcessingOptions:
+    def __init__(self):
+        self.defaultOptions = {}
+        self.presentationOptions = {}
+        self.currentOptions = {}
+
+    def getDefaultOption(self, optionName):
+        return self.defaultOptions[optionName.lower()]
+
+    def setDefaultOption(self, optionName, value):
+        self.defaultOptions[optionName.lower()] = value
+
+    def getPresentationOption(self, optionName):
+        return self.presentationOptions[optionName.lower()]
+
+    def setPresentationOption(self, optionName, value):
+        self.presentationOptions[optionName.lower()] = value
+
+    def getCurrentOption(self, optionName):
+        return self.currentOptions[optionName.lower()][-1]
+
+    # Note: Can't pop to an empty stack. Will always have default available
+    def popCurrentOption(self, optionName):
+        key = optionName.lower()
+        if len(self.currentOptions[key]) > 1:
+            # Have a non-default value to use
+            self.currentOptions[key].pop()
+
+    def setCurrentOption(self, optionName, value):
+        key = optionName.lower()
+
+        if key in self.currentOptions:
+            # Add new value to existing stack
+            self.currentOptions[key].append(value)
+        else:
+            # Start a new stack for this option
+            self.currentOptions[key] = [value]
+
+    def setOptionValues(self, optionName, value):
+        key = optionName.lower()
+        if key not in self.defaultOptions:
+            self.setDefaultOption(optionName, value)
+
+        self.setPresentationOption(optionName, value)
+
+        self.setCurrentOption(optionName, value)
+
+    def setOptionValuesArray(self, optionArray):
+        for keyValuePair in optionArray:
+            self.setOptionValues(keyValuePair[0], keyValuePair[1])
+
+    def dynamicallySetOption(self, optionName, optionValue, conversion):
+        lowerName = optionName.lower()
+        if optionValue == "default":
+            self.setCurrentOption(lowerName, self.getDefaultOption(lowerName))
+
+        elif optionValue == "pres":
+            self.setCurrentOption(lowerName, self.getPresentationOption(lowerName))
+
+        elif optionValue in ["pop", "prev"]:
+            self.popCurrentOption(lowerName)
+
+        elif conversion == "":
+            self.setCurrentOption(lowerName, optionValue)
+
+        elif conversion == "float":
+            self.setCurrentOption(lowerName, float(optionValue))
+
+        elif conversion == "sortednumericlist":
+            self.setCurrentOption(lowerName, sortedNumericList(optionValue))
+
+        elif conversion == "int":
+            self.setCurrentOption(lowerName, int(optionValue))
 
 
 def startswithOneOf(haystack, needleList):
@@ -218,13 +295,12 @@ def applyCellBorderStyling(
 # Apply table line styling
 def applyTableLineStyling(
     table,
-    wholeTableLineStyling,
-    linedColumns,
-    linedRows,
-    lineWidthMultiplier,
-    lineCount,
-    lineColour,
+    processingOptions,
 ):
+    wholeTableLineStyling = processingOptions.getCurrentOption("addTableLines")
+    linedColumns = processingOptions.getCurrentOption("addTableColumnLines")
+    linedRows = processingOptions.getCurrentOption("addTableRowLines")
+
     lastRow = len(table.rows) - 1
 
     # Create blank cell styling matrix
@@ -303,37 +379,10 @@ def applyTableLineStyling(
             applyCellBorderStyling(
                 cell,
                 cellStyling[rowNumber][columnNumber],
-                lineWidthMultiplier,
-                lineCount,
-                lineColour,
+                processingOptions.getCurrentOption("addTableLineWidth"),
+                processingOptions.getCurrentOption("addTableLineCount"),
+                processingOptions.getCurrentOption("addTableLineColour"),
             )
-
-
-# Return current, default and presentation values for an option
-def setOptionValues(optionValue):
-    return optionValue, optionValue, optionValue
-
-
-# Set an option value on the fly, based on default, presentation setting, or dynamic Value
-# with conversion determined by optional fourth parameter
-def dynamicallySetOption(optionValue, defaultValue, presentationValue, conversion=""):
-    if optionValue == "default":
-        return defaultValue
-
-    elif optionValue == "pres":
-        return presentationValue
-
-    elif conversion == "":
-        return optionValue
-
-    elif conversion == "float":
-        return float(optionValue)
-
-    elif conversion == "sortednumericlist":
-        return sortedNumericList(optionValue)
-
-    elif conversion == "int":
-        return int(optionValue)
 
 
 # Given current indenting regime calculate what level the bullet / number is at
@@ -651,6 +700,9 @@ def get_image_size(fname):
 
 # Render a list of bullets
 def renderText(shape, bullets):
+    baseTextDecrement = processingOptions.getCurrentOption("baseTextDecrement")
+    baseTextSize = processingOptions.getCurrentOption("baseTextSize")
+
     tf = shape.text_frame
 
     for bulletNumber, bullet in enumerate(bullets):
@@ -702,6 +754,7 @@ def findBodyShape(slide):
 
 # Returns a top, left, width, height for content to be rendered into
 def getContentRect(presentation, slide, topOfContent, margin):
+    numbersHeight = processingOptions.getCurrentOption("numbersHeight")
     # Left and right are always defined by the margins
     rectLeft = margin
     rectWidth = presentation.slide_width - 2 * margin
@@ -720,6 +773,8 @@ def getContentRect(presentation, slide, topOfContent, margin):
 # Finds the title and adds the text to it, returning title bottom, title shape, and
 # flattened title
 def formatTitle(presentation, slide, titleText, titleFontSize):
+    marginBase = processingOptions.getCurrentOption("marginBase")
+
     # Find title
     title = findTitleShape(slide)
 
@@ -728,7 +783,7 @@ def formatTitle(presentation, slide, titleText, titleFontSize):
 
         return (marginBase, None, "<No title>")
 
-    if adjustTitles:
+    if processingOptions.getCurrentOption("adjustTitles"):
         title.top = marginBase
         title.left = marginBase
         title.width = presentation.slide_width - marginBase * 2
@@ -739,7 +794,7 @@ def formatTitle(presentation, slide, titleText, titleFontSize):
     # Add the title text to the first paragraph
     flattenedTitle = addFormattedText(title.text_frame.paragraphs[0], titleText)
 
-    if adjustTitles:
+    if processingOptions.getCurrentOption("adjustTitles"):
         title.height = Pt(titleFontSize) * titleLineCount
 
     title.text_frame.paragraphs[0].font.size = Pt(titleFontSize)
@@ -756,11 +811,14 @@ def parseTitleText(titleLineString):
     slideTitleWithPossibleHref = titleLineString.strip().rstrip("#").rstrip()
 
     if hrefMatch := slideHrefRegex.match(slideTitleWithPossibleHref):
+        # Use the explicit href
         slideTitle = hrefMatch.group(1)
         href = hrefMatch.group(2)
     else:
+        # No href
         href = ""
         slideTitle = slideTitleWithPossibleHref
+
     return slideTitle, href
 
 
@@ -1115,6 +1173,12 @@ def parseText(text):
 
 # Calls the tokeniser and then handles the fragments it gets back
 def addFormattedText(p, text):
+    boldBold = processingOptions.getCurrentOption("boldBold")
+    boldColour = processingOptions.getCurrentOption("boldColour")
+    italicItalic = processingOptions.getCurrentOption("italicItalic")
+    italicColour = processingOptions.getCurrentOption("italicColour")
+    monoFont = processingOptions.getCurrentOption("monoFont")
+
     # Get back parsed text fragments, along with control information on each
     # fragment
     parsedText = parseText(text)
@@ -1163,10 +1227,11 @@ def addFormattedText(p, text):
 
             if fragType == "I":
                 font = run.font
-                if want_italic_italic == True:
+                if italicItalic == True:
                     font.italic = True
-                if want_italic_colour == True:
-                    font.color.theme_color = italic_colour
+                if italicColour != "":
+                    font.color.theme_color = italicColour
+
             elif fragType == "Gloss":
                 # Add this run to abbrevRunsDictionary - for Glossary fix ups later
                 if fragTerm not in abbrevRunsDictionary:
@@ -1208,10 +1273,10 @@ def addFormattedText(p, text):
                         font.underline = False
             elif fragType == "B2":
                 font = run.font
-                if want_bold_bold == True:
+                if boldBold == True:
                     font.bold = True
-                if want_bold_colour == True:
-                    font.color.theme_color = bold_colour
+                if boldColour != "":
+                    font.color.theme_color = boldColour
             elif fragType == "C":
                 font = run.font
                 font.name = monoFont
@@ -1271,6 +1336,7 @@ def addFormattedText(p, text):
 
 
 def addFooter(presentation, slideNumber, slide):
+    numbersHeight = processingOptions.getCurrentOption("numbersHeight")
     shapes = slide.shapes
     footer = shapes.add_textbox(
         Inches(0.1),
@@ -1295,6 +1361,8 @@ def deleteSimpleShape(shape):
 
 
 def createProcessingSummarySlide(presentation, metadata):
+    tableMargin = processingOptions.getCurrentOption("tableMargin")
+    pageTitleSize = processingOptions.getCurrentOption("pageTitleSize")
     # Use the first slide in the template presentation as the base
     slide = presentation.slides[0]
 
@@ -1382,6 +1450,8 @@ def createTitleOrSectionSlide(
     subtitleSize,
     notes_text,
 ):
+    marginBase = processingOptions.getCurrentOption("marginBase")
+
     slide = presentation.slides.add_slide(presentation.slide_layouts[layout])
 
     # Add title
@@ -1487,6 +1557,10 @@ def handleWhateverGraphicType(graphicFilename):
 
 
 def createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber):
+    monoFont = processingOptions.getCurrentOption("monoFont")
+    baseTextSize = processingOptions.getCurrentOption("baseTextSize")
+    defaultBaseTextSize = processingOptions.getDefaultOption("baseTextSize")
+
     # A variable number of newlines appear before the actual code
     codeLines = slideInfo.code[codeBlockNumber]
 
@@ -1524,10 +1598,12 @@ def createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber):
     tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
     tf.word_wrap = False
 
-    # Fill the code box with green
+    # Fill the code box with background colour - whether explicit or defaulted
     fill = codeBox.fill
     fill.solid()
-    fill.fore_color.rgb = RGBColor.from_string(codeBackground)
+    fill.fore_color.rgb = RGBColor.from_string(
+        processingOptions.getCurrentOption("codeBackground")
+    )
 
     # Get the sole paragraph
     p = codeBox.text_frame.paragraphs[0]
@@ -1544,6 +1620,11 @@ def createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber):
 
     # Estimate how wide the code box would need to be at the current font size
     # versus actual width
+    codeColumns = processingOptions.getCurrentOption("codeColumns")
+    fixedPitchHeightWidthRatio = ProcessingOptions.getCurrentOption(
+        "fixedPitchHeightWidthRatio"
+    )
+
     estimatedWidthVersusCodeboxWidth = (
         p.font.size * codeColumns / codeBox.width / fixedPitchHeightWidthRatio
     )
@@ -1559,7 +1640,9 @@ def createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber):
         codeBox.left = int((presentation.slide_width - codeBox.width) / 2)
 
     # Use the code foreground colour - whether explicit or defaulted
-    p.font.color.rgb = RGBColor.from_string(codeForeground)
+    p.font.color.rgb = RGBColor.from_string(
+        processingOptions.getCurrentOption("codeforeground")
+    )
 
     # Adjust code box height based on lines
     codeBox.height = min(
@@ -1667,6 +1750,10 @@ def createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber):
 
 
 def createAbstractSlide(presentation, slideNumber, titleText, paragraphs):
+    titleOnlyLayout = processingOptions.getCurrentOption("titleOnlyLayout")
+    marginBase = processingOptions.getCurrentOption("marginBase")
+    pageTitleSize = processingOptions.getCurrentOption("pageTitleSize")
+
     slide = presentation.slides.add_slide(presentation.slide_layouts[titleOnlyLayout])
 
     shapes = slide.shapes
@@ -1720,6 +1807,12 @@ def createAbstractSlide(presentation, slideNumber, titleText, paragraphs):
 
 # Unified creation of a table or a code or a content slide
 def createContentSlide(presentation, slideNumber, slideInfo):
+
+    titleOnlyLayout = processingOptions.getCurrentOption("titleOnlyLayout")
+    contentSlideLayout = processingOptions.getCurrentOption("contentSlideLayout")
+    marginBase = processingOptions.getCurrentOption("marginBase")
+    pageTitleSize = processingOptions.getCurrentOption("pageTitleSize")
+
     # slideInfo's body text is only filled in if there is code - and that's
     # where the code - plus preamble and postamble is.
     if slideInfo.code != "":
@@ -1768,9 +1861,7 @@ def createContentSlide(presentation, slideNumber, slideInfo):
     # render - and warn if there are. Then calculate how many to render#
     ####################################################################
     if len(slideInfo.sequence) > maxBlocks:
-        print(
-            "Too many blocks to render. Only " + str(maxBlocks) + " will be rendered."
-        )
+        print(f"Too many blocks to render. Only {str(maxBlocks)} will be rendered.")
     blocksToRender = min(maxBlocks, len(slideInfo.sequence))
 
     ####################################################################
@@ -1778,6 +1869,7 @@ def createContentSlide(presentation, slideNumber, slideInfo):
     # and their top left corner coordinates
     ####################################################################
     allContentSplit = 0
+    contentSplit = processingOptions.getCurrentOption("contentSplit")
     for b in range(blocksToRender):
         allContentSplit = allContentSplit + contentSplit[b]
 
@@ -1788,7 +1880,7 @@ def createContentSlide(presentation, slideNumber, slideInfo):
     tableBlockNumber = 0
 
     for b in range(blocksToRender):
-        if contentSplitDirection == "vertical":
+        if processingOptions.getCurrentOption("contentSplitDirection") == "vertical":
             # Height and top
             blockHeight = int(contentHeight * contentSplit[b] / allContentSplit)
             blockTop = verticalCursor
@@ -1826,6 +1918,21 @@ def createContentSlide(presentation, slideNumber, slideInfo):
 
 
 def createListBlock(slideInfo, slide, renderingRectangle):
+    horizontalCardGap = processingOptions.getCurrentOption("horizontalcardgap")
+    verticalCardGap = processingOptions.getCurrentOption("verticalcardgap")
+    cardTitleAlign = processingOptions.getCurrentOption("cardtitlealign")
+    cardTitlePosition = processingOptions.getCurrentOption("cardtitleposition")
+    cardShape = processingOptions.getCurrentOption("cardshape")
+    cardLayout = processingOptions.getCurrentOption("cardlayout")
+    cardPercent = processingOptions.getCurrentOption("cardpercent")
+    cardShadow = processingOptions.getCurrentOption("cardshadow")
+    cardTitleSize = processingOptions.getCurrentOption("cardtitlesize")
+    cardBorderWidth = processingOptions.getCurrentOption("cardborderwidth")
+    cardBorderColour = processingOptions.getCurrentOption("cardbordercolour")
+    cardColour = processingOptions.getCurrentOption("cardcolour")
+    marginBase = processingOptions.getCurrentOption("marginBase")
+    pageTitleSize = processingOptions.getCurrentOption("pageTitleSize")
+
     # Get bulleted text shape - either for bullets above cards or first card's body shape
     bulletsShape = findBodyShape(slide)
 
@@ -1883,9 +1990,9 @@ def createListBlock(slideInfo, slide, renderingRectangle):
             cardWidth = int(renderingRectangle.width)
 
         # Calculate title top and height - horizontal layout
-        if want_card_title_size:
+        if cardTitleSize > 0:
             # Specified by user
-            cardTitleHeightRaw = Inches(cardTitleFontSize / 72)
+            cardTitleHeightRaw = Inches(cardTitleSize / 72)
         else:
             # Shrunk to 2/3 of page title height
             cardTitleHeightRaw = Inches(int(10000 * pageTitleSize * 2 / 3 / 72) / 10000)
@@ -1954,10 +2061,8 @@ def createListBlock(slideInfo, slide, renderingRectangle):
             addFormattedText(cardTitleShape.text_frame.paragraphs[0], cards[c][0])
 
             # Set card title font size
-            if want_card_title_size:
-                cardTitleShape.text_frame.paragraphs[0].font.size = Pt(
-                    cardTitleFontSize
-                )
+            if cardTitleSize > 0:
+                cardTitleShape.text_frame.paragraphs[0].font.size = Pt(cardTitleSize)
             else:
                 cardTitleShape.text_frame.paragraphs[0].font.size = Pt(
                     pageTitleSize * 2 / 3
@@ -2011,10 +2116,10 @@ def createListBlock(slideInfo, slide, renderingRectangle):
             fill.background()
 
             # Fill in card's background - if necessary
-            if want_card_colour:
+            if cardColour != "":
                 fill = cardBackgroundShape.fill
                 fill.solid()
-                fill.fore_color.theme_color = card_colour
+                fill.fore_color.theme_color = cardColour
 
     # Adjust bullets shape height - and calculate verticals for any cards
 
@@ -2062,13 +2167,13 @@ def createListBlock(slideInfo, slide, renderingRectangle):
 
         lf = cardBackgroundShape.line
 
-        if want_card_border_colour:
-            lf.color.theme_color = card_border_colour
+        if cardBorderColour != "":
+            lf.color.theme_color = cardBorderColour
 
-        if want_card_border_width:
-            lf.width = Pt(card_border_width)
+        if cardBorderWidth > 0:
+            lf.width = Pt(cardBorderWidth)
 
-        if want_card_shadow:
+        if cardShadow:
             createShadow(cardBackgroundShape)
 
     return slide
@@ -2076,6 +2181,9 @@ def createListBlock(slideInfo, slide, renderingRectangle):
 
 def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
     tableRows = slideInfo.tableRows[tableBlockNumber]
+    tableMargin = processingOptions.getCurrentOption("tableMargin")
+    marginBase = processingOptions.getCurrentOption("marginBase")
+    baseTextSize = processingOptions.getCurrentOption("baseTextSize")
 
     printableTopLeftGraphicFilename = ""
     printableTopRightGraphicFilename = ""
@@ -2652,6 +2760,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
             cols[colno].width = int(shapeWidth * widths[colno] / widths_total)
 
         # Fill in the cells
+        compactTables = processingOptions.getCurrentOption("compactTables")
         for rowNumber, row in enumerate(tableRows):
             # Add dummy cells to the end of the row so that there are as many
             # cells in the row as there are columns in the table
@@ -2694,12 +2803,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
         # Apply table border styling - whether there is any or not
         applyTableLineStyling(
             newTable,
-            addTableLines,
-            addTableColumnLines,
-            addTableRowLines,
-            addTableLineWidth,
-            addTableLineCount,
-            addTableLineColour,
+            processingOptions,
         )
 
     return slide
@@ -2731,6 +2835,11 @@ def delinkify(text):
 
 
 def createTOCSlide(presentation, slideNumber, titleText, bullets, tocStyle):
+    titleOnlyLayout = processingOptions.getCurrentOption("titleOnlyLayout")
+    tocTitle = processingOptions.getCurrentOption("tocTitle")
+    marginBase = processingOptions.getCurrentOption("marginBase")
+    pageTitleSize = processingOptions.getCurrentOption("pageTitleSize")
+
     print(
         str(slideNumber).rjust(4)
         + '     Table Of Contents (Style: "'
@@ -2806,6 +2915,12 @@ def createTOCSlide(presentation, slideNumber, titleText, bullets, tocStyle):
 
 
 def createSlide(presentation, slideNumber, slideInfo):
+    abstractTitle = processingOptions.getCurrentOption("abstractTitle")
+    tocTitle = processingOptions.getCurrentOption("tocTitle")
+    tocStyle = processingOptions.getCurrentOption("tocStyle")
+    sectionTitleSize = processingOptions.getCurrentOption("sectionTitleSize")
+    sectionSubtitleSize = processingOptions.getCurrentOption("sectionSubtitleSize")
+
     if slideInfo.blockType in ["content", "code", "table"]:
         if (tocStyle != "") & (tocTitle == slideInfo.titleText):
             # This is a Table Of Contents slide
@@ -2847,7 +2962,7 @@ def createSlide(presentation, slideNumber, slideInfo):
                 presentation,
                 slideNumber,
                 slideInfo.titleText,
-                sectionSlideLayout,
+                processingOptions.getCurrentOption("sectionSlideLayout"),
                 sectionTitleSize,
                 slideInfo.subtitleText,
                 sectionSubtitleSize,
@@ -2859,7 +2974,7 @@ def createSlide(presentation, slideNumber, slideInfo):
             presentation,
             slideNumber,
             slideInfo.titleText,
-            titleSlideLayout,
+            processingOptions.getCurrentOption("titleSlideLayout"),
             sectionTitleSize,
             slideInfo.subtitleText,
             sectionSubtitleSize,
@@ -2873,6 +2988,8 @@ def createSlide(presentation, slideNumber, slideInfo):
 
 
 def createTaskSlides(prs, slideNumber, tasks, titleStem):
+    tasksPerPage = processingOptions.getCurrentOption("tasksPerPage")
+
     taskSlideNumber = 0
 
     taskCount = len(tasks)
@@ -2958,6 +3075,12 @@ def createGlossarySlides(prs, slideNumber, abbrevDictionary):
     termSlideNumber = 0
     glossarySlides = []
 
+    glossaryTitle = processingOptions.getCurrentOption("glossaryTitle")
+    glossaryTerm = processingOptions.getCurrentOption("glossaryTerm")
+    glossaryTermsPerPage = processingOptions.getCurrentOption("glossaryTermsPerPage")
+    glossaryMeaningWidth = processingOptions.getCurrentOption("glossaryMeaningWidth")
+    glossaryMeaning = processingOptions.getCurrentOption("glossaryMeaning")
+
     termCount = len(abbrevDictionary)
 
     for termNumber, term in enumerate(sorted(abbrevDictionary.keys())):
@@ -3029,6 +3152,9 @@ def createFootnoteSlides(prs, slideNumber, footnoteDefinitions):
     footnotesSlideNumber = 0
     footnoteSlides = []
 
+    footnotesTitle = processingOptions.getCurrentOption("footnotesTitle")
+    footnotesPerPage = processingOptions.getCurrentOption("footnotesPerPage")
+
     footnoteCount = len(footnoteDefinitions)
 
     for footnoteNumber, footnote in enumerate(footnoteDefinitions):
@@ -3099,9 +3225,13 @@ for i in range(len(banner)):
     bannerUnderline = bannerUnderline + "="
 
 print("\n" + banner + "\n" + bannerUnderline)
-print("Open source project: https://github.com/MartinPacker/md2pptx")
+print("\nOpen source project: https://github.com/MartinPacker/md2pptx")
+
+print("\nPython: " + platform.python_version())
 
 input_file = []
+
+processingOptions = ProcessingOptions()
 
 if len(sys.argv) > 2:
     # Have input file as well as output file
@@ -3148,17 +3278,22 @@ linkRegex = re.compile("^\[(.+)\]\((.+)\)")
 twoUpRegex = re.compile("^\|(.+?)\|(.+?)\|")
 footnoteDefinitionRegex = re.compile("^\[\^(.+?)]: (.+)")
 spanRegex = re.compile("<span( )*class=")
-slideHrefRegex = re.compile("\[(.+)\]\(.+\)")
+slideHrefRegex = re.compile("(.+)\[(.+)\]")
+# slideHrefRegex = re.compile("\[(.+)\]\(.+\)")
 anchorRegex = re.compile("^<a id=[\"'](.+)[\"']></a>")
 dynamicMetadataRegex = re.compile("^<!-- md2pptx: (.+): (.+) -->")
 
 
 # Default slide layout enumeration
-titleSlideLayout = 0
-sectionSlideLayout = 1
-contentSlideLayout = 2
-titleOnlyLayout = 5
-blankLayout = 6
+processingOptions.setOptionValuesArray(
+    [
+        ["titleSlideLayout", 0],
+        ["sectionSlideLayout", 1],
+        ["contentSlideLayout", 2],
+        ["titleOnlyLayout", 5],
+        ["blanklayout", 6],
+    ]
+)
 
 # Abbreviation Dictionary
 abbrevDictionary = {}
@@ -3247,7 +3382,8 @@ for line in input_file:
 
 want_numbers_headings = False
 want_numbers_content = False
-slideTemplateFile = ""
+
+processingOptions.setOptionValues("slideTemplateFile", "")
 
 ######################################################################################
 #                                                                                    #
@@ -3255,136 +3391,132 @@ slideTemplateFile = ""
 #                                                                                    #
 ######################################################################################
 
-defaultPageTitleSize, pageTitleSize, presPageTitleSize = setOptionValues(30)
+processingOptions.setOptionValues("pageTitleSize", 30)
 
-defaultBaseTextSize, presBaseTextSize, baseTextSize = setOptionValues(18)
+processingOptions.setOptionValues("baseTextSize", 18)
 
-defaultBaseTextDecrement, presBaseTextDecrement, baseTextDecrement = setOptionValues(2)
+processingOptions.setOptionValues("baseTextDecrement", 2)
 
-defaultCodeForeground, presCodeForeground, codeForeground = setOptionValues("000000")
-
-defaultCodeBackground, presCodeBackground, codeBackground = setOptionValues("DFFFDF")
-
-# Column count to work out if code should fit
-defaultCodeColumns, codeColumns, presCodeColumns = setOptionValues(80)
-
-# Assume a fixed pitch character is this times as high as it is wide
-(
-    defaultFixedPitchHeightWidthRatio,
-    fixedPitchHeightWidthRatio,
-    presFixedPitchHeightWidthRatio,
-) = setOptionValues(1.2)
-
-defaultCardPercent, cardPercent, presCardPercent = setOptionValues(80)
-
-defaultCompactTables, compactTables, presCompactTables = setOptionValues(0)
-
-defaultCardLayout, cardLayout, presCardLayout = setOptionValues("horizontal")
-
-defaultCardTitleAlign, cardTitleAlign, presCardTitleAlign = setOptionValues("c")
-
-defaultCardTitlePosition, cardTitlePosition, presCardTitlePosition = setOptionValues(
-    "above"
+# Code defaults
+processingOptions.setOptionValuesArray(
+    [
+        ["codeForeground", "000000"],
+        ["codeBackground", "DFFFDF"],
+        ["codeColumns", 80],
+        ["fixedPitchHeightWidthRatio", 1.2],
+    ]
 )
 
-defaultCardShape, cardShape, presCardShape = setOptionValues("rounded")
-
-defaultHorizontalCardGap, horizontalCardGap, presHorizontalCardGap = setOptionValues(
-    0.25
+# Text defaults
+processingOptions.setOptionValuesArray(
+    [
+        ["italicItalic", True],
+        ["italicColour", ""],
+        ["boldBold", True],
+        ["boldColour", ""],
+    ]
 )
 
-defaultVerticalCardGap, verticalCardGap, presVerticalCardGap = setOptionValues(0.15)
-
-defaultContentSplit, contentSplit, presContentSplit = setOptionValues(
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+# Tables defaults
+processingOptions.setOptionValuesArray(
+    [
+        ["compactTables", 0],
+        ["addTableRowLines", "no"],
+        ["addTableColumnLines", []],
+        ["addTableRowLines", []],
+        ["addTableLineWidth", 1],
+        ["addTableLineCount", 1],
+        ["addTableLineColour", "000000"],
+        ["tableMargin", Inches(0.2)],
+    ]
 )
 
-(
-    defaultContentSplitDirection,
-    contentSplitDirection,
-    presContentSplitDirection,
-) = setOptionValues("vertical")
+# Cards defaults
+processingOptions.setOptionValuesArray(
+    [
+        ["cardPercent", 80],
+        ["cardLayout", "horizontal"],
+        ["cardTitleAlign", "c"],
+        ["cardTitlePosition", "above"],
+        ["cardShape", "rounded"],
+        ["horizontalCardGap", 0.25],
+        ["verticalCardGap", 0.15],
+        ["cardShadow", False],
+        ["cardTitleSize", 0],
+        ["cardBorderWidth", 0],
+        ["cardBorderColour", ""],
+        ["cardColour", ""],
+    ]
+)
+
+
+processingOptions.setOptionValues("contentSplit", [1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
+
+processingOptions.setOptionValues("contentSplitDirection", "vertical")
 
 # Number of spaces a single level of indentation is
-defaultIndentSpaces, indentSpaces, presIndentSpaces = setOptionValues(2)
+processingOptions.setOptionValues("indentSpaces", 2)
 
 # Whether titles are adjusted or not
-defaultAdjustTitles, adjustTitles, presAdjustTitles = setOptionValues(True)
+processingOptions.setOptionValues("adjustTitles", True)
 
+# Section defaults
+processingOptions.setOptionValuesArray(
+    [["sectionTitleSize", 40], ["sectionSubtitleSize", 28]]
+)
 
-# Whether tables have lines added or not
-defaultAddTableLines, addTableLines, presAddTableLines = setOptionValues("no")
+processingOptions.setOptionValues("monoFont", "Courier")
 
-# Which table columns to put a vertical line after
-(
-    defaultAddTableColumnLines,
-    addTableColumnLines,
-    presAddTableColumnLines,
-) = setOptionValues([])
+topHeadingLevel = 1
+titleLevel = topHeadingLevel
+sectionLevel = titleLevel + 1
+contentLevel = sectionLevel + 1
+cardLevel = contentLevel + 1
 
-# Which table rows to put a vertical line after
-(
-    defaultAddTableRowLines,
-    addTableRowLines,
-    presAddTableRowLines,
-) = setOptionValues([])
+# Abstracts defaults
+abstractTitle = processingOptions.setOptionValues("abstractTitle", "")
 
-# How wide the added table lines are, relatively speaking
-defaultAddTableLineWidth, addTableLineWidth, presAddTableLineWidth = setOptionValues(1)
+# Tasks defaults
+processingOptions.setOptionValuesArray([["taskSlides", "all"], ["tasksPerPage", 20]])
 
-# Whether the lines are drawn singly or doubly
-defaultAddTableLineCount, addTableLineCount, presAddTableLineCount = setOptionValues(1)
+# Glossary defaults
+processingOptions.setOptionValuesArray(
+    [
+        ["glossaryTitle", "Title"],
+        ["glossaryTerm", "Term"],
+        ["glossaryMeaning", "Meaning"],
+        ["glossaryMeaningWidth", 5],
+        ["glossaryTermsPerPage", 20],
+    ]
+)
 
-# RGB value of colour table lines will be added with
-defaultAddTableLineColour, addTableLineColour, presAddTableLineColour = setOptionValues("000000")
+# Footnotes defaults
+processingOptions.setOptionValuesArray(
+    [["footnotesTitle", "Footnotes"], ["footnotesPerPage", 20]]
+)
 
-sectionTitleSize = 40
-sectionSubtitleSize = 28
-monoFont = "Courier"
-tocStyle = ""
-tocTitle = "Topics"
+# Table Of Contents defaults
+processingOptions.setOptionValuesArray([["tocTitle", "Topics"], ["tocStyle", ""]])
+
+processingOptions.setOptionValues("marginBase", Inches(0.2))
+
 tocEntries = []
 
-want_bold_colour = False
-want_bold_bold = True
-want_italic_colour = False
-want_italic_italic = True
-
-want_card_colour = False
-want_card_border_colour = False
-want_card_border_width = False
-want_card_title_size = False
-want_card_shadow = False
-
-
-titleLevel = 1
-sectionLevel = 2
-contentLevel = 3
-cardLevel = 4
-
-abstractTitle = ""
-
-taskSlides = "all"
-tasksPerPage = 20
-
-glossaryTitle = "Glossary"
-glossaryTerm = "Term"
-glossaryMeaning = "Meaning"
-glossaryMeaningWidth = 5
-glossaryTermsPerPage = 20
-footnotesTitle = "Footnotes"
-footnotesPerPage = 20
 
 metadata = []
-marginBase = Inches(0.2)
-tableMargin = Inches(0.2)
+
 
 # Space to leave at bottom if numbers
 numbersHeight = Inches(0.4)
 
 # If no numbers leave all the above height anyway
-numbersContentMargin = numbersHeight
-numbersHeadingsMargin = numbersContentMargin
+processingOptions.setOptionValuesArray(
+    [
+        ["numbersHeight", numbersHeight],
+        ["numbersContentMargin", numbersHeight],
+        ["numbersHeadingsMargin", numbersHeight],
+    ]
+)
 
 # Background colour class correspondence
 bgcolors = {}
@@ -3400,6 +3532,7 @@ emphases = {}
 footnoteDefinitions = []
 footnoteReferences = []
 
+maxBlocks = 10
 
 ######################################################################################
 #                                                                                    #
@@ -3414,6 +3547,7 @@ if len(metadata_lines) > 0:
     print("")
     print("Name".ljust(40) + " " + "Value")
     print("----".ljust(40) + " " + "-----")
+
 for line in metadata_lines:
     matchInfo = metadataRegex.match(line)
     name = matchInfo.group(1).strip()
@@ -3427,17 +3561,19 @@ for line in metadata_lines:
     name = name.lower()
 
     if name == "numbers":
+        numbersHeight = processingOptions.getCurrentOption("numbersHeight")
         if value.lower() == "yes":
             # Want slide numbers everywhere
             want_numbers_headings = True
-            numbersHeadingsMargin = numbersHeight
+            processingOptions.setOptionValues("numbersHeadingsMargin", numbersHeight)
+
             want_numbers_content = True
-            numbersContentMargin = numbersHeight
+            processingOptions.setOptionValues("numbersContentMargin", numbersHeight)
         elif value.lower() == "content":
             # Want slide numbers on content slides but not headings & sections
             want_numbers_headings = False
             want_numbers_content = True
-            numbersContentMargin = numbersHeight
+            processingOptions.setOptionValues("numbersContentMargin", numbersHeight)
         else:
             # Don't want slide numbers - but they could still be added by slide master
             # (Can code any other value, including 'no' or omit this metadata type)
@@ -3445,89 +3581,84 @@ for line in metadata_lines:
             want_numbers_content = False
 
     elif name == "pagetitlesize":
-        _, pageTitleSize, presPageTitleSize = setOptionValues(float(value))
+        processingOptions.setOptionValues(name, float(value))
 
     elif name == "basetextsize":
-        _, baseTextSize, presBaseTextSize = setOptionValues(float(value))
+        processingOptions.setOptionValues(name, float(value))
 
     elif name == "basetextdecrement":
-        _, baseTextDecrement, presBaseTextDecrement = setOptionValues(float(value))
+        processingOptions.setOptionValues(name, float(value))
 
     elif name == "sectiontitlesize":
-        sectionTitleSize = float(value)
+        processingOptions.setOptionValues(name, float(value))
 
     elif name == "sectionsubtitlesize":
-        sectionSubtitleSize = float(value)
+        processingOptions.setOptionValues(name, float(value))
 
     elif (name == "template") | (name == "master"):
         if value == "Martin Master.pptx":
             slideTemplateFile = "Martin Template.pptx"
         else:
             slideTemplateFile = value
+        processingOptions.setOptionValues("slideTemplateFile", slideTemplateFile)
 
     elif name == "monofont":
-        monoFont = value
+        processingOptions.setOptionValues(name, value)
 
     elif name == "marginbase":
-        marginBase = Inches(float(value))
+        processingOptions.setOptionValues(name, Inches(float(value)))
 
     elif name == "tablemargin":
-        tableMargin = Inches(float(value))
+        processingOptions.setOptionValues(name, Inches(float(value)))
 
     elif name == "tocstyle":
-        tocStyle = value
+        processingOptions.setOptionValues(name, value)
 
     elif name == "toctitle":
-        tocTitle = value
+        processingOptions.setOptionValues(name, value)
+
+    elif name == "compacttables":
+        processingOptions.setOptionValues(name, float(value))
 
     elif name == "abstracttitle":
-        abstractTitle = value
+        processingOptions.setOptionValues(name, value)
 
     elif name == "boldbold":
         if value.lower() == "no":
-            want_bold_bold = False
-
-    elif name == "compacttables":
-        _, compactTables, presCompactTables = setOptionValues(float(value))
+            processingOptions.setOptionValues("boldBold", False)
 
     elif (name == "boldcolour") | (name == "boldcolour"):
-        want_bold_colour = True
-        bold_colour = parseThemeColour(value)
+        processingOptions.setOptionValues("boldColour", parseThemeColour(value))
 
     elif name == "italicitalic":
         if value == "no":
-            want_italic_italic = False
+            processingOptions.setOptionValues("italicItalic", False)
 
     elif (name == "italiccolour") | (name == "italiccolor"):
-        want_italic_colour = True
-        italic_colour = parseThemeColour(value)
+        processingOptions.setOptionValues("italicColour", parseThemeColour(value))
 
     elif (name == "cardcolour") | (name == "cardcolor"):
-        want_card_colour = True
-        card_colour = parseThemeColour(value)
+        processingOptions.setOptionValues("cardColour", parseThemeColour(value))
 
     elif (name == "cardbordercolour") | (name == "cardbordercolor"):
-        want_card_border_colour = True
-        card_border_colour = parseThemeColour(value)
+        processingOptions.setOptionValues("cardBorderColour", parseThemeColour(value))
 
     elif name == "cardborderwidth":
-        want_card_border_width = True
-        card_border_width = float(value)
+        processingOptions.setOptionValues(name, float(value))
 
     elif name == "cardtitlesize":
-        want_card_title_size = True
-        cardTitleFontSize = float(value)
+        processingOptions.setOptionValues(name, float(value))
 
     elif name == "cardshadow":
         if value.lower() == "yes":
-            want_card_shadow = True
+            processingOptions.setOptionValues(name, True)
 
     elif name == "cardpercent":
-        _, cardPercent, presCardPercent = setOptionValues(float(value))
+        processingOptions.setOptionValues(name, float(value))
 
     elif name == "cardlayout":
         if value in ["horizontal", "vertical"]:
-            _, cardLayout, presCardLayout = setOptionValues(value)
+            processingOptions.setOptionValues(name, value)
         else:
             print(
                 f'CardLayout value \'{value}\' unsupported. "horizontal" or "vertical" required.'
@@ -3535,7 +3666,7 @@ for line in metadata_lines:
 
     elif name == "cardshape":
         if value in ["squared", "rounded"]:
-            _, cardShape, presCardShape = setOptionValues(value)
+            processingOptions.setOptionValues(name, value)
         else:
             print(
                 f'CardShape value \'{value}\' unsupported. "squared" or "rounded" required.'
@@ -3543,7 +3674,7 @@ for line in metadata_lines:
 
     elif name == "cardtitleposition":
         if value in ["above", "inside"]:
-            _, cardTitlePosition, presCardTitlePosition = setOptionValues(value)
+            processingOptions.setOptionValues(name, value)
         else:
             print(
                 f'CardTitlePosition value \'{value}\' unsupported. "inside" or "above" required.'
@@ -3552,15 +3683,12 @@ for line in metadata_lines:
     elif name == "cardtitlealign":
         val1l = value[:1].lower()
         if val1l in ["l", "r", "c"]:
-            _, cardTitleAlign, presCardTitleAlign = setOptionValues(val1l)
+            processingOptions.setOptionValues(name, val1l)
         else:
             print(f"CardAlign value '{value}' unsupported.")
 
-    elif name == "horizontalcardgap":
-        _, horizontalCardGap, presHorizontalCardGap = setOptionValues(float(value))
-
-    elif name == "verticalcardgap":
-        _, verticalCardGap, presVerticalCardGap = setOptionValues(float(value))
+    elif name == ["horizontalcardgap", "verticalcardgap"]:
+        processingOptions.setOptionValues(name, float(value))
 
     elif name == "contentsplit":
         splitValue = value.split()
@@ -3573,72 +3701,80 @@ for line in metadata_lines:
         for _ in range(needMore):
             cs.append(1)
 
-        _, contentSplit, presContentSplit = setOptionValues(cs)
+        processingOptions.setOptionValues("contentSplit", cs)
 
     elif name in ["contentsplitdirection", "contentsplitdirn"]:
-        if value in ["vertical", "horizontal", "v", "h"]:
+        if value in [
+            "vertical",
+            "horizontal",
+            "v",
+            "h",
+            "default",
+            "pres",
+            "pop",
+            "prev",
+        ]:
             if value in ["vertical", "horizontal"]:
                 adjustedValue = value
             elif value == "v":
                 adjustedValue = "vertical"
-            else:
+            elif value == "h":
                 adjustedValue = "horizontal"
-            _, contentSplitDirection, presContentSplitDirection = setOptionValues(
-                adjustedValue
-            )
+            else:
+                adjustedValue = value
+
+            processingOptions.setOptionValues("contentSplitDirection", adjustedValue)
+
         else:
             print(
-                f'contentSplitDirection value \'{value}\' unsupported. "vertical" or "horizontal" required.'
+                f'{name} value \'{value}\' unsupported. "vertical" or "horizontal" required.'
             )
 
     elif name == "taskslides":
-        taskSlides = value
+        processingOptions.setOptionValues(name, value)
 
     elif name == "tasksperpage":
-        tasksPerPage = int(value)
+        processingOptions.setOptionValues(name, int(value))
 
-    elif name == "titleslidelayout":
-        titleSlideLayout = int(value)
-
-    elif name == "sectionslidelayout":
-        sectionSlideLayout = int(value)
-
-    elif name == "contentslidelayout":
-        contentSlideLayout = int(value)
-
-    elif name == "titleonlylayout":
-        titleOnlyLayout = int(value)
-
-    elif name == "blanklayout":
-        blankLayout = int(value)
+    elif name in [
+        "titleslidelayout",
+        "sectionslidelayout",
+        "contentslidelayout",
+        "titleonlylayout",
+        "blanklayout",
+    ]:
+        processingOptions.setOptionValues(name, int(value))
 
     elif name == "numbersheight":
         numbersHeight = Inches(float(value))
 
         # If no numbers leave all the above height anyway
-        numbersContentMargin = numbersHeight
-        numbersHeadingsMargin = numbersContentMargin
+        processingOptions.setOptionValues("numbersHeight", numbersHeight)
+        processingOptions.setOptionValues("numbersContentMargin", numbersHeight)
+        processingOptions.setOptionValues("numbersHeadingsMargin", numbersHeight)
 
     elif name == "glossarytitle":
-        glossaryTitle = value
+        processingOptions.setOptionValues(name, value)
 
     elif name == "glossaryterm":
-        glossaryTerm = value
+        processingOptions.setOptionValues(name, value)
 
     elif name == "glossarymeaning":
-        glossaryMeaning = value
+        processingOptions.setOptionValues(name, value)
 
     elif name == "glossarymeaningwidth":
-        glossaryMeaningWidth = int(value)
+        processingOptions.setOptionValues(name, int(value))
 
     elif name == "glossarytermsperpage":
-        glossaryTermsPerPage = int(value)
+        processingOptions.setOptionValues(name, int(value))
 
     elif name == "footnotesperpage":
-        footnotesPerPage = int(value)
+        processingOptions.setOptionValues(name, int(value))
 
     elif name == "footnotestitle":
-        footnotesTitle = value
+        processingOptions.setOptionValues(name, value)
+
+    # Following relate to styling and don't use Processing Options class
 
     elif name.startswith("style.bgcolor."):
         spanClass = name[14:]
@@ -3652,19 +3788,14 @@ for line in metadata_lines:
         spanClass = name[15:]
         emphases[spanClass] = value
 
-    elif name == "codeforeground":
-        _, codeForeground, presCodeForeground = setOptionValues(value)
-
-    elif name == "codebackground":
-        _, codeBackground, presCodeBackground = setOptionValues(value)
+    elif name in ["codeforeground", "codebackground"]:
+        processingOptions.setOptionValues(name, value)
 
     elif name == "fpratio":
-        _, fixedPitchHeightWidthRatio, presFixedPitchHeightWidthRatio = setOptionValues(
-            float(value)
-        )
+        processingOptions.setOptionValues("fixedPitchHeightWidthRatio", float(value))
 
     elif name == "codecolumns":
-        _, codeColumns, presCodeColumns = setOptionValues(int(value))
+        processingOptions.setOptionValues(name, int(value))
 
     elif name == "topheadinglevel":
         titleLevel = int(value)
@@ -3673,36 +3804,22 @@ for line in metadata_lines:
         cardLevel = contentLevel + 1
 
     elif name == "indentspaces":
-        _, indentSpaces, presIndentSpaces = setOptionValues(int(value))
+        processingOptions.setOptionValues(name, int(value))
 
     elif name == "adjusttitles":
         if value == "no":
-            _, adjustTitles, presAdjustTitles = setOptionValues(False)
+            processingOptions.setOptionValues(name, False)
 
-    elif name == "addtablelines":
-        _, addTableLines, presAddTableLines = setOptionValues(value)
+    elif name in ["addtablelines", "addtablelinecolour"]:
+        processingOptions.setOptionValues(name, value)
 
-    elif name == "addtablecolumnlines":
-        _, addTableColumnLines, presAddTableColumnLines = setOptionValues(
-            sortedNumericList(value)
-        )
+    elif name in ["addtablecolumnlines", "addtablerowlines"]:
+        processingOptions.setOptionValues(name, sortedNumericList(value))
 
-    elif name == "addtablerowlines":
-        _, addTableRowLines, presAddTableRowLines = setOptionValues(
-            sortedNumericList(value)
-        )
+    elif name in ["addtablelinecount", "addtablelinewidth"]:
+        processingOptions.setOptionValues(name, int(value))
 
-    elif name == "addtablelinecount":
-        _, addTableLineCount, presAddTableLineCount = setOptionValues(int(value)
-        )
-
-    elif name == "addtablelinewidth":
-        _, addTableLineWidth, presAddTableLineWidth = setOptionValues(int(value)
-        )
-    elif name == "addtablelinecolour":
-        _, addTableLineColour, presAddTableLineColour = setOptionValues(value)
-
-
+slideTemplateFile = processingOptions.getCurrentOption("slideTemplateFile")
 if slideTemplateFile != "":
     originalSlideTemplateFile = slideTemplateFile
     if Path(os.path.expanduser(slideTemplateFile)).exists():
@@ -3762,8 +3879,6 @@ notes_text = ""
 slide = None
 tasks = []
 sequence = []
-maxBlocks = 10
-
 
 slideHrefs = {}
 href_runs = {}
@@ -3850,7 +3965,7 @@ for line in linesAfterConcatenation:
 # references have been gathered
 for line in linesAfterConcatenation:
     line = line.rstrip()
-    line = line.replace("\t", " " * indentSpaces)
+    line = line.replace("\t", " " * processingOptions.getCurrentOption("indentSpaces"))
 
     if line == "<ignoreme>":
         # Line was taken care of in the previous pass
@@ -3966,89 +4081,74 @@ for line in linesAfterConcatenation:
                 # Valid metadata pair so parse key / value - and apply if valid
                 if metadataKey == "compacttables":
                     # Font size for tables
-                    compactTables = dynamicallySetOption(
-                        metadataValue, defaultCompactTables, presCompactTables, "float"
+                    processingOptions.dynamicallySetOption(
+                        metadataKey, metadataValue.lower(), "float"
                     )
 
                 elif metadataKey == "pagetitlesize":
                     # Page Title Font size
-                    pageTitleSize = dynamicallySetOption(
-                        metadataValue, defaultPageTitleSize, presPageTitleSize, "float"
+                    processingOptions.dynamicallySetOption(
+                        metadataKey, metadataValue, "float"
                     )
 
                 elif metadataKey == "cardpercent":
                     # Cards' vertical percent of content area
-                    cardPercent = dynamicallySetOption(
-                        metadataValue, defaultCardPercent, presCardPercent, "float"
+                    processingOptions.dynamicallySetOption(
+                        metadataKey, metadataValue, "float"
                     )
 
                 elif metadataKey == "cardlayout":
                     # Cards' layout - horizontal or vertical
-                    cardLayout = dynamicallySetOption(
-                        metadataValue, defaultCardLayout, presCardLayout, ""
+                    processingOptions.dynamicallySetOption(
+                        metadataKey, metadataValue, ""
                     )
 
                 elif metadataKey == "basetextsize":
                     # Base text size
-                    baseTextSize = dynamicallySetOption(
-                        metadataValue, defaultBaseTextSize, presBaseTextSize, "float"
+                    processingOptions.dynamicallySetOption(
+                        metadataKey, metadataValue, "float"
                     )
 
                 elif metadataKey == "basetextdecrement":
                     # Base text decrement
-                    baseTextDecrement = dynamicallySetOption(
-                        metadataValue,
-                        defaultBaseTextDecrement,
-                        presBaseTextDecrement,
-                        "float",
+                    processingOptions.dynamicallySetOption(
+                        metadataKey, metadataValue, "float"
                     )
 
                 # Note: Actual value handling prevents using dynamicallySetOption
                 elif metadataKey == "cardtitlealign":
                     # Card title alignment
-                    if metadataValue == "default":
-                        cardTitleAlign = defaultCardTitleAlign
-
-                    elif metadataValue == "pres":
-                        cardTitleAlign = presCardTitleAlign
-
-                    else:
-                        cardTitleAlign = metadataValue[:1].lower()
+                    processingOptions.dynamicallySetOption(
+                        metadataKey, metadataValue.lower(), ""
+                    )
 
                 elif metadataKey == "cardtitleposition":
                     # Card title position - above or inside
-                    cardTitlePosition = dynamicallySetOption(
-                        metadataValue,
-                        defaultCardTitlePosition,
-                        presCardTitlePosition,
-                        "",
+                    processingOptions.dynamicallySetOption(
+                        metadataKey, metadataValue, ""
                     )
 
-                elif metadataKey == "horizontalcardgap":
-                    # Gap between horizontally arranged cards
-                    horizontalCardGap = dynamicallySetOption(
-                        metadataValue,
-                        defaultHorizontalCardGap,
-                        presHorizontalCardGap,
-                        "float",
-                    )
-
-                elif metadataKey == "verticalcardgap":
-                    # Gap between vertically arranged cards
-                    verticalCardGap = dynamicallySetOption(
-                        metadataValue,
-                        defaultVerticalCardGap,
-                        presVerticalCardGap,
-                        "float",
+                elif metadataKey in ["horizontalcardgap", "verticalcardgap"]:
+                    processingOptions.dynamicallySetOption(
+                        metadataKey, metadataValue, "float"
                     )
 
                 # Note: Actual value handling prevents using dynamicallySetOption
                 elif metadataKey == "contentsplit":
                     # Proportions for each content element on a slide
                     if metadataValue == "default":
-                        contentSplit = defaultContentSplit
+                        contentSplit = processingOptions.getDefaultOption(
+                            "contentSplit"
+                        )
                     elif metadataValue == "pres":
-                        contentSplit = presContentSplit
+                        contentSplit = processingOptions.getPresentationOption(
+                            "contentSplit"
+                        )
+                    elif metadataValue in ["pop", "prev"]:
+                        processingOptions.popCurrentOption("contentSplit")
+                        contentSplit = processingOptions.getPresentationOption(
+                            "contentSplit"
+                        )
                     else:
                         splitValue = metadataValue.split()
                         contentSplit = []
@@ -4059,104 +4159,87 @@ for line in linesAfterConcatenation:
                         needMore = maxBlocks - len(contentSplit)
                         for _ in range(needMore):
                             contentSplit.append(1)
-
-                # Note: This does not use "pres" or "default"
-                elif metadataKey in ["contentsplitdirection", "contentsplitdirn"]:
-                    if metadataValue in ["vertical", "horizontal", "v", "h"]:
-                        if metadataValue in ["vertical", "horizontal"]:
-                            adjustedValue = metadataValue
-                        elif metadataValue == "v":
-                            adjustedValue = "vertical"
-                        else:
-                            adjustedValue = "horizontal"
-                        contentSplitDirection = adjustedValue
-                        presContentSplitDirection = adjustedValue
-                    else:
-                        print(
-                            f'contentSplitDirection value \'{metadataValue}\' unsupported. "vertical" or "horizontal" required.'
-                        )
-
-                elif metadataKey == "codeforeground":
-                    # Code slide foreground
-                    codeForeground = dynamicallySetOption(
-                        metadataValue, defaultCodeForeground, presCodeForeground, ""
+                    processingOptions.dynamicallySetOption(
+                        "contentSplit", contentSplit, ""
                     )
 
-                elif metadataKey == "codebackground":
-                    # Code slide background
-                    codeBackground = dynamicallySetOption(
-                        metadataValue, defaultCodeBackground, presCodeBackground, ""
+                elif metadataKey in ["contentsplitdirection", "contentsplitdirn"]:
+                    if metadataValue in [
+                        "vertical",
+                        "horizontal",
+                        "v",
+                        "h",
+                        "pres",
+                        "default",
+                        "pop",
+                        "prev",
+                    ]:
+                        if metadataValue == "v":
+                            adjustedValue = "vertical"
+                        elif metadataValue == "h":
+                            adjustedValue = "horizontal"
+                        else:
+                            adjustedValue = metadataValue
+
+                        processingOptions.dynamicallySetOption(
+                            "contentSplitDirection",
+                            adjustedValue,
+                            "",
+                        )
+
+                    else:
+                        print(
+                            f'{metadataKey} value \'{metadataValue}\' unsupported. "vertical" or "horizontal" required.'
+                        )
+
+                elif metadataKey in ["codeforeground", "codebackground"]:
+                    processingOptions.dynamicallySetOption(
+                        metadataKey,
+                        metadataValue,
+                        "",
                     )
 
                 elif metadataKey == "fpratio":
                     # Fixed Pitch font height to width ratio
-                    fixedPitchHeightWidthRatio = dynamicallySetOption(
+                    processingOptions.dynamicallySetOption(
+                        "fixedPitchHeightWidthRatio",
                         metadataValue,
-                        defaultFixedPitchHeightWidthRatio,
-                        presFixedPitchHeightWidthRatio,
                         "float",
                     )
 
                 elif metadataKey == "codecolumns":
-                    # Code slide column count
-                    codeColumns = dynamicallySetOption(
-                        metadataValue, defaultCodeColumns, presCodeColumns, "int"
+                    processingOptions.dynamicallySetOption(
+                        metadataKey,
+                        metadataValue,
+                        "int",
                     )
 
                 elif metadataKey == "indentspaces":
                     # Spaces representing a single indentation level
-                    indentSpaces = dynamicallySetOption(
-                        metadataValue, defaultIndentSpaces, presIndentSpaces, "int"
-                    )
-
-                elif metadataKey == "addtablelines":
-                    # Table level lines
-                    addTableLines = dynamicallySetOption(
-                        metadataValue, defaultAddTableLines, presAddTableLines, ""
-                    )
-
-                elif metadataKey == "addtablecolumnlines":
-                    # Table column lines
-                    addTableColumnLines = dynamicallySetOption(
+                    processingOptions.dynamicallySetOption(
+                        metadataKey,
                         metadataValue,
-                        defaultAddTableColumnLines,
-                        presAddTableColumnLines,
-                        "sortednumericlist",
-                    )
-
-                elif metadataKey == "addtablerowlines":
-                    # Table row lines
-                    addTableRowLines = dynamicallySetOption(
-                        metadataValue,
-                        defaultAddTableRowLines,
-                        presAddTableRowLines,
-                        "sortednumericlist",
-                    )
-
-                elif metadataKey == "addtablelinecount":
-                    # Table lines' multiplicity
-                    addTableLineCount = dynamicallySetOption(
-                        metadataValue,
-                        defaultAddTableLineCount,
-                        presAddTableLineCount,
                         "int",
                     )
 
-                elif metadataKey == "addtablelinewidth":
-                    # Table lines' width
-                    addTableLineWidth = dynamicallySetOption(
+                elif metadataKey in ["addtablecolumnlines", "addtablerowlines"]:
+                    processingOptions.dynamicallySetOption(
+                        metadataKey,
                         metadataValue,
-                        defaultAddTableLineWidth,
-                        presAddTableLineWidth,
+                        "sortednumericlist",
+                    )
+
+                elif metadataKey in ["addtablelinecount", "addtablelinewidth"]:
+                    processingOptions.dynamicallySetOption(
+                        metadataKey,
+                        metadataValue,
                         "int",
                     )
 
-                elif metadataKey == "addtablelinecolour":
-                    # Table lines' colour - RGB
-                    addTableLineColour = dynamicallySetOption(
+                elif metadataKey in ["addtablelines", "addtablelinecolour"]:
+                    processingOptions.dynamicallySetOption(
+                        metadataKey,
                         metadataValue,
-                        defaultAddTableLineColour,
-                        presAddTableLineColour,
                         "",
                     )
 
@@ -4240,7 +4323,9 @@ for line in linesAfterConcatenation:
     elif match := bulletRegex.match(line):
         # Bulleted list
         bulletLine = match.group(3).lstrip()
-        bulletLevel = calculateIndentationLevel(match.start(2), indentSpaces)
+        bulletLevel = calculateIndentationLevel(
+            match.start(2), processingOptions.getCurrentOption("indentSpaces")
+        )
         bulletType = "bulleted"
         if inCard:
             cardBullets.append([bulletLevel, bulletLine, bulletType])
@@ -4259,7 +4344,9 @@ for line in linesAfterConcatenation:
     elif match := numberRegex.match(line):
         # Numbered list
         bulletLine = match.group(3).lstrip()
-        bulletLevel = calculateIndentationLevel(match.start(2), indentSpaces)
+        bulletLevel = calculateIndentationLevel(
+            match.start(2), processingOptions.getCurrentOption("indentSpaces")
+        )
         bulletType = "numbered"
         if inCard:
             cardBullets.append([bulletLevel, bulletLine, bulletType])
@@ -4395,6 +4482,7 @@ if len(footnoteDefinitions) > 0:
         prs, slideNumber, footnoteDefinitions
     )
 
+    footnotesPerPage = processingOptions.getCurrentOption("footnotesPerPage")
     # Fix up any footnote slide hyperlinks
     footnoteNumber = -1
     for footnoteRun in footnoteRunsDictionary.keys():
@@ -4410,6 +4498,7 @@ if len(footnoteDefinitions) > 0:
 #                                                                                    #
 ######################################################################################
 if len(abbrevDictionary) > 0:
+    glossaryTermsPerPage = processingOptions.getCurrentOption("glossaryTermsPerPage")
     slideNumber, glossarySlides = createGlossarySlides(
         prs, slideNumber, abbrevDictionary
     )
@@ -4430,6 +4519,8 @@ if len(abbrevDictionary) > 0:
 # Add final slide - or more than one - with any Taskpaper tasks in                   #
 #                                                                                    #
 ######################################################################################
+taskSlides = processingOptions.getCurrentOption("taskSlides")
+
 if (len(tasks) > 0) & (taskSlides != "none"):
     # Turn tasks into a table slide
 
