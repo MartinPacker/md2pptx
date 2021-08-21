@@ -127,6 +127,7 @@ To quote from the python-pptx license statement:
 =colalign l r l
 =csv
 Level,Date,What
+2.3,21&nbsp;August&nbsp;2021,Fixed "slide title as heading reference bug". Added Python release to runtime output. Refactored metadata handling.
 2.2.5,5&nbsp;August&nbsp;2021,You can turn on lines after table rows and columns with `addTableRowLines` and `addTableColumnLines`. You can also do `addTableLines` on a slide-by-slide basis. Also `addTableLineColour`&comma; `addTableLineWidth`&comma; and `addTableLineCount`.
 2.2.4,30&nbsp;July&nbsp;2021,You can turn on a border round a table or all cells with `addTableLines`. Fixed bug where slide notes appeared containing code fragments and subtitles.
 2.2.3,25&nbsp;July&nbsp;2021,Code etc blocks can include numeric character and entity references
