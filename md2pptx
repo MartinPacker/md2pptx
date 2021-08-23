@@ -3532,7 +3532,7 @@ processingOptions.setOptionValuesArray(
 processingOptions.setOptionValuesArray(
     [
         ["compactTables", 0],
-        ["addTableRowLines", "no"],
+        ["addTableLines", "no"],
         ["addTableColumnLines", []],
         ["addTableRowLines", []],
         ["addTableLineWidth", 1],
