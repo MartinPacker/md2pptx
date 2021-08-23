@@ -1820,13 +1820,13 @@ To create a "Chevron Style" Table Of Contents slide and Section slides code:
 If you create a "Chevron Style" Table Of Contents slide. it will look something like this:
 
 <div style="border: 1px solid black">
-<img src="chevronTOC.png" />
+<img src="https://github.com/MartinPacker/md2pptx/blob/master/chevronTOC.png" />
 </div>
 
 If you specify `tocStyle: chevron` the Section slides will be rendered something like this:
 
 <div style="border: 1px solid black">
-<img src="chevronSection.png" />
+<img src="https://github.com/MartinPacker/md2pptx/blob/master/chevronSection.png" />
 </div>
 
 Here the section is highlighted by removing the background.
@@ -1841,13 +1841,13 @@ To create a "Circle Style" Table Of Contents slide and Section slides code:
 If you create a "Circle Style" Table Of Contents slide. it will look something like this:
 
 <div style="border: 1px solid black">
-<img src="circleTOC.png" />
+<img src="https://github.com/MartinPacker/md2pptx/blob/master/circleTOC.png" />
 </div>
 
 If you specify `tocStyle: circle` the Section slides will be rendered something like this:
 
 <div style="border: 1px solid black">
-<img src="circleSection.png" />
+<img src="https://github.com/MartinPacker/md2pptx/blob/master/circleSection.png" />
 </div>
 
 Here the section is highlighted by removing the background and emphasising the circle itself.
