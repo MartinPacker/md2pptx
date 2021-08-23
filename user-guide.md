@@ -67,7 +67,6 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 		* [Associating A Class Name with A Foreground Colour With `style.fgcolor`](#associating-a-class-name-with-a-foreground-colour-with-stylefgcolor)
 		* [Associating A Class Name With Text Emphasis With `style.emphasis`](#associating-a-class-name-with-text-emphasis-with-styleemphasis)
 		* [Template Presentation - `template`](#template-presentation-template)
-		* ["Chevron Style" Table Of Contents - `tocStyle` And `tocTitle`](#chevron-style-table-of-contents-tocstyle-and-toctitle)
 		* [Specifying An Abstract Slide With `abstractTitle`](#specifying-an-abstract-slide-with-abstracttitle)
 		* [Specifying Text Size With `baseTextSize` And `baseTextDecrement`](#specifying-text-size-with-basetextsize-and-basetextdecrement)
 		* [Specifying Bold And Italic Text Colour With `BoldColour` And `ItalicColour`](#specifying-bold-and-italic-text-colour-with-boldcolour-and-italiccolour)
@@ -103,6 +102,14 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 		* [Slides With Multiple Content Blocks](#slides-with-multiple-content-blocks)
 			* [Horizontal Or Vertical Split - `ContentSplitDirection`](#horizontal-or-vertical-split-contentsplitdirection)
 			* [Split Proportions - `ContentSplit`](#split-proportions-contentsplit)
+		* [Table Of Contents Metadata](#table-of-contents-metadata)
+			* ["Chevron Style" Table Of Contents](#chevron-style-table-of-contents)
+			* ["Circle Style" Table Of Contents](#circle-style-table-of-contents)
+			* [Table Of Contents Style - `tocStyle`](#table-of-contents-style-tocstyle)
+			* [Table Of Contents Title - `tocTitle`](#table-of-contents-title-toctitle)
+			* [Table Of Contents Item Height - `TOCItemHeight`](#table-of-contents-item-height-tocitemheight)
+			* [Table Of Contents Row Gap - `TOCRowGap`](#table-of-contents-row-gap-tocrowgap)
+			* [Table Of Contents Font Size - `TOCFontSize`](#table-of-contents-font-size-tocfontsize)
 	* [Dynamic Metadata](#dynamic-metadata)
 		* [Tables](#tables)
 			* [`CompactTables`](#compacttables)
@@ -239,6 +246,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|2.3.2|23&nbsp;August&nbsp;2021|Added `TOCStyle: circle` Table Of Contents layout. Also metadata to control Table Of Contents layout.|
 |2.3.1|21&nbsp;August&nbsp;2021|Forgot to mention "prev" / "pop" in documentation for 2.3.|
 |2.3|21&nbsp;August&nbsp;2021|Fixed "slide title as heading reference bug". Added Python release to runtime output. Refactored metadata handling.sublim|
 |2.2.5|5&nbsp;August&nbsp;2021|You can turn on lines after table rows and columns with `addTableRowLines` and `addTableColumnLines`. You can also do `addTableLines` on a slide-by-slide basis. Also `addTableLineColour`&comma; `addTableLineWidth`&comma; and `addTableLineCount`.|
@@ -1278,32 +1286,6 @@ Templates are searched for in the following sequence:
 1. Using the name as given. For example `hipodz.pptx` will search the current directory.
 2. In the md2pptx installation directory.
 
-#### "Chevron Style" Table Of Contents - `tocStyle` And `tocTitle`
-<a id="chevron-style-table-of-contents-tocstyle-and-toctitle"></a>
-
-If you have a Table Of Contents slide - with each section title listed as a top level bullet you can create a "Chevron Style" Table Of Contents slide. It will look something like this:
-
-![](chevronTOC.png)
-
-If your Table Of Contents slide's title is "Topics" you need only code
-
-	tocStyle: chevron
-
-If your Table Of Contents slide's title is something else you need to additionally code something like
-
-	tocTitle: Agenda
-
-If you specify `tocStyle: chevron` the section headings will be rendered something like this:
-
-![](chevronSection.png)
-
-Here the section is highlighted by removing the background.
-
-**NOTES:**
-
-* Ensure only one slide has the same title as the Table Of Contents slide. Otherwise md2pptx will attempt to render the other slides as if they were a Table Of Contents slide.
-* Ensure the section slides' titles are unique. Otherwise more than one chevron will be highlighted on the relevant section slide.
-
 #### Specifying An Abstract Slide With `abstractTitle`
 <a id="specifying-an-abstract-slide-with-abstracttitle"></a>
 
@@ -1797,6 +1779,137 @@ will make the first block a quarter the height (or width) of the second. Specify
 You can override this on a slide-by-slide basis with [Dynamic ContentSplit](#dynamic-contentsplit).
 
 The default value is such as to make each block have equal space.
+
+#### Table Of Contents Metadata
+
+If you have a slide in a certain format you can convert it to a Table Of Contents slide.
+This slide can be either ["Chevron Style"](#chevron-style-table-of-contents) or ["Circle Style"](#circle-style-table-of-contents).
+
+In addition to building the Table Of Contents slide each Section Slide replicates the Table Of Contents slide but with the current section's title highlighted. The examples below will make this clearer.
+
+The format required is a bulleted list slide with each section title listed as a top level bullet. For example:
+
+    ### Topics
+
+    * [A Section](#a-section)
+    * [Another Section](#another-section)
+    * [Yet Another Section](#yet-another-section)
+    * [A Much Longer Section Title](#a-much-longer-section-title)
+    * [An Even Longer Giant Section Title](#an-even-longer-giant-section-title)
+    * [Let's Do It Again](#lets-do-it-again)
+    * [And One More Time](#and-one-more-time)
+
+You will recognise each entry as an internal link. Perhaps the easiest way to create such a piece of Markdown is with [mdpre](https://github.com/MartinPacker/mdpre) with its `=toc` capability. It will automate gathering the links and Section slide titles.
+
+When processing this slide md2pptx will recognise it as a Table Of Contents slide because of the slide title "Topics". It will build a list of headings from the bullets. When md2pptx sees a Section slide whose title matches one of the titles in the Table Of Contents slide's bullets it creates a similar slide to the Table Of Contents slide, but with this section highlighted.
+
+**NOTES:**
+
+* Ensure only one slide has the same title as the Table Of Contents slide. Otherwise md2pptx will attempt to render the other slides as if they were a Table Of Contents slide.
+* Ensure the Section slides' titles are unique. Otherwise more than one chevron will be highlighted on the relevant section slide.
+* The style of the Table Of Contents and Section slides is controlled with [`tocStyle`](#table-of-contents-style-tocstyle).
+* You don't have to use "Topics" as the title of the Table Of Contents slide. You can control this with [`tocTitle`](#table-of-contents-title-toctitle).
+
+##### "Chevron Style" Table Of Contents
+<a id="chevron-style-table-of-contents"></a>
+
+To create a "Chevron Style" Table Of Contents slide and Section slides code:
+
+	tocStyle: chevron
+
+If you create a "Chevron Style" Table Of Contents slide. it will look something like this:
+
+<div style="border: 1px solid black">
+<img src="chevronTOC.png" />
+</div>
+
+If you specify `tocStyle: chevron` the Section slides will be rendered something like this:
+
+<div style="border: 1px solid black">
+<img src="chevronSection.png" />
+</div>
+
+Here the section is highlighted by removing the background.
+
+##### "Circle Style" Table Of Contents
+<a id="circle-style-table-of-contents"></a>
+
+To create a "Circle Style" Table Of Contents slide and Section slides code:
+
+	tocStyle: circle
+
+If you create a "Circle Style" Table Of Contents slide. it will look something like this:
+
+<div style="border: 1px solid black">
+<img src="circleTOC.png" />
+</div>
+
+If you specify `tocStyle: circle` the Section slides will be rendered something like this:
+
+<div style="border: 1px solid black">
+<img src="circleSection.png" />
+</div>
+
+Here the section is highlighted by removing the background and emphasising the circle itself.
+
+
+##### Table Of Contents Style - `tocStyle`
+<a id="table-of-contents-style-tocstyle"></a>
+
+There are two styles of Table Of Contents and Section slide you can specify:
+
+	tocStyle: chevron
+
+and
+
+	tocStyle: circle
+
+
+##### Table Of Contents Title - `tocTitle`
+<a id="table-of-contents-title-toctitle"></a>
+
+If your Table Of Contents slide's title is something other than "Topics" you need to tell md2pptx what title to match, additionally coding something like
+
+	tocTitle: Agenda
+
+md2pptx will look for this title on a slide instead of "Topics" and use the matching slide to create a Table Of Contents slide.
+
+##### Table Of Contents Item Height - `TOCItemHeight`
+<a id="table-of-contents-item-height-tocitemheight"></a>
+
+You can control the height of the items with `TOCItemHeight`. Coding
+
+    tocItemHeight: 1.5
+
+leads to each item being 1.5 inches high.
+
+For Chevron the default is 1 inch high. For Circle the default is 1.25 inches.
+
+Chevron items are 2.5 times as wide as they are high. Circle items are the same width as they are high.
+
+
+##### Table Of Contents Row Gap - `TOCRowGap`
+<a id="table-of-contents-row-gap-tocrowgap"></a>
+
+You can control the vertical spacing between rows of items with `TOCRowGap`. Coding
+
+    tocRowGap: 0.5
+
+leads to the vertical gap between rows being 0.5 inches.
+
+The default is 0.75 inches.
+
+##### Table Of Contents Font Size - `TOCFontSize`
+<a id="table-of-contents-font-size-tocfontsize"></a>
+
+You can adjust the font size for the Table Of Contents entries with `TOCFontSize`. Coding
+
+    tocFontSize: 10
+
+leads to the font size being 10 points.
+
+For Chevron the default is 14pt. For Circle the default is 12pt.
+
 
 <a id="dynamic-metadata"></a>
 ### Dynamic Metadata

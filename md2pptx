@@ -17,8 +17,8 @@ from pptx.util import Inches, Pt
 from pptx.dml.color import RGBColor, MSO_THEME_COLOR
 from pptx.enum.text import MSO_AUTO_SIZE, PP_ALIGN
 from pptx.enum.shapes import PP_PLACEHOLDER
-from pptx.enum.shapes import MSO_SHAPE
-from pptx.enum.text import MSO_ANCHOR
+from pptx.enum.shapes import MSO_SHAPE, MSO_CONNECTOR
+from pptx.enum.text import MSO_ANCHOR, PP_ALIGN
 from pptx.enum.action import PP_ACTION
 from pptx.dml.color import RGBColor
 import imghdr, struct
@@ -43,8 +43,8 @@ try:
 except:
     have_cairosvg = False
 
-md2pptx_level = "2.3.1"
-md2pptx_date = "21 August, 2021"
+md2pptx_level = "2.3.2"
+md2pptx_date = "23 August, 2021"
 
 
 class SlideInfo:
@@ -2809,19 +2809,61 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
     return slide
 
 
-def createChevron(chevronText, x, y, width, height, filled, shapes):
+def createChevron(text, x, y, width, height, filled, shapes, fontSize):
+    # Create shape
     shape = shapes.add_shape(MSO_SHAPE.CHEVRON, x, y, width, height)
-    shape.text = chevronText
+
+    # Set shape's text
+    shape.text = text
+
+    # Set shape's text attributes
     tf = shape.text_frame
     p = tf.paragraphs[0]
     f = p.font
-    f.size = Pt(14)
-    shape.line.color.rgb = RGBColor(0, 0, 0)
+    f.size = Pt(fontSize)
     f.color.rgb = RGBColor(0, 0, 0)
+
+    # Set shape's outline attributes
+    shape.line.color.rgb = RGBColor(0, 0, 0)
     shape.line.width = Pt(1.0)
 
+    # Potentially fill background
     if filled is False:
         shape.fill.background()
+
+
+def createOval(text, x, y, width, height, filled, shapes, fontSize):
+    # Create shape
+    shape = shapes.add_shape(MSO_SHAPE.OVAL, x, y, width, height)
+
+    # Set shape's text
+    shape.text = text
+
+    # Set shape's text attributes
+    tf = shape.text_frame
+    p = tf.paragraphs[0]
+    p.alignment = PP_ALIGN.CENTER
+    f = p.font
+    f.size = Pt(fontSize)
+    f.color.rgb = RGBColor(0, 0, 0)
+
+    # Set shape's outline attributes
+    shape.line.color.rgb = RGBColor(191, 191, 191)
+    shape.line.width = Pt(1.0)
+
+    # Potentially fill background
+    if filled is False:
+        shape.fill.background()
+        shape.line.width = Pt(3.0)
+
+
+def createLine(x0, y0, x1, y1, shapes):
+    # Create line
+    line = shapes.add_shape(MSO_SHAPE.LINE_INVERSE, x0, y0, x1 - x0, y1 - y0)
+
+    # Set shape's outline attributes
+    line.line.color.rgb = RGBColor(191, 191, 191)
+    line.line.width = Pt(4.0)
 
 
 def delinkify(text):
@@ -2840,13 +2882,20 @@ def createTOCSlide(presentation, slideNumber, titleText, bullets, tocStyle):
     marginBase = processingOptions.getCurrentOption("marginBase")
     pageTitleSize = processingOptions.getCurrentOption("pageTitleSize")
 
-    print(
-        str(slideNumber).rjust(4)
-        + '     Table Of Contents (Style: "'
-        + tocStyle
-        + '") '
-        + titleText
-    )
+    if titleText == tocTitle:
+        print(
+            str(slideNumber).rjust(4)
+            + '     Table Of Contents (Style: "'
+            + tocStyle
+            + '") '
+            + titleText
+        )
+    else:
+        print(
+            str(slideNumber).rjust(4)
+            + '     '
+            + titleText
+        )
 
     slide = presentation.slides.add_slide(presentation.slide_layouts[titleOnlyLayout])
 
@@ -2867,46 +2916,108 @@ def createTOCSlide(presentation, slideNumber, titleText, bullets, tocStyle):
         presentation, slide, slideTitleBottom, marginBase
     )
 
-    width = Inches(3)
-    height = Inches(1)
-    rowGap = Inches(0.75)
-
-    chevronsPerRow = 4
-
-    # Create global inList of TOC entries
+    # Create global list of TOC entries
     for bullet in bullets:
         bulletLevel, bulletText, bulletType = bullet
         if bulletLevel == 0:
             # Level 0 is top level so create a TOC entry
-            tocEntries.append(delinkify(bulletText))
+            TOCEntries.append(delinkify(bulletText))
 
-    rowCount = 1 + len(tocEntries) / chevronsPerRow
+    TOCEntryCount = len(TOCEntries)
+
+    TOCFontSize = processingOptions.getCurrentOption("TOCFontSize")
+    
+    TOCItemHeight = processingOptions.getCurrentOption("TOCItemHeight")
+
+    height = Inches(TOCItemHeight)
+
+    if tocStyle == "chevron":
+        if height == 0:
+            height = Inches(1)
+        
+        width = height * 2.5
+
+        entryGap = Inches(-0.5 * height / Inches(1))
+        
+        if TOCFontSize == 0:
+            TOCFontSize = 14
+
+    elif tocStyle == "circle":
+        if height == 0:
+            height = Inches(1.25)
+        
+        width = height
+
+        entryGap = Inches(0.5)
+
+        if TOCFontSize == 0:
+            TOCFontSize = 12
+
+    rowGap = Inches(processingOptions.getCurrentOption("TOCRowGap"))
+
+    TOCEntriesPerRow = int((presentation.slide_width - 2 * marginBase) / (width + entryGap))
+
+    rowCount = 1 + TOCEntryCount / TOCEntriesPerRow
 
     # Calculate actual TOC height so it can be vertically centred
     TOCHeight = (rowCount * height) + ((rowCount - 1) * rowGap)
 
+    # Calculate where top of TOC should be
     TOCtop = slideTitleBottom + (contentHeight - TOCHeight + height) / 2
 
     # Calculate actual TOC width
-    TOCWidth = chevronsPerRow * (width - Inches(0.5)) + Inches(0.5)
-    TOCleft = (presentation.slide_width - TOCWidth) / 2
+    TOCWidth = TOCEntriesPerRow * (width + entryGap)
+
+    # Calculate where the TOC will start
+    TOCleft = (presentation.slide_width - TOCWidth + entryGap) / 2
 
     x = TOCleft
     y = TOCtop
-    chevronNumber = 1
-    for bulletText in tocEntries:
+
+    AbsoluteTOCEntryNumber = 1
+
+    TOCEntryNumber = 1
+
+    for bulletText in TOCEntries:
         if bulletText == titleText:
             wantFilled = False
         else:
             wantFilled = True
 
-        createChevron(bulletText, x, y, width, height, wantFilled, shapes)
-        x = x + width - Inches(0.5)
-        chevronNumber = chevronNumber + 1
-        if chevronNumber == chevronsPerRow + 1:
+        if tocStyle == "chevron":
+            createChevron(bulletText, x, y, width, height, wantFilled, shapes, TOCFontSize)
+
+        elif tocStyle == "circle":
+            # Create the circle
+            createOval(bulletText, x, y, width, height, wantFilled, shapes, TOCFontSize)
+
+            # Create half connector to next one - if not last
+            if AbsoluteTOCEntryNumber < TOCEntryCount:
+                connector = createLine(
+                    x + width,
+                    y + height / 2,
+                    x + width + entryGap / 2,
+                    y + height / 2,
+                    shapes,
+                )
+
+            # Create half connector to previous one - if not first
+            if AbsoluteTOCEntryNumber > 1:
+                # z =1
+                connector = createLine(
+                    x - entryGap / 2, y + height / 2, x, y + height / 2, shapes
+                )
+
+        # Prepare for the next TOC entry - even if there isn't one
+        x = x + width + entryGap
+
+        # If beyond end of line the next TOC entry would be at the start of the next line
+        AbsoluteTOCEntryNumber = AbsoluteTOCEntryNumber + 1
+        TOCEntryNumber = TOCEntryNumber + 1
+        if TOCEntryNumber == TOCEntriesPerRow + 1:
             x = TOCleft
             y = y + rowGap + height
-            chevronNumber = 1
+            TOCEntryNumber = 1
 
     if want_numbers_content is True:
         addFooter(presentation, slideNumber, slide)
@@ -3496,11 +3607,19 @@ processingOptions.setOptionValuesArray(
 )
 
 # Table Of Contents defaults
-processingOptions.setOptionValuesArray([["tocTitle", "Topics"], ["tocStyle", ""]])
+processingOptions.setOptionValuesArray(
+    [
+        ["tocTitle", "Topics"],
+        ["tocStyle", ""],
+        ["tocItemHeight", 0],
+        ["tocRowGap", 0.75],
+        ["tocFontSize", 0],
+    ]
+)
 
 processingOptions.setOptionValues("marginBase", Inches(0.2))
 
-tocEntries = []
+TOCEntries = []
 
 
 metadata = []
@@ -3616,6 +3735,15 @@ for line in metadata_lines:
 
     elif name == "toctitle":
         processingOptions.setOptionValues(name, value)
+
+    elif name == "tocitemheight":
+        processingOptions.setOptionValues(name, float(value))
+
+    elif name == "tocrowgap":
+        processingOptions.setOptionValues(name, float(value))
+
+    elif name == "tocfontsize":
+        processingOptions.setOptionValues(name, float(value))
 
     elif name == "compacttables":
         processingOptions.setOptionValues(name, float(value))
