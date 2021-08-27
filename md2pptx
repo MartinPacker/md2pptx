@@ -13,6 +13,7 @@ import sys
 import os
 import time
 from pptx import Presentation
+from pptx import __version__ as pptx_version
 from pptx.util import Inches, Pt
 from pptx.dml.color import RGBColor, MSO_THEME_COLOR
 from pptx.enum.text import MSO_AUTO_SIZE, PP_ALIGN
@@ -20,6 +21,7 @@ from pptx.enum.shapes import PP_PLACEHOLDER
 from pptx.enum.shapes import MSO_SHAPE, MSO_CONNECTOR
 from pptx.enum.text import MSO_ANCHOR, PP_ALIGN
 from pptx.enum.action import PP_ACTION
+from pptx.enum.dml import MSO_PATTERN
 from pptx.dml.color import RGBColor
 import imghdr, struct
 import datetime
@@ -43,8 +45,8 @@ try:
 except:
     have_cairosvg = False
 
-md2pptx_level = "2.3.2"
-md2pptx_date = "23 August, 2021"
+md2pptx_level = "2.3.3"
+md2pptx_date = "27 August, 2021"
 
 
 class SlideInfo:
@@ -2809,7 +2811,9 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
     return slide
 
 
-def createChevron(text, x, y, width, height, filled, shapes, fontSize):
+def createChevron(text, x, y, width, height, filled, shapes, fontSize, wantLink, unhighlightedBackground):
+    global TOCruns
+
     # Create shape
     shape = shapes.add_shape(MSO_SHAPE.CHEVRON, x, y, width, height)
 
@@ -2822,6 +2826,10 @@ def createChevron(text, x, y, width, height, filled, shapes, fontSize):
     f = p.font
     f.size = Pt(fontSize)
     f.color.rgb = RGBColor(0, 0, 0)
+    
+    # If want link create it from the first run
+    if wantLink:
+        TOCruns.append(p.runs[0])
 
     # Set shape's outline attributes
     shape.line.color.rgb = RGBColor(0, 0, 0)
@@ -2830,9 +2838,14 @@ def createChevron(text, x, y, width, height, filled, shapes, fontSize):
     # Potentially fill background
     if filled is False:
         shape.fill.background()
+    else:
+        if wantLink & (unhighlightedBackground != ""):
+            shape.fill.solid()
+            shape.fill.fore_color.rgb = RGBColor.from_string(unhighlightedBackground)
 
+def createOval(text, x, y, width, height, filled, shapes, fontSize, wantLink, unhighlightedBackground):
+    global TOCruns
 
-def createOval(text, x, y, width, height, filled, shapes, fontSize):
     # Create shape
     shape = shapes.add_shape(MSO_SHAPE.OVAL, x, y, width, height)
 
@@ -2847,6 +2860,10 @@ def createOval(text, x, y, width, height, filled, shapes, fontSize):
     f.size = Pt(fontSize)
     f.color.rgb = RGBColor(0, 0, 0)
 
+    # If want link create it from the first run
+    if wantLink:
+        TOCruns.append(p.runs[0])
+
     # Set shape's outline attributes
     shape.line.color.rgb = RGBColor(191, 191, 191)
     shape.line.width = Pt(1.0)
@@ -2855,7 +2872,10 @@ def createOval(text, x, y, width, height, filled, shapes, fontSize):
     if filled is False:
         shape.fill.background()
         shape.line.width = Pt(3.0)
-
+    else:
+        if wantLink & (unhighlightedBackground != ""):
+            shape.fill.solid()
+            shape.fill.fore_color.rgb = RGBColor.from_string(unhighlightedBackground)
 
 def createLine(x0, y0, x1, y1, shapes):
     # Create line
@@ -2871,35 +2891,82 @@ def delinkify(text):
         linkText = linkMatch.group(1)
         linkURL = linkMatch.group(2)
 
-        return linkText
+        return (linkText, linkURL)
     else:
-        return text
+        return (text, "")
 
 
 def createTOCSlide(presentation, slideNumber, titleText, bullets, tocStyle):
+    global SectionSlides
     titleOnlyLayout = processingOptions.getCurrentOption("titleOnlyLayout")
     tocTitle = processingOptions.getCurrentOption("tocTitle")
     marginBase = processingOptions.getCurrentOption("marginBase")
     pageTitleSize = processingOptions.getCurrentOption("pageTitleSize")
 
-    if titleText == tocTitle:
-        print(
-            str(slideNumber).rjust(4)
-            + '     Table Of Contents (Style: "'
-            + tocStyle
-            + '") '
-            + titleText
-        )
-    else:
-        print(
-            str(slideNumber).rjust(4)
-            + '     '
-            + titleText
-        )
+    if tocStyle != "plain":
+        if titleText == tocTitle:
+            print(
+                str(slideNumber).rjust(4)
+                + '     Table Of Contents (Style: "'
+                + tocStyle
+                + '") '
+                + titleText
+            )
+                
+        else:
+            print(
+                str(slideNumber).rjust(4)
+                + '     '
+                + titleText
+            )
+        
+
+    if tocStyle == "plain":
+        if titleText != tocTitle: 
+            slide = createTitleOrSectionSlide(
+            presentation,
+            slideNumber,
+            titleText,
+            processingOptions.getCurrentOption("sectionSlideLayout"),
+            processingOptions.getCurrentOption("sectionTitleSize"),
+            slideInfo.subtitleText,
+            processingOptions.getCurrentOption("sectionSubtitleSize"),
+            notes_text,
+            )
+        else:
+            # Remove the links from the bullets and replace with target slide title
+            for bullet in bullets:
+                linkMatch = linkRegex.match(bullet[1])
+                bullet[1] = linkMatch.group(1)
+            
+            # Create the TOC slide - with these neutralised titles
+            slide = createContentSlide(
+                presentation,
+                slideNumber,
+                slideInfo,
+            )
+            
+            # Postprocess slide to pick up runs - for TOC creation
+            body = findBodyShape(slide)
+            text_frame = body.text_frame
+            for p in text_frame.paragraphs:
+                TOCruns.append(p.runs[0])
+        
+            
+
+        SectionSlides[titleText] = slide
+
+        return slide
 
     slide = presentation.slides.add_slide(presentation.slide_layouts[titleOnlyLayout])
 
+
+    SectionSlides[titleText] = slide
+
+
+
     shapes = slide.shapes
+
 
     # Add title
     if titleText == tocTitle:
@@ -2921,13 +2988,17 @@ def createTOCSlide(presentation, slideNumber, titleText, bullets, tocStyle):
         bulletLevel, bulletText, bulletType = bullet
         if bulletLevel == 0:
             # Level 0 is top level so create a TOC entry
-            TOCEntries.append(delinkify(bulletText))
+            linkText, linkHref = delinkify(bulletText)
+            TOCEntries.append([linkText, linkHref])
 
+    
     TOCEntryCount = len(TOCEntries)
 
     TOCFontSize = processingOptions.getCurrentOption("TOCFontSize")
     
     TOCItemHeight = processingOptions.getCurrentOption("TOCItemHeight")
+
+    TOCItemColour = processingOptions.getCurrentOption("TOCItemColour")
 
     height = Inches(TOCItemHeight)
 
@@ -2953,6 +3024,7 @@ def createTOCSlide(presentation, slideNumber, titleText, bullets, tocStyle):
         if TOCFontSize == 0:
             TOCFontSize = 12
 
+    
     rowGap = Inches(processingOptions.getCurrentOption("TOCRowGap"))
 
     TOCEntriesPerRow = int((presentation.slide_width - 2 * marginBase) / (width + entryGap))
@@ -2978,18 +3050,23 @@ def createTOCSlide(presentation, slideNumber, titleText, bullets, tocStyle):
 
     TOCEntryNumber = 1
 
-    for bulletText in TOCEntries:
-        if bulletText == titleText:
+    for entry in TOCEntries:
+        entryText = entry[0]
+        entryHref = entry[1]
+        
+        if entryText == titleText:
             wantFilled = False
+            wantLink = False
         else:
             wantFilled = True
+            wantLink = True
 
         if tocStyle == "chevron":
-            createChevron(bulletText, x, y, width, height, wantFilled, shapes, TOCFontSize)
+            createChevron(entryText, x, y, width, height, wantFilled, shapes, TOCFontSize, wantLink, TOCItemColour)
 
         elif tocStyle == "circle":
             # Create the circle
-            createOval(bulletText, x, y, width, height, wantFilled, shapes, TOCFontSize)
+            createOval(entryText, x, y, width, height, wantFilled, shapes, TOCFontSize, wantLink, TOCItemColour)
 
             # Create half connector to next one - if not last
             if AbsoluteTOCEntryNumber < TOCEntryCount:
@@ -3339,6 +3416,7 @@ print("\n" + banner + "\n" + bannerUnderline)
 print("\nOpen source project: https://github.com/MartinPacker/md2pptx")
 
 print("\nPython: " + platform.python_version())
+print("python-pptx: " + pptx_version)
 
 input_file = []
 
@@ -3418,6 +3496,10 @@ footnoteRunsDictionary = {}
 # Extract metadata
 metadata_lines = []
 afterMetadataAndHTML = []
+
+
+TOCruns = []
+SectionSlides = {}
 
 inMetadata = True
 in_comment = False
@@ -3612,8 +3694,10 @@ processingOptions.setOptionValuesArray(
         ["tocTitle", "Topics"],
         ["tocStyle", ""],
         ["tocItemHeight", 0],
+        ["tocItemColour", ""],
         ["tocRowGap", 0.75],
         ["tocFontSize", 0],
+        ["tocLinks", False],
     ]
 )
 
@@ -3731,13 +3815,26 @@ for line in metadata_lines:
         processingOptions.setOptionValues(name, Inches(float(value)))
 
     elif name == "tocstyle":
-        processingOptions.setOptionValues(name, value)
+        if value in ["chevron", "circle", "plain"]:
+            processingOptions.setOptionValues(name, value)
+        else:
+            print(
+                f'TOCStyle value \'{value}\' unsupported. "chevron" or "circle" required.'
+            )
 
     elif name == "toctitle":
         processingOptions.setOptionValues(name, value)
 
     elif name == "tocitemheight":
         processingOptions.setOptionValues(name, float(value))
+
+    elif (name == "tocitemcolour") | (name == "tocitemcolor"):
+        processingOptions.setOptionValues("tocItemColour", value)
+
+    elif name == "toclinks":
+        if value.lower() == "yes":
+            processingOptions.setOptionValues(name, True)
+
 
     elif name == "tocrowgap":
         processingOptions.setOptionValues(name, float(value))
@@ -3755,7 +3852,7 @@ for line in metadata_lines:
         if value.lower() == "no":
             processingOptions.setOptionValues("boldBold", False)
 
-    elif (name == "boldcolour") | (name == "boldcolour"):
+    elif (name == "boldcolour") | (name == "boldcolor"):
         processingOptions.setOptionValues("boldColour", parseThemeColour(value))
 
     elif name == "italicitalic":
@@ -4680,6 +4777,16 @@ if (len(tasks) > 0) & (taskSlides != "none"):
         else:
             createTaskSlides(prs, slideNumber, complete, "Completed Tasks")
             createTaskSlides(prs, slideNumber, incomplete, "Incomplete Tasks")
+
+######################################################################################
+#                                                                                    #
+# Make any TOC-related links                                                         #
+#                                                                                    #
+######################################################################################
+if processingOptions.getCurrentOption("tocLinks"):
+    for run in TOCruns:
+        createRunHyperlinkOrTooltip(run, SectionSlides[run.text])
+
 
 ######################################################################################
 #                                                                                    #

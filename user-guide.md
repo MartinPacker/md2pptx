@@ -105,9 +105,12 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 		* [Table Of Contents Metadata](#table-of-contents-metadata)
 			* ["Chevron Style" Table Of Contents](#chevron-style-table-of-contents)
 			* ["Circle Style" Table Of Contents](#circle-style-table-of-contents)
+			* ["Plain Style" Table Of Contents](#plain-style-table-of-contents)
 			* [Table Of Contents Style - `tocStyle`](#table-of-contents-style-tocstyle)
 			* [Table Of Contents Title - `tocTitle`](#table-of-contents-title-toctitle)
+			* [Table Of Contents Live Links - `tocLinks`](#table-of-contents-live-links-toclinks)
 			* [Table Of Contents Item Height - `TOCItemHeight`](#table-of-contents-item-height-tocitemheight)
+			* [Table Of Contents Item Colour - `TOCItemColour`](#table-of-contents-item-colour-tocitemcolour)
 			* [Table Of Contents Row Gap - `TOCRowGap`](#table-of-contents-row-gap-tocrowgap)
 			* [Table Of Contents Font Size - `TOCFontSize`](#table-of-contents-font-size-tocfontsize)
 	* [Dynamic Metadata](#dynamic-metadata)
@@ -246,6 +249,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|2.3.3|27&nbsp;August&nbsp;2021|Added `TOCStyle: plain` Table Of Contents layout. Also can enable internal links in TOC and Section slides. Fixed `addTableLines` bug.|
 |2.3.2|23&nbsp;August&nbsp;2021|Added `TOCStyle: circle` Table Of Contents layout. Also metadata to control Table Of Contents layout.|
 |2.3.1|21&nbsp;August&nbsp;2021|Forgot to mention "prev" / "pop" in documentation for 2.3.|
 |2.3|21&nbsp;August&nbsp;2021|Fixed "slide title as heading reference bug". Added Python release to runtime output. Refactored metadata handling.sublim|
@@ -1783,9 +1787,9 @@ The default value is such as to make each block have equal space.
 #### Table Of Contents Metadata
 
 If you have a slide in a certain format you can convert it to a Table Of Contents slide.
-This slide can be either ["Chevron Style"](#chevron-style-table-of-contents) or ["Circle Style"](#circle-style-table-of-contents).
+This slide can be ["Chevron Style"](#chevron-style-table-of-contents), ["Circle Style"](#circle-style-table-of-contents), or ["Plain Style"](#plain-style-table-of-contents).
 
-In addition to building the Table Of Contents slide each Section Slide replicates the Table Of Contents slide but with the current section's title highlighted. The examples below will make this clearer.
+In addition to building the Table Of Contents slide, for Chevron and Circle styles, each Section Slide replicates the Table Of Contents slide but with the current section's title highlighted. The examples below will make this clearer.
 
 The format required is a bulleted list slide with each section title listed as a top level bullet. For example:
 
@@ -1801,7 +1805,7 @@ The format required is a bulleted list slide with each section title listed as a
 
 You will recognise each entry as an internal link. Perhaps the easiest way to create such a piece of Markdown is with [mdpre](https://github.com/MartinPacker/mdpre) with its `=toc` capability. It will automate gathering the links and Section slide titles.
 
-When processing this slide md2pptx will recognise it as a Table Of Contents slide because of the slide title "Topics". It will build a list of headings from the bullets. When md2pptx sees a Section slide whose title matches one of the titles in the Table Of Contents slide's bullets it creates a similar slide to the Table Of Contents slide, but with this section highlighted.
+When processing this slide md2pptx will recognise it as a Table Of Contents slide because of the slide title "Topics". It will build a list of headings from the bullets. With Chevron and Circle styles, when md2pptx sees a Section slide whose title matches one of the titles in the Table Of Contents slide's bullets it creates a similar slide to the Table Of Contents slide, but with this section highlighted.
 
 **NOTES:**
 
@@ -1817,7 +1821,7 @@ To create a "Chevron Style" Table Of Contents slide and Section slides code:
 
 	tocStyle: chevron
 
-If you create a "Chevron Style" Table Of Contents slide. it will look something like this:
+If you create a "Chevron Style" Table Of Contents slide, it will look something like this:
 
 <div style="border: 1px solid black">
 <img src="https://raw.githubusercontent.com/MartinPacker/md2pptx/master/chevronTOC.png" />
@@ -1831,6 +1835,8 @@ If you specify `tocStyle: chevron` the Section slides will be rendered something
 
 Here the section is highlighted by removing the background.
 
+In the above pictures live links are disabled and default rendering options have been taken.
+
 ##### "Circle Style" Table Of Contents
 <a id="circle-style-table-of-contents"></a>
 
@@ -1838,7 +1844,7 @@ To create a "Circle Style" Table Of Contents slide and Section slides code:
 
 	tocStyle: circle
 
-If you create a "Circle Style" Table Of Contents slide. it will look something like this:
+If you create a "Circle Style" Table Of Contents slide, it will look something like this:
 
 <div style="border: 1px solid black">
 <img src="https://raw.githubusercontent.com/MartinPacker/md2pptx/master/circleTOC.png" />
@@ -1852,18 +1858,33 @@ If you specify `tocStyle: circle` the Section slides will be rendered something 
 
 Here the section is highlighted by removing the background and emphasising the circle itself.
 
+In the above pictures live links are disabled and default rendering options have been taken.
+
+##### "Plain Style" Table Of Contents
+<a id="plain-style-table-of-contents"></a>
+
+The purpose of Plain Style is to create a Table Of Contents slide with each presentation section listed as a live link. Unlike with Chevron and Circle styles, Plain Style does not affect Section slides.
+
+To create a "Plain Style" Table Of Contents slide and Section slides code:
+
+	tocStyle: plain
+
+If you create a "Plain Style" Table Of Contents slide, it will look something like this:
+
+<div style="border: 1px solid black">
+<img src="https://raw.githubusercontent.com/MartinPacker/md2pptx/master/plainTOC.png" />
+</div>
+
+**Note:** With Plain Style, Section slides are unaffected; They are rendered as if no Table Of Contents functions were used.
 
 ##### Table Of Contents Style - `tocStyle`
 <a id="table-of-contents-style-tocstyle"></a>
 
-There are two styles of Table Of Contents and Section slide you can specify:
+There are three styles of Table Of Contents and Section slide you can specify:
 
-	tocStyle: chevron
-
-and
-
-	tocStyle: circle
-
+* `tocStyle: chevron`
+* `tocStyle: circle`
+* `TOCStyle: plain`
 
 ##### Table Of Contents Title - `tocTitle`
 <a id="table-of-contents-title-toctitle"></a>
@@ -1873,6 +1894,20 @@ If your Table Of Contents slide's title is something other than "Topics" you nee
 	tocTitle: Agenda
 
 md2pptx will look for this title on a slide instead of "Topics" and use the matching slide to create a Table Of Contents slide.
+
+##### Table Of Contents Live Links - `tocLinks`
+<a id="table-of-contents-live-links-toclinks"></a>
+
+You can enable live links in Table Of Contents and Section slides for Chevron and Circle styles. (Links are always live in Plain style.) In a Powerpoint slide show clicking on an item in the Table Of Contents slide or a Section slide takes you to the Section slide that is the link's target.
+
+By default live links are not enabled - for compatibility with existing presentations.
+
+Enable live links by coding
+
+	tocLinks: yes
+
+**Note:** You cannot control the colour of links in Powerpoint. For that reason you might need to change the background colour of items using [TOCItemColour](#table-of-contents-item-colour-colour).
+
 
 ##### Table Of Contents Item Height - `TOCItemHeight`
 <a id="table-of-contents-item-height-tocitemheight"></a>
@@ -1887,6 +1922,20 @@ For Chevron the default is 1 inch high. For Circle the default is 1.25 inches.
 
 Chevron items are 2.5 times as wide as they are high. Circle items are the same width as they are high.
 
+##### Table Of Contents Item Colour - `TOCItemColour`
+<a id="table-of-contents-item-colour-colour"></a>
+
+For Chevron and Circle Table Of Contents styles you can control the background colour of the items with `TOCItemColour` (or `TOCItemColor`). Coding
+
+    tocItemColour: E0E0FF
+
+leads to each item's background colour being pale blue.
+
+If you don't specify this the default Powerpoint background colour for shapes is used.
+
+This option was introduced because when [live links](#table-of-contents-live-links-toclinks) are used in Table Of Contents and Section slides the link text might be nearly invisible.
+
+**Note:** This option doesn't affect the background colour of the highlighted item on a Section slide; That remains unfilled.
 
 ##### Table Of Contents Row Gap - `TOCRowGap`
 <a id="table-of-contents-row-gap-tocrowgap"></a>
