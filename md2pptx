@@ -4791,7 +4791,19 @@ if processingOptions.getCurrentOption("tocLinks"):
 
 if processingOptions.getCurrentOption("sectionArrows"):
     # Add navigation arrows between section slides
-    pass
+    for sectionNumber, SectionSlide in enumerate(SectionSlides):
+        if sectionNumber > 1:
+            # Need backwards arrow
+            pass
+
+        # Always need home arrow - except for TOC
+        if sectionNumber > 0:
+            # Need home arrow
+            pass
+
+        if (sectionNumber < len(SectionSlides)) & (sectionNumber > 0):
+            # Need forwards
+            pass
 
 ######################################################################################
 #                                                                                    #
