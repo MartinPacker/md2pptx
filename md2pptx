@@ -4791,19 +4791,38 @@ if processingOptions.getCurrentOption("tocLinks"):
 
 if processingOptions.getCurrentOption("sectionArrows"):
     # Add navigation arrows between section slides
-    for sectionNumber, SectionSlide in enumerate(SectionSlides):
+    
+    buttonTop = prs.slide_height - Inches(2/3)
+    forwShape = None
+    
+    previousSection = None
+    for sectionNumber, sectionSlide in enumerate(SectionSlides):
+        slide = SectionSlides[sectionSlide]
+        if sectionNumber == 0:
+            TOCslide = slide
+
+        if forwShape != None:
+            forwShape.click_action.target_slide = slide
+        
+
         if sectionNumber > 1:
             # Need backwards arrow
-            pass
+            backShape = slide.shapes.add_shape(MSO_SHAPE.ACTION_BUTTON_BACK_OR_PREVIOUS,prs.slide_width / 2 - Inches(2/3), buttonTop, Inches(1/3), Inches(1/3))
+            backShape.click_action.target_slide = previousSlide
 
         # Always need home arrow - except for TOC
         if sectionNumber > 0:
-            # Need home arrow
-            pass
+            homeShape = slide.shapes.add_shape(MSO_SHAPE.ACTION_BUTTON_HOME,prs.slide_width / 2 - Inches(1/6), buttonTop, Inches(1/3), Inches(1/3))
+            homeShape.click_action.target_slide = TOCslide
 
-        if (sectionNumber < len(SectionSlides)) & (sectionNumber > 0):
+        if (sectionNumber < len(SectionSlides) - 1) & (sectionNumber > 0):
             # Need forwards
-            pass
+            forwShape = slide.shapes.add_shape(MSO_SHAPE.ACTION_BUTTON_FORWARD_OR_NEXT,prs.slide_width / 2 + Inches(1/3), buttonTop, Inches(1/3), Inches(1/3))
+        else:
+            forwShape = None
+
+        previousSlide = slide
+
 
 ######################################################################################
 #                                                                                    #
