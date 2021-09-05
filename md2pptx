@@ -45,8 +45,8 @@ try:
 except:
     have_cairosvg = False
 
-md2pptx_level = "2.3.3"
-md2pptx_date = "27 August, 2021"
+md2pptx_level = "2.3.3+"
+md2pptx_date = "5 September, 2021"
 
 
 class SlideInfo:
@@ -386,6 +386,14 @@ def applyTableLineStyling(
                 processingOptions.getCurrentOption("addTableLineColour"),
             )
 
+def reportSlideTitle(slideNumber, indent, titleText):
+    print(str(slideNumber).rjust(4) + " " + ("  " * indent) + titleText)
+
+def reportGraphicFileNames(leftFilename, rightFilename = ""):
+    if rightFilename == "":
+        print("             ---> " + leftFilename.ljust(30))
+    else:
+        print("             ---> " + leftFilename.ljust(30) + " , " +rightFilename)
 
 # Given current indenting regime calculate what level the bullet / number is at
 def calculateIndentationLevel(firstNonSpace, indentSpaces):
@@ -1485,7 +1493,7 @@ def createTitleOrSectionSlide(
             subtitleShape.left = title.left
             subtitleShape.height = marginBase * 2
 
-    print(str(slideNumber).rjust(4) + "   " + flattenedTitle)
+    reportSlideTitle(slideNumber, 1, flattenedTitle)
 
     if want_numbers_headings is True:
         addFooter(presentation, slideNumber, slide)
@@ -1765,7 +1773,7 @@ def createAbstractSlide(presentation, slideNumber, titleText, paragraphs):
         presentation, slide, titleText, pageTitleSize
     )
 
-    print(str(slideNumber).rjust(4) + "     Abstract: " + flattenedTitle)
+    reportSlideTitle(slideNumber, 3, "Abstract: " + flattenedTitle)
 
     # Get the rectangle the content will draw in
     contentLeft, contentWidth, contentTop, contentHeight = getContentRect(
@@ -1849,7 +1857,7 @@ def createContentSlide(presentation, slideNumber, slideInfo):
     )
 
     # Log slide's title
-    print(str(slideNumber).rjust(4) + "     " + flattenedTitle.ljust(40))
+    reportSlideTitle(slideNumber, 3 ,flattenedTitle.ljust(40))
 
     ####################################################################
     # Get the dimensions of the content area to place all content in   #
@@ -2354,27 +2362,17 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
         ####################################################################
         if gridColumns == 2:
             # Doing 1- or 2-row side-by-side graphics slide
-            print(
-                "           --> "
-                + printableTopLeftGraphicFilename.ljust(30)
-                + " , "
-                + printableTopRightGraphicFilename
-            )
+            reportGraphicFileNames(printableTopLeftGraphicFilename, printableTopRightGraphicFilename)
         else:
             # Doing 2 row, single column graphics slide
-            print("           --> " + printableTopLeftGraphicFilename.ljust(30))
+            reportGraphicFileNames(printableTopLeftGraphicFilename)
 
         if gridRows == 2:
             # Second row of filenames
             if gridColumns == 2:
-                print(
-                    "           --> "
-                    + printableBottomLeftGraphicFilename.ljust(30)
-                    + " , "
-                    + printableBottomRightGraphicFilename
-                )
+                reportGraphicFileNames(printableBottomLeftGraphicFilename, printableBottomRightGraphicFilename)
             else:
-                print("           --> " + printableBottomLeftGraphicFilename.ljust(30))
+                reportGraphicFileNames(printableBottomLeftGraphicFilename)
 
         ####################################################################
         # Get the image dimensions                                         #
@@ -2899,26 +2897,20 @@ def delinkify(text):
 def createTOCSlide(presentation, slideNumber, titleText, bullets, tocStyle):
     global SectionSlides
     titleOnlyLayout = processingOptions.getCurrentOption("titleOnlyLayout")
+    blankLayout = processingOptions.getCurrentOption("blankLayout")
     tocTitle = processingOptions.getCurrentOption("tocTitle")
     marginBase = processingOptions.getCurrentOption("marginBase")
     pageTitleSize = processingOptions.getCurrentOption("pageTitleSize")
 
     if tocStyle != "plain":
         if titleText == tocTitle:
-            print(
-                str(slideNumber).rjust(4)
-                + '     Table Of Contents (Style: "'
-                + tocStyle
-                + '") '
-                + titleText
+            reportSlideTitle(
+                slideNumber, 3,
+                f'Table Of Contents (Style: "{tocStyle}") {titleText}'
             )
                 
         else:
-            print(
-                str(slideNumber).rjust(4)
-                + '     '
-                + titleText
-            )
+            reportSlideTitle(slideNumber, 2, titleText)
         
 
     if tocStyle == "plain":
@@ -2951,14 +2943,15 @@ def createTOCSlide(presentation, slideNumber, titleText, bullets, tocStyle):
             text_frame = body.text_frame
             for p in text_frame.paragraphs:
                 TOCruns.append(p.runs[0])
-        
-            
-
+                    
+        # Store the new slide in the list of section slides - for fixing up links
         SectionSlides[titleText] = slide
 
         return slide
 
-    slide = presentation.slides.add_slide(presentation.slide_layouts[titleOnlyLayout])
+    else:
+        slide = presentation.slides.add_slide(presentation.slide_layouts[titleOnlyLayout])
+        title = findTitleShape(slide)
 
 
     SectionSlides[titleText] = slide
@@ -2968,15 +2961,18 @@ def createTOCSlide(presentation, slideNumber, titleText, bullets, tocStyle):
     shapes = slide.shapes
 
 
-    # Add title
+    # Add title if TOC slide. Or delete shape if not
     if titleText == tocTitle:
-        useTitle = tocTitle
+        # Is TOC slide so add title
+        slideTitleBottom, title, flattenedTitle = formatTitle(
+            presentation, slide, tocTitle, pageTitleSize
+        )
     else:
-        useTitle = ""
+        # Is not TOC slide so delete title shape and adjust where title bottom
+        # would be
+        deleteSimpleShape(title)
+        slideTitleBottom = marginBase
 
-    slideTitleBottom, title, flattenedTitle = formatTitle(
-        presentation, slide, useTitle, pageTitleSize
-    )
 
     # Get the rectangle the content will draw in
     contentLeft, contentWidth, contentTop, contentHeight = getContentRect(
