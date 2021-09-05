@@ -3694,6 +3694,7 @@ processingOptions.setOptionValuesArray(
         ["tocRowGap", 0.75],
         ["tocFontSize", 0],
         ["tocLinks", False],
+        ["sectionArrows", False],
     ]
 )
 
@@ -3828,6 +3829,10 @@ for line in metadata_lines:
         processingOptions.setOptionValues("tocItemColour", value)
 
     elif name == "toclinks":
+        if value.lower() == "yes":
+            processingOptions.setOptionValues(name, True)
+
+    elif name == "sectionarrows":
         if value.lower() == "yes":
             processingOptions.setOptionValues(name, True)
 
@@ -4776,13 +4781,17 @@ if (len(tasks) > 0) & (taskSlides != "none"):
 
 ######################################################################################
 #                                                                                    #
-# Make any TOC-related links                                                         #
+# Make any TOC / Section-related links                                               #
 #                                                                                    #
 ######################################################################################
 if processingOptions.getCurrentOption("tocLinks"):
+    # Linkify section items
     for run in TOCruns:
         createRunHyperlinkOrTooltip(run, SectionSlides[run.text])
 
+if processingOptions.getCurrentOption("sectionArrows"):
+    # Add navigation arrows between section slides
+    pass
 
 ######################################################################################
 #                                                                                    #
