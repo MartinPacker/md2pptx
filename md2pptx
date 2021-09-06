@@ -4807,6 +4807,8 @@ if processingOptions.getCurrentOption("sectionArrows"):
 
         if forwShape != None:
             forwShape.click_action.target_slide = slide
+            hl = forwShape.click_action.hyperlink
+            hl._hlink.set("tooltip", "Next Section")
         
 
         buttonShapes = []
@@ -4814,18 +4816,25 @@ if processingOptions.getCurrentOption("sectionArrows"):
             # Need backwards arrow
             backShape = slide.shapes.add_shape(MSO_SHAPE.ACTION_BUTTON_BACK_OR_PREVIOUS,prs.slide_width / 2 - Inches(2/3), buttonTop, Inches(1/3), Inches(1/3))
             backShape.click_action.target_slide = previousSlide
+            hl = backShape.click_action.hyperlink
+            hl._hlink.set("tooltip", "Previous Section")
+
             buttonShapes.append(backShape)
 
         # Always need home arrow - except for TOC
         if sectionNumber > 0:
             homeShape = slide.shapes.add_shape(MSO_SHAPE.ACTION_BUTTON_HOME,prs.slide_width / 2 - Inches(1/6), buttonTop, Inches(1/3), Inches(1/3))
             homeShape.click_action.target_slide = TOCslide
-            buttonShapes.append(homeShape)
 
+            hl = homeShape.click_action.hyperlink
+            hl._hlink.set("tooltip", "Table Of Contents")
+
+            buttonShapes.append(homeShape)
 
         if (sectionNumber < len(SectionSlides) - 1) & (sectionNumber > 0):
             # Need forwards
             forwShape = slide.shapes.add_shape(MSO_SHAPE.ACTION_BUTTON_FORWARD_OR_NEXT,prs.slide_width / 2 + Inches(1/3), buttonTop, Inches(1/3), Inches(1/3))
+            
             buttonShapes.append(forwShape)
 
         else:
