@@ -45,7 +45,7 @@ try:
 except:
     have_cairosvg = False
 
-md2pptx_level = "2.3.3+"
+md2pptx_level = "2.3.4"
 md2pptx_date = "6 September, 2021"
 
 
@@ -668,6 +668,11 @@ def getPictureTooltip(picture):
         # There is no tooltip
         return ""
 
+# Create hyperlink and optional tooltip from a shape eg Chevron 
+def createShapeHyperlinkAndTooltip(shape, to_slide, tooltipText=""):
+	shape.click_action.target_slide = to_slide
+	hl = shape.click_action.hyperlink
+	hl._hlink.set("tooltip", tooltipText)
 
 def get_image_size(fname):
     """Determine the image type of fhandle and return its size.
@@ -4806,28 +4811,22 @@ if processingOptions.getCurrentOption("sectionArrows"):
             TOCslide = slide
 
         if forwShape != None:
-            forwShape.click_action.target_slide = slide
-            hl = forwShape.click_action.hyperlink
-            hl._hlink.set("tooltip", "Next Section")
-        
+            createShapeHyperlinkAndTooltip(forwShape, slide, "Next Section")
 
         buttonShapes = []
         if sectionNumber > 1:
             # Need backwards arrow
             backShape = slide.shapes.add_shape(MSO_SHAPE.ACTION_BUTTON_BACK_OR_PREVIOUS,prs.slide_width / 2 - Inches(2/3), buttonTop, Inches(1/3), Inches(1/3))
-            backShape.click_action.target_slide = previousSlide
-            hl = backShape.click_action.hyperlink
-            hl._hlink.set("tooltip", "Previous Section")
+
+            createShapeHyperlinkAndTooltip(backShape, previousSlide, "Previous Section")
 
             buttonShapes.append(backShape)
 
         # Always need home arrow - except for TOC
         if sectionNumber > 0:
             homeShape = slide.shapes.add_shape(MSO_SHAPE.ACTION_BUTTON_HOME,prs.slide_width / 2 - Inches(1/6), buttonTop, Inches(1/3), Inches(1/3))
-            homeShape.click_action.target_slide = TOCslide
 
-            hl = homeShape.click_action.hyperlink
-            hl._hlink.set("tooltip", "Table Of Contents")
+            createShapeHyperlinkAndTooltip(homeShape, TOCslide, "Table Of Contents")
 
             buttonShapes.append(homeShape)
 
