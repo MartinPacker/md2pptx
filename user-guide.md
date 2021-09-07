@@ -102,7 +102,7 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 		* [Slides With Multiple Content Blocks](#slides-with-multiple-content-blocks)
 			* [Horizontal Or Vertical Split - `ContentSplitDirection`](#horizontal-or-vertical-split-contentsplitdirection)
 			* [Split Proportions - `ContentSplit`](#split-proportions-contentsplit)
-		* [Table Of Contents Metadata](#table-of-contents-metadata)
+		* [Table Of Contents And Section Slide Metadata](#table-of-contents-and-section-slide-metadata)
 			* ["Chevron Style" Table Of Contents](#chevron-style-table-of-contents)
 			* ["Circle Style" Table Of Contents](#circle-style-table-of-contents)
 			* ["Plain Style" Table Of Contents](#plain-style-table-of-contents)
@@ -113,6 +113,8 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 			* [Table Of Contents Item Colour - `TOCItemColour`](#table-of-contents-item-colour-tocitemcolour)
 			* [Table Of Contents Row Gap - `TOCRowGap`](#table-of-contents-row-gap-tocrowgap)
 			* [Table Of Contents Font Size - `TOCFontSize`](#table-of-contents-font-size-tocfontsize)
+			* [Section Navigation Buttons - `SectionArrows`](#section-navigation-buttons-sectionarrows)
+			* [Section Navigation Button Colour - `SectionArrowsColour`](#section-navigation-button-colour-sectionarrowscolour)
 	* [Dynamic Metadata](#dynamic-metadata)
 		* [Tables](#tables)
 			* [`CompactTables`](#compacttables)
@@ -249,10 +251,11 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|2.3.4|7&nbsp;September&nbsp;2021|Added `SectionArrows` which enables navigation buttons between Section slides. `SectionArrowsColour` sets the buttons' background colour.|
 |2.3.3|27&nbsp;August&nbsp;2021|Added `TOCStyle: plain` Table Of Contents layout. Also can enable internal links in TOC and Section slides. Fixed `addTableLines` bug.|
 |2.3.2|23&nbsp;August&nbsp;2021|Added `TOCStyle: circle` Table Of Contents layout. Also metadata to control Table Of Contents layout.|
 |2.3.1|21&nbsp;August&nbsp;2021|Forgot to mention "prev" / "pop" in documentation for 2.3.|
-|2.3|21&nbsp;August&nbsp;2021|Fixed "slide title as heading reference bug". Added Python release to runtime output. Refactored metadata handling.sublim|
+|2.3|21&nbsp;August&nbsp;2021|Fixed "slide title as heading reference bug". Added Python release to runtime output. Refactored metadata handling.|
 |2.2.5|5&nbsp;August&nbsp;2021|You can turn on lines after table rows and columns with `addTableRowLines` and `addTableColumnLines`. You can also do `addTableLines` on a slide-by-slide basis. Also `addTableLineColour`&comma; `addTableLineWidth`&comma; and `addTableLineCount`.|
 |2.2.4|30&nbsp;July&nbsp;2021|You can turn on a border round a table or all cells with `addTableLines`. Fixed bug where slide notes appeared containing code fragments and subtitles.|
 |2.2.3|25&nbsp;July&nbsp;2021|Code etc blocks can include numeric character and entity references|
@@ -1784,7 +1787,7 @@ You can override this on a slide-by-slide basis with [Dynamic ContentSplit](#dyn
 
 The default value is such as to make each block have equal space.
 
-#### Table Of Contents Metadata
+#### Table Of Contents And Section Slide Metadata
 
 If you have a slide in a certain format you can convert it to a Table Of Contents slide.
 This slide can be ["Chevron Style"](#chevron-style-table-of-contents), ["Circle Style"](#circle-style-table-of-contents), or ["Plain Style"](#plain-style-table-of-contents).
@@ -1906,7 +1909,7 @@ Enable live links by coding
 
 	tocLinks: yes
 
-**Note:** You cannot control the colour of links in Powerpoint. For that reason you might need to change the background colour of items using [TOCItemColour](#table-of-contents-item-colour-colour).
+**Note:** You cannot control the colour of links in Powerpoint. For that reason you might need to change the background colour of items using [TOCItemColour](#table-of-contents-item-colour-tocitemcolour).
 
 
 ##### Table Of Contents Item Height - `TOCItemHeight`
@@ -1923,13 +1926,13 @@ For Chevron the default is 1 inch high. For Circle the default is 1.25 inches.
 Chevron items are 2.5 times as wide as they are high. Circle items are the same width as they are high.
 
 ##### Table Of Contents Item Colour - `TOCItemColour`
-<a id="table-of-contents-item-colour-colour"></a>
+<a id="table-of-contents-item-colour-tocitemcolour"></a>
 
 For Chevron and Circle Table Of Contents styles you can control the background colour of the items with `TOCItemColour` (or `TOCItemColor`). Coding
 
     tocItemColour: E0E0FF
 
-leads to each item's background colour being pale blue.
+leads to each item's background colour being pale blue. This is a hexadecimal RGB (Red, Green, Blue) value.
 
 If you don't specify this the default Powerpoint background colour for shapes is used.
 
@@ -1959,6 +1962,50 @@ leads to the font size being 10 points.
 
 For Chevron the default is 14pt. For Circle the default is 12pt.
 
+
+##### Section Navigation Buttons - `SectionArrows`
+<a id="section-navigation-buttons-sectionarrows"></a>
+
+You can enable navigation buttons for Section slides - if you have Table Of Contents enabled. If you do the result is something like this:
+
+<div style="border: 1px solid black">
+<img src="https://raw.githubusercontent.com/MartinPacker/md2pptx/master/circleSectionNavigationButtons.png" />
+</div>
+
+The three buttons are:
+
+* To previous section slide
+* To the table of contents slide
+* To the next section slide
+
+Buttons which make no sense - such as the last Section slide having a forward button - are suppressed.
+
+Coding
+
+    sectionArrows: yes
+
+enables this feature.
+The default value is `no`.
+
+You can specify the background colour for the buttons with [`SectionArrowsColour`](#section-navigation-buttons-sectionarrowscolour).
+
+
+##### Section Navigation Button Colour - `SectionArrowsColour`
+<a id="section-navigation-buttons-colour-sectionarrowscolour"></a>
+
+You can set the background colour of the buttons specified with [`SectionArrows`](#section-navigation-buttons-sectionarrows).
+
+You probably want to match any colour specified with [`TOCItemColour`](#table-of-contents-item-colour-tocitemcolour).
+
+To do this use `SectionArrowsColour` (or `SectionArrowsColor`).
+
+Coding
+
+    sectionArrowsColour: E0E0FF
+
+leads to each item's background colour being pale blue. This is a hexadecimal RGB (Red, Green, Blue) value.
+
+If you don't specify this the default Powerpoint background colour for shapes is used.
 
 <a id="dynamic-metadata"></a>
 ### Dynamic Metadata

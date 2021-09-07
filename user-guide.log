@@ -5,8 +5,8 @@ mdpre Markdown Preprocessor v0.4.6 (26 January, 2021)
 Def mdpre_date = 26 January, 2021
 Def mdpre_level = 0.4.6
 Def userid = martinpacker
-Def time = 11&colon;07
-Def date = 27 August&comma; 2021
+Def time = 20&colon;29
+Def date = 7 September&comma; 2021
 Def TOC = Table Of Contents
 Def md = Markdown
 Def pp = Powerpoint
@@ -121,7 +121,7 @@ CSV Stop
 ..... ..... .....  Slides With Multiple Content Blocks
 ..... ..... ..... .....  Horizontal Or Vertical Split - `ContentSplitDirection`
 ..... ..... ..... .....  Split Proportions - `ContentSplit`
-..... ..... .....  Table Of Contents Metadata
+..... ..... .....  Table Of Contents And Section Slide Metadata
 ..... ..... ..... .....  "Chevron Style" Table Of Contents
 ..... ..... ..... .....  "Circle Style" Table Of Contents
 ..... ..... ..... .....  "Plain Style" Table Of Contents
@@ -132,6 +132,8 @@ CSV Stop
 ..... ..... ..... .....  Table Of Contents Item Colour - `TOCItemColour`
 ..... ..... ..... .....  Table Of Contents Row Gap - `TOCRowGap`
 ..... ..... ..... .....  Table Of Contents Font Size - `TOCFontSize`
+..... ..... ..... .....  Section Navigation Buttons - `SectionArrows`
+..... ..... ..... .....  Section Navigation Button Colour - `SectionArrowsColour`
 ..... .....  Dynamic Metadata
 ..... ..... .....  Tables
 ..... ..... ..... .....  `CompactTables`
