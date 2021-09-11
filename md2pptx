@@ -45,8 +45,8 @@ try:
 except:
     have_cairosvg = False
 
-md2pptx_level = "2.3.4"
-md2pptx_date = "6 September, 2021"
+md2pptx_level = "2.3.4+"
+md2pptx_date = "11 September, 2021"
 
 
 class SlideInfo:
@@ -168,6 +168,13 @@ def startswithOneOf(haystack, needleList):
 # sorted list
 def sortedNumericList(string):
     return sorted(list(map(int, set(string.split()))))
+
+def parseRGB(str):
+    if RGBmatch := RGBRegex.match(str):
+        # Matches
+        return (True, RGBmatch.group(1))
+    else:
+        return (False,"")
 
 
 # Resolve symbols and unescape any numeric character references
@@ -385,6 +392,63 @@ def applyTableLineStyling(
                 processingOptions.getCurrentOption("addTableLineCount"),
                 processingOptions.getCurrentOption("addTableLineColour"),
             )
+
+def handleSpanClass(run, className):
+	if className in bgcolors:
+		run = set_highlight(run, bgcolors[className])
+
+	if className in fgcolors:
+		font = run.font
+		font.color.rgb = RGBColor.from_string(fgcolors[className])
+
+	if className in emphases:
+		if " bold " in " " + emphases[className] + " ":
+			font.bold = True
+		else:
+			font.bold = False
+		if " italic " in " " + emphases[className] + " ":
+			font.italic = True
+		else:
+			font.italic = False
+		if " underline " in " " + emphases[className] + " ":
+			font.underline = True
+		else:
+			font.underline = False
+
+def handleSpanStyle(run, styleText):
+    styleElements = styleText.split(";")
+
+    # Handle the non-empty ones - as the empty one is after the final semicolon
+    for styleElement in list(filter(lambda e: e != "",styleElements)):
+        styleElementSplit = styleElement.split(":")
+        styleElementName = styleElementSplit[0].strip()
+        styleElementValue = styleElementSplit[1].strip()
+
+        if styleElementName == "color":
+            check, RGBstring = parseRGB(styleElementValue)
+            if check:
+                run.font.color.rgb = RGBColor.from_string(RGBstring)
+            else:
+                print(f"Invalid {styleElementName} RGB value {styleElementValue}")
+
+        elif styleElementName == "background-color":
+            check, RGBstring = parseRGB(styleElementValue)
+            if check:
+                set_highlight(run, RGBstring)
+            else:
+                print(f"Invalid {styleElementName} RGB value {styleElementValue}")
+
+        elif styleElementName == "text-decoration":
+            if styleElementValue == "underline":
+                run.font.underline = True
+
+        elif styleElementName == "font-weight":
+            if styleElementValue == "bold":
+                run.font.bold = True
+
+        elif styleElementName == "font-style":
+            if styleElementValue == "italic":
+                run.font.italic = True
 
 def reportSlideTitle(slideNumber, indent, titleText):
     print(str(slideNumber).rjust(4) + " " + ("  " * indent) + titleText)
@@ -670,9 +734,9 @@ def getPictureTooltip(picture):
 
 # Create hyperlink and optional tooltip from a shape eg Chevron 
 def createShapeHyperlinkAndTooltip(shape, to_slide, tooltipText=""):
-	shape.click_action.target_slide = to_slide
-	hl = shape.click_action.hyperlink
-	hl._hlink.set("tooltip", tooltipText)
+    shape.click_action.target_slide = to_slide
+    hl = shape.click_action.hyperlink
+    hl._hlink.set("tooltip", tooltipText)
 
 def get_image_size(fname):
     """Determine the image type of fhandle and return its size.
@@ -842,6 +906,7 @@ def parseText(text):
     state = "N"
     fragment = ""
     lastChar = ""
+    spanState = "None"
 
     # Replace any "\#" strings with entity reference
     text2 = text.replace("\\#", "&#x23;")
@@ -860,12 +925,11 @@ def parseText(text):
     # Replace any footnote reference starts with char 238
     text2 = text2.replace("[^", chr(238))
 
-    # Replace any potential footnote reference ends with char 239
-    # Don't anymore because it collides with end-of-footnote
-    # text2 = text2.replace("]", chr(239))
-
+    # Replace any span style starts with char 239
+    text2 = re.sub(spanStyleRegex, chr(239), text2)
+    
     # Replace any span class starts with char 240
-    text2 = re.sub(spanRegex, chr(240), text2)
+    text2 = re.sub(spanClassRegex, chr(240), text2)
 
     # Replace any span ends with char 241
     text2 = text2.replace("</span>", chr(241))
@@ -1148,32 +1212,54 @@ def parseText(text):
             abbrevDictionary[dictAbbrev] = dictFull
             textArray.append(["Gloss", dictAbbrev, dictAbbrev, dictFull])
             fragment = ""
+        elif ord(c) == 241:
+            # End of span
+            if spanState == "Class":
+                # Span with class
+                splitting = fragment.split(">")
+                spanText = splitting[1]
+                className = splitting[0].strip().strip("'").strip('"')
+                styleText = ""
+                if (
+                    (className in bgcolors)
+                    | (className in fgcolors)
+                    | (className in emphases)
+                ):
+                    textArray.append(["SpanClass", [className, spanText]])
+                    fragment = ""
+                else:
+                    print(
+                        className
+                        + " is not defined. Ignoring reference to it in <span> element."
+                    )
+                    fragment = spanText
+            else:
+                # Span with style
+                splitting = fragment.split(">")
+                spanText = splitting[1]
+                styleText = splitting[0].strip().strip("'").strip('"')
+                textArray.append(["SpanStyle", [styleText, spanText]])
+                className = ""
+                fragment = ""
+            spanState = "None"
         elif ord(c) == 240:
             # In span element where we hit the class name
             if fragment != "":
                 textArray.append([state, fragment])
+
                 fragment = ""
-        elif ord(c) == 241:
-            # End of span
-            splitting = fragment.split(">")
-            spanText = splitting[1]
-            className = splitting[0].strip().strip("'").strip('"')
-            if (
-                (className in bgcolors)
-                | (className in fgcolors)
-                | (className in emphases)
-            ):
-                textArray.append(["Span", [className, spanText]])
+            spanState = "Class"
+        elif ord(c) == 239:
+            # In span element where we hit the style text
+            if fragment != "":
+                textArray.append([state, fragment])
+
                 fragment = ""
-            else:
-                print(
-                    className
-                    + " is not defined. Ignoring reference to it in <span> element."
-                )
-                fragment = spanText
+                spanState = "Style"
         elif ord(c) == 238:
             if fragment != "":
                 textArray.append([state, fragment])
+
                 fragment = ""
                 state = "fnref"
         else:
@@ -1200,7 +1286,7 @@ def addFormattedText(p, text):
 
     # Replace chr(237) with > in each Fragment
     for f in range(len(parsedText)):
-        if parsedText[f][0] == "Span":
+        if parsedText[f][0] in ["SpanClass", "SpanStyle"]:
             parsedText[f][1][1] = parsedText[f][1][1].replace(chr(237), ">")
         else:
             parsedText[f][-1] = parsedText[f][-1].replace(chr(237), ">")
@@ -1214,8 +1300,13 @@ def addFormattedText(p, text):
             fragType, fragDetail = fragment
 
         # Break into subfragments around a newline
-        if fragType == "Span":
+        if fragType == "SpanClass":
             className, fragText = fragDetail
+            styleText = ""
+            subfragments = fragText.split("\n")
+        elif fragType == "SpanStyle":
+            styleText, fragText = fragDetail
+            className = ""
             subfragments = fragText.split("\n")
         else:
             subfragments = fragDetail.split("\n")
@@ -1267,25 +1358,12 @@ def addFormattedText(p, text):
                 linkText = "!"
                 fragment = ""
 
-            elif fragType == "Span":
-                if className in bgcolors:
-                    run = set_highlight(run, bgcolors[className])
-                if className in fgcolors:
-                    font = run.font
-                    font.color.rgb = RGBColor.from_string(fgcolors[className])
-                if className in emphases:
-                    if " bold " in " " + emphases[className] + " ":
-                        font.bold = True
-                    else:
-                        font.bold = False
-                    if " italic " in " " + emphases[className] + " ":
-                        font.italic = True
-                    else:
-                        font.italic = False
-                    if " underline " in " " + emphases[className] + " ":
-                        font.underline = True
-                    else:
-                        font.underline = False
+            elif fragType == "SpanClass":
+                handleSpanClass(run, className)
+
+            elif fragType == "SpanStyle":
+                handleSpanStyle(run, styleText)
+
             elif fragType == "B2":
                 font = run.font
                 if boldBold == True:
@@ -1690,7 +1768,7 @@ def createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber):
                             afterSpan = fragment[classNameEndsAt + 2 :]
                             afterSpan1 = afterSpan[: afterSpan.index("</span>")]
                             afterSpan2 = afterSpan[afterSpan.index("</span>") + 7 :]
-                            textArray.append(["Span", [className, afterSpan1]])
+                            textArray.append(["SpanClass", [className, afterSpan1]])
                             textArray.append(["Normal", afterSpan2])
                             fragment = ""
                         else:
@@ -3467,7 +3545,9 @@ bothClickableGraphicRegex = re.compile(
 linkRegex = re.compile("^\[(.+)\]\((.+)\)")
 twoUpRegex = re.compile("^\|(.+?)\|(.+?)\|")
 footnoteDefinitionRegex = re.compile("^\[\^(.+?)]: (.+)")
-spanRegex = re.compile("<span( )*class=")
+spanClassRegex = re.compile("<span( )*class=")
+spanStyleRegex = re.compile("<span( )*style=")
+RGBRegex = re.compile("#([0-9a-fA-F]{6})")
 slideHrefRegex = re.compile("(.+)\[(.+)\]")
 # slideHrefRegex = re.compile("\[(.+)\]\(.+\)")
 anchorRegex = re.compile("^<a id=[\"'](.+)[\"']></a>")
