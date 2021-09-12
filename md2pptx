@@ -46,7 +46,7 @@ except:
     have_cairosvg = False
 
 md2pptx_level = "2.3.4+"
-md2pptx_date = "11 September, 2021"
+md2pptx_date = "12 September, 2021"
 
 
 class SlideInfo:
@@ -394,26 +394,26 @@ def applyTableLineStyling(
             )
 
 def handleSpanClass(run, className):
-	if className in bgcolors:
-		run = set_highlight(run, bgcolors[className])
+    if className in bgcolors:
+        run = set_highlight(run, bgcolors[className])
 
-	if className in fgcolors:
-		font = run.font
-		font.color.rgb = RGBColor.from_string(fgcolors[className])
+    if className in fgcolors:
+        font = run.font
+        font.color.rgb = RGBColor.from_string(fgcolors[className])
 
-	if className in emphases:
-		if " bold " in " " + emphases[className] + " ":
-			font.bold = True
-		else:
-			font.bold = False
-		if " italic " in " " + emphases[className] + " ":
-			font.italic = True
-		else:
-			font.italic = False
-		if " underline " in " " + emphases[className] + " ":
-			font.underline = True
-		else:
-			font.underline = False
+    if className in emphases:
+        if " bold " in " " + emphases[className] + " ":
+            font.bold = True
+        else:
+            font.bold = False
+        if " italic " in " " + emphases[className] + " ":
+            font.italic = True
+        else:
+            font.italic = False
+        if " underline " in " " + emphases[className] + " ":
+            font.underline = True
+        else:
+            font.underline = False
 
 def handleSpanStyle(run, styleText):
     styleElements = styleText.split(";")
@@ -1016,35 +1016,42 @@ def parseText(text):
                 textArray.append([state, fragment])
                 fragment = ""
                 state = "I"
+
             elif state == "I":
                 # Either go to bold or end italic
                 if lastChar == "*":
                     # Go to bold
                     state = "B1"
+
                 else:
                     # End italic
                     textArray.append([state, fragment])
                     fragment = ""
                     state = "N"
+
             elif state == "B1":
                 # Starting to close bold bracket
                 state = "B2"
+
             elif lastChar == "*":
                 # closing either bold or italic bracket
                 textArray.append([state, fragment])
                 fragment = ""
                 state = "N"
+
         elif c == "`":
             if state == "N":
                 # Going to code
                 textArray.append([state, fragment])
                 fragment = ""
                 state = "C"
+
             else:
                 # exiting code
                 textArray.append([state, fragment])
                 fragment = ""
                 state = "N"
+
         elif ord(c) == 247:
             # Entering or leaving CriticMarkup replacement
             if state == "N":
@@ -1052,11 +1059,13 @@ def parseText(text):
                 textArray.append([state, fragment])
                 fragment = ""
                 state = "CMRep"
+
             else:
                 # exiting CriticMarkup replacement
                 textArray.append([state, fragment])
                 fragment = ""
                 state = "N"
+
         elif ord(c) == 248:
             # Entering or leaving CriticMarkup highlight
             if state == "N":
@@ -1064,11 +1073,13 @@ def parseText(text):
                 textArray.append([state, fragment])
                 fragment = ""
                 state = "CMHig"
+
             else:
                 # exiting CriticMarkup highlight
                 textArray.append([state, fragment])
                 fragment = ""
                 state = "N"
+
         elif ord(c) == 249:
             # Entering or leaving CriticMarkup comment
             if state == "N":
@@ -1076,11 +1087,13 @@ def parseText(text):
                 textArray.append([state, fragment])
                 fragment = ""
                 state = "CMCom"
+
             else:
                 # exiting CriticMarkup comment
                 textArray.append([state, fragment])
                 fragment = ""
                 state = "N"
+
         elif ord(c) == 250:
             # Entering or leaving CriticMarkup deletion
             if state == "N":
@@ -1088,11 +1101,13 @@ def parseText(text):
                 textArray.append([state, fragment])
                 fragment = ""
                 state = "CMDel"
+
             else:
                 # exiting CriticMarkup deletion
                 textArray.append([state, fragment])
                 fragment = ""
                 state = "N"
+
         elif ord(c) == 251:
             # Entering or leaving CriticMarkup addition
             if state == "N":
@@ -1100,11 +1115,13 @@ def parseText(text):
                 textArray.append([state, fragment])
                 fragment = ""
                 state = "CMAdd"
+
             else:
                 # exiting CriticMarkup addition
                 textArray.append([state, fragment])
                 fragment = ""
                 state = "N"
+
         elif ord(c) == 252:
             # Entering or leaving underline
             if state == "N":
@@ -1112,11 +1129,13 @@ def parseText(text):
                 textArray.append([state, fragment])
                 fragment = ""
                 state = "Ins"
+
             else:
                 # exiting underline
                 textArray.append([state, fragment])
                 fragment = ""
                 state = "N"
+
         elif ord(c) == 253:
             # Entering or leaving strikethrough
             if state == "N":
@@ -1124,6 +1143,7 @@ def parseText(text):
                 textArray.append([state, fragment])
                 fragment = ""
                 state = "Del"
+
             else:
                 # exiting strikethrough
                 textArray.append([state, fragment])
@@ -1136,11 +1156,13 @@ def parseText(text):
                 textArray.append([state, fragment])
                 fragment = ""
                 state = "Sub"
+
             else:
                 # exiting subscript
                 textArray.append([state, fragment])
                 fragment = ""
                 state = "N"
+
         elif ord(c) == 255:
             # Entering or leaving superscript
             if state == "N":
@@ -1148,11 +1170,13 @@ def parseText(text):
                 textArray.append([state, fragment])
                 fragment = ""
                 state = "Sup"
+
             else:
                 # exiting superscript
                 textArray.append([state, fragment])
                 fragment = ""
                 state = "N"
+
         elif c == "[":
             if state == "N":
                 # Could be entering a Link
@@ -1162,6 +1186,7 @@ def parseText(text):
                 # The bracket is kept in in case there is no matching ]
                 fragment = "["
                 state = "LinkText1"
+
         elif c == "]":
             # Could be ending picking up the link text
             if state == "LinkText1":
@@ -1170,14 +1195,17 @@ def parseText(text):
 
                 # Remove [ and add a separator to allow for link URL
                 fragment = fragment[1:] + chr(246)
+
             elif state == "fnref":
                 # This terminates a footnote reference
                 textArray.append([state, fragment])
                 state = "N"
                 fragment = ""
+
             else:
                 # This was an ordinary square bracket
                 fragment += "]"
+
         elif c == "(":
             # Could be starting to pick up the link URL
             if state == "LinkText2":
@@ -1185,6 +1213,7 @@ def parseText(text):
                 state = "LinkURL1"
             else:
                 fragment = fragment + c
+
         elif c == ")":
             # Could be ending picking up the link URL
             if state == "LinkURL1":
@@ -1194,17 +1223,22 @@ def parseText(text):
                 state = "N"
             else:
                 fragment = fragment + c
+
         elif ord(c) == 236:
             fragment = fragment + "<"
+
         elif ord(c) == 244:
             fragment = fragment + "["
+
         elif ord(c) == 245:
             fragment = fragment + "]"
+
         elif ord(c) == 242:
             if fragment != "":
                 textArray.append([state, fragment])
                 fragment = ""
             dictEntry = ""
+
         elif ord(c) == 243:
             dictEntry = fragment.split(">")
             dictAbbrev = dictEntry[1]
@@ -1212,6 +1246,7 @@ def parseText(text):
             abbrevDictionary[dictAbbrev] = dictFull
             textArray.append(["Gloss", dictAbbrev, dictAbbrev, dictFull])
             fragment = ""
+
         elif ord(c) == 241:
             # End of span
             if spanState == "Class":
@@ -1226,12 +1261,12 @@ def parseText(text):
                     | (className in emphases)
                 ):
                     textArray.append(["SpanClass", [className, spanText]])
+                    
                     fragment = ""
+
                 else:
-                    print(
-                        className
-                        + " is not defined. Ignoring reference to it in <span> element."
-                    )
+                    print(f"{className} is not defined. Ignoring reference to it in <span> element.")
+                    
                     fragment = spanText
             else:
                 # Span with style
@@ -1241,7 +1276,9 @@ def parseText(text):
                 textArray.append(["SpanStyle", [styleText, spanText]])
                 className = ""
                 fragment = ""
+
             spanState = "None"
+
         elif ord(c) == 240:
             # In span element where we hit the class name
             if fragment != "":
@@ -1249,6 +1286,7 @@ def parseText(text):
 
                 fragment = ""
             spanState = "Class"
+
         elif ord(c) == 239:
             # In span element where we hit the style text
             if fragment != "":
@@ -1714,9 +1752,7 @@ def createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber):
     # Estimate how wide the code box would need to be at the current font size
     # versus actual width
     codeColumns = processingOptions.getCurrentOption("codeColumns")
-    fixedPitchHeightWidthRatio = ProcessingOptions.getCurrentOption(
-        "fixedPitchHeightWidthRatio"
-    )
+    fixedPitchHeightWidthRatio = processingOptions.getCurrentOption("fixedPitchHeightWidthRatio")
 
     estimatedWidthVersusCodeboxWidth = (
         p.font.size * codeColumns / codeBox.width / fixedPitchHeightWidthRatio
@@ -1755,66 +1791,76 @@ def createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber):
                 textArray = []
                 # Break line down into what will become runs
                 for fragmentNumber, fragment in enumerate(spanFragments):
-
                     if fragmentNumber > 0:
-                        classNameStartsAt = fragment.index('"')
-                        classNameEndsAt = fragment.index('"', classNameStartsAt + 1)
-                        className = fragment[classNameStartsAt + 1 : classNameEndsAt]
-                        if (
-                            (className in bgcolors)
-                            | (className in fgcolors)
-                            | (className in emphases)
-                        ):
-                            afterSpan = fragment[classNameEndsAt + 2 :]
-                            afterSpan1 = afterSpan[: afterSpan.index("</span>")]
-                            afterSpan2 = afterSpan[afterSpan.index("</span>") + 7 :]
-                            textArray.append(["SpanClass", [className, afterSpan1]])
-                            textArray.append(["Normal", afterSpan2])
+                        # Find start of span class 
+                        fragment = "<span " + fragment
+                        if spanClassMatch := spanClassRegex.match(fragment):
+                            afterSpanTag = fragment[spanClassMatch.end(1):]
+                            className = afterSpanTag[ 7 :afterSpanTag.index(">")-1]
+                            if (
+                                (className in bgcolors)
+                                | (className in fgcolors)
+                                | (className in emphases)
+                            ):                                
+                                afterClosingAngle = afterSpanTag[afterSpanTag.index(">") + 1:]
+                                startEnd = afterClosingAngle.index("</span>")
+                                afterSpan2 = afterClosingAngle[: startEnd]
+                                afterSpan3 = afterClosingAngle[startEnd + 7 :]
+                                textArray.append(["SpanClass", [className, afterSpan2]])
+                                textArray.append(["Normal", afterSpan3])
+                                fragment = ""
+                            else:
+                                print(
+                                    className
+                                    + " is not defined. Ignoring reference to it in <span> element."
+                                )
+                        elif spanStyleMatch := spanStyleRegex.match(fragment):
+                            afterSpanTag = fragment[spanStyleMatch.end(1):]
+                            styleText = afterSpanTag[ 7 :afterSpanTag.index(">")-1]
+                            styleElements = styleText.split(";")
+                            afterClosingAngle = afterSpanTag[afterSpanTag.index(">") + 1:]
+                            startEnd = afterClosingAngle.index("</span>")
+                            afterSpan2 = afterClosingAngle[: startEnd]
+                            afterSpan3 = afterClosingAngle[startEnd + 7 :]
+                            textArray.append(["SpanStyle", [styleText, afterSpan2]])
+                            textArray.append(["Normal", afterSpan3])
                             fragment = ""
-                        else:
-                            print(
-                                className
-                                + " is not defined. Ignoring reference to it in <span> element."
-                            )
-                            fragment = spanText
                     else:
                         textArray.append(["Normal", fragment])
 
                 # Now we have a text array we can add the runs for the line
                 for textArrayItem in textArray:
-                    if textArrayItem[0] == "Normal":
-                        # Is not spanned
+                    textArrayItemType = textArrayItem[0]
+                    if textArrayItemType == "Normal":
+                        # Is not in a span element bracket
                         className = ""
+                        spanStyle = ""
                         spanText = textArrayItem[1]
-                    else:
-                        # Is spanned
+
+                    elif textArrayItemType == "SpanClass":
+                        # Is in a span class element bracket
                         className = textArrayItem[1][0]
                         spanText = textArrayItem[1][1]
+                        spanStyle = ""
+
+                    else:
+                        # Is in a span style element bracket
+                        spanStyle = textArrayItem[1][0]
+                        spanText = textArrayItem[1][1]
+
                     if spanText != "":
                         run = p.add_run()
                         run.text = spanText
                         font = run.font
                         font.name = monoFont
+
                     if className != "":
                         # Augment run with whatever the span class calls for
-                        if className in bgcolors:
-                            run = set_highlight(run, bgcolors[className])
-                        if className in fgcolors:
-                            font = run.font
-                            font.color.rgb = RGBColor.from_string(fgcolors[className])
-                        if className in emphases:
-                            if " bold " in " " + emphases[className] + " ":
-                                font.bold = True
-                            else:
-                                font.bold = False
-                            if " italic " in " " + emphases[className] + " ":
-                                font.italic = True
-                            else:
-                                font.italic = False
-                            if " underline " in " " + emphases[className] + " ":
-                                font.underline = True
-                            else:
-                                font.underline = False
+                        handleSpanClass(run, className)
+
+                    if spanStyle != "":
+                        # Augment the run with whatever the style calls for
+                        handleSpanStyle(run, spanStyle)
 
                 # Add terminating newline
                 run = p.add_run()
@@ -4091,12 +4137,22 @@ for line in metadata_lines:
     # Following relate to styling and don't use Processing Options class
 
     elif name.startswith("style.bgcolor."):
-        spanClass = name[14:]
-        bgcolors[spanClass] = value
+        (check, colour) = parseRGB("#" + value)
+        if check:
+            # Valid RGB hex value
+            bgcolors[spanClass] = colour
+        else:
+            print(f"Invalid value for {name} - {value}. Ignoring.")
+
 
     elif name.startswith("style.fgcolor."):
         spanClass = name[14:]
-        fgcolors[spanClass] = value
+        (check, colour) = parseRGB("#" + value)
+        if check:
+            # Valid RGB hex value
+            fgcolors[spanClass] = colour
+        else:
+            print(f"Invalid value for {name} - {value}. Ignoring.")
 
     elif name.startswith("style.emphasis."):
         spanClass = name[15:]
