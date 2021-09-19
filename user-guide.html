@@ -1123,7 +1123,11 @@ body .markdown-body
 </li>
 <li><a href="#html-comments">HTML Comments</a></li>
 <li><a href="#special-text-formatting">Special Text Formatting</a><ul>
-<li><a href="#using-html-&lt;style&gt;-elements-to-specify-text-colours-and-underlining">Using HTML <code>&lt;style&gt;</code> Elements To Specify Text Colours And Underlining</a></li>
+<li><a href="#using-html-&lt;span&gt;-elements-to-specify-text-colours-and-underlining">Using HTML <code>&lt;span&gt;</code> Elements To Specify Text Colours And Underlining</a><ul>
+<li><a href="#using-html-&lt;span&gt;-elements-with-class">Using HTML <code>&lt;span&gt;</code> Elements with <code>class</code></a></li>
+<li><a href="#using-html-&lt;span&gt;-elements-with-style">Using HTML <code>&lt;span&gt;</code> Elements with <code>style</code></a></li>
+</ul>
+</li>
 <li><a href="#html-entity-references">HTML Entity References</a></li>
 <li><a href="#numeric-character-references">Numeric Character References</a></li>
 <li><a href="#escaped-characters">Escaped Characters</a></li>
@@ -1347,6 +1351,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">2.4</td>
+<td align="right">19&nbsp;September&nbsp;2021</td>
+<td align="left">Some simple style information added to span support. fgcolor &amp; bgcolor hex RGB  metadata values are checked for validity.</td>
+</tr>
 <tr>
 <td align="left">2.3.4</td>
 <td align="right">7&nbsp;September&nbsp;2021</td>
@@ -2116,9 +2125,16 @@ To create an internal slide reference you need to do two things:</p>
 </tr>
 </tbody>
 </table>
-<h3 id="using-html-style-elements-to-specify-text-colours-and-underlining">Using HTML <code>&lt;style&gt;</code> Elements To Specify Text Colours And Underlining<a class="headerlink" href="#using-html-style-elements-to-specify-text-colours-and-underlining" title="Permanent link"></a></h3>
-<p><a id="using-html-style-elements-to-specify-text-colours-and-underlining"></a></p>
-<p>You can set the background or foreground colour of a piece of text. To do this use the <code>&lt;span&gt;</code> HTML element. Here is an example:</p>
+<p><a id="using-html-%3Cspan%3E-elements-to-specify-text-colours-and-underlining"></a></p>
+<h3 id="using-html-span-elements-to-specify-text-colours-and-underlining">Using HTML <code>&lt;span&gt;</code> Elements To Specify Text Colours And Underlining<a class="headerlink" href="#using-html-span-elements-to-specify-text-colours-and-underlining" title="Permanent link"></a></h3>
+<p>You can set the background or foreground colour of a piece of text. To do this use the <code>&lt;span&gt;</code> HTML element:</p>
+<ul>
+<li>You can use <code>&lt;span class= "..." &gt;</code> - which is probably more compact but less direct.</li>
+<li>You can use <code>&lt;span style= "..." &gt;</code> - which is more direct but less compact.</li>
+</ul>
+<p><a id="using-html-%3Cspan%3E-elements-with-class"></a></p>
+<h4 id="using-html-span-elements-with-class">Using HTML <code>&lt;span&gt;</code> Elements with <code>class</code><a class="headerlink" href="#using-html-span-elements-with-class" title="Permanent link"></a></h4>
+<p>Where the same styling needs to be applied to multiple pieces of text the <code>class</code> attribute is probably the most appropriate. Here is an example:</p>
 <pre><code>I would like to highlight &lt;span class="yellow"&gt;this bit&lt;/span&gt; but not **this** bit.
 </code></pre>
 <p>In this example the <code>span</code> element specifies a <code>class</code> attribute. The class name must match one specified in the metadata using one of</p>
@@ -2150,6 +2166,20 @@ To create an internal slide reference you need to do two things:</p>
 <pre><code>&lt;span class="mytest"&gt;Here is some text&lt;/span&gt;
 </code></pre>
 <p>for example - as it uses the class <code>mytest</code>.</p>
+<p><a id="using-html-%3Cspan%3E-elements-with-style"></a></p>
+<h4 id="using-html-span-elements-with-style">Using HTML <code>&lt;span&gt;</code> Elements with <code>style</code><a class="headerlink" href="#using-html-span-elements-with-style" title="Permanent link"></a></h4>
+<p>You can specify a limited number of types of styling:</p>
+<ul>
+<li>Foreground colour with <code>color</code></li>
+<li>Background colour with <code>color</code></li>
+<li>Underlining with <code>text-decoration: underline</code></li>
+<li>Bold with <code>font-weight: bold</code></li>
+<li>Italic with <code>font-style: italic</code></li>
+</ul>
+<p>Here is an example:</p>
+<pre><code>Here's &lt;span style="font-weight: bold;font-style: italic;color: #0000FF;"&gt;blue bold italic&lt;/span&gt; text.
+</code></pre>
+<p>Notice the <code>color</code> specification is in Hexadecimal RGB (Red Green Blue) format. CSS colour names are not supported.</p>
 <h3 id="html-entity-references">HTML Entity References<a class="headerlink" href="#html-entity-references" title="Permanent link"></a></h3>
 <p><a id="html-entity-references"></a></p>
 <p>md2pptx supports a few <a href="https://en.wikipedia.org/wiki/List_of_XML_and_HTML_character_entity_references">HTML entity references</a>&colon;</p>

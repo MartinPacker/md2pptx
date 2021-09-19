@@ -44,7 +44,9 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 	* [Coding A Hyperlink To Another Slide](#coding-a-hyperlink-to-another-slide)
 * [HTML Comments](#html-comments)
 * [Special Text Formatting](#special-text-formatting)
-	* [Using HTML `<style>` Elements To Specify Text Colours And Underlining](#using-html-<style>-elements-to-specify-text-colours-and-underlining)
+	* [Using HTML `<span>` Elements To Specify Text Colours And Underlining](#using-html-<span>-elements-to-specify-text-colours-and-underlining)
+		* [Using HTML `<span>` Elements with `class`](#using-html-<span>-elements-with-class)
+		* [Using HTML `<span>` Elements with `style`](#using-html-<span>-elements-with-style)
 	* [HTML Entity References](#html-entity-references)
 	* [Numeric Character References](#numeric-character-references)
 	* [Escaped Characters](#escaped-characters)
@@ -251,6 +253,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|2.4|19&nbsp;September&nbsp;2021|Some simple style information added to span support. fgcolor &amp; bgcolor hex RGB  metadata values are checked for validity.|
 |2.3.4|7&nbsp;September&nbsp;2021|Added `SectionArrows` which enables navigation buttons between Section slides. `SectionArrowsColour` sets the buttons' background colour.|
 |2.3.3|27&nbsp;August&nbsp;2021|Added `TOCStyle: plain` Table Of Contents layout. Also can enable internal links in TOC and Section slides. Fixed `addTableLines` bug.|
 |2.3.2|23&nbsp;August&nbsp;2021|Added `TOCStyle: circle` Table Of Contents layout. Also metadata to control Table Of Contents layout.|
@@ -948,10 +951,18 @@ Some other HTML-originated text effects work - as Markdown allows you to embed H
 |Underline|`ins`|`this is <ins>important</ins>`|this is <ins>important</ins>|
 |Strikethrough|`del`|`this is <del>obsolete>/del>`|this is <del>obsolete</del>|
 
-### Using HTML `<style>` Elements To Specify Text Colours And Underlining
-<a id="using-html-style-elements-to-specify-text-colours-and-underlining"></a>
+<a id="using-html-%3Cspan%3E-elements-to-specify-text-colours-and-underlining"></a>
+### Using HTML `<span>` Elements To Specify Text Colours And Underlining
 
-You can set the background or foreground colour of a piece of text. To do this use the `<span>` HTML element. Here is an example:
+You can set the background or foreground colour of a piece of text. To do this use the `<span>` HTML element:
+
+* You can use `<span class= "..." >` - which is probably more compact but less direct.
+* You can use `<span style= "..." >` - which is more direct but less compact.
+
+<a id="using-html-%3Cspan%3E-elements-with-class"></a>
+####  Using HTML `<span>` Elements with `class`
+
+Where the same styling needs to be applied to multiple pieces of text the `class` attribute is probably the most appropriate. Here is an example:
 
     I would like to highlight <span class="yellow">this bit</span> but not **this** bit.
 
@@ -992,6 +1003,23 @@ The above uses only the style elements that md2pptx supports with `style.` metad
 	<span class="mytest">Here is some text</span>
 
 for example - as it uses the class `mytest`.
+
+<a id="using-html-%3Cspan%3E-elements-with-style"></a>
+####  Using HTML `<span>` Elements with `style`
+
+You can specify a limited number of types of styling:
+
+* Foreground colour with `color`
+* Background colour with `color`
+* Underlining with `text-decoration: underline`
+* Bold with `font-weight: bold`
+* Italic with `font-style: italic`
+
+Here is an example:
+
+    Here's <span style="font-weight: bold;font-style: italic;color: #0000FF;">blue bold italic</span> text.
+
+Notice the `color` specification is in Hexadecimal RGB (Red Green Blue) format. CSS colour names are not supported.
 
 ### HTML Entity References
 <a id="html-entity-references"></a>
