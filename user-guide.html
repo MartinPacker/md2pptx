@@ -1352,6 +1352,11 @@ THE SOFTWARE.
 </thead>
 <tbody>
 <tr>
+<td align="left">2.4.1</td>
+<td align="right">2&nbsp;October&nbsp;2021</td>
+<td align="left">Fixed bug where code appeared in a slide&rsquo;s Notes slide</td>
+</tr>
+<tr>
 <td align="left">2.4</td>
 <td align="right">19&nbsp;September&nbsp;2021</td>
 <td align="left">Some simple style information added to span support. fgcolor &amp; bgcolor hex RGB  metadata values are checked for validity.</td>
@@ -2005,7 +2010,11 @@ You can also use some other kinds of markup, such as hyperlinks and <code>&lt;ab
 <li>Select Open Hyperlink.</li>
 </ol>
 <p>It should then open in your browser.</p>
-<p><strong>Note:</strong> It would be confusing (to the parser) to support structured items such as bulleted lists in slide notes. For this reason they are not supported.</p>
+<p><strong>Notes:</strong></p>
+<ol>
+<li>It would be confusing (to the parser) to support structured items such as bulleted lists in slide notes. For this reason they are not supported.</li>
+<li>You can intersperse notes with slide contents. For example, you can follow a code block with slide note paragraphs that describe that code block. Then have another code block on the same slide, followed by its explanatory notes. All the notes will be gathered into the notes slide, which is not how other markdown processors would handle it. They would intersperse the paragraphs and the code blocks - in the order you coded them.</li>
+</ol>
 <h2 id="slides-without-titles">Slides Without Titles<a class="headerlink" href="#slides-without-titles" title="Permanent link"></a></h2>
 <p><a id="slides-without-titles"></a></p>
 <p>Most slides have a title - and it&rsquo;s easy to see where such slides start. However, sometimes you want a slide without a title. For those cases you can start a slide in a two basic ways:</p>
@@ -2014,6 +2023,7 @@ You can also use some other kinds of markup, such as hyperlinks and <code>&lt;ab
 <li>Use a level 3 heading with a non-breaking space:</li>
 </ul>
 <p>The most likely use case is for code slides, though you might continue a bulleted-list slide this way.</p>
+<p><strong>Note:</strong> If you continue a numbered list onto a new slide its number will reset to 1.</p>
 <h3 id="using-a-horizontal-rule">Using A Horizontal Rule<a class="headerlink" href="#using-a-horizontal-rule" title="Permanent link"></a></h3>
 <p>You can code a horizontal rule in a number of ways - which all Markdown processors should be able to handle:</p>
 <ul>

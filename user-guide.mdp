@@ -127,6 +127,7 @@ To quote from the python-pptx license statement:
 =colalign l r l
 =csv
 Level,Date,What
+2.4.1,2&nbsp;October&nbsp;2021,Fixed bug where code appeared in a slide's Notes slide
 2.4,19&nbsp;September&nbsp;2021,Some simple style information added to span support. fgcolor &amp; bgcolor hex RGB  metadata values are checked for validity.
 2.3.4,7&nbsp;September&nbsp;2021,Added `SectionArrows` which enables navigation buttons between Section slides. `SectionArrowsColour` sets the buttons' background colour. 
 2.3.3,27&nbsp;August&nbsp;2021,Added `TOCStyle: plain` Table Of Contents layout. Also can enable internal links in TOC and Section slides. Fixed `addTableLines` bug.
@@ -775,8 +776,15 @@ To follow a hyperlink in slide notes:
 It should then open in your browser.
 
 
-**Note:** It would be confusing (to the parser) to support structured items such as bulleted lists in slide notes. \
+**Notes:**
+
+1. It would be confusing (to the parser) to support structured items such as bulleted lists in slide notes. \
 For this reason they are not supported.
+2. You can intersperse notes with slide contents. \
+For example, you can follow a code block with slide note paragraphs that describe that code block. \
+Then have another code block on the same slide, followed by its explanatory notes. \
+All the notes will be gathered into the notes slide, which is not how other markdown processors would handle it. \
+They would intersperse the paragraphs and the code blocks - in the order you coded them.
 
 ## Slides Without Titles
 <a id="slides-without-titles"></a>
@@ -789,6 +797,8 @@ For those cases you can start a slide in a two basic ways:
 * Use a level 3 heading with a non-breaking space:
 
 The most likely use case is for code slides, though you might continue a bulleted-list slide this way.
+
+**Note:** If you continue a numbered list onto a new slide its number will reset to 1.
 
 ### Using A Horizontal Rule
 
