@@ -45,8 +45,8 @@ try:
 except:
     have_cairosvg = False
 
-md2pptx_level = "2.4"
-md2pptx_date = "19 September, 2021"
+md2pptx_level = "2.4.1"
+md2pptx_date = "2 October, 2021"
 
 
 class SlideInfo:
@@ -3508,7 +3508,7 @@ def createGlossarySlides(prs, slideNumber, abbrevDictionary):
 
 def createSlideNotes(slide, notes_text):
     # Remove surrounding white space
-    notes_text = notes_text.strip()
+    notes_text = notes_text.strip().lstrip("\n")
 
     if slide.notes_slide.notes_text_frame.text != "":
         # Notes already filled in
@@ -4295,6 +4295,7 @@ inBlock = False
 inList = False
 inTable = False
 inCard = False
+inTitle = False
 
 blockType = ""
 slideTitle = ""
@@ -4395,7 +4396,10 @@ for line in linesAfterConcatenation:
 # Pass 4: Main pass over the input file, now that footnote
 # references have been gathered
 for line in linesAfterConcatenation:
+    # Remove trailing white space
     line = line.rstrip()
+    
+    # Convert tabs to spaces
     line = line.replace("\t", " " * processingOptions.getCurrentOption("indentSpaces"))
 
     if line == "<ignoreme>":
@@ -4407,10 +4411,12 @@ for line in linesAfterConcatenation:
         inCode = True
         inHTMLCode = True
         inTable = False
+        inTitle = False
 
     if startswithOneOf(line, ["</pre>", "</code>"]):
         inCode = False
         inHTMLCode = False
+        inTitle = False
 
     if line.startswith("```"):
         inCode = not inCode
@@ -4423,6 +4429,7 @@ for line in linesAfterConcatenation:
             # Just exited code - but add closing line
             code[-1].append(line)
         inFencedCode = not inFencedCode
+        inTitle = False
 
     if inCode or inHTMLCode or inFencedCode:
         if len(code) == 0:
@@ -4433,6 +4440,7 @@ for line in linesAfterConcatenation:
         if len(code[-1]) == 1:
             sequence.append("code")
 
+        inTitle = False
     if (
         (line == "")
         & (inCode is True)
@@ -4440,6 +4448,7 @@ for line in linesAfterConcatenation:
         & (inFencedCode is False)
     ):
         inCode = False
+        inTitle = False
 
     if (line.startswith("    ")) & (inList is False):
         # Only list items and code can be indented by 4 characters
@@ -4448,10 +4457,12 @@ for line in linesAfterConcatenation:
             blockType = "code"
             code[-1].append(line[4:])
             inCode = True
+        inTitle = False
 
     # Rewrite horizontal rule as a heading 3 with non-breaking space
     if startswithOneOf(line, ["<hr/>", "---", "***", "___"]):
         line = "### &nbsp;"
+        inTitle = True
 
     # Taskpaper task
     if line[:1] == "-":
@@ -4495,6 +4506,7 @@ for line in linesAfterConcatenation:
             done = ""
 
         tasks.append([slideNumber + 1, text, dueDate, tags, done])
+        inTitle = False
 
     elif line.startswith("<a id="):
         # Anchor on whatever slide we're on
@@ -4502,9 +4514,11 @@ for line in linesAfterConcatenation:
             href = hrefMatch.group(1)
             if (href != "") & (href in slideHrefs.keys()):
                 print(f"Heading Reference redefined: '{href}' for slide {slideNumber}")
+        inTitle = False
 
     elif line.startswith("<!-- md2pptx: "):
         # Dynamic metadata line
+        inTitle = False
         if DMMatch := dynamicMetadataRegex.match(line):
             metadataKey = DMMatch.group(1).lower()
             metadataValue = DMMatch.group(2).lower()
@@ -4693,6 +4707,7 @@ for line in linesAfterConcatenation:
             # Create information about a card_title
             cardBullets = []
             cards.append([cardName])
+            inTitle = False	
 
         else:
             # One of Content, Section, or Title slide
@@ -4723,11 +4738,15 @@ for line in linesAfterConcatenation:
                 # Heading Level 2 - section
                 thisLevel = sectionLevel
                 blockType = "section"
+                inTitle = True
 
             elif line[:titleLevel] == "#" * titleLevel:
                 # Heading Level 1 - slide title
                 thisLevel = titleLevel
                 blockType = "title"
+                inTitle = True
+            else:
+                inTitle = False
 
             # Get slide title text and any href
             slideTitle, href = parseTitleText(line[thisLevel:])
@@ -4771,6 +4790,7 @@ for line in linesAfterConcatenation:
             sequence.append("list")
         inList = True
         inTable = False
+        inTitle = False
 
     elif match := numberRegex.match(line):
         # Numbered list
@@ -4792,6 +4812,7 @@ for line in linesAfterConcatenation:
             sequence.append("list")
         inList = True
         inTable = False
+        inTitle = False
 
     elif (graphicRegex.match(line) != None) | (
         clickableGraphicRegex.match(line) != None
@@ -4849,6 +4870,7 @@ for line in linesAfterConcatenation:
 
         # Add table row to saved table rows
         tableRows[-1].append(tableRow)
+        inTitle = False
 
     elif line[:1] == "|":
         # Table or side-by-side
@@ -4875,14 +4897,20 @@ for line in linesAfterConcatenation:
 
         # Add clean table row to saved table rows
         tableRows[-1].append(tableRow)
+        inTitle = False
 
     else:
         # Not in a table
         inTable = False
-
-        # Must be a slide note line
-        slideSubtitle = slideSubtitle + "\n" + line
-        notes_text = notes_text + "\n" + line
+        
+        if not inCode:
+            # Must be a slide note line or a subtitle line
+            if line == "":
+                inTitle = False
+            if inTitle:
+                slideSubtitle = slideSubtitle + "\n" + line
+            elif startswithOneOf(line, ["</pre>", "</code>"]) is False:
+                notes_text = notes_text + "\n" + line
 
 ######################################################################################
 #                                                                                    #
