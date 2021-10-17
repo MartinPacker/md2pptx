@@ -86,6 +86,7 @@ class ProcessingOptions:
         self.defaultOptions = {}
         self.presentationOptions = {}
         self.currentOptions = {}
+        self.dynamicallyChangedOptions = {}
         self.hideMetadataStyle = False
 
     def getDefaultOption(self, optionName):
@@ -155,6 +156,8 @@ class ProcessingOptions:
 
         elif conversion == "int":
             self.setCurrentOption(lowerName, int(optionValue))
+        
+        self.dynamicallyChangedOptions[lowerName] = True
 
 
 def startswithOneOf(haystack, needleList):
@@ -1577,8 +1580,24 @@ def createProcessingSummarySlide(presentation, rawMetadata):
             # Move to next column
             column += 2
             row = 0
+        
+        # Set text of metadata key cell
         newTable.cell(row, column).text = key
-        newTable.cell(row, column + 1).text = value
+        if processingOptions.dynamicallyChangedOptions.get(key) is not None:
+            # Set text of metadata value cell - with asterisk
+            newTable.cell(row, column + 1).text = value + "*"
+            
+            # Colour key cell blue
+            p1 = newTable.cell(row, column).text_frame.paragraphs[0]
+            p1.font.color.rgb = RGBColor.from_string("0000FF")
+
+            # Colour value cell blue
+            p2 = newTable.cell(row, column + 1).text_frame.paragraphs[0]
+            p2.font.color.rgb = RGBColor.from_string("0000FF")
+        else:
+            # Set text of metadata value cell - without asterisk
+            newTable.cell(row, column + 1).text = value
+
         if metadataColumnPairs == 3:
             newTable.cell(row, column).text_frame.paragraphs[0].font.size = Pt(12)
             newTable.cell(row, column + 1).text_frame.paragraphs[0].font.size = Pt(12)
