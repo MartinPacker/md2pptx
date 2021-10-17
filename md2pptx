@@ -45,8 +45,8 @@ try:
 except:
     have_cairosvg = False
 
-md2pptx_level = "2.4.1"
-md2pptx_date = "2 October, 2021"
+md2pptx_level = "2.4.2"
+md2pptx_date = "17 October, 2021"
 
 
 class SlideInfo:
@@ -86,6 +86,7 @@ class ProcessingOptions:
         self.defaultOptions = {}
         self.presentationOptions = {}
         self.currentOptions = {}
+        self.hideMetadataStyle = False
 
     def getDefaultOption(self, optionName):
         return self.defaultOptions[optionName.lower()]
@@ -1501,7 +1502,7 @@ def deleteSimpleShape(shape):
     shapeElement.getparent().remove(shapeElement)
 
 
-def createProcessingSummarySlide(presentation, metadata):
+def createProcessingSummarySlide(presentation, rawMetadata):
     tableMargin = processingOptions.getCurrentOption("tableMargin")
     pageTitleSize = processingOptions.getCurrentOption("pageTitleSize")
     # Use the first slide in the template presentation as the base
@@ -1522,7 +1523,17 @@ def createProcessingSummarySlide(presentation, metadata):
     )
 
     # Work out how many pairs of columns we need
+    if processingOptions.hideMetadataStyle:
+        # Adjust metadata item count to remove style.
+        metadata = []
+        for metadataItem in rawMetadata:
+            if metadataItem[0].startswith("style.") == False:
+                metadata.append(metadataItem)
+    else:
+        metadata = rawMetadata
+    
     metadataRows = len(metadata)
+
     maxMetadataRowsPerColumn = 15
     if metadataRows > 2 * maxMetadataRowsPerColumn:
         metadataColumnPairs = 3
@@ -1777,8 +1788,8 @@ def createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber):
         # - assuming declared width is accurate
         codeBox.width = int(p.font.size * codeColumns / fixedPitchHeightWidthRatio)
 
-        # Center the code box
-        codeBox.left = int((presentation.slide_width - codeBox.width) / 2)
+        # Center the code box - actually don't - 5 October 2021 temporary "fix"
+        # codeBox.left = int((presentation.slide_width - codeBox.width) / 2)
 
     # Use the code foreground colour - whether explicit or defaulted
     p.font.color.rgb = RGBColor.from_string(
@@ -3912,6 +3923,12 @@ processingOptions.setOptionValuesArray(
     ]
 )
 
+######################################################################################
+#                                                                                    #
+#  Prime for style. metadata                                                         #
+#                                                                                    #
+######################################################################################
+
 # Background colour class correspondence
 bgcolors = {}
 
@@ -3920,6 +3937,12 @@ fgcolors = {}
 
 # Emphases class correspondence
 emphases = {}
+
+######################################################################################
+#                                                                                    #
+#  Prime for footnotes                                                               #
+#                                                                                    #
+######################################################################################
 
 # List of footnote definitions. Each is a (ref, text) pair.
 # Also array of names - for quick searching
@@ -3941,6 +3964,7 @@ if len(metadata_lines) > 0:
     print("")
     print("Name".ljust(40) + " " + "Value")
     print("----".ljust(40) + " " + "-----")
+
 
 for line in metadata_lines:
     matchInfo = metadataRegex.match(line)
@@ -4249,6 +4273,10 @@ for line in metadata_lines:
 
     elif name in ["addtablelinecount", "addtablelinewidth"]:
         processingOptions.setOptionValues(name, int(value))
+    
+    elif name == "hidemetadata":
+        if value == "style":
+            processingOptions.hideMetadataStyle = True
 
 slideTemplateFile = processingOptions.getCurrentOption("slideTemplateFile")
 if slideTemplateFile != "":
