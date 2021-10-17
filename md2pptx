@@ -4309,7 +4309,6 @@ else:
     # If there is a slide to use fill it with metadata
     templateSlideCount = len(prs.slides)
     if templateSlideCount > 0:
-        createProcessingSummarySlide(prs, metadata)
         print("\nWriting processing summary slide with metadata on it.")
     else:
         print("\nNo slide to document metadata on. Continuing without it.")
@@ -5168,6 +5167,9 @@ for p in range(picture_count):
             target = href
 
     createPictureHyperlinkOrTooltip(picture, target, tooltip)
+
+if templateSlideCount > 0:
+	createProcessingSummarySlide(prs, metadata)
 
 # Write out the finished presentation
 prs.save(output_filename)
