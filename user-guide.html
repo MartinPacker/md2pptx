@@ -1141,7 +1141,10 @@ body .markdown-body
 </ul>
 </li>
 <li><a href="#controlling-the-presentation-with-metadata">Controlling The Presentation With Metadata</a><ul>
-<li><a href="#specifying-metadata">Specifying Metadata</a></li>
+<li><a href="#specifying-metadata">Specifying Metadata</a><ul>
+<li><a href="#processing-summary">Processing Summary</a></li>
+</ul>
+</li>
 <li><a href="#metadata-keys">Metadata Keys</a><ul>
 <li><a href="#slide-numbers-numbers">Slide Numbers - <code>numbers</code></a></li>
 <li><a href="#page-title-size-pagetitlesize">Page Title Size - <code>pageTitleSize</code></a></li>
@@ -1351,6 +1354,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">2.4.2</td>
+<td align="right">18&nbsp;October&nbsp;2021</td>
+<td align="left">Added <code>hideMetadata: style</code> - to suppress <code>style.</code> items in the Processing Summary slide. Also flag overridden values in same.</td>
+</tr>
 <tr>
 <td align="left">2.4.1</td>
 <td align="right">2&nbsp;October&nbsp;2021</td>
@@ -1663,9 +1671,9 @@ sectionTitleSize: 30
 <img alt="" src="/Users/martinpacker/md2pptx/Simple2.png" />
 <img alt="" src="/Users/martinpacker/md2pptx/Simple3.png" />
 <img alt="" src="/Users/martinpacker/md2pptx/Simple4.png" /></p>
-<p>The first slide is special, and an inevitable feature of using the python-pptx library. You will probably want to remove it before publishing.</p>
-<p>Because the first slide has to be there md2pptx uses it to create a processing summary. The processing summary slide shows processing options, the time and date the presentation was created by md2pptx, and metadata.</p>
-<p>Metadata is specified in the first three lines of this sample. In general metadata is the lines before the first blank line. It consists of key/value pairs, with the key separated from the value by a colon.</p>
+<p>The first slide is special, and an almost inevitable feature of using the python-pptx library. You will probably want to remove it before publishing.</p>
+<p>If there is at least one slide in the presentation template md2pptx uses the first one to create a processing summary. The processing summary slide shows processing options, the time and date the presentation was created by md2pptx, and metadata.</p>
+<p>Metadata is specified in the first three lines of this sample. In general metadata is the set of lines before the first blank line. It consists of key/value pairs, with the key separated from the value by a colon.</p>
 <p>In this case the metadata specifies a number of things:</p>
 <ol>
 <li>The Powerpoint file the presentation is based on is &ldquo;hipodz.pptx&rdquo;.</li>
@@ -2424,9 +2432,19 @@ You can change these colours under &ldquo;Themes&rdquo; in the Slide Master edit
 <p>You can control some aspects of md2pptx&rsquo;s processing using metadata.</p>
 <h3 id="specifying-metadata">Specifying Metadata<a class="headerlink" href="#specifying-metadata" title="Permanent link"></a></h3>
 <p><a id="specifying-metadata"></a></p>
-<p>You specify metadata in the lines before the first blank line. It consists of key/value pairs, with the key separated from the value by a colon.
+<p>You specify &ldquo;whole presentation&rdquo; metadata in the lines before the first blank line. It consists of key / value pairs, with the key separated from the value by a colon.
 Keys are case insensitive. In this User Guide they are capitalised to aid comprehension. For example, <code>baseTextDecrement</code> is treated the same as <code>basetextdecrement</code>.</p>
-<p>While some Markdown processors handle metadata, most ignore it. Conversely, while md2pptx will print <strong>all</strong> the metadata it encounters on the first slide (if the template presentation contains at least 1 slide), it will practically ignore metadata it doesn&rsquo;t understand.</p>
+<p>While some Markdown processors handle metadata, most ignore it. Conversely, while md2pptx will generally print <strong>all</strong> the metadata it encounters on the first slide (if the template presentation contains at least 1 slide), it will practically ignore metadata it doesn&rsquo;t understand.</p>
+<p>&ldquo;Whole presentation&rdquo; refers to metadata that applies to every slide in the presentation - unless overridden. Whole presentation metadata items are described in <a href="#metadata-keys">Metadata Keys</a>.</p>
+<p>Some metadata items can be overridden dynamically - in the middle of the presentation. md2pptx will only support these where it makes sense to. These keys are described in <a href="#dynamic-metadata">Dynamic Metadata</a>.</p>
+<h4 id="processing-summary">Processing Summary<a class="headerlink" href="#processing-summary" title="Permanent link"></a></h4>
+<p><a id="processing-summary"></a></p>
+<p>As described in <a href="#creating-slides">Creating Slides</a>, md2pptx will populate the first slide in the template file with metadata information (if such a slide exists). This slide will contain a table with all the &ldquo;whole presentation&rdquo; metadata keys and their values. Its format will adjust to fit all the metadata items.</p>
+<p><strong>Notes</strong></p>
+<ol>
+<li>If you override a &ldquo;whole presentation&rdquo; metadata item by a dynamic metadata specification the key and value in this table will be coloured blue. An asterisk will be appended to the metadata value.</li>
+<li>You can suppress <code>style.</code> metadata items by specifying the metadata item <code>hideMetadata: style</code>. In the md2pptx developer&rsquo;s experience <code>style.</code> metadata items can become numerous and could obscure more important items in the Processing Summary slide. The default is not to hide such items.</li>
+</ol>
 <h3 id="metadata-keys">Metadata Keys<a class="headerlink" href="#metadata-keys" title="Permanent link"></a></h3>
 <p><a id="metadata-keys"></a></p>
 <p>The following sections describe each of the metadata keys.</p>

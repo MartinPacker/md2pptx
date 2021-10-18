@@ -5,8 +5,8 @@ mdpre Markdown Preprocessor v0.4.6 (26 January, 2021)
 Def mdpre_date = 26 January, 2021
 Def mdpre_level = 0.4.6
 Def userid = martinpacker
-Def time = 17&colon;07
-Def date = 2 October&comma; 2021
+Def time = 17&colon;10
+Def date = 18 October&comma; 2021
 Def TOC = Table Of Contents
 Def md = Markdown
 Def pp = Powerpoint
@@ -70,6 +70,7 @@ CSV Stop
 ..... .....  Referring To A Footnote
 .....  Controlling The Presentation With Metadata
 ..... .....  Specifying Metadata
+..... ..... .....  Processing Summary
 ..... .....  Metadata Keys
 ..... ..... .....  Slide Numbers - `numbers`
 ..... ..... .....  Page Title Size - `pageTitleSize`
