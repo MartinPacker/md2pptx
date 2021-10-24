@@ -45,8 +45,8 @@ try:
 except:
     have_cairosvg = False
 
-md2pptx_level = "2.4.2"
-md2pptx_date = "17 October, 2021"
+md2pptx_level = "2.4.3"
+md2pptx_date = "24 October, 2021"
 
 
 class SlideInfo:
@@ -1198,6 +1198,15 @@ def parseText(text):
                 # The bracket is kept in in case there is no matching ]
                 fragment = "["
                 state = "LinkText1"
+                
+            elif state == "LinkText2":
+                # Could be entering an indirect reference
+                indLinkText = fragment[:-1]
+
+                # The bracket is kept in in case there is no matching ]
+                fragment = "["
+                state = "LinkRef1"
+                
 
         elif c == "]":
             # Could be ending picking up the link text
@@ -1213,6 +1222,26 @@ def parseText(text):
                 textArray.append([state, fragment])
                 state = "N"
                 fragment = ""
+                
+            elif state == "LinkRef1":
+                # Picked up link reference
+                reference = fragment[1:]
+                
+                # Attempt to look up reference
+                foundReference = False
+                for (indref, indURL) in indirectAnchors:
+                    if indref == reference:
+                        foundReference = True
+                        break
+                
+                if foundReference:
+                    # Append fragment with resolved reference
+                    textArray.append(["Link", indLinkText + chr(246) + indURL])
+                else:
+                    print(f"Reference {reference} not resolved.\n")
+                    textArray.append(["N", indLinkText])
+                fragment = ""
+                state = "N"
 
             else:
                 # This was an ordinary square bracket
@@ -3092,8 +3121,13 @@ def delinkify(text):
     if linkMatch := linkRegex.match(text):
         linkText = linkMatch.group(1)
         linkURL = linkMatch.group(2)
-
         return (linkText, linkURL)
+
+    elif linkMatch:= indirectReferenceUsageRegex(text):
+        print(linkMatch.group(1))
+        print(linkMatch.group(2))
+        return (text, "")
+
     else:
         return (text, "")
 
@@ -3682,7 +3716,7 @@ bothClickableGraphicRegex = re.compile(
 
 linkRegex = re.compile("^\[(.+)\]\((.+)\)")
 twoUpRegex = re.compile("^\|(.+?)\|(.+?)\|")
-footnoteDefinitionRegex = re.compile("^\[\^(.+?)]: (.+)")
+footnoteDefinitionRegex = re.compile("^\[\^(.+?)\]: (.+)")
 spanClassRegex = re.compile("<span( )*class=")
 spanStyleRegex = re.compile("<span( )*style=")
 RGBRegex = re.compile("#([0-9a-fA-F]{6})")
@@ -3690,6 +3724,8 @@ slideHrefRegex = re.compile("(.+)\[(.+)\]")
 # slideHrefRegex = re.compile("\[(.+)\]\(.+\)")
 anchorRegex = re.compile("^<a id=[\"'](.+)[\"']></a>")
 dynamicMetadataRegex = re.compile("^<!-- md2pptx: (.+): (.+) -->")
+indirectReferenceAnchorRegex = re.compile("^\[(.+?)\]: (.+)")
+indirectReferenceUsageRegex = re.compile("[(.+?)]\[(.+?)]")
 
 
 # Default slide layout enumeration
@@ -4439,7 +4475,22 @@ for line in linesAfterConcatenation:
         linesAfterConcatenation[metadataLinenumber] = "<ignoreme>"
     metadataLinenumber += 1
 
-# Pass 4: Main pass over the input file, now that footnote
+# Pass 4: Extract any indirect reference anchors
+metadataLinenumber = 0
+indirectAnchors = []
+for line in linesAfterConcatenation:
+    line = line.rstrip()
+    if m := indirectReferenceAnchorRegex.match(line):
+        anchorName = m.group(1).strip()
+        anchorURL = m.group(2).strip()
+        
+        indirectAnchors.append([anchorName, anchorURL])
+        
+        
+        linesAfterConcatenation[metadataLinenumber] = "<ignoreme>"
+    metadataLinenumber += 1
+  
+# Pass 5: Main pass over the input file, now that footnote
 # references have been gathered
 for line in linesAfterConcatenation:
     # Remove trailing white space

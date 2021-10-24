@@ -254,6 +254,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|2.4.3|24&nbsp;October&nbsp;2021|Added support for indirect links&comma; complementing reference links.|
 |2.4.2|18&nbsp;October&nbsp;2021|Added `hideMetadata: style` - to suppress `style.` items in the Processing Summary slide. Also flag overridden values in same.|
 |2.4.1|2&nbsp;October&nbsp;2021|Fixed bug where code appeared in a slide's Notes slide|
 |2.4|19&nbsp;September&nbsp;2021|Some simple style information added to span support. fgcolor &amp; bgcolor hex RGB  metadata values are checked for validity.|
@@ -869,7 +870,7 @@ This has the perhaps-useful side effect of not drawing a horizontal rule in most
 
 To code a hyperlink to an **external** URL in a slide code something like:
 
-	[IBM Website](http://www.ibm.com)
+	[IBM Website](https://www.ibm.com)
 
 It will be rendered with the text "IBM Website" displayed: [IBM Website](http://www.ibm.com).
 This above works for **external** references.
@@ -877,6 +878,20 @@ To create an internal slide reference you need to do two things:
 
 1. Tag the heading of the target slide with a heading reference (href).
 2. Code a reference to the target slide using the href.
+
+The above syntax is in a form called *Reference Hyperlinking*. You can use an alternative form - called *Indirect Hyperlinking*. To code an external URL using an indirect hyperlink use the form
+
+```
+[IBM Website][IBM]
+
+
+[IBM]: https://www.ibm.com
+```
+
+You might prefer the indirect form to the (inline) reference form for a couple of reasons:
+
+* You can reuse the same link, coding it in one place.
+* You can code such a link anywhere, potentially collecting links at the end of your Markdown file.
 
 ### Coding A Heading Reference On A Target Slide
 <a id="coding-a-heading-reference-on-a-target-slide"></a>

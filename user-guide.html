@@ -1355,6 +1355,11 @@ THE SOFTWARE.
 </thead>
 <tbody>
 <tr>
+<td align="left">2.4.3</td>
+<td align="right">24&nbsp;October&nbsp;2021</td>
+<td align="left">Added support for indirect links&comma; complementing reference links.</td>
+</tr>
+<tr>
 <td align="left">2.4.2</td>
 <td align="right">18&nbsp;October&nbsp;2021</td>
 <td align="left">Added <code>hideMetadata: style</code> - to suppress <code>style.</code> items in the Processing Summary slide. Also flag overridden values in same.</td>
@@ -2047,7 +2052,7 @@ You can also use some other kinds of markup, such as hyperlinks and <code>&lt;ab
 <h2 id="hyperlinks">Hyperlinks<a class="headerlink" href="#hyperlinks" title="Permanent link"></a></h2>
 <p><a id="hyperlinks"></a></p>
 <p>To code a hyperlink to an <strong>external</strong> URL in a slide code something like:</p>
-<pre><code>[IBM Website](http://www.ibm.com)
+<pre><code>[IBM Website](https://www.ibm.com)
 </code></pre>
 <p>It will be rendered with the text &ldquo;IBM Website&rdquo; displayed: <a href="http://www.ibm.com">IBM Website</a>.
 This above works for <strong>external</strong> references.
@@ -2056,6 +2061,18 @@ To create an internal slide reference you need to do two things:</p>
 <li>Tag the heading of the target slide with a heading reference (href).</li>
 <li>Code a reference to the target slide using the href.</li>
 </ol>
+<p>The above syntax is in a form called <em>Reference Hyperlinking</em>. You can use an alternative form - called <em>Indirect Hyperlinking</em>. To code an external URL using an indirect hyperlink use the form</p>
+<div class="highlight"><pre>[IBM Website][IBM]
+
+
+[IBM]: https://www.ibm.com
+</pre></div>
+
+<p>You might prefer the indirect form to the (inline) reference form for a couple of reasons:</p>
+<ul>
+<li>You can reuse the same link, coding it in one place.</li>
+<li>You can code such a link anywhere, potentially collecting links at the end of your Markdown file.</li>
+</ul>
 <h3 id="coding-a-heading-reference-on-a-target-slide">Coding A Heading Reference On A Target Slide<a class="headerlink" href="#coding-a-heading-reference-on-a-target-slide" title="Permanent link"></a></h3>
 <p><a id="coding-a-heading-reference-on-a-target-slide"></a></p>
 <p>Multimarkdown and md2pptx support the following way of identifying a heading reference (href):</p>
