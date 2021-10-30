@@ -9,6 +9,7 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 
 * [Why md2pptx?](#why-md2pptx)
 	* [A Real World Use Case](#a-real-world-use-case)
+	* [Using md2pptx With mdpre](#using-md2pptx-with-mdpre)
 * [How Do You Use md2pptx?](#how-do-you-use-md2pptx)
 	* [Installation](#installation)
 	* [Use](#use)
@@ -187,6 +188,19 @@ The author developed a presentation over 10 years in Powerpoint and OpenOffice a
 He took the trouble to convert it to Markdown and regenerated it with a very early version of md2pptx. The presentation looks nice again, with consistent formatting.
 
 It was relatively little trouble to convert to Markdown. In fact it took about an hour to convert the 40 slide presentation. The consistency gain was automatic.
+
+### Using md2pptx With mdpre
+
+The author also developed [mdpre](https://github.com/MartinPacker/mdpre) - and actively maintains it.
+
+mdpre is a preprocessor to create Markdown. It has a number of features that might be of use in creating Markdown, with an especial focus on preparing Markdown for md2pptx. These features include:
+
+* Including files.
+* Setting (and querying) variables.
+* Conditional processing.
+* Conversion of CSV files to Markdown tables.
+
+The author has made running mdpre and md2pptx together easier by creating a [make](https://en.wikipedia.org/wiki/Make_(software)) file.
 
 ## How Do You Use md2pptx?
 

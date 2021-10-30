@@ -57,6 +57,21 @@ It was relatively little trouble to convert to &md;. \
 In fact it took about an hour to convert the 40 slide presentation. \
 The consistency gain was automatic.
 
+### Using md2pptx With mdpre
+
+The author also developed [mdpre](https://github.com/MartinPacker/mdpre) - and actively maintains it.
+
+mdpre is a preprocessor to create Markdown. \
+It has a number of features that might be of use in creating Markdown, with an especial focus on preparing Markdown for md2pptx. \
+These features include:
+
+* Including files.
+* Setting (and querying) variables.
+* Conditional processing.
+* Conversion of CSV files to Markdown tables.
+
+The author has made running mdpre and md2pptx together easier by creating a [make](https://en.wikipedia.org/wiki/Make_(software)) file.
+
 ## How Do You Use md2pptx?
 
 You write Markdown in exactly the same way as normal, with some understanding of how Markdown is converted to slides (using the information in [Creating Slides](#creating-slides)).

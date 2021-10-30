@@ -5,8 +5,8 @@ mdpre Markdown Preprocessor v0.4.6 (26 January, 2021)
 Def mdpre_date = 26 January, 2021
 Def mdpre_level = 0.4.6
 Def userid = martinpacker
-Def time = 19&colon;49
-Def date = 24 October&comma; 2021
+Def time = 11&colon;09
+Def date = 30 October&comma; 2021
 Def TOC = Table Of Contents
 Def md = Markdown
 Def pp = Powerpoint
@@ -15,6 +15,7 @@ Table Of Contents - spec '2 * Table Of Contents'
 2 5 Table Of Contents
 .....  Why md2pptx?
 ..... .....  A Real World Use Case
+..... .....  Using md2pptx With mdpre
 .....  How Do You Use md2pptx?
 ..... .....  Installation
 ..... .....  Use

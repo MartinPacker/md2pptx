@@ -1070,6 +1070,7 @@ body .markdown-body
 <ul>
 <li><a href="#why-md2pptx">Why md2pptx?</a><ul>
 <li><a href="#a-real-world-use-case">A Real World Use Case</a></li>
+<li><a href="#using-md2pptx-with-mdpre">Using md2pptx With mdpre</a></li>
 </ul>
 </li>
 <li><a href="#how-do-you-use-md2pptx">How Do You Use md2pptx?</a><ul>
@@ -1297,6 +1298,16 @@ body .markdown-body
 <p>The author developed a presentation over 10 years in Powerpoint and OpenOffice and LibreOffice. It became very inconsistent in formatting - fonts, colours, indentations, bullets, etc.. It was a horrible mess.</p>
 <p>He took the trouble to convert it to Markdown and regenerated it with a very early version of md2pptx. The presentation looks nice again, with consistent formatting.</p>
 <p>It was relatively little trouble to convert to Markdown. In fact it took about an hour to convert the 40 slide presentation. The consistency gain was automatic.</p>
+<h3 id="using-md2pptx-with-mdpre">Using md2pptx With mdpre<a class="headerlink" href="#using-md2pptx-with-mdpre" title="Permanent link"></a></h3>
+<p>The author also developed <a href="https://github.com/MartinPacker/mdpre">mdpre</a> - and actively maintains it.</p>
+<p>mdpre is a preprocessor to create Markdown. It has a number of features that might be of use in creating Markdown, with an especial focus on preparing Markdown for md2pptx. These features include:</p>
+<ul>
+<li>Including files.</li>
+<li>Setting (and querying) variables.</li>
+<li>Conditional processing.</li>
+<li>Conversion of CSV files to Markdown tables.</li>
+</ul>
+<p>The author has made running mdpre and md2pptx together easier by creating a <a href="https://en.wikipedia.org/wiki/Make_(software)">make</a> file.</p>
 <h2 id="how-do-you-use-md2pptx">How Do You Use md2pptx?<a class="headerlink" href="#how-do-you-use-md2pptx" title="Permanent link"></a></h2>
 <p>You write Markdown in exactly the same way as normal, with some understanding of how Markdown is converted to slides (using the information in <a href="#creating-slides">Creating Slides</a>).</p>
 <p>To use md2pptx you need to download it and install the prerequisites.</p>
