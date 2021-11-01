@@ -45,8 +45,8 @@ try:
 except:
     have_cairosvg = False
 
-md2pptx_level = "2.4.3"
-md2pptx_date = "24 October, 2021"
+md2pptx_level = "2.4.3+"
+md2pptx_date = "1 November, 2021"
 
 
 class SlideInfo:
@@ -206,6 +206,7 @@ def resolveSymbols(text):
     text2 = text2.replace("&Delta;", "Δ")
     text2 = text2.replace("&delta;", "δ")
     text2 = text2.replace("&sim;", "∼")
+    text2 = text2.replace("&nbsp;", chr(160))
     text2 = text2.replace("&semi;", ";")
     text2 = text2.replace("&colon;", ":")
     text2 = text2.replace("&comma;", ",")
