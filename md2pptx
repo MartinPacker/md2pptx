@@ -32,6 +32,7 @@ import urllib.request
 import tempfile
 import copy
 import platform
+import shutil
 
 # import xml.etree
 from lxml import etree
@@ -46,7 +47,7 @@ except:
     have_cairosvg = False
 
 md2pptx_level = "2.4.3+"
-md2pptx_date = "1 November, 2021"
+md2pptx_date = "2 November, 2021"
 
 
 class SlideInfo:
@@ -1714,6 +1715,7 @@ def handleWhateverGraphicType(graphicFilename):
         graphicFile.write(data)
 
         if ".svg" in graphicFilename.lower():
+            print(graphicFilename[:-3] + ".PNG")
             # is a web-based SVG file
             if have_cairosvg:
                 # Convert SVG file to temporary PNG
@@ -1741,6 +1743,7 @@ def handleWhateverGraphicType(graphicFilename):
             # is a physical SVG file
             if have_cairosvg:
                 # Convert SVG file to temporary PNG
+                PNGname = graphicFilename[:-4] + ".PNG"
 
                 # Store in a temporary file
                 graphicFile = tempfile.NamedTemporaryFile(delete=False)
@@ -1749,6 +1752,11 @@ def handleWhateverGraphicType(graphicFilename):
 
                 # Retrieve the temporary file name
                 graphicFilename = graphicFile.name
+                if processingOptions.getCurrentOption("exportSVG"):
+                    try:
+                        shutil.copy(graphicFilename, PNGname)
+                    except:
+                        print("Copy error: " +PNGname)
 
             else:
                 print("Don't have CairoSVG installed. Terminating.")
@@ -3979,6 +3987,12 @@ processingOptions.setOptionValuesArray(
     ]
 )
 
+# Graphics options
+processingOptions.setOptionValuesArray(
+    [
+        ["exportSVG", False],
+    ]
+)
 ######################################################################################
 #                                                                                    #
 #  Prime for style. metadata                                                         #
@@ -4333,6 +4347,11 @@ for line in metadata_lines:
     elif name == "hidemetadata":
         if value == "style":
             processingOptions.hideMetadataStyle = True
+
+    elif name == "exportsvg":
+        if value.lower() == "yes":
+            processingOptions.setOptionValues(name, True)
+
 
 slideTemplateFile = processingOptions.getCurrentOption("slideTemplateFile")
 if slideTemplateFile != "":

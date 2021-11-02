@@ -268,6 +268,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|2.4.3+|2&nbsp;November&nbsp;2021|Added support for `&nbsp;`. `exportSVG: yes` exports PNG for disk-based SVG files|
 |2.4.3|24&nbsp;October&nbsp;2021|Added support for indirect links&comma; complementing reference links.|
 |2.4.2|18&nbsp;October&nbsp;2021|Added `hideMetadata: style` - to suppress `style.` items in the Processing Summary slide. Also flag overridden values in same.|
 |2.4.1|2&nbsp;October&nbsp;2021|Fixed bug where code appeared in a slide's Notes slide|
@@ -1081,7 +1082,7 @@ md2pptx supports a few [HTML entity references](https://en.wikipedia.org/wiki/Li
 |`&comma;`|&comma;|`&infin;`|&infin;|`&exist;`|&exist;|
 |`&check;`|&check;|`&times;`|&times;|`&lambda;`|&lambda;|
 |`&mu;`|&mu;|`&nu;`|&nu;|`&pi;`|&pi;|
-|`&rho;`|&rho;|
+|`&rho;`|&rho;|`&nbsp;`|*non-breaking space*|
 
 ### Numeric Character References
 <a id="numeric-character-references"></a>
