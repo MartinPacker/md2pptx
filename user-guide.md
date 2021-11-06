@@ -106,6 +106,8 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 		* [Slides With Multiple Content Blocks](#slides-with-multiple-content-blocks)
 			* [Horizontal Or Vertical Split - `ContentSplitDirection`](#horizontal-or-vertical-split-contentsplitdirection)
 			* [Split Proportions - `ContentSplit`](#split-proportions-contentsplit)
+		* [Graphics Metadata](#graphics-metadata)
+			* [Exporting Converted SVG Files - `ExportSVG`](#exporting-converted-svg-files-exportsvg)
 		* [Table Of Contents And Section Slide Metadata](#table-of-contents-and-section-slide-metadata)
 			* ["Chevron Style" Table Of Contents](#chevron-style-table-of-contents)
 			* ["Circle Style" Table Of Contents](#circle-style-table-of-contents)
@@ -268,7 +270,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
-|2.4.3+|2&nbsp;November&nbsp;2021|Added support for `&nbsp;`. `exportSVG: yes` exports PNG for disk-based SVG files|
+|2.4.3+|2&nbsp;November&nbsp;2021|Added support for `&nbsp;`. `exportSVG: yes` exports PNG for disk-based SVG files.|
 |2.4.3|24&nbsp;October&nbsp;2021|Added support for indirect links&comma; complementing reference links.|
 |2.4.2|18&nbsp;October&nbsp;2021|Added `hideMetadata: style` - to suppress `style.` items in the Processing Summary slide. Also flag overridden values in same.|
 |2.4.1|2&nbsp;October&nbsp;2021|Fixed bug where code appeared in a slide's Notes slide|
@@ -512,6 +514,8 @@ Scalable Vector Graphics (SVG) format is only supported if you have installed th
 SVG support uses the [CairoSVG](https://cairosvg.org/) library - which requires Python to be at least at the 3.6 level. md2pptx's SVG support is limited by that available in CairoSVG and so not all SVG files are supported.
 
 If CairoSVG is not installed and md2pptx encounters an SVG graphic reference it will write a message reminding you of the need for CairoSVG. md2pptx will then immediately terminate.
+
+You can optionally have md2pptx export the temporary PNG files. See [Exporting Converted SVG Files - `ExportSVG`](#exporting-converted-svg-files-exportsvg). The file name is the same as the SVG file's name, except the extension is PNG. This is not supported for SVG files accessed via a URL.
 
 ### Table Slides
 <a id="table-slides"></a>
@@ -1866,6 +1870,15 @@ will make the first block a quarter the height (or width) of the second. Specify
 You can override this on a slide-by-slide basis with [Dynamic ContentSplit](#dynamic-contentsplit).
 
 The default value is such as to make each block have equal space.
+
+#### Graphics Metadata
+
+<a id="exporting-converted-svg-files-exportsvg"></a>
+##### Exporting Converted SVG Files - `ExportSVG`
+
+By default md2pptx does not export SVG files converted to PNG. (md2pptx handles SVG graphics by converting them to PNG format.) You can save the converted graphics to PNG by specifying:
+
+    ExportSVG: yes
 
 #### Table Of Contents And Section Slide Metadata
 
