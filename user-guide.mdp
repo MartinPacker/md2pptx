@@ -142,7 +142,7 @@ To quote from the python-pptx license statement:
 =colalign l r l
 =csv
 Level,Date,What
-2.4.3+,2&nbsp;November&nbsp;2021,Added support for `&nbsp;`. `exportSVG: yes` exports PNG for disk-based SVG files.
+2.5,14&nbsp;November&nbsp;2021,Added support for `&nbsp;`. `exportGraphics: yes` exports PNG for SVG &amp; EPS files. Added support for EPS graphics.
 2.4.3,24&nbsp;October&nbsp;2021,Added support for indirect links&comma; complementing reference links.
 2.4.2,18&nbsp;October&nbsp;2021,Added `hideMetadata: style` - to suppress `style.` items in the Processing Summary slide. Also flag overridden values in same.
 2.4.1,2&nbsp;October&nbsp;2021,Fixed bug where code appeared in a slide's Notes slide
@@ -415,9 +415,12 @@ md2pptx's SVG support is limited by that available in CairoSVG and so not all SV
 If CairoSVG is not installed and md2pptx encounters an SVG graphic reference it will write a message reminding you of the need for CairoSVG. \
 md2pptx will then immediately terminate.
 
-You can optionally have md2pptx export the temporary PNG files. See [Exporting Converted SVG Files - `ExportSVG`](#exporting-converted-svg-files-exportsvg). \
-The file name is the same as the SVG file's name, except the extension is PNG. \
-This is not supported for SVG files accessed via a URL.
+Encapsulated Postscript (EPS) format is only supported if you have installed the [Pillow Python package](https://python-pillow.org/) and [Ghostscript](https://www.ghostscript.com/) - as PowerPoint doesn't support it (and nor does python-pptx). \
+EPS files - whether from the web or a local file - are converted to a temporary PNG file first, before copying into the PowerPoint slide deck. \
+Pillow requires Python to be at least at the 3.7 level.
+
+You can optionally have md2pptx export the temporary PNG files. See [Exporting Converted SVG And PNG Files - `exportGraphics`](#exporting-converted-svg-and-png-files-exportGraphics). \
+The file name is the same as the SVG or EPS file's name, except the extension is PNG. \
 
 ### Table Slides
 <a id="table-slides"></a>
@@ -1913,14 +1916,14 @@ The default value is such as to make each block have equal space.
 
 #### Graphics Metadata
 
-<a id="exporting-converted-svg-files-exportsvg"></a>
-##### Exporting Converted SVG Files - `ExportSVG`
+<a id="exporting-converted-svg-and-png-files-exportGraphics"></a>
+##### Exporting Converted SVG And PNG Files - `exportGraphics`
 
-By default md2pptx does not export SVG files converted to PNG. \
-(md2pptx handles SVG graphics by converting them to PNG format.) \
+By default md2pptx does not export SVG and EPS files converted to PNG. \
+(md2pptx handles SVG and EPS graphics by converting them to PNG format.) \
 You can save the converted graphics to PNG by specifying:
 
-    ExportSVG: yes
+    exportGraphics: yes
 
 #### Table Of Contents And Section Slide Metadata
 

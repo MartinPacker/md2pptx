@@ -1202,7 +1202,7 @@ body .markdown-body
 </ul>
 </li>
 <li><a href="#graphics-metadata">Graphics Metadata</a><ul>
-<li><a href="#exporting-converted-svg-files-exportsvg">Exporting Converted SVG Files - <code>ExportSVG</code></a></li>
+<li><a href="#exporting-converted-svg-and-png-files-exportgraphics">Exporting Converted SVG And PNG Files - <code>exportGraphics</code></a></li>
 </ul>
 </li>
 <li><a href="#table-of-contents-and-section-slide-metadata">Table Of Contents And Section Slide Metadata</a><ul>
@@ -1370,9 +1370,9 @@ THE SOFTWARE.
 </thead>
 <tbody>
 <tr>
-<td align="left">2.4.3+</td>
-<td align="right">2&nbsp;November&nbsp;2021</td>
-<td align="left">Added support for <code>&amp;nbsp;</code>. <code>exportSVG: yes</code> exports PNG for disk-based SVG files.</td>
+<td align="left">2.5</td>
+<td align="right">14&nbsp;November&nbsp;2021</td>
+<td align="left">Added support for <code>&amp;nbsp;</code>. <code>exportGraphics: yes</code> exports PNG for SVG &amp; EPS files. Added support for EPS graphics.</td>
 </tr>
 <tr>
 <td align="left">2.4.3</td>
@@ -1802,7 +1802,8 @@ sectionTitleSize: 30
 <p>Scalable Vector Graphics (SVG) format is only supported if you have installed the CairoSVG Python package - as PowerPoint doesn&rsquo;t support it (and nor does python-pptx). SVG files - whether from the web or a local file - are converted to a temporary PNG file first, before copying into the PowerPoint slide deck.</p>
 <p>SVG support uses the <a href="https://cairosvg.org/">CairoSVG</a> library - which requires Python to be at least at the 3.6 level. md2pptx&rsquo;s SVG support is limited by that available in CairoSVG and so not all SVG files are supported.</p>
 <p>If CairoSVG is not installed and md2pptx encounters an SVG graphic reference it will write a message reminding you of the need for CairoSVG. md2pptx will then immediately terminate.</p>
-<p>You can optionally have md2pptx export the temporary PNG files. See <a href="#exporting-converted-svg-files-exportsvg">Exporting Converted SVG Files - <code>ExportSVG</code></a>. The file name is the same as the SVG file&rsquo;s name, except the extension is PNG. This is not supported for SVG files accessed via a URL.</p>
+<p>Encapsulated Postscript (EPS) format is only supported if you have installed the <a href="https://python-pillow.org/">Pillow Python package</a> and <a href="https://www.ghostscript.com/">Ghostscript</a> - as PowerPoint doesn&rsquo;t support it (and nor does python-pptx). EPS files - whether from the web or a local file - are converted to a temporary PNG file first, before copying into the PowerPoint slide deck. Pillow requires Python to be at least at the 3.7 level.</p>
+<p>You can optionally have md2pptx export the temporary PNG files. See <a href="#exporting-converted-svg-and-png-files-exportGraphics">Exporting Converted SVG And PNG Files - <code>exportGraphics</code></a>. The file name is the same as the SVG or EPS file&rsquo;s name, except the extension is PNG.</p>
 <h3 id="table-slides">Table Slides<a class="headerlink" href="#table-slides" title="Permanent link"></a></h3>
 <p><a id="table-slides"></a></p>
 <p>You can create a table slide using Markdown&rsquo;s table format.</p>
@@ -2959,10 +2960,10 @@ For example</p>
 <p>You can override this on a slide-by-slide basis with <a href="#dynamic-contentsplit">Dynamic ContentSplit</a>.</p>
 <p>The default value is such as to make each block have equal space.</p>
 <h4 id="graphics-metadata">Graphics Metadata<a class="headerlink" href="#graphics-metadata" title="Permanent link"></a></h4>
-<p><a id="exporting-converted-svg-files-exportsvg"></a></p>
-<h5 id="exporting-converted-svg-files-exportsvg">Exporting Converted SVG Files - <code>ExportSVG</code><a class="headerlink" href="#exporting-converted-svg-files-exportsvg" title="Permanent link"></a></h5>
-<p>By default md2pptx does not export SVG files converted to PNG. (md2pptx handles SVG graphics by converting them to PNG format.) You can save the converted graphics to PNG by specifying:</p>
-<pre><code>ExportSVG: yes
+<p><a id="exporting-converted-svg-and-png-files-exportGraphics"></a></p>
+<h5 id="exporting-converted-svg-and-png-files-exportgraphics">Exporting Converted SVG And PNG Files - <code>exportGraphics</code><a class="headerlink" href="#exporting-converted-svg-and-png-files-exportgraphics" title="Permanent link"></a></h5>
+<p>By default md2pptx does not export SVG and EPS files converted to PNG. (md2pptx handles SVG and EPS graphics by converting them to PNG format.) You can save the converted graphics to PNG by specifying:</p>
+<pre><code>exportGraphics: yes
 </code></pre>
 <h4 id="table-of-contents-and-section-slide-metadata">Table Of Contents And Section Slide Metadata<a class="headerlink" href="#table-of-contents-and-section-slide-metadata" title="Permanent link"></a></h4>
 <p>If you have a slide in a certain format you can convert it to a Table Of Contents slide.

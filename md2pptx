@@ -46,8 +46,18 @@ try:
 except:
     have_cairosvg = False
 
-md2pptx_level = "2.4.3+"
-md2pptx_date = "2 November, 2021"
+# Try to import Pillow - which might not be installed.
+# Flag availability or otherwise
+try:
+    import PIL
+
+    have_pillow = True
+except:
+    have_pillow = False
+
+
+md2pptx_level = "2.5"
+md2pptx_date = "14 November, 2021"
 
 
 class SlideInfo:
@@ -1695,8 +1705,12 @@ def createTitleOrSectionSlide(
 
 def handleWhateverGraphicType(graphicFilename):
     # Handles both physical file and URI file types
+    graphicFilename = graphicFilename.strip()
+    
+    # First ensure we have the data in a file and know if the source was a URI
     if ":" in graphicFilename:
         # Is a URI - so we have to retrieve it and store it in a temporary file
+        is_uri = True
 
         # Massage the URI into a printable filename
         if len(graphicFilename) > 50:
@@ -1706,61 +1720,83 @@ def handleWhateverGraphicType(graphicFilename):
         else:
             printableGraphicFilename = graphicFilename
 
-        # Retrieve the data
+        # Retrieve the data into a temporary file
         operUrl = urllib.request.urlopen(graphicFilename)
         data = operUrl.read()
 
+        # Obtain file extension
+        extensionPos = graphicFilename.rindex(".")
+        fileExt = graphicFilename[extensionPos:]
+
         # Store in a temporary file
-        graphicFile = tempfile.NamedTemporaryFile(delete=False)
-        graphicFile.write(data)
-
-        if ".svg" in graphicFilename.lower():
-            print(graphicFilename[:-3] + ".PNG")
-            # is a web-based SVG file
-            if have_cairosvg:
-                # Convert SVG file to temporary PNG
-
-                # Store SVG in a temporary file
-                convertedGraphicFile = tempfile.NamedTemporaryFile(delete=False)
-
-                cairosvg.svg2png(file_obj=graphicFile, write_to=convertedGraphicFile)
-
-                # Retrieve the temporary file name
-                graphicFilename = convertedGraphicFile.name
-
-            else:
-                print("Don't have CairoSVG installed. Terminating.")
-                sys.exit()
-        else:
-            # Retrieve the temporary (PNG) file name
-            graphicFilename = graphicFile.name
+        tempGraphicFile = tempfile.NamedTemporaryFile(delete=False, suffix = fileExt)
+        tempGraphicFile.write(data)
+        convertibleFilename = tempGraphicFile.name
+        tempGraphicFile.close()
 
     else:
+        is_uri = False
+        
         # Files don't get their names edited
         printableGraphicFilename = graphicFilename
+        convertibleFilename = graphicFilename
 
-        if ".svg" in graphicFilename.lower():
-            # is a physical SVG file
-            if have_cairosvg:
-                # Convert SVG file to temporary PNG
-                PNGname = graphicFilename[:-4] + ".PNG"
+        if is_uri:
+            lastSlash = graphicFilename.rindex("/")
+            lastDot = graphicFilename.rindex(".")
+            
+            PNGname = graphicFilename[lastSlash + 1 : lastDot] + ".PNG"
+        else:
+            PNGname = graphicFilename[:-4] + ".PNG"
 
-                # Store in a temporary file
-                graphicFile = tempfile.NamedTemporaryFile(delete=False)
 
-                cairosvg.svg2png(file_obj=open(graphicFilename), write_to=graphicFile)
+    # Process the file - whatever the origin - based on file extension
+    if ".svg" in graphicFilename.lower():
+        # is an SVG file
+        if have_cairosvg:
+            # Convert SVG file to temporary PNG
+            # Store in a temporary file
+            graphicFile = tempfile.NamedTemporaryFile(delete=False, suffix = ".PNG")
 
-                # Retrieve the temporary file name
-                graphicFilename = graphicFile.name
-                if processingOptions.getCurrentOption("exportSVG"):
-                    try:
-                        shutil.copy(graphicFilename, PNGname)
-                    except:
-                        print("Copy error: " +PNGname)
+            cairosvg.svg2png(file_obj=open(convertibleFilename), write_to=graphicFile)
 
-            else:
-                print("Don't have CairoSVG installed. Terminating.")
+            # Retrieve the temporary file name
+            graphicFilename = graphicFile.name
+
+            if processingOptions.getCurrentOption("exportGraphics"):
+                try:
+                    shutil.copy(graphicFilename, PNGname)
+                except:
+                    print("Copy error: " +PNGname)
+
+        else:
+            print("Don't have CairoSVG installed. Terminating.")
+            sys.exit()
+    elif ".eps" in graphicFilename.lower():
+        if have_pillow:
+            # Get EPS file
+            im = PIL.Image.open(graphicFilename)
+            
+            # Store in a temporary file
+            graphicFile = tempfile.NamedTemporaryFile(delete=False, suffix = ".PNG")
+
+            try:
+                im.save(graphicFile)
+            except:
+                print("Could not convert EPS file. Is Ghostview installed?\n")
+                print("Terminating.\n")
                 sys.exit()
+
+            # Retrieve the temporary file name
+            graphicFilename = graphicFile.name
+            if processingOptions.getCurrentOption("exportGraphics"):
+                try:
+                    shutil.copy(graphicFilename, PNGname)
+                except:
+                    print("Copy error: " +PNGname)
+
+    else:
+        graphicFilename = convertibleFilename
 
     return graphicFilename, printableGraphicFilename
 
@@ -3676,7 +3712,19 @@ print("\n" + banner + "\n" + bannerUnderline)
 print("\nOpen source project: https://github.com/MartinPacker/md2pptx")
 
 print("\nPython: " + platform.python_version())
+
 print("python-pptx: " + pptx_version)
+
+if have_pillow:
+    print ("Pillow: " + PIL.__version__)
+else:
+    print("Pillow: Not Installed")
+
+if have_cairosvg:
+    print("CairoSVG: " + cairosvg.__version__)
+else:
+    print("CairoSVG: Not Installed")
+
 
 input_file = []
 
@@ -3990,7 +4038,7 @@ processingOptions.setOptionValuesArray(
 # Graphics options
 processingOptions.setOptionValuesArray(
     [
-        ["exportSVG", False],
+        ["exportGraphics", False],
     ]
 )
 ######################################################################################
@@ -4348,10 +4396,9 @@ for line in metadata_lines:
         if value == "style":
             processingOptions.hideMetadataStyle = True
 
-    elif name == "exportsvg":
+    elif name == "exportgraphics":
         if value.lower() == "yes":
             processingOptions.setOptionValues(name, True)
-
 
 slideTemplateFile = processingOptions.getCurrentOption("slideTemplateFile")
 if slideTemplateFile != "":
@@ -4824,7 +4871,7 @@ for line in linesAfterConcatenation:
             # Create information about a card_title
             cardBullets = []
             cards.append([cardName])
-            inTitle = False	
+            inTitle = False    
 
         else:
             # One of Content, Section, or Title slide
@@ -5259,7 +5306,7 @@ for p in range(picture_count):
     createPictureHyperlinkOrTooltip(picture, target, tooltip)
 
 if templateSlideCount > 0:
-	createProcessingSummarySlide(prs, metadata)
+    createProcessingSummarySlide(prs, metadata)
 
 # Write out the finished presentation
 prs.save(output_filename)

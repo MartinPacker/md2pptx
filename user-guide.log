@@ -5,8 +5,8 @@ mdpre Markdown Preprocessor v0.4.6 (26 January, 2021)
 Def mdpre_date = 26 January, 2021
 Def mdpre_level = 0.4.6
 Def userid = martinpacker
-Def time = 10&colon;16
-Def date = 6 November&comma; 2021
+Def time = 20&colon;52
+Def date = 14 November&comma; 2021
 Def TOC = Table Of Contents
 Def md = Markdown
 Def pp = Powerpoint
@@ -126,7 +126,7 @@ CSV Stop
 ..... ..... ..... .....  Horizontal Or Vertical Split - `ContentSplitDirection`
 ..... ..... ..... .....  Split Proportions - `ContentSplit`
 ..... ..... .....  Graphics Metadata
-..... ..... ..... .....  Exporting Converted SVG Files - `ExportSVG`
+..... ..... ..... .....  Exporting Converted SVG And PNG Files - `exportGraphics`
 ..... ..... .....  Table Of Contents And Section Slide Metadata
 ..... ..... ..... .....  "Chevron Style" Table Of Contents
 ..... ..... ..... .....  "Circle Style" Table Of Contents
