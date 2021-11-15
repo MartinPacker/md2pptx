@@ -2388,4 +2388,5 @@ Known deviations are:
 * md2pptx can reference Encapsulated Postscript (EPS) graphics - by converting them to .PNG files. Markdown and HTML can't. See [Graphics File References](#graphics-file-references) for details of how you specify to md2pptx including graphics of various types.
 
 * In tables the number of dashes in a column's header is used to denote its relative width. This is not standard Markdown behaviour. See [Table Slides](#table-slides) for details of md2pptx's Tables support.
+* In tables trailing pipe (`|`) characters are optional in md2pptx.
 * md2pptx supports inline Taskpaper format. Markdown doesn't. (The use of the Taskpaper `-` delimiter currently prevents md2pptx from supporting it as a list bullet marker.) See [Task List Slides](#task-list-slides) for details of md2pptx's Taskpaper support.
