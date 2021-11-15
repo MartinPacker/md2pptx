@@ -1270,6 +1270,7 @@ body .markdown-body
 </li>
 </ul>
 </li>
+<li><a href="#deviations-from-standard-markdown">Deviations From Standard Markdown</a></li>
 </ul>
 <h2 id="why-md2pptx">Why md2pptx?<a class="headerlink" href="#why-md2pptx" title="Permanent link"></a></h2>
 <p>There are advantages in creating presentations using a flat file format. Some of these are:</p>
@@ -1296,7 +1297,7 @@ body .markdown-body
 <li>Markdown is compact; The files are tiny.</li>
 <li>Markdown is used in popular sites, such as <a href="https://github.com">Github</a>.</li>
 </ul>
-<p>Every piece of text you use to create a Powerpoint presentation with md2pptx is valid Markdown. While it might not render exactly the same way put through another Markdown processor, it is generally equivalent. This is one of the key aims of md2pptx.</p>
+<p>Every piece of text you use to create a Powerpoint presentation with md2pptx is valid Markdown - with very few exceptions. While it might not render exactly the same way put through another Markdown processor, it is generally equivalent. This is one of the key aims of md2pptx.</p>
 <p>One final advantage of the md2pptx approach is you can generate presentations without using PowerPoint itself. Indeed you can create presentations on machines where PowerPoint won&rsquo;t even run. All you need is to be able to run Python 3 and install python-pptx.</p>
 <h3 id="a-real-world-use-case">A Real World Use Case<a class="headerlink" href="#a-real-world-use-case" title="Permanent link"></a></h3>
 <p>The author developed a presentation over 10 years in Powerpoint and OpenOffice and LibreOffice. It became very inconsistent in formatting - fonts, colours, indentations, bullets, etc.. It was a horrible mess.</p>
@@ -3359,4 +3360,18 @@ The default value is <code>no</code>.</p>
 <h4 id="blank-slide-blanklayout">Blank Slide - <code>BlankLayout</code><a class="headerlink" href="#blank-slide-blanklayout" title="Permanent link"></a></h4>
 <p>This is where md2pptx wants to create a slide without using any content from the template slide.</p>
 <h4 id="content-slide-contentslidelayout">Content Slide - <code>ContentSlideLayout</code><a class="headerlink" href="#content-slide-contentslidelayout" title="Permanent link"></a></h4>
-<p>This is where md2pptx wants to reuse e.g. a text area. It is expected the template slide will have a title shape.</p></article></body></html>
+<p>This is where md2pptx wants to reuse e.g. a text area. It is expected the template slide will have a title shape.</p>
+<h2 id="deviations-from-standard-markdown">Deviations From Standard Markdown<a class="headerlink" href="#deviations-from-standard-markdown" title="Permanent link"></a></h2>
+<p><a id="deviations-from-standard-markdown"></a></p>
+<p>While a key aim of the md2pptx project is to keep as closely as possible to standard Markdown (or at any rate Multimarkdown) there are some known incompatibilities. Apart from the fact md2pptx doesn&rsquo;t support all Markdown (or HTML) syntax, the deviations are intended to be useful and optional.</p>
+<p>This section lists the known ones so you can make judgments about which deviations to tolerate.</p>
+<p>Known deviations are:</p>
+<ul>
+<li>
+<p>md2pptx can reference Encapsulated Postscript (EPS) graphics - by converting them to .PNG files. Markdown and HTML can&rsquo;t. See <a href="#graphics-file-references">Graphics File References</a> for details of how you specify to md2pptx including graphics of various types.</p>
+</li>
+<li>
+<p>In tables the number of dashes in a column&rsquo;s header is used to denote its relative width. This is not standard Markdown behaviour. See <a href="#table-slides">Table Slides</a> for details of md2pptx&rsquo;s Tables support.</p>
+</li>
+<li>md2pptx supports inline Taskpaper format. Markdown doesn&rsquo;t. (The use of the Taskpaper <code>-</code> delimiter currently prevents md2pptx from supporting it as a list bullet marker.) See <a href="#task-list-slides">Task List Slides</a> for details of md2pptx&rsquo;s Taskpaper support.</li>
+</ul></article></body></html>

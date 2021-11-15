@@ -155,6 +155,7 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 		* [Title Only Slide - `TitleOnlyLayout`](#title-only-slide-titleonlylayout)
 		* [Blank Slide - `BlankLayout`](#blank-slide-blanklayout)
 		* [Content Slide - `ContentSlideLayout`](#content-slide-contentslidelayout)
+* [Deviations From Standard Markdown](#deviations-from-standard-markdown)
 
 ## Why md2pptx?
 
@@ -179,7 +180,7 @@ The flat file format that md2pptx uses is Markdown. Using Markdown has further a
 * Markdown is compact; The files are tiny.
 * Markdown is used in popular sites, such as [Github](https://github.com).
 
-Every piece of text you use to create a Powerpoint presentation with md2pptx is valid Markdown. While it might not render exactly the same way put through another Markdown processor, it is generally equivalent. This is one of the key aims of md2pptx.
+Every piece of text you use to create a Powerpoint presentation with md2pptx is valid Markdown - with very few exceptions. While it might not render exactly the same way put through another Markdown processor, it is generally equivalent. This is one of the key aims of md2pptx.
 
 One final advantage of the md2pptx approach is you can generate presentations without using PowerPoint itself. Indeed you can create presentations on machines where PowerPoint won't even run. All you need is to be able to run Python 3 and install python-pptx.
 
@@ -2374,3 +2375,17 @@ This is where md2pptx wants to create a slide without using any content from the
 #### Content Slide - `ContentSlideLayout`
 
 This is where md2pptx wants to reuse e.g. a text area. It is expected the template slide will have a title shape.
+
+## Deviations From Standard Markdown
+<a id="deviations-from-standard-markdown"></a>
+
+While a key aim of the md2pptx project is to keep as closely as possible to standard Markdown (or at any rate Multimarkdown) there are some known incompatibilities. Apart from the fact md2pptx doesn't support all Markdown (or HTML) syntax, the deviations are intended to be useful and optional.
+
+This section lists the known ones so you can make judgments about which deviations to tolerate.
+
+Known deviations are:
+
+* md2pptx can reference Encapsulated Postscript (EPS) graphics - by converting them to .PNG files. Markdown and HTML can't. See [Graphics File References](#graphics-file-references) for details of how you specify to md2pptx including graphics of various types.
+
+* In tables the number of dashes in a column's header is used to denote its relative width. This is not standard Markdown behaviour. See [Table Slides](#table-slides) for details of md2pptx's Tables support.
+* md2pptx supports inline Taskpaper format. Markdown doesn't. (The use of the Taskpaper `-` delimiter currently prevents md2pptx from supporting it as a list bullet marker.) See [Task List Slides](#task-list-slides) for details of md2pptx's Taskpaper support.

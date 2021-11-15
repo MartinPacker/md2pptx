@@ -5,8 +5,8 @@ mdpre Markdown Preprocessor v0.4.6 (26 January, 2021)
 Def mdpre_date = 26 January, 2021
 Def mdpre_level = 0.4.6
 Def userid = martinpacker
-Def time = 20&colon;52
-Def date = 14 November&comma; 2021
+Def time = 20&colon;28
+Def date = 15 November&comma; 2021
 Def TOC = Table Of Contents
 Def md = Markdown
 Def pp = Powerpoint
@@ -177,6 +177,7 @@ CSV Stop
 ..... ..... .....  Title Only Slide - `TitleOnlyLayout`
 ..... ..... .....   Blank Slide - `BlankLayout`
 ..... ..... .....  Content Slide - `ContentSlideLayout`
+.....  Deviations From Standard Markdown
 -----------------------------------------------------
 - Processing completed.
 -----------------------------------------------------
