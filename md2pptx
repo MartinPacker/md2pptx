@@ -33,6 +33,7 @@ import tempfile
 import copy
 import platform
 import shutil
+from cairosvg import helpers
 
 # import xml.etree
 from lxml import etree
@@ -56,8 +57,8 @@ except:
     have_pillow = False
 
 
-md2pptx_level = "2.5"
-md2pptx_date = "14 November, 2021"
+md2pptx_level = "2.5.1"
+md2pptx_date = "12 February, 2022"
 
 
 class SlideInfo:
@@ -167,7 +168,7 @@ class ProcessingOptions:
 
         elif conversion == "int":
             self.setCurrentOption(lowerName, int(optionValue))
-        
+
         self.dynamicallyChangedOptions[lowerName] = True
 
 
@@ -762,7 +763,7 @@ def createShapeHyperlinkAndTooltip(shape, to_slide, tooltipText=""):
     hl._hlink.set("tooltip", tooltipText)
 
 
-def get_image_size(fname):
+def getGraphicDimensions(fname):
     """Determine the image type of fhandle and return its size.
     from draco"""
     try:
@@ -1210,7 +1211,7 @@ def parseText(text):
                 # The bracket is kept in in case there is no matching ]
                 fragment = "["
                 state = "LinkText1"
-                
+
             elif state == "LinkText2":
                 # Could be entering an indirect reference
                 indLinkText = fragment[:-1]
@@ -1218,7 +1219,6 @@ def parseText(text):
                 # The bracket is kept in in case there is no matching ]
                 fragment = "["
                 state = "LinkRef1"
-                
 
         elif c == "]":
             # Could be ending picking up the link text
@@ -1234,18 +1234,18 @@ def parseText(text):
                 textArray.append([state, fragment])
                 state = "N"
                 fragment = ""
-                
+
             elif state == "LinkRef1":
                 # Picked up link reference
                 reference = fragment[1:]
-                
+
                 # Attempt to look up reference
                 foundReference = False
                 for (indref, indURL) in indirectAnchors:
                     if indref == reference:
                         foundReference = True
                         break
-                
+
                 if foundReference:
                     # Append fragment with resolved reference
                     textArray.append(["Link", indLinkText + chr(246) + indURL])
@@ -1575,7 +1575,7 @@ def createProcessingSummarySlide(presentation, rawMetadata):
                 metadata.append(metadataItem)
     else:
         metadata = rawMetadata
-    
+
     metadataRows = len(metadata)
 
     maxMetadataRowsPerColumn = 15
@@ -1621,13 +1621,13 @@ def createProcessingSummarySlide(presentation, rawMetadata):
             # Move to next column
             column += 2
             row = 0
-        
+
         # Set text of metadata key cell
         newTable.cell(row, column).text = key
         if processingOptions.dynamicallyChangedOptions.get(key) is not None:
             # Set text of metadata value cell - with asterisk
             newTable.cell(row, column + 1).text = value + "*"
-            
+
             # Colour key cell blue
             p1 = newTable.cell(row, column).text_frame.paragraphs[0]
             p1.font.color.rgb = RGBColor.from_string("0000FF")
@@ -1706,7 +1706,7 @@ def createTitleOrSectionSlide(
 def handleWhateverGraphicType(graphicFilename):
     # Handles both physical file and URI file types
     graphicFilename = graphicFilename.strip()
-    
+
     # First ensure we have the data in a file and know if the source was a URI
     if ":" in graphicFilename:
         # Is a URI - so we have to retrieve it and store it in a temporary file
@@ -1729,26 +1729,25 @@ def handleWhateverGraphicType(graphicFilename):
         fileExt = graphicFilename[extensionPos:]
 
         # Store in a temporary file
-        tempGraphicFile = tempfile.NamedTemporaryFile(delete=False, suffix = fileExt)
+        tempGraphicFile = tempfile.NamedTemporaryFile(delete=False, suffix=fileExt)
         tempGraphicFile.write(data)
         convertibleFilename = tempGraphicFile.name
         tempGraphicFile.close()
 
     else:
         is_uri = False
-        
+
         # Files don't get their names edited
         printableGraphicFilename = graphicFilename
         convertibleFilename = graphicFilename
 
-        if is_uri:
-            lastSlash = graphicFilename.rindex("/")
-            lastDot = graphicFilename.rindex(".")
-            
-            PNGname = graphicFilename[lastSlash + 1 : lastDot] + ".PNG"
-        else:
-            PNGname = graphicFilename[:-4] + ".PNG"
+    if is_uri:
+        lastSlash = graphicFilename.rindex("/")
+        lastDot = graphicFilename.rindex(".")
 
+        PNGname = graphicFilename[lastSlash + 1 : lastDot] + ".PNG"
+    else:
+        PNGname = graphicFilename[:-4] + ".PNG"
 
     # Process the file - whatever the origin - based on file extension
     if ".svg" in graphicFilename.lower():
@@ -1756,7 +1755,7 @@ def handleWhateverGraphicType(graphicFilename):
         if have_cairosvg:
             # Convert SVG file to temporary PNG
             # Store in a temporary file
-            graphicFile = tempfile.NamedTemporaryFile(delete=False, suffix = ".PNG")
+            graphicFile = tempfile.NamedTemporaryFile(delete=False, suffix=".PNG")
 
             cairosvg.svg2png(file_obj=open(convertibleFilename), write_to=graphicFile)
 
@@ -1767,7 +1766,7 @@ def handleWhateverGraphicType(graphicFilename):
                 try:
                     shutil.copy(graphicFilename, PNGname)
                 except:
-                    print("Copy error: " +PNGname)
+                    print("Copy error: " + PNGname)
 
         else:
             print("Don't have CairoSVG installed. Terminating.")
@@ -1776,9 +1775,9 @@ def handleWhateverGraphicType(graphicFilename):
         if have_pillow:
             # Get EPS file
             im = PIL.Image.open(graphicFilename)
-            
+
             # Store in a temporary file
-            graphicFile = tempfile.NamedTemporaryFile(delete=False, suffix = ".PNG")
+            graphicFile = tempfile.NamedTemporaryFile(delete=False, suffix=".PNG")
 
             try:
                 im.save(graphicFile)
@@ -1793,7 +1792,7 @@ def handleWhateverGraphicType(graphicFilename):
                 try:
                     shutil.copy(graphicFilename, PNGname)
                 except:
-                    print("Copy error: " +PNGname)
+                    print("Copy error: " + PNGname)
 
     else:
         graphicFilename = convertibleFilename
@@ -2632,7 +2631,9 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
         # Get the image dimensions                                         #
         ####################################################################
         if topLeftGraphicFilename != "":
-            topLeftImgWidth, topLeftImgHeight = get_image_size(topLeftGraphicFilename)
+            topLeftImgWidth, topLeftImgHeight = getGraphicDimensions(
+                topLeftGraphicFilename
+            )
             if topLeftImgWidth == -1:
                 if gridRows == 2:
                     print(
@@ -2647,7 +2648,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
         if gridColumns == 2:
             # Get top right image dimensions
             if topRightGraphicFilename != "":
-                topRightImgWidth, topRightImgHeight = get_image_size(
+                topRightImgWidth, topRightImgHeight = getGraphicDimensions(
                     topRightGraphicFilename
                 )
                 if topRightImgWidth == -1:
@@ -2667,7 +2668,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
         if gridRows == 2:
             # Get bottom left image dimensions
             if bottomLeftGraphicFilename != "":
-                bottomLeftImgWidth, bottomLeftImgHeight = get_image_size(
+                bottomLeftImgWidth, bottomLeftImgHeight = getGraphicDimensions(
                     bottomLeftGraphicFilename
                 )
                 if bottomLeftImgWidth == -1:
@@ -2684,9 +2685,10 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                 else:
                     # Get bottom right image dimensions
                     if bottomRightGraphicFilename != "":
-                        bottomRightImgWidth, bottomRightImgHeight = get_image_size(
-                            bottomRightGraphicFilename
-                        )
+                        (
+                            bottomRightImgWidth,
+                            bottomRightImgHeight,
+                        ) = getGraphicDimensions(bottomRightGraphicFilename)
                         if bottomRightImgWidth == -1:
                             print(
                                 "Missing bottom right image file: "
@@ -3168,7 +3170,7 @@ def delinkify(text):
         linkURL = linkMatch.group(2)
         return (linkText, linkURL)
 
-    elif linkMatch:= indirectReferenceUsageRegex(text):
+    elif linkMatch := indirectReferenceUsageRegex(text):
         print(linkMatch.group(1))
         print(linkMatch.group(2))
         return (text, "")
@@ -3716,7 +3718,7 @@ print("\nPython: " + platform.python_version())
 print("python-pptx: " + pptx_version)
 
 if have_pillow:
-    print ("Pillow: " + PIL.__version__)
+    print("Pillow: " + PIL.__version__)
 else:
     print("Pillow: Not Installed")
 
@@ -4086,6 +4088,11 @@ if len(metadata_lines) > 0:
 
 for line in metadata_lines:
     matchInfo = metadataRegex.match(line)
+
+    if matchInfo is None:
+        print("Ignoring invalid metadata line: " + line)
+        continue
+
     name = matchInfo.group(1).strip()
     value = matchInfo.group(2).strip()
     metadata.append([name, value])
@@ -4391,7 +4398,7 @@ for line in metadata_lines:
 
     elif name in ["addtablelinecount", "addtablelinewidth"]:
         processingOptions.setOptionValues(name, int(value))
-    
+
     elif name == "hidemetadata":
         if value == "style":
             processingOptions.hideMetadataStyle = True
@@ -4550,19 +4557,18 @@ for line in linesAfterConcatenation:
     if m := indirectReferenceAnchorRegex.match(line):
         anchorName = m.group(1).strip()
         anchorURL = m.group(2).strip()
-        
+
         indirectAnchors.append([anchorName, anchorURL])
-        
-        
+
         linesAfterConcatenation[metadataLinenumber] = "<ignoreme>"
     metadataLinenumber += 1
-  
+
 # Pass 5: Main pass over the input file, now that footnote
 # references have been gathered
 for line in linesAfterConcatenation:
     # Remove trailing white space
     line = line.rstrip()
-    
+
     # Convert tabs to spaces
     line = line.replace("\t", " " * processingOptions.getCurrentOption("indentSpaces"))
 
@@ -4871,7 +4877,7 @@ for line in linesAfterConcatenation:
             # Create information about a card_title
             cardBullets = []
             cards.append([cardName])
-            inTitle = False    
+            inTitle = False
 
         else:
             # One of Content, Section, or Title slide
@@ -5066,7 +5072,7 @@ for line in linesAfterConcatenation:
     else:
         # Not in a table
         inTable = False
-        
+
         if not inCode:
             # Must be a slide note line or a subtitle line
             if line == "":
