@@ -1371,6 +1371,11 @@ THE SOFTWARE.
 </thead>
 <tbody>
 <tr>
+<td align="left">2.5.1</td>
+<td align="right">12&nbsp;February&nbsp;2022</td>
+<td align="left">Fixed bug 110 - crash on bad metadata line</td>
+</tr>
+<tr>
 <td align="left">2.5</td>
 <td align="right">14&nbsp;November&nbsp;2021</td>
 <td align="left">Added support for <code>&amp;nbsp;</code>. <code>exportGraphics: yes</code> exports PNG for SVG &amp; EPS files. Added support for EPS graphics.</td>
@@ -2475,6 +2480,7 @@ You can change these colours under &ldquo;Themes&rdquo; in the Slide Master edit
 <p>You specify &ldquo;whole presentation&rdquo; metadata in the lines before the first blank line. It consists of key / value pairs, with the key separated from the value by a colon.
 Keys are case insensitive. In this User Guide they are capitalised to aid comprehension. For example, <code>baseTextDecrement</code> is treated the same as <code>basetextdecrement</code>.</p>
 <p>While some Markdown processors handle metadata, most ignore it. Conversely, while md2pptx will generally print <strong>all</strong> the metadata it encounters on the first slide (if the template presentation contains at least 1 slide), it will practically ignore metadata it doesn&rsquo;t understand.</p>
+<p>Also any line containing invalid metadata (that is not in the form <code>key : value</code>) will be flagged as an error but otherwise ignored.</p>
 <p>&ldquo;Whole presentation&rdquo; refers to metadata that applies to every slide in the presentation - unless overridden. Whole presentation metadata items are described in <a href="#metadata-keys">Metadata Keys</a>.</p>
 <p>Some metadata items can be overridden dynamically - in the middle of the presentation. md2pptx will only support these where it makes sense to. These keys are described in <a href="#dynamic-metadata">Dynamic Metadata</a>.</p>
 <h4 id="processing-summary">Processing Summary<a class="headerlink" href="#processing-summary" title="Permanent link"></a></h4>

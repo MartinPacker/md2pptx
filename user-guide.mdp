@@ -142,6 +142,7 @@ To quote from the python-pptx license statement:
 =colalign l r l
 =csv
 Level,Date,What
+2.5.1,12&nbsp;February&nbsp;2022,Fixed bug 110 - crash on bad metadata line
 2.5,14&nbsp;November&nbsp;2021,Added support for `&nbsp;`. `exportGraphics: yes` exports PNG for SVG &amp; EPS files. Added support for EPS graphics.
 2.4.3,24&nbsp;October&nbsp;2021,Added support for indirect links&comma; complementing reference links.
 2.4.2,18&nbsp;October&nbsp;2021,Added `hideMetadata: style` - to suppress `style.` items in the Processing Summary slide. Also flag overridden values in same.
@@ -1191,6 +1192,8 @@ For example, `baseTextDecrement` is treated the same as `basetextdecrement`.
 
 While some Markdown processors handle metadata, most ignore it. \
 Conversely, while md2pptx will generally print **all** the metadata it encounters on the first slide (if the template presentation contains at least 1 slide), it will practically ignore metadata it doesn't understand.
+
+Also any line containing invalid metadata (that is not in the form `key : value`) will be flagged as an error but otherwise ignored.
 
 "Whole presentation" refers to metadata that applies to every slide in the presentation - unless overridden. \
 Whole presentation metadata items are described in [Metadata Keys](#metadata-keys).
