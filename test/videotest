@@ -12,7 +12,7 @@ title = slide.shapes.title
 title.text = "Here's a nice video!"
 
 
-slide.shapes.add_movie("waterdrop.mp4",Inches(1), Inches(1.5),Inches(8),Inches(5))
+slide.shapes.add_movie("waterdrop.mp4",Inches(1), Inches(1.5),Inches(8),Inches(5),"Battery W3M.png")
 
 prs.save('videotest.pptx')
 
