@@ -5,11 +5,23 @@ from pptx.util import Inches, Pt
 
 prs = Presentation()
 title_slide_layout = prs.slide_layouts[5]
+
+# Add video slide
 slide = prs.slides.add_slide(title_slide_layout)
 title = slide.shapes.title
 title.text = "Here's a nice video!"
 
 
 slide.shapes.add_movie("waterdrop.mp4",Inches(1), Inches(1.5),Inches(8),Inches(5))
+
+prs.save('videotest.pptx')
+
+# Add audio slide
+slide = prs.slides.add_slide(title_slide_layout)
+title = slide.shapes.title
+title.text = "Here's a not-so nice audio snippet :-) !"
+
+
+slide.shapes.add_movie("audiotest.m4a",Inches(1), Inches(1.5),Inches(1),Inches(1))
 
 prs.save('videotest.pptx')
