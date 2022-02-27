@@ -57,8 +57,8 @@ except:
     have_pillow = False
 
 
-md2pptx_level = "2.5.1"
-md2pptx_date = "12 February, 2022"
+md2pptx_level = "2.5.2"
+md2pptx_date = "27 February, 2022"
 
 
 class SlideInfo:
@@ -1720,6 +1720,9 @@ def handleWhateverGraphicType(graphicFilename):
         else:
             printableGraphicFilename = graphicFilename
 
+        # Get Temporary File Directory - which might be None
+        tempDir = processingOptions.getCurrentOption("tempDir")
+
         # Retrieve the data into a temporary file
         operUrl = urllib.request.urlopen(graphicFilename)
         data = operUrl.read()
@@ -1729,7 +1732,9 @@ def handleWhateverGraphicType(graphicFilename):
         fileExt = graphicFilename[extensionPos:]
 
         # Store in a temporary file
-        tempGraphicFile = tempfile.NamedTemporaryFile(delete=False, suffix=fileExt)
+        tempGraphicFile = tempfile.NamedTemporaryFile(
+            delete=False, suffix=fileExt, dir=tempDir
+        )
         tempGraphicFile.write(data)
         convertibleFilename = tempGraphicFile.name
         tempGraphicFile.close()
@@ -1755,7 +1760,13 @@ def handleWhateverGraphicType(graphicFilename):
         if have_cairosvg:
             # Convert SVG file to temporary PNG
             # Store in a temporary file
-            graphicFile = tempfile.NamedTemporaryFile(delete=False, suffix=".PNG")
+
+            # Get Temporary File Directory - which might be None
+            tempDir = processingOptions.getCurrentOption("tempDir")
+
+            graphicFile = tempfile.NamedTemporaryFile(
+                delete=False, suffix=".PNG", dir=tempDir
+            )
 
             cairosvg.svg2png(file_obj=open(convertibleFilename), write_to=graphicFile)
 
@@ -1776,8 +1787,13 @@ def handleWhateverGraphicType(graphicFilename):
             # Get EPS file
             im = PIL.Image.open(graphicFilename)
 
+            # Get Temporary File Directory - which might be None
+            tempDir = processingOptions.getCurrentOption("tempDir")
+
             # Store in a temporary file
-            graphicFile = tempfile.NamedTemporaryFile(delete=False, suffix=".PNG")
+            graphicFile = tempfile.NamedTemporaryFile(
+                delete=False, suffix=".PNG", dir=tempDir
+            )
 
             try:
                 im.save(graphicFile)
@@ -2448,8 +2464,25 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
     printableBottomLeftGraphicFilename = ""
     printableBottomRightGraphicFilename = ""
 
+    if (
+        (len(tableRows) == 1)
+        & (len(tableRows[0]) == 1)
+        & (tableRows[0][0][0:11] == "XYZZY-video")
+    ):
+        # Is a video and we know it parses correctly
+        videoElement = tableRows[0][0][11:]
+
+        videoMatch = videoRegex.match(videoElement)
+        width, height, source = videoMatch.groups(0)
+        print(width)
+        print(height)
+        print(source)
+        slide.shapes.add_movie(source, Inches(1), Inches(1.5), Inches(4), Inches(3))
+
+        return
+
     # Handle table body
-    if (len(tableRows) <= 2) & (len(tableRows[0]) <= 2):
+    elif (len(tableRows) <= 2) & (len(tableRows[0]) <= 2):
         # This is a table with 1 or 2 rows and 1 or 2 columns
         isGraphicsGrid = True
         gridRows = len(tableRows)
@@ -3773,6 +3806,8 @@ bothClickableGraphicRegex = re.compile(
     clickableGraphicRE + "(.*?)" + clickableGraphicRE
 )
 
+videoRegex = re.compile('<video width="(\d+)" height="(\d+)" src="(.+)"></video>')
+
 linkRegex = re.compile("^\[(.+)\]\((.+)\)")
 twoUpRegex = re.compile("^\|(.+?)\|(.+?)\|")
 footnoteDefinitionRegex = re.compile("^\[\^(.+?)\]: (.+)")
@@ -3855,6 +3890,11 @@ for line in input_file:
         elif startswithOneOf(lineLstrip, ["</code>", "</pre>"]):
             inCode = False
             afterMetadataAndHTML.append(line)
+
+        elif startswithOneOf(lineLstrip, ["<video ", "<audio "]):
+            # Line goes to post-metadata array
+            afterMetadataAndHTML.append(line)
+
         else:
             inHTML = True
         continue
@@ -3891,6 +3931,7 @@ want_numbers_headings = False
 want_numbers_content = False
 
 processingOptions.setOptionValues("slideTemplateFile", "")
+processingOptions.setOptionValues("tempDir", None)
 
 ######################################################################################
 #                                                                                    #
@@ -4407,6 +4448,9 @@ for line in metadata_lines:
         if value.lower() == "yes":
             processingOptions.setOptionValues(name, True)
 
+    elif name == "tempdir":
+        processingOptions.setOptionValues(name, os.path.expanduser(value))
+
 slideTemplateFile = processingOptions.getCurrentOption("slideTemplateFile")
 if slideTemplateFile != "":
     originalSlideTemplateFile = slideTemplateFile
@@ -4507,6 +4551,10 @@ for line in afterMetadataAndHTML:
 
     elif line.startswith("<a id="):
         # This is an anchor line so keep it separate
+        linesAfterConcatenation.append(line)
+
+    elif startswithOneOf(line, ["<video ", "<audio "]):
+        # This is a video / audio element line
         linesAfterConcatenation.append(line)
 
     elif line.lstrip() == "":
@@ -4982,6 +5030,23 @@ for line in linesAfterConcatenation:
             sequence.append("list")
         inList = True
         inTable = False
+        inTitle = False
+
+    elif match := videoRegex.match(line):
+        if inTable is False:
+            blockType = "table"
+            tableRows.append([])
+            inTable = True
+            sequence.append("table")
+            inList = False
+            inCard = False
+
+        # Create a table row
+        tableRow = []
+        tableRow.append("XYZZY-video" + line)
+
+        # Add table row to saved table rows
+        tableRows[-1].append(tableRow)
         inTitle = False
 
     elif (graphicRegex.match(line) != None) | (
