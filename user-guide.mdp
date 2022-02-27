@@ -142,6 +142,7 @@ To quote from the python-pptx license statement:
 =colalign l r l
 =csv
 Level,Date,What
+2.5.2,27&nbsp;February&nbsp;2022,Added [`tempDir`](#specifying-where-temporary-files-are-stored-with-tempdir) to specify where temporary files are stored.
 2.5.1,12&nbsp;February&nbsp;2022,Fixed bug 110 - crash on bad metadata line
 2.5,14&nbsp;November&nbsp;2021,Added support for `&nbsp;`. `exportGraphics: yes` exports PNG for SVG &amp; EPS files. Added support for EPS graphics.
 2.4.3,24&nbsp;October&nbsp;2021,Added support for indirect links&comma; complementing reference links.
@@ -421,7 +422,9 @@ EPS files - whether from the web or a local file - are converted to a temporary 
 Pillow requires Python to be at least at the 3.7 level.
 
 You can optionally have md2pptx export the temporary PNG files. See [Exporting Converted SVG And PNG Files - `exportGraphics`](#exporting-converted-svg-and-png-files-exportGraphics). \
-The file name is the same as the SVG or EPS file's name, except the extension is PNG. \
+The file name is the same as the SVG or EPS file's name, except the extension is PNG.
+
+**Note:** You can specify which directory temporary files, such as temporary graphics, are stored in - using [`tempDir`](#specifying-where-temporary-files-are-stored-with-tempdir).
 
 ### Table Slides
 <a id="table-slides"></a>
@@ -1563,6 +1566,16 @@ While the default for signifying each level of indentation for bullets is two sp
 
 You can change the value of `IndentSpaces` on a slide-by-slide basis, perhaps because you are including material from elsewhere that uses a different value. \
 See [Dynamic IndentSpaces](#indentspaces-dynamic).
+
+####  Specifying Where Temporary Files Are Stored With `tempDir`
+<a id="specifying-where-temporary-files-are-stored-with-tempdir"></a>
+
+You can specify which directory temporary files are stored in. For example:
+
+    tempDir: ~/Temp
+
+The above stores temporary files in the Temp subdirectory of the user's home directory.
+As you can see from this example directory names are expanded.
 
 #### Table Metadata
 

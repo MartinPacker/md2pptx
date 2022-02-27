@@ -5,8 +5,8 @@ mdpre Markdown Preprocessor v0.5 (27 November, 2021)
 Def mdpre_date = 27 November, 2021
 Def mdpre_level = 0.5
 Def userid = martinpacker
-Def time = 14&colon;32
-Def date = 12 February&comma; 2022
+Def time = 16&colon;55
+Def date = 27 February&comma; 2022
 Def TOC = Table Of Contents
 Def md = Markdown
 Def pp = Powerpoint
@@ -92,6 +92,7 @@ CSV Stop
 ..... ..... .....  Controlling Glossary Slide Production With `glossaryTitle`, `glossaryTerm`, `glossaryMeaning`,`glossaryMeaningWidth`, and `glossaryTermsPerPage`
 ..... ..... .....  Specifying How Much Space To Reserve For Slide Numbers With `NumbersHeight`
 ..... ..... .....  Specifying How Many Spaces Represent An Indentation Level With `IndentSpaces`
+..... ..... .....   Specifying Where Temporary Files Are Stored With `tempDir`
 ..... ..... .....  Table Metadata
 ..... ..... ..... .....  Shrinking Tables With `compactTables`
 ..... ..... ..... .....  Adding Lines Round Tables And Cells With `addTableLines`

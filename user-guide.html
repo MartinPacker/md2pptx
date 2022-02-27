@@ -1166,6 +1166,7 @@ body .markdown-body
 <li><a href="#controlling-glossary-slide-production-with-glossarytitle-glossaryterm-glossarymeaningglossarymeaningwidth-and-glossarytermsperpage">Controlling Glossary Slide Production With <code>glossaryTitle</code>, <code>glossaryTerm</code>, <code>glossaryMeaning</code>,<code>glossaryMeaningWidth</code>, and <code>glossaryTermsPerPage</code></a></li>
 <li><a href="#specifying-how-much-space-to-reserve-for-slide-numbers-with-numbersheight">Specifying How Much Space To Reserve For Slide Numbers With <code>NumbersHeight</code></a></li>
 <li><a href="#specifying-how-many-spaces-represent-an-indentation-level-with-indentspaces">Specifying How Many Spaces Represent An Indentation Level With <code>IndentSpaces</code></a></li>
+<li><a href="#specifying-where-temporary-files-are-stored-with-tempdir">Specifying Where Temporary Files Are Stored With <code>tempDir</code></a></li>
 <li><a href="#table-metadata">Table Metadata</a><ul>
 <li><a href="#shrinking-tables-with-compacttables">Shrinking Tables With <code>compactTables</code></a></li>
 <li><a href="#adding-lines-round-tables-and-cells-with-addtablelines">Adding Lines Round Tables And Cells With <code>addTableLines</code></a></li>
@@ -1370,6 +1371,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">2.5.2</td>
+<td align="right">27&nbsp;February&nbsp;2022</td>
+<td align="left">Added <a href="#specifying-where-temporary-files-are-stored-with-tempdir"><code>tempDir</code></a> to specify where temporary files are stored.</td>
+</tr>
 <tr>
 <td align="left">2.5.1</td>
 <td align="right">12&nbsp;February&nbsp;2022</td>
@@ -1810,6 +1816,7 @@ sectionTitleSize: 30
 <p>If CairoSVG is not installed and md2pptx encounters an SVG graphic reference it will write a message reminding you of the need for CairoSVG. md2pptx will then immediately terminate.</p>
 <p>Encapsulated Postscript (EPS) format is only supported if you have installed the <a href="https://python-pillow.org/">Pillow Python package</a> and <a href="https://www.ghostscript.com/">Ghostscript</a> - as PowerPoint doesn&rsquo;t support it (and nor does python-pptx). EPS files - whether from the web or a local file - are converted to a temporary PNG file first, before copying into the PowerPoint slide deck. Pillow requires Python to be at least at the 3.7 level.</p>
 <p>You can optionally have md2pptx export the temporary PNG files. See <a href="#exporting-converted-svg-and-png-files-exportGraphics">Exporting Converted SVG And PNG Files - <code>exportGraphics</code></a>. The file name is the same as the SVG or EPS file&rsquo;s name, except the extension is PNG.</p>
+<p><strong>Note:</strong> You can specify which directory temporary files, such as temporary graphics, are stored in - using <a href="#specifying-where-temporary-files-are-stored-with-tempdir"><code>tempDir</code></a>.</p>
 <h3 id="table-slides">Table Slides<a class="headerlink" href="#table-slides" title="Permanent link"></a></h3>
 <p><a id="table-slides"></a></p>
 <p>You can create a table slide using Markdown&rsquo;s table format.</p>
@@ -2716,6 +2723,13 @@ baseTextDecrement: 1
 <pre><code>IndentSpaces: 4
 </code></pre>
 <p>You can change the value of <code>IndentSpaces</code> on a slide-by-slide basis, perhaps because you are including material from elsewhere that uses a different value. See <a href="#indentspaces-dynamic">Dynamic IndentSpaces</a>.</p>
+<h4 id="specifying-where-temporary-files-are-stored-with-tempdir">Specifying Where Temporary Files Are Stored With <code>tempDir</code><a class="headerlink" href="#specifying-where-temporary-files-are-stored-with-tempdir" title="Permanent link"></a></h4>
+<p><a id="specifying-where-temporary-files-are-stored-with-tempdir"></a></p>
+<p>You can specify which directory temporary files are stored in. For example:</p>
+<pre><code>tempDir: ~/Temp
+</code></pre>
+<p>The above stores temporary files in the Temp subdirectory of the user&rsquo;s home directory.
+As you can see from this example directory names are expanded.</p>
 <h4 id="table-metadata">Table Metadata<a class="headerlink" href="#table-metadata" title="Permanent link"></a></h4>
 <h5 id="shrinking-tables-with-compacttables">Shrinking Tables With <code>compactTables</code><a class="headerlink" href="#shrinking-tables-with-compacttables" title="Permanent link"></a></h5>
 <p><a id="shrinking-tables-with-compacttables"></a></p>

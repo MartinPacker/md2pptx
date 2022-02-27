@@ -79,6 +79,7 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 		* [Controlling Glossary Slide Production With `glossaryTitle`, `glossaryTerm`, `glossaryMeaning`,`glossaryMeaningWidth`, and `glossaryTermsPerPage`](#controlling-glossary-slide-production-with-glossarytitle-glossaryterm-glossarymeaningglossarymeaningwidth-and-glossarytermsperpage)
 		* [Specifying How Much Space To Reserve For Slide Numbers With `NumbersHeight`](#specifying-how-much-space-to-reserve-for-slide-numbers-with-numbersheight)
 		* [Specifying How Many Spaces Represent An Indentation Level With `IndentSpaces`](#specifying-how-many-spaces-represent-an-indentation-level-with-indentspaces)
+		* [Specifying Where Temporary Files Are Stored With `tempDir`](#specifying-where-temporary-files-are-stored-with-tempdir)
 		* [Table Metadata](#table-metadata)
 			* [Shrinking Tables With `compactTables`](#shrinking-tables-with-compacttables)
 			* [Adding Lines Round Tables And Cells With `addTableLines`](#adding-lines-round-tables-and-cells-with-addtablelines)
@@ -271,6 +272,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|2.5.2|27&nbsp;February&nbsp;2022|Added [`tempDir`](#specifying-where-temporary-files-are-stored-with-tempdir) to specify where temporary files are stored.|
 |2.5.1|12&nbsp;February&nbsp;2022|Fixed bug 110 - crash on bad metadata line|
 |2.5|14&nbsp;November&nbsp;2021|Added support for `&nbsp;`. `exportGraphics: yes` exports PNG for SVG &amp; EPS files. Added support for EPS graphics.|
 |2.4.3|24&nbsp;October&nbsp;2021|Added support for indirect links&comma; complementing reference links.|
@@ -520,6 +522,9 @@ If CairoSVG is not installed and md2pptx encounters an SVG graphic reference it 
 Encapsulated Postscript (EPS) format is only supported if you have installed the [Pillow Python package](https://python-pillow.org/) and [Ghostscript](https://www.ghostscript.com/) - as PowerPoint doesn't support it (and nor does python-pptx). EPS files - whether from the web or a local file - are converted to a temporary PNG file first, before copying into the PowerPoint slide deck. Pillow requires Python to be at least at the 3.7 level.
 
 You can optionally have md2pptx export the temporary PNG files. See [Exporting Converted SVG And PNG Files - `exportGraphics`](#exporting-converted-svg-and-png-files-exportGraphics). The file name is the same as the SVG or EPS file's name, except the extension is PNG.
+
+**Note:** You can specify which directory temporary files, such as temporary graphics, are stored in - using [`tempDir`](#specifying-where-temporary-files-are-stored-with-tempdir).
+
 ### Table Slides
 <a id="table-slides"></a>
 
@@ -1551,6 +1556,16 @@ While the default for signifying each level of indentation for bullets is two sp
     IndentSpaces: 4
 
 You can change the value of `IndentSpaces` on a slide-by-slide basis, perhaps because you are including material from elsewhere that uses a different value. See [Dynamic IndentSpaces](#indentspaces-dynamic).
+
+####  Specifying Where Temporary Files Are Stored With `tempDir`
+<a id="specifying-where-temporary-files-are-stored-with-tempdir"></a>
+
+You can specify which directory temporary files are stored in. For example:
+
+    tempDir: ~/Temp
+
+The above stores temporary files in the Temp subdirectory of the user's home directory.
+As you can see from this example directory names are expanded.
 
 #### Table Metadata
 
