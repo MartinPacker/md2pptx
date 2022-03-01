@@ -57,8 +57,8 @@ except:
     have_pillow = False
 
 
-md2pptx_level = "2.5.2"
-md2pptx_date = "27 February, 2022"
+md2pptx_level = "2.5.3"
+md2pptx_date = "1 March, 2022"
 
 
 class SlideInfo:
@@ -1724,7 +1724,14 @@ def handleWhateverGraphicType(graphicFilename):
         tempDir = processingOptions.getCurrentOption("tempDir")
 
         # Retrieve the data into a temporary file
-        operUrl = urllib.request.urlopen(graphicFilename)
+        try:
+            operUrl = urllib.request.urlopen(graphicFilename)
+        except urllib.error.HTTPError as e:
+            print(e)
+            print("File: " + graphicFilename)
+            print("md2pptx terminating")
+            exit()
+
         data = operUrl.read()
 
         # Obtain file extension
@@ -1732,9 +1739,15 @@ def handleWhateverGraphicType(graphicFilename):
         fileExt = graphicFilename[extensionPos:]
 
         # Store in a temporary file
-        tempGraphicFile = tempfile.NamedTemporaryFile(
-            delete=False, suffix=fileExt, dir=tempDir
-        )
+        try:
+            tempGraphicFile = tempfile.NamedTemporaryFile(
+                delete=False, suffix=fileExt, dir=tempDir
+            )
+        except IOError as e:
+            print(e)
+            print("md2pptx terminating")
+            exit()
+        
         tempGraphicFile.write(data)
         convertibleFilename = tempGraphicFile.name
         tempGraphicFile.close()
@@ -1764,9 +1777,14 @@ def handleWhateverGraphicType(graphicFilename):
             # Get Temporary File Directory - which might be None
             tempDir = processingOptions.getCurrentOption("tempDir")
 
-            graphicFile = tempfile.NamedTemporaryFile(
-                delete=False, suffix=".PNG", dir=tempDir
-            )
+            try:
+                graphicFile = tempfile.NamedTemporaryFile(
+                    delete=False, suffix=".PNG", dir=tempDir
+                )
+            except IOError as e:
+                print(e)
+                print("md2pptx terminating")
+                exit()
 
             cairosvg.svg2png(file_obj=open(convertibleFilename), write_to=graphicFile)
 
@@ -1791,9 +1809,15 @@ def handleWhateverGraphicType(graphicFilename):
             tempDir = processingOptions.getCurrentOption("tempDir")
 
             # Store in a temporary file
-            graphicFile = tempfile.NamedTemporaryFile(
-                delete=False, suffix=".PNG", dir=tempDir
-            )
+            try:
+                graphicFile = tempfile.NamedTemporaryFile(
+                    delete=False, suffix=".PNG", dir=tempDir
+                )
+            except IOError as e:
+                print(e)
+                print("md2pptx terminating")
+                exit()
+        
 
             try:
                 im.save(graphicFile)

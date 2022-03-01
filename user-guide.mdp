@@ -142,6 +142,7 @@ To quote from the python-pptx license statement:
 =colalign l r l
 =csv
 Level,Date,What
+2.5.3,1&nbsp;March&nbsp;2022,Added exception handling when creating temporary file. Also when retrieving files from a URL.
 2.5.2,27&nbsp;February&nbsp;2022,Added [`tempDir`](#specifying-where-temporary-files-are-stored-with-tempdir) to specify where temporary files are stored.
 2.5.1,12&nbsp;February&nbsp;2022,Fixed bug 110 - crash on bad metadata line
 2.5,14&nbsp;November&nbsp;2021,Added support for `&nbsp;`. `exportGraphics: yes` exports PNG for SVG &amp; EPS files. Added support for EPS graphics.
