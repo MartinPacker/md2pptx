@@ -1792,8 +1792,8 @@ def handleWhateverGraphicType(graphicFilename):
         convertibleFilename = graphicFilename
 
     if is_uri:
-        lastSlash = graphicFilename.rindex("/")
-        lastDot = graphicFilename.rindex(".")
+        lastSlash = graphicFilename.rfind("/")
+        lastDot = graphicFilename.rfind(".")
 
         PNGname = graphicFilename[lastSlash + 1 : lastDot] + ".PNG"
     else:
