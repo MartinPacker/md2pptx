@@ -57,7 +57,7 @@ except:
     have_pillow = False
 
 
-md2pptx_level = "2.5.3+"
+md2pptx_level = "2.5.4"
 md2pptx_date = "3 March, 2022"
 
 
@@ -1735,14 +1735,40 @@ def handleWhateverGraphicType(graphicFilename):
 
         data = operUrl.read()
 
-        # Obtain file extension
-        extensionPos = graphicFilename.rindex(".")
-        lastSlashPos = graphicFilename.rindex("/")
-        if lastSlashPos > extensionPos:
-            fileExt = ""
+        # Get Content-Type header - if set
+        content_type = ""
+
+        if str(type(operUrl)) == "<class 'http.client.HTTPResponse'>":
+            # Can try to get content header
+            content_type = operUrl.getheader("content-type")
+        
+            if content_type == "":
+                # Obtain file extension by searching in the URL
+                extensionPos = graphicFilename.rindex(".")
+                lastSlashPos = graphicFilename.rindex("/")
+                if lastSlashPos > extensionPos:
+                    fileExt = ""
             
+                else:
+                    fileExt = graphicFilename[extensionPos:]
+
+            else:
+                # Set file extension based on Content-Type header_name
+                # Note: It's been translated to lower case above
+                if content_type in ["image/jpeg", "image/jpg"]:
+                    # Note: only the first of these two is legitimate
+                    fileExt = "jpg"
+                elif content_type == "image/png":
+                    fileExt = "png"
+                elif content_type in ["image/svg+xml", "image/svg"]:
+                    # Note: only the first of these two is legitimate
+                    fileExt = "svg"
+                elif content_type == "application/postscript":
+                    fileExt = "eps"
+                else:
+                    fileExt = None
         else:
-            fileExt = graphicFilename[extensionPos:]
+            fileExt = None
 
         # Store in a temporary file
         try:
