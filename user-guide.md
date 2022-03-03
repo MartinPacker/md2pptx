@@ -272,6 +272,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|2.5.4|3&nbsp;March&nbsp;2022|Where possible use `Content-Type` HTTP header to determine graphics file type when fetched from the web.|
 |2.5.3|1&nbsp;March&nbsp;2022|Added exception handling when creating temporary file. Also when retrieving files from a URL.|
 |2.5.2|27&nbsp;February&nbsp;2022|Added [`tempDir`](#specifying-where-temporary-files-are-stored-with-tempdir) to specify where temporary files are stored.|
 |2.5.1|12&nbsp;February&nbsp;2022|Fixed bug 110 - crash on bad metadata line|
@@ -524,7 +525,15 @@ Encapsulated Postscript (EPS) format is only supported if you have installed the
 
 You can optionally have md2pptx export the temporary PNG files. See [Exporting Converted SVG And PNG Files - `exportGraphics`](#exporting-converted-svg-and-png-files-exportGraphics). The file name is the same as the SVG or EPS file's name, except the extension is PNG.
 
-**Note:** You can specify which directory temporary files, such as temporary graphics, are stored in - using [`tempDir`](#specifying-where-temporary-files-are-stored-with-tempdir).
+**Notes:**
+
+1. You can specify which directory temporary files, such as temporary graphics, are stored in - using [`tempDir`](#specifying-where-temporary-files-are-stored-with-tempdir).
+2. For graphics - whether image or vector - retrieved from the Internet md2pptx will attempt to acquire the MIME type (`Content-Type` HTTP header) to determine what type the graphic is:
+
+    * PNG - `image/png`
+    * JPEG - `image/jpeg` or `image/jpg` (though the latter is unofficial)
+    * SVG - `image/svg+xml` or `image/svg` (though the latter is unofficial)
+    * EPS - `application/postscript`
 
 ### Table Slides
 <a id="table-slides"></a>

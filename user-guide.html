@@ -1372,6 +1372,11 @@ THE SOFTWARE.
 </thead>
 <tbody>
 <tr>
+<td align="left">2.5.4</td>
+<td align="right">3&nbsp;March&nbsp;2022</td>
+<td align="left">Where possible use <code>Content-Type</code> HTTP header to determine graphics file type when fetched from the web.</td>
+</tr>
+<tr>
 <td align="left">2.5.3</td>
 <td align="right">1&nbsp;March&nbsp;2022</td>
 <td align="left">Added exception handling when creating temporary file. Also when retrieving files from a URL.</td>
@@ -1821,7 +1826,19 @@ sectionTitleSize: 30
 <p>If CairoSVG is not installed and md2pptx encounters an SVG graphic reference it will write a message reminding you of the need for CairoSVG. md2pptx will then immediately terminate.</p>
 <p>Encapsulated Postscript (EPS) format is only supported if you have installed the <a href="https://python-pillow.org/">Pillow Python package</a> and <a href="https://www.ghostscript.com/">Ghostscript</a> - as PowerPoint doesn&rsquo;t support it (and nor does python-pptx). EPS files - whether from the web or a local file - are converted to a temporary PNG file first, before copying into the PowerPoint slide deck. Pillow requires Python to be at least at the 3.7 level.</p>
 <p>You can optionally have md2pptx export the temporary PNG files. See <a href="#exporting-converted-svg-and-png-files-exportGraphics">Exporting Converted SVG And PNG Files - <code>exportGraphics</code></a>. The file name is the same as the SVG or EPS file&rsquo;s name, except the extension is PNG.</p>
-<p><strong>Note:</strong> You can specify which directory temporary files, such as temporary graphics, are stored in - using <a href="#specifying-where-temporary-files-are-stored-with-tempdir"><code>tempDir</code></a>.</p>
+<p><strong>Notes:</strong></p>
+<ol>
+<li>You can specify which directory temporary files, such as temporary graphics, are stored in - using <a href="#specifying-where-temporary-files-are-stored-with-tempdir"><code>tempDir</code></a>.</li>
+<li>
+<p>For graphics - whether image or vector - retrieved from the Internet md2pptx will attempt to acquire the MIME type (<code>Content-Type</code> HTTP header) to determine what type the graphic is:</p>
+<ul>
+<li>PNG - <code>image/png</code></li>
+<li>JPEG - <code>image/jpeg</code> or <code>image/jpg</code> (though the latter is unofficial)</li>
+<li>SVG - <code>image/svg+xml</code> or <code>image/svg</code> (though the latter is unofficial)</li>
+<li>EPS - <code>application/postscript</code></li>
+</ul>
+</li>
+</ol>
 <h3 id="table-slides">Table Slides<a class="headerlink" href="#table-slides" title="Permanent link"></a></h3>
 <p><a id="table-slides"></a></p>
 <p>You can create a table slide using Markdown&rsquo;s table format.</p>
