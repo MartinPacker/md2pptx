@@ -35,8 +35,8 @@ import platform
 import shutil
 from cairosvg import helpers
 
-# import xml.etree
 from lxml import etree
+from lxml.html import fromstring
 
 # Try to import CairoSVG - which might not be installed.
 # Flag availability or otherwise
@@ -57,8 +57,8 @@ except:
     have_pillow = False
 
 
-md2pptx_level = "2.5.3"
-md2pptx_date = "1 March, 2022"
+md2pptx_level = "2.5.3+"
+md2pptx_date = "3 March, 2022"
 
 
 class SlideInfo:
@@ -1726,6 +1726,7 @@ def handleWhateverGraphicType(graphicFilename):
         # Retrieve the data into a temporary file
         try:
             operUrl = urllib.request.urlopen(graphicFilename)
+
         except urllib.error.HTTPError as e:
             print(e)
             print("File: " + graphicFilename)
@@ -1736,7 +1737,12 @@ def handleWhateverGraphicType(graphicFilename):
 
         # Obtain file extension
         extensionPos = graphicFilename.rindex(".")
-        fileExt = graphicFilename[extensionPos:]
+        lastSlashPos = graphicFilename.rindex("/")
+        if lastSlashPos > extensionPos:
+            fileExt = ""
+            
+        else:
+            fileExt = graphicFilename[extensionPos:]
 
         # Store in a temporary file
         try:
@@ -2496,12 +2502,16 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
         # Is a video and we know it parses correctly
         videoElement = tableRows[0][0][11:]
 
-        videoMatch = videoRegex.match(videoElement)
-        width, height, source = videoMatch.groups(0)
-        print(width)
-        print(height)
-        print(source)
-        slide.shapes.add_movie(source, Inches(1), Inches(1.5), Inches(4), Inches(3))
+        videoElementXML = fromstring(videoElement)
+        videoWidth = videoElementXML.attrib["width"]
+        videoHeight = videoElementXML.attrib["height"]
+        src = videoElementXML.attrib["src"]
+        if "poster" in videoElementXML.attrib:
+           poster = videoElementXML.attrib['poster']
+        else:
+           poster = None
+
+        slide.shapes.add_movie(src, Inches(1), Inches(1.5), Inches(4), Inches(3), poster)
 
         return
 
@@ -3830,7 +3840,7 @@ bothClickableGraphicRegex = re.compile(
     clickableGraphicRE + "(.*?)" + clickableGraphicRE
 )
 
-videoRegex = re.compile('<video width="(\d+)" height="(\d+)" src="(.+)"></video>')
+videoRegex = re.compile('<video (.+)></video>')
 
 linkRegex = re.compile("^\[(.+)\]\((.+)\)")
 twoUpRegex = re.compile("^\|(.+?)\|(.+?)\|")
