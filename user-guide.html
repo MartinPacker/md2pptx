@@ -1254,6 +1254,9 @@ body .markdown-body
 <li><a href="#contentsplitdirection"><code>ContentSplitDirection</code></a></li>
 <li><a href="#contentsplit"><code>ContentSplit</code></a></li>
 <li><a href="#indentspaces"><code>IndentSpaces</code></a></li>
+<li><a href="#marginbase"><code>MarginBase</code></a></li>
+<li><a href="#numbersheight"><code>NumbersHeight</code></a></li>
+<li><a href="#tablemargin">TableMargin</a></li>
 </ul>
 </li>
 </ul>
@@ -1371,6 +1374,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">2.5.5</td>
+<td align="right">5&nbsp;March&nbsp;2022</td>
+<td align="left">Make <a href="#tablemargin-dynamic"><code>tableMargin</code></a>&comma; <a href="#marginbase-dynamic"><code>marginBase</code></a>&comma; and <a href="#numbersheight-dynamic"><code>numbersHeight</code></a> dynamically settable.</td>
+</tr>
 <tr>
 <td align="left">2.5.4</td>
 <td align="right">3&nbsp;March&nbsp;2022</td>
@@ -2569,6 +2577,7 @@ For everything else use <code>marginBase</code>.</p>
 <pre><code>marginBase: 0.5
 </code></pre>
 <p>The default is <code>0.2</code> (inches).</p>
+<p>You can do this dynamically (on a slide-by-slide basis with <a href="#marginbase-dynamic"><code>marginBase</code></a> or <a href="#tablemargin-dynamic"><code>tableMargin</code></a>.</p>
 <h4 id="controlling-adjusting-title-positions-and-sizes-adjusttitles">Controlling Adjusting Title Positions And Sizes - <code>AdjustTitles</code><a class="headerlink" href="#controlling-adjusting-title-positions-and-sizes-adjusttitles" title="Permanent link"></a></h4>
 <p><a id="controlling-adjusting-title-positions-and-sizes-adjusttitles"></a></p>
 <p>By default md2pptx will adjust the positions and sizes of slide elements - to create a uniform, tidy experience. Sometimes, though, you might not want this adjustment to happen. For elements other than titles this is unlikely to be the case - as that would interfere with multi-element layouts.</p>
@@ -2736,10 +2745,12 @@ baseTextDecrement: 1
 </code></pre>
 <p>will cause the maximum number of glossary items on a Glossary slide to be 10. If there are more terms, a second slide will be created. And so on. The default is 20.</p>
 <h4 id="specifying-how-much-space-to-reserve-for-slide-numbers-with-numbersheight">Specifying How Much Space To Reserve For Slide Numbers With <code>NumbersHeight</code><a class="headerlink" href="#specifying-how-much-space-to-reserve-for-slide-numbers-with-numbersheight" title="Permanent link"></a></h4>
+<p><a id="specifying-how-much-space-to-reserve-for-slide-numbers-with-numbersheight"></a></p>
 <p>You can override the default space left at the bottom of the slides - for slide numbers or maybe a custom footer:</p>
 <pre><code>NumbersHeight: 1.0
 </code></pre>
 <p>This specifies to reserve 1.0 inches of vertical space. The default is 0.4 inches.</p>
+<p>You can do this dynamically (on a slide-by-slide basis) with <a href="#numbersheight-dynamic"><code>numbersHeight</code></a>.</p>
 <h4 id="specifying-how-many-spaces-represent-an-indentation-level-with-indentspaces">Specifying How Many Spaces Represent An Indentation Level With <code>IndentSpaces</code><a class="headerlink" href="#specifying-how-many-spaces-represent-an-indentation-level-with-indentspaces" title="Permanent link"></a></h4>
 <p>While the default for signifying each level of indentation for bullets is two spaces, you can change it by coding <code>IndentSpaces</code> for metadata. For example:</p>
 <pre><code>IndentSpaces: 4
@@ -3300,6 +3311,23 @@ The default value is <code>no</code>.</p>
 <h4 id="indentspaces"><code>IndentSpaces</code><a class="headerlink" href="#indentspaces" title="Permanent link"></a></h4>
 <p>You can override the presentation <a href="#specifying-how-many-spaces-represent-an-indentation-level-with-indentspaces">IndentSpaces</a> specification on a slide-by-slide basis:</p>
 <pre><code>&lt;!-- md2pptx: indentspaces: 4 --&gt;
+</code></pre>
+<p><a id="marginbase-dynamic"></a></p>
+<h4 id="marginbase"><code>MarginBase</code><a class="headerlink" href="#marginbase" title="Permanent link"></a></h4>
+<p>You can override the presentation <a href="#margin-size-marginbase-and-tablemargin">MarginBase</a> specification on a slide-by-slide-basis. For example:</p>
+<pre><code>&lt;!-- md2pptx: marginbase: 0 --&gt;
+</code></pre>
+<p>You might do this along with a <a href="#numbersheight-dynamic">Dynamic NumbersHeight</a> value of 0 to allow something to occupy the whole slide.</p>
+<p><a id="numbersheight-dynamic"></a></p>
+<h4 id="numbersheight"><code>NumbersHeight</code><a class="headerlink" href="#numbersheight" title="Permanent link"></a></h4>
+<p>You can override the presentation <a href="#specifying-how-much-space-to-reserve-for-slide-numbers-with-numbersheight">NumbersHeight</a> specification on a slide-by-slide-basis. For example:</p>
+<pre><code>&lt;!-- md2pptx: numbersheight: 0 --&gt;
+</code></pre>
+<p>You might do this along with a <a href="#marginbase-dynamic">Dynamic MarginBase</a> value of 0 to allow something to occupy the whole slide.</p>
+<p><a id="tablemargin-dynamic"></a></p>
+<h4 id="tablemargin">TableMargin<a class="headerlink" href="#tablemargin" title="Permanent link"></a></h4>
+<p>You can override the presentation <a href="#margin-size-marginbase-and-tablemargin">TableMargin</a> specification on a slide-by-slide-basis:</p>
+<pre><code>&lt;!-- md2pptx: tablemargin: 0.25 --&gt;
 </code></pre>
 <h2 id="modifying-the-slide-template">Modifying The Slide Template<a class="headerlink" href="#modifying-the-slide-template" title="Permanent link"></a></h2>
 <p><a id="modifying-the-slide-template"></a></p>

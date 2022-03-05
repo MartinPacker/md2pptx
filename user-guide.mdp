@@ -142,6 +142,7 @@ To quote from the python-pptx license statement:
 =colalign l r l
 =csv
 Level,Date,What
+2.5.5,5&nbsp;March&nbsp;2022,Make [`tableMargin`](#tablemargin-dynamic)&comma; [`marginBase`](#marginbase-dynamic)&comma; and [`numbersHeight`](#numbersheight-dynamic) dynamically settable.
 2.5.4,3&nbsp;March&nbsp;2022,Where possible use `Content-Type` HTTP header to determine graphics file type when fetched from the web.
 2.5.3,1&nbsp;March&nbsp;2022,Added exception handling when creating temporary file. Also when retrieving files from a URL.
 2.5.2,27&nbsp;February&nbsp;2022,Added [`tempDir`](#specifying-where-temporary-files-are-stored-with-tempdir) to specify where temporary files are stored.
@@ -1313,6 +1314,9 @@ Example:
 
 The default is `0.2` (inches).
 
+
+You can do this dynamically (on a slide-by-slide basis with [`marginBase`](#marginbase-dynamic) or [`tableMargin`](#tablemargin-dynamic).
+
 #### Controlling Adjusting Title Positions And Sizes - `AdjustTitles`
 <a id="controlling-adjusting-title-positions-and-sizes-adjusttitles"></a>
 
@@ -1560,6 +1564,7 @@ Coding
 will cause the maximum number of glossary items on a Glossary slide to be 10. If there are more terms, a second slide will be created. And so on. The default is 20.
 
 #### Specifying How Much Space To Reserve For Slide Numbers With `NumbersHeight`
+<a id="specifying-how-much-space-to-reserve-for-slide-numbers-with-numbersheight"></a>
 
 You can override the default space left at the bottom of the slides - for slide numbers or maybe a custom footer:
 
@@ -1567,6 +1572,8 @@ You can override the default space left at the bottom of the slides - for slide 
 
 This specifies to reserve 1.0 inches of vertical space. \
 The default is 0.4 inches.
+
+You can do this dynamically (on a slide-by-slide basis) with [`numbersHeight`](#numbersheight-dynamic).
 
 #### Specifying How Many Spaces Represent An Indentation Level With `IndentSpaces`
 
@@ -2402,6 +2409,30 @@ You can override the presentation [IndentSpaces](#specifying-how-many-spaces-rep
 
     <!-- md2pptx: indentspaces: 4 -->
 
+<a id="marginbase-dynamic"></a>
+####  `MarginBase`
+
+You can override the presentation [MarginBase](#margin-size-marginbase-and-tablemargin) specification on a slide-by-slide-basis. For example:
+
+    <!-- md2pptx: marginbase: 0 -->
+
+You might do this along with a [Dynamic NumbersHeight](#numbersheight-dynamic) value of 0 to allow something to occupy the whole slide.
+
+<a id="numbersheight-dynamic"></a>
+####  `NumbersHeight`
+
+You can override the presentation [NumbersHeight](#specifying-how-much-space-to-reserve-for-slide-numbers-with-numbersheight) specification on a slide-by-slide-basis. For example:
+
+    <!-- md2pptx: numbersheight: 0 -->
+
+You might do this along with a [Dynamic MarginBase](#marginbase-dynamic) value of 0 to allow something to occupy the whole slide.
+
+<a id="tablemargin-dynamic"></a>
+#### TableMargin
+
+You can override the presentation [TableMargin](#margin-size-marginbase-and-tablemargin) specification on a slide-by-slide-basis:
+
+    <!-- md2pptx: tablemargin: 0.25 -->
 
 ## Modifying The Slide Template
 <a id="modifying-the-slide-template"></a>

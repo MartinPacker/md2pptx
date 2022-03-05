@@ -57,8 +57,8 @@ except:
     have_pillow = False
 
 
-md2pptx_level = "2.5.4"
-md2pptx_date = "3 March, 2022"
+md2pptx_level = "2.5.5"
+md2pptx_date = "5 March, 2022"
 
 
 class SlideInfo:
@@ -4836,6 +4836,57 @@ for line in linesAfterConcatenation:
                     # Base text decrement
                     processingOptions.dynamicallySetOption(
                         metadataKey, metadataValue, "float"
+                    )
+
+                elif metadataKey == "numbersheight":
+                    # vertical space to reserve for slide number
+                    if metadataValue == "default":
+                        numbersheight = processingOptions.getDefaultOption(
+                            "numbersHeight"
+                        )
+                    elif metadataValue == "pres":
+                        numbersheight = processingOptions.getPresentationOption(
+                            "numbersHeight"
+                        )
+                    else:
+                        numbersheight = int(Inches(float(metadataValue)))
+
+                    processingOptions.dynamicallySetOption(
+                        metadataKey, numbersheight, "int"
+                    )
+
+                elif metadataKey == "marginbase":
+                    #  space to reserve as a margin
+                    if metadataValue == "default":
+                        marginbase = processingOptions.getDefaultOption(
+                            "marginbase"
+                        )
+                    elif metadataValue == "pres":
+                        marginbase = processingOptions.getPresentationOption(
+                            "marginbase"
+                        )
+                    else:
+                        marginbase = int(Inches(float(metadataValue)))
+
+                    processingOptions.dynamicallySetOption(
+                        metadataKey, marginbase, "int"
+                    )
+
+                elif metadataKey == "tablemargin":
+                    #  space to reserve as a table margin
+                    if metadataValue == "default":
+                        tablemargin = processingOptions.getDefaultOption(
+                            "tablemargin"
+                        )
+                    elif metadataValue == "pres":
+                        tablemargin = processingOptions.getPresentationOption(
+                            "tablemargin"
+                        )
+                    else:
+                        tablemargin = int(Inches(float(metadataValue)))
+
+                    processingOptions.dynamicallySetOption(
+                        metadataKey, tablemargin, "int"
                     )
 
                 # Note: Actual value handling prevents using dynamicallySetOption
