@@ -80,6 +80,7 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 		* [Specifying How Much Space To Reserve For Slide Numbers With `NumbersHeight`](#specifying-how-much-space-to-reserve-for-slide-numbers-with-numbersheight)
 		* [Specifying How Many Spaces Represent An Indentation Level With `IndentSpaces`](#specifying-how-many-spaces-represent-an-indentation-level-with-indentspaces)
 		* [Specifying Where Temporary Files Are Stored With `tempDir`](#specifying-where-temporary-files-are-stored-with-tempdir)
+		* [Deleting The First (Processing Summary) Slide - with `DeleteFirstSlide`](#deleting-the-first-(processing-summary)-slide-with-deletefirstslide)
 		* [Table Metadata](#table-metadata)
 			* [Shrinking Tables With `compactTables`](#shrinking-tables-with-compacttables)
 			* [Adding Lines Round Tables And Cells With `addTableLines`](#adding-lines-round-tables-and-cells-with-addtablelines)
@@ -275,6 +276,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|2.6|18&nbsp;March&nbsp;2022|Support multi-column table cells - complying with the MultiMarkdown spec. Added [`deleteFirstSlide`](#deleting-the-first-(processing-summary)-slide-with-deletefirstslide).|
 |2.5.5|5&nbsp;March&nbsp;2022|Make [`tableMargin`](#tablemargin-dynamic)&comma; [`marginBase`](#marginbase-dynamic)&comma; and [`numbersHeight`](#numbersheight-dynamic) dynamically settable.|
 |2.5.4|3&nbsp;March&nbsp;2022|Where possible use `Content-Type` HTTP header to determine graphics file type when fetched from the web.|
 |2.5.3|1&nbsp;March&nbsp;2022|Added exception handling when creating temporary file. Also when retrieving files from a URL.|
@@ -1586,6 +1588,19 @@ You can specify which directory temporary files are stored in. For example:
 
 The above stores temporary files in the Temp subdirectory of the user's home directory.
 As you can see from this example directory names are expanded.
+
+#### Deleting The First (Processing Summary) Slide - with `DeleteFirstSlide`
+<a id="deleting-the-first-(processing-summary)-slide-with-deletefirstslide"></a>
+
+Sometimes you will want to review the Processing Summary slide - which is the first slide in the presentation. Sometimes you won't.
+
+To remove it specify:
+
+    removeFirstSlide: yes
+
+The default is `no`.
+
+**Note:** If you don't have a Processing Summary slide - perhaps because the slide master you used doesn't have a slide - the first slide would still be removed if you specified `removeFirstSlide: yes`. This is probably not what you want to have happen.
 
 #### Table Metadata
 

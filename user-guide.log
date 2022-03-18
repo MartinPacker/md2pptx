@@ -1,12 +1,12 @@
 
-mdpre Markdown Preprocessor v0.5 (27 November, 2021)
-====================================================
+mdpre Markdown Preprocessor v0.6.1 (17 March, 2022)
+===================================================
 - opened <stdout> for writing
-Def mdpre_date = 27 November, 2021
-Def mdpre_level = 0.5
+Def mdpre_date = 17 March, 2022
+Def mdpre_level = 0.6.1
 Def userid = martinpacker
-Def time = 12&colon;49
-Def date = 5 March&comma; 2022
+Def time = 19&colon;52
+Def date = 18 March&comma; 2022
 Def TOC = Table Of Contents
 Def md = Markdown
 Def pp = Powerpoint
@@ -93,6 +93,7 @@ CSV Stop
 ..... ..... .....  Specifying How Much Space To Reserve For Slide Numbers With `NumbersHeight`
 ..... ..... .....  Specifying How Many Spaces Represent An Indentation Level With `IndentSpaces`
 ..... ..... .....   Specifying Where Temporary Files Are Stored With `tempDir`
+..... ..... .....  Deleting The First (Processing Summary) Slide - with `DeleteFirstSlide`
 ..... ..... .....  Table Metadata
 ..... ..... ..... .....  Shrinking Tables With `compactTables`
 ..... ..... ..... .....  Adding Lines Round Tables And Cells With `addTableLines`
@@ -182,7 +183,7 @@ CSV Stop
 ..... ..... .....   Blank Slide - `BlankLayout`
 ..... ..... .....  Content Slide - `ContentSlideLayout`
 .....  Deviations From Standard Markdown
-----------------------------------------------------
+---------------------------------------------------
 - Processing completed.
-----------------------------------------------------
+---------------------------------------------------
 
