@@ -35,7 +35,6 @@ import tempfile
 import copy
 import platform
 import shutil
-from cairosvg import helpers
 
 from lxml import etree
 from lxml.html import fromstring
@@ -44,6 +43,7 @@ from lxml.html import fromstring
 # Flag availability or otherwise
 try:
     import cairosvg
+    from cairosvg import helpers
 
     have_cairosvg = True
 except:
@@ -5495,13 +5495,17 @@ for p in range(picture_count):
 if templateSlideCount > 0:
     createProcessingSummarySlide(prs, metadata)
 
-if processingOptions.getDefaultOption("deletefirstslide"):
-    # Write out the finished presentation - Removing First Slide
-    slide_list_to_dlt = [0]
-    for sldNum in slide_list_to_dlt:
-        rId = prs.slides._sldIdLst[sldNum].rId
-        prs.part.drop_rel(rId)
-        del prs.slides._sldIdLst[sldNum]
+try:
+    if processingOptions.getDefaultOption("deletefirstslide"):
+        # Write out the finished presentation - Removing First Slide
+        slide_list_to_dlt = [0]
+        for sldNum in slide_list_to_dlt:
+            rId = prs.slides._sldIdLst[sldNum].rId
+            prs.part.drop_rel(rId)
+            del prs.slides._sldIdLst[sldNum]
+except:
+    pass
+
 prs.save(output_filename)
 
 elapsed_time = time.time() - start_time
