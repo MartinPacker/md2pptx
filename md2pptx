@@ -58,7 +58,7 @@ except:
 
 
 md2pptx_level = "2.5.5+"
-md2pptx_date = "6 March, 2022"
+md2pptx_date = "18 March, 2022"
 
 
 class SlideInfo:
