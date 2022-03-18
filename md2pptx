@@ -3093,26 +3093,31 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
         for colno in range(columns):
             cols[colno].width = int(shapeWidth * widths[colno] / widths_total)
 
-        # Fill in the cells
+        # Get options for filling in the cells
         compactTables = processingOptions.getCurrentOption("compactTables")
+        spanCells = processingOptions.getCurrentOption("spanCells")
+        
+        # Fill in the cells
         for rowNumber, row in enumerate(tableRows):
             # Add dummy cells to the end of the row so that there are as many
             # cells in the row as there are columns in the table
             cellCount = len(row)
             
             # Unless there is a non-empty cell there is no anchor cell for this row
-            potentialAnchorCell = None
+            if spanCells == "yes":
+                potentialAnchorCell = None
             
             for c in range(cellCount, columns):
                 row.append("")
             for columnNumber, cell in enumerate(row):
                 newCell = newTable.cell(rowNumber, columnNumber)
 
-                if cell != "":
-                    potentialAnchorCell = newCell
-                else:
-                    if potentialAnchorCell is not None:
-                        potentialAnchorCell.merge(newCell)
+                if spanCells == "yes":
+                    if cell != "":
+                        potentialAnchorCell = newCell
+                    else:
+                        if potentialAnchorCell is not None:
+                            potentialAnchorCell.merge(newCell)
                     
                 # For compact table remove the margins around the text
                 if compactTables > 0:
@@ -4031,6 +4036,7 @@ processingOptions.setOptionValuesArray(
         ["addTableLineCount", 1],
         ["addTableLineColour", "000000"],
         ["tableMargin", Inches(0.2)],
+        ["spanCells", "yes"],
     ]
 )
 
@@ -4495,6 +4501,9 @@ for line in metadata_lines:
     elif name in ["addtablelinecount", "addtablelinewidth"]:
         processingOptions.setOptionValues(name, int(value))
 
+    elif name == "spancells":
+        processingOptions.setOptionValues(name, value)
+    
     elif name == "hidemetadata":
         if value == "style":
             processingOptions.hideMetadataStyle = True
@@ -4878,6 +4887,21 @@ for line in linesAfterConcatenation:
 
                     processingOptions.dynamicallySetOption(
                         metadataKey, tablemargin, "int"
+                    )
+
+                elif metadataKey == "spancells":
+                    #  whether table cells can span more than one column
+                    if metadataValue == "default":
+                        spancells = processingOptions.getDefaultOption("spancells")
+                    elif metadataValue == "pres":
+                        spancells = processingOptions.getPresentationOption(
+                            "spancells"
+                        )
+                    else:
+                        spancells = metadataValue
+
+                    processingOptions.dynamicallySetOption(
+                        metadataKey, spancells, ""
                     )
 
                 # Note: Actual value handling prevents using dynamicallySetOption
