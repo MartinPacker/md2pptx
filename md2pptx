@@ -12,7 +12,7 @@ import re
 import sys
 import os
 import time
-import collections 
+import collections
 import collections.abc
 from pptx import Presentation
 from pptx import __version__ as pptx_version
@@ -173,10 +173,12 @@ class ProcessingOptions:
 
         self.dynamicallyChangedOptions[lowerName] = True
 
-def delete_slide(prs, slideNumber):
+
+def deleteSlide(prs, slideNumber):
     rId = prs.slides._sldIdLst[slideNumber].rId
     prs.part.drop_rel(rId)
     del prs.slides._sldIdLst[slideNumber]
+
 
 def startswithOneOf(haystack, needleList):
     for needle in needleList:
@@ -2558,7 +2560,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                     topLeftGraphicTitle = topLeftGraphicMatch.group(1)
                     topLeftGraphicFilename = topLeftGraphicMatch.group(2)
                     topLeftGraphicHref = ""
-                    topLeftVideo=""
+                    topLeftVideo = ""
                 (
                     topLeftGraphicFilename,
                     printableTopLeftGraphicFilename,
@@ -3103,17 +3105,17 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
         # Get options for filling in the cells
         compactTables = processingOptions.getCurrentOption("compactTables")
         spanCells = processingOptions.getCurrentOption("spanCells")
-        
+
         # Fill in the cells
         for rowNumber, row in enumerate(tableRows):
             # Add dummy cells to the end of the row so that there are as many
             # cells in the row as there are columns in the table
             cellCount = len(row)
-            
+
             # Unless there is a non-empty cell there is no anchor cell for this row
             if spanCells == "yes":
                 potentialAnchorCell = None
-            
+
             for c in range(cellCount, columns):
                 row.append("")
             for columnNumber, cell in enumerate(row):
@@ -3125,7 +3127,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                     else:
                         if potentialAnchorCell is not None:
                             potentialAnchorCell.merge(newCell)
-                    
+
                 # For compact table remove the margins around the text
                 if compactTables > 0:
                     newCell.margin_top = Pt(0)
@@ -4254,7 +4256,7 @@ for line in metadata_lines:
             processingOptions.setOptionValues(name, True)
         else:
             processingOptions.setOptionValues(name, False)
-        
+
     elif (name == "template") | (name == "master"):
         if value == "Martin Master.pptx":
             slideTemplateFile = "Martin Template.pptx"
@@ -4518,7 +4520,7 @@ for line in metadata_lines:
 
     elif name == "spancells":
         processingOptions.setOptionValues(name, value)
-    
+
     elif name == "hidemetadata":
         if value == "style":
             processingOptions.hideMetadataStyle = True
@@ -4909,15 +4911,11 @@ for line in linesAfterConcatenation:
                     if metadataValue == "default":
                         spancells = processingOptions.getDefaultOption("spancells")
                     elif metadataValue == "pres":
-                        spancells = processingOptions.getPresentationOption(
-                            "spancells"
-                        )
+                        spancells = processingOptions.getPresentationOption("spancells")
                     else:
                         spancells = metadataValue
 
-                    processingOptions.dynamicallySetOption(
-                        metadataKey, spancells, ""
-                    )
+                    processingOptions.dynamicallySetOption(metadataKey, spancells, "")
 
                 # Note: Actual value handling prevents using dynamicallySetOption
                 elif metadataKey == "cardtitlealign":
@@ -5523,7 +5521,7 @@ if templateSlideCount > 0:
 try:
     if processingOptions.getCurrentOption("deletefirstslide"):
         # Remove first slide
-        delete_slide(prs, 0)
+        deleteSlide(prs, 0)
 
 except:
     pass
