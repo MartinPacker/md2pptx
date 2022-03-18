@@ -57,8 +57,8 @@ except:
     have_pillow = False
 
 
-md2pptx_level = "2.5.5"
-md2pptx_date = "5 March, 2022"
+md2pptx_level = "2.5.5+"
+md2pptx_date = "6 March, 2022"
 
 
 class SlideInfo:
@@ -1741,14 +1741,14 @@ def handleWhateverGraphicType(graphicFilename):
         if str(type(operUrl)) == "<class 'http.client.HTTPResponse'>":
             # Can try to get content header
             content_type = operUrl.getheader("content-type")
-        
+
             if content_type == "":
                 # Obtain file extension by searching in the URL
                 extensionPos = graphicFilename.rindex(".")
                 lastSlashPos = graphicFilename.rindex("/")
                 if lastSlashPos > extensionPos:
                     fileExt = ""
-            
+
                 else:
                     fileExt = graphicFilename[extensionPos:]
 
@@ -1779,7 +1779,7 @@ def handleWhateverGraphicType(graphicFilename):
             print(e)
             print("md2pptx terminating")
             exit()
-        
+
         tempGraphicFile.write(data)
         convertibleFilename = tempGraphicFile.name
         tempGraphicFile.close()
@@ -1849,7 +1849,6 @@ def handleWhateverGraphicType(graphicFilename):
                 print(e)
                 print("md2pptx terminating")
                 exit()
-        
 
             try:
                 im.save(graphicFile)
@@ -2520,29 +2519,8 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
     printableBottomLeftGraphicFilename = ""
     printableBottomRightGraphicFilename = ""
 
-    if (
-        (len(tableRows) == 1)
-        & (len(tableRows[0]) == 1)
-        & (tableRows[0][0][0:11] == "XYZZY-video")
-    ):
-        # Is a video and we know it parses correctly
-        videoElement = tableRows[0][0][11:]
-
-        videoElementXML = fromstring(videoElement)
-        videoWidth = videoElementXML.attrib["width"]
-        videoHeight = videoElementXML.attrib["height"]
-        src = videoElementXML.attrib["src"]
-        if "poster" in videoElementXML.attrib:
-           poster = videoElementXML.attrib['poster']
-        else:
-           poster = None
-
-        slide.shapes.add_movie(src, Inches(1), Inches(1.5), Inches(4), Inches(3), poster)
-
-        return
-
     # Handle table body
-    elif (len(tableRows) <= 2) & (len(tableRows[0]) <= 2):
+    if (len(tableRows) <= 2) & (len(tableRows[0]) <= 2):
         # This is a table with 1 or 2 rows and 1 or 2 columns
         isGraphicsGrid = True
         gridRows = len(tableRows)
@@ -2554,30 +2532,37 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
 
         # Attempt to retrieve filename for left side - top row
         topLeftSide = tableRows[0][0]
-        if (graphicRegex.match(topLeftSide) != None) | (
-            clickableGraphicRegex.match(topLeftSide) != None
+        if (
+            (graphicRegex.match(topLeftSide) != None)
+            | (videoRegex.match(topLeftSide) != None)
+            | (clickableGraphicRegex.match(topLeftSide) != None)
         ):
-            if clickableGraphicMatch := clickableGraphicRegex.match(topLeftSide):
-                # Clickable graphic case
-                topLeftGraphicTitle = clickableGraphicMatch.group(1)
-                topLeftGraphicFilename = clickableGraphicMatch.group(2)
-                topLeftGraphicHref = clickableGraphicMatch.group(3)
+            if videoRegexMatch := videoRegex.match(topLeftSide):
+                topLeftVideo = topLeftSide
             else:
-                # Graphic
-                topLeftGraphicMatch = graphicRegex.match(topLeftSide)
-                topLeftGraphicTitle = topLeftGraphicMatch.group(1)
-                topLeftGraphicFilename = topLeftGraphicMatch.group(2)
-                topLeftGraphicHref = ""
+                if clickableGraphicMatch := clickableGraphicRegex.match(topLeftSide):
+                    # Clickable graphic case
+                    topLeftGraphicTitle = clickableGraphicMatch.group(1)
+                    topLeftGraphicFilename = clickableGraphicMatch.group(2)
+                    topLeftGraphicHref = clickableGraphicMatch.group(3)
+                else:
+                    # Graphic
+                    topLeftGraphicMatch = graphicRegex.match(topLeftSide)
+                    topLeftGraphicTitle = topLeftGraphicMatch.group(1)
+                    topLeftGraphicFilename = topLeftGraphicMatch.group(2)
+                    topLeftGraphicHref = ""
+                    topLeftVideo=""
+                (
+                    topLeftGraphicFilename,
+                    printableTopLeftGraphicFilename,
+                ) = handleWhateverGraphicType(topLeftGraphicFilename)
 
-            (
-                topLeftGraphicFilename,
-                printableTopLeftGraphicFilename,
-            ) = handleWhateverGraphicType(topLeftGraphicFilename)
-            topLeftHTML = ""
-            topGraphicCount += 1
+                topLeftHTML = ""
+                topGraphicCount += 1
         else:
             topLeftGraphicFilename = ""
             topLeftHTML = topLeftSide
+            topLeftVideo = ""
 
         # Attempt to retrieve filename for right side - top row
         if gridColumns == 2:
@@ -3114,11 +3099,21 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
             # Add dummy cells to the end of the row so that there are as many
             # cells in the row as there are columns in the table
             cellCount = len(row)
+            
+            # Unless there is a non-empty cell there is no anchor cell for this row
+            potentialAnchorCell = None
+            
             for c in range(cellCount, columns):
                 row.append("")
             for columnNumber, cell in enumerate(row):
                 newCell = newTable.cell(rowNumber, columnNumber)
 
+                if cell != "":
+                    potentialAnchorCell = newCell
+                else:
+                    if potentialAnchorCell is not None:
+                        potentialAnchorCell.merge(newCell)
+                    
                 # For compact table remove the margins around the text
                 if compactTables > 0:
                     newCell.margin_top = Pt(0)
@@ -3866,7 +3861,7 @@ bothClickableGraphicRegex = re.compile(
     clickableGraphicRE + "(.*?)" + clickableGraphicRE
 )
 
-videoRegex = re.compile('<video (.+)></video>')
+videoRegex = re.compile("<video (.+)></video>")
 
 linkRegex = re.compile("^\[(.+)\]\((.+)\)")
 twoUpRegex = re.compile("^\|(.+?)\|(.+?)\|")
@@ -4858,9 +4853,7 @@ for line in linesAfterConcatenation:
                 elif metadataKey == "marginbase":
                     #  space to reserve as a margin
                     if metadataValue == "default":
-                        marginbase = processingOptions.getDefaultOption(
-                            "marginbase"
-                        )
+                        marginbase = processingOptions.getDefaultOption("marginbase")
                     elif metadataValue == "pres":
                         marginbase = processingOptions.getPresentationOption(
                             "marginbase"
@@ -4875,9 +4868,7 @@ for line in linesAfterConcatenation:
                 elif metadataKey == "tablemargin":
                     #  space to reserve as a table margin
                     if metadataValue == "default":
-                        tablemargin = processingOptions.getDefaultOption(
-                            "tablemargin"
-                        )
+                        tablemargin = processingOptions.getDefaultOption("tablemargin")
                     elif metadataValue == "pres":
                         tablemargin = processingOptions.getPresentationOption(
                             "tablemargin"
@@ -5154,7 +5145,7 @@ for line in linesAfterConcatenation:
 
         # Create a table row
         tableRow = []
-        tableRow.append("XYZZY-video" + line)
+        tableRow.append(line)
 
         # Add table row to saved table rows
         tableRows[-1].append(tableRow)
