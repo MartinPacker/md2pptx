@@ -4124,6 +4124,8 @@ processingOptions.setOptionValuesArray(
 
 processingOptions.setOptionValues("marginBase", Inches(0.2))
 
+processingOptions.setOptionValues("deleteFirstSlide", False)
+
 TOCEntries = []
 
 
@@ -4242,8 +4244,12 @@ for line in metadata_lines:
 
     elif name == "sectionsubtitlesize":
         processingOptions.setOptionValues(name, float(value))
+
     elif name == "deletefirstslide":
-        processingOptions.setDefaultOption("deletefirstslide", True)
+        if value.lower() == "yes":
+            processingOptions.setOptionValues(name, True)
+        else:
+            processingOptions.setOptionValues(name, False)
         
     elif (name == "template") | (name == "master"):
         if value == "Martin Master.pptx":
@@ -5511,7 +5517,8 @@ if templateSlideCount > 0:
     createProcessingSummarySlide(prs, metadata)
 
 try:
-    if processingOptions.getDefaultOption("deletefirstslide"):
+    if processingOptions.getCurrentOption("deletefirstslide"):
+        print("Deleting first slide")
         # Write out the finished presentation - Removing First Slide
         slide_list_to_dlt = [0]
         for sldNum in slide_list_to_dlt:
@@ -5519,6 +5526,7 @@ try:
             prs.part.drop_rel(rId)
             del prs.slides._sldIdLst[sldNum]
 except:
+    print(":Exception")
     pass
 
 prs.save(output_filename)
