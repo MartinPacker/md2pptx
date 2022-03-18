@@ -173,6 +173,10 @@ class ProcessingOptions:
 
         self.dynamicallyChangedOptions[lowerName] = True
 
+def delete_slide(prs, slideNumber):
+    rId = prs.slides._sldIdLst[slideNumber].rId
+    prs.part.drop_rel(rId)
+    del prs.slides._sldIdLst[slideNumber]
 
 def startswithOneOf(haystack, needleList):
     for needle in needleList:
@@ -5518,15 +5522,10 @@ if templateSlideCount > 0:
 
 try:
     if processingOptions.getCurrentOption("deletefirstslide"):
-        print("Deleting first slide")
-        # Write out the finished presentation - Removing First Slide
-        slide_list_to_dlt = [0]
-        for sldNum in slide_list_to_dlt:
-            rId = prs.slides._sldIdLst[sldNum].rId
-            prs.part.drop_rel(rId)
-            del prs.slides._sldIdLst[sldNum]
+        # Remove first slide
+        delete_slide(prs, 0)
+
 except:
-    print(":Exception")
     pass
 
 prs.save(output_filename)
