@@ -5,7 +5,7 @@ mdpre Markdown Preprocessor v0.6.1 (17 March, 2022)
 Def mdpre_date = 17 March, 2022
 Def mdpre_level = 0.6.1
 Def userid = martinpacker
-Def time = 19&colon;52
+Def time = 20&colon;16
 Def date = 18 March&comma; 2022
 Def TOC = Table Of Contents
 Def md = Markdown
@@ -37,6 +37,7 @@ CSV Stop
 ..... ..... .....  Special Case: Two By Two Grid Of Graphics
 ..... ..... .....  Special Case: Three Graphics On A Slide
 ..... ..... .....  Special Case: One Graphic Above Another
+..... ..... .....  Multi-Column Table Cells
 ..... .....  Card Slides
 ..... .....  Code Slides
 ..... ..... .....  `<code>`
@@ -99,6 +100,7 @@ CSV Stop
 ..... ..... ..... .....  Adding Lines Round Tables And Cells With `addTableLines`
 ..... ..... ..... .....  Adding Lines After Table Rows And Columns With `addTableRowLines` And `addTableColumnLines`
 ..... ..... ..... .....  Specifying What The Added Table Lines Look Like With `addTableLineColour`, `addTableLineCount` and `addTableLineWidth`
+..... ..... ..... .....  Controlling Whether Empty Table Cells Cause Column Spanning - `SpanCells`
 ..... ..... .....  Card Metadata
 ..... ..... ..... .....  Card Background Colour - `CardColour`
 ..... ..... ..... .....  Card Border Colour - `CardBorderColour`
@@ -148,6 +150,7 @@ CSV Stop
 ..... ..... ..... .....  `addTableLines`
 ..... ..... ..... .....  `addTableColumnLines` And `addTableRowLines`
 ..... ..... ..... .....  Added Table Line Attributes
+..... ..... ..... .....  `SpanCells`
 ..... ..... .....  Cards
 ..... ..... ..... .....  `CardPercent`
 ..... ..... ..... .....  `CardLayout`

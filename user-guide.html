@@ -1097,6 +1097,7 @@ body .markdown-body
 <li><a href="#special-case-two-by-two-grid-of-graphics">Special Case: Two By Two Grid Of Graphics</a></li>
 <li><a href="#special-case-three-graphics-on-a-slide">Special Case: Three Graphics On A Slide</a></li>
 <li><a href="#special-case-one-graphic-above-another">Special Case: One Graphic Above Another</a></li>
+<li><a href="#multicolumn-table-cells">Multi-Column Table Cells</a></li>
 </ul>
 </li>
 <li><a href="#card-slides">Card Slides</a></li>
@@ -1173,6 +1174,7 @@ body .markdown-body
 <li><a href="#adding-lines-round-tables-and-cells-with-addtablelines">Adding Lines Round Tables And Cells With <code>addTableLines</code></a></li>
 <li><a href="#adding-lines-after-table-rows-and-columns-with-addtablerowlines-and-addtablecolumnlines">Adding Lines After Table Rows And Columns With <code>addTableRowLines</code> And <code>addTableColumnLines</code></a></li>
 <li><a href="#specifying-what-the-added-table-lines-look-like-with-addtablelinecolour-addtablelinecount-and-addtablelinewidth">Specifying What The Added Table Lines Look Like With <code>addTableLineColour</code>, <code>addTableLineCount</code> and <code>addTableLineWidth</code></a></li>
+<li><a href="#controlling-whether-empty-table-cells-cause-column-spanning-spancells">Controlling Whether Empty Table Cells Cause Column Spanning - <code>SpanCells</code></a></li>
 </ul>
 </li>
 <li><a href="#card-metadata">Card Metadata</a><ul>
@@ -1230,6 +1232,7 @@ body .markdown-body
 <li><a href="#addtablelines"><code>addTableLines</code></a></li>
 <li><a href="#addtablecolumnlines-and-addtablerowlines"><code>addTableColumnLines</code> And <code>addTableRowLines</code></a></li>
 <li><a href="#added-table-line-attributes">Added Table Line Attributes</a></li>
+<li><a href="#spancells"><code>SpanCells</code></a></li>
 </ul>
 </li>
 <li><a href="#cards">Cards</a><ul>
@@ -1378,7 +1381,7 @@ THE SOFTWARE.
 <tr>
 <td align="left">2.6</td>
 <td align="right">18&nbsp;March&nbsp;2022</td>
-<td align="left">Support multi-column table cells - complying with the MultiMarkdown spec. Added <a href="#deleting-the-first-(processing-summary)-slide-with-deletefirstslide"><code>deleteFirstSlide</code></a>.</td>
+<td align="left">Support <a href="#multicolumn-table-cells">multi-column table cells</a> - complying with the MultiMarkdown spec. Added <a href="#deleting-the-first-(processing-summary)-slide-with-deletefirstslide"><code>deleteFirstSlide</code></a>.</td>
 </tr>
 <tr>
 <td align="left">2.5.5</td>
@@ -1938,6 +1941,21 @@ sectionTitleSize: 30
 <p>For the types of graphics supported see <a href="#graphics-file-references">Graphics File References</a>.</p>
 <p>For how to make such graphics clickable or have a tooltip see <a href="#clickable-pictures">Clickable Pictures</a>.</p>
 <p><strong>Note:</strong> Regular Markdown processors don&rsquo;t support pictures in tables; They render the <code>|</code> characters literally. For this reason the vertical bars are optional.</p>
+<h4 id="multi-column-table-cells">Multi-Column Table Cells<a class="headerlink" href="#multi-column-table-cells" title="Permanent link"></a></h4>
+<p><a id="multicolumn-table-cells"></a></p>
+<p>Markdown supports cells that span more than one contiguous column. Here&rsquo;s an example:</p>
+<pre><code>|A||C|
+|:-:|:-:|:-|
+|Two cells?||One?|
+|1|2|3|
+||A|B|
+</code></pre>
+<p>In this example</p>
+<ol>
+<li>The empty cell in the heading line causes the &ldquo;A&rdquo; cell to occupy the first two columns.</li>
+<li>The empty cell after &ldquo;Two Cells?&rdquo; causes &ldquo;Two Cells?&rdquo; to occupy the first two columns.</li>
+<li>The empty cell at the beginning of the final row leads to an empty first cell. &ldquo;A&rdquo; is in the second column.</li>
+</ol>
 <h3 id="card-slides">Card Slides<a class="headerlink" href="#card-slides" title="Permanent link"></a></h3>
 <p><a id="card-slides"></a></p>
 <p>A card slide contains side-by-side panels - or cards. Each card has a title and, below that, the contents are defined using the same syntax as in <a href="#bullet-slides">Bullet Slides</a>. In fact this slide type is derivative of the Bullet Slide type.</p>
@@ -2829,6 +2847,13 @@ For example</p>
 </code></pre>
 <p>In this case the only valid values are <code>1</code> and <code>2</code>x.</p>
 <p>You can specify all three of these on a table-by-table basis. See <a href="#addtablelinesattributes-dynamic">Dynamic Metadata</a>.</p>
+<h5 id="controlling-whether-empty-table-cells-cause-column-spanning-spancells">Controlling Whether Empty Table Cells Cause Column Spanning - <code>SpanCells</code><a class="headerlink" href="#controlling-whether-empty-table-cells-cause-column-spanning-spancells" title="Permanent link"></a></h5>
+<p><a id="controlling-whether-empty-table-cells-cause-column-spanning-spancells"></a></p>
+<p>For some use cases you don&rsquo;t want an empty table cell to cause the cell to the left to expand into it. To prevent this code:</p>
+<pre><code>spanCells: no
+</code></pre>
+<p>The default is <code>yes</code>.</p>
+<p>You can override this value at the slide level with <a href="#spancells-dynamic">Dynamic SpanCells</a>.</p>
 <h4 id="card-metadata">Card Metadata<a class="headerlink" href="#card-metadata" title="Permanent link"></a></h4>
 <h5 id="card-background-colour-cardcolour">Card Background Colour - <code>CardColour</code><a class="headerlink" href="#card-background-colour-cardcolour" title="Permanent link"></a></h5>
 <p><a id="card-background-colour-cardcolour"></a></p>
@@ -3234,6 +3259,12 @@ The default value is <code>no</code>.</p>
 <pre><code>&lt;!-- md2pptx: addtablelinecount: 2 --&gt;
 </code></pre>
 <p>makes the added lines each appear as a pair of lines.</p>
+<p><a id="spancells-dynamic"></a></p>
+<h5 id="spancells"><code>SpanCells</code><a class="headerlink" href="#spancells" title="Permanent link"></a></h5>
+<p>You can override the presentation <a href="#controlling-whether-empty-table-cells-cause-column-spanning-spancells"><code>SpanCells</code></a> value:</p>
+<pre><code>&lt;!-- md2pptx: spancells: yes --&gt;
+</code></pre>
+<p>You might do this if the presentation generally tolerates multi-column table cells but this table doesn&rsquo;t.</p>
 <h4 id="cards">Cards<a class="headerlink" href="#cards" title="Permanent link"></a></h4>
 <p><a id="cardpercent-dynamic"></a></p>
 <h5 id="cardpercent"><code>CardPercent</code><a class="headerlink" href="#cardpercent" title="Permanent link"></a></h5>

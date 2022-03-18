@@ -28,6 +28,7 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 		* [Special Case: Two By Two Grid Of Graphics](#special-case-two-by-two-grid-of-graphics)
 		* [Special Case: Three Graphics On A Slide](#special-case-three-graphics-on-a-slide)
 		* [Special Case: One Graphic Above Another](#special-case-one-graphic-above-another)
+		* [Multi-Column Table Cells](#multicolumn-table-cells)
 	* [Card Slides](#card-slides)
 	* [Code Slides](#code-slides)
 		* [`<code>`](#<code>)
@@ -86,6 +87,7 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 			* [Adding Lines Round Tables And Cells With `addTableLines`](#adding-lines-round-tables-and-cells-with-addtablelines)
 			* [Adding Lines After Table Rows And Columns With `addTableRowLines` And `addTableColumnLines`](#adding-lines-after-table-rows-and-columns-with-addtablerowlines-and-addtablecolumnlines)
 			* [Specifying What The Added Table Lines Look Like With `addTableLineColour`, `addTableLineCount` and `addTableLineWidth`](#specifying-what-the-added-table-lines-look-like-with-addtablelinecolour-addtablelinecount-and-addtablelinewidth)
+			* [Controlling Whether Empty Table Cells Cause Column Spanning - `SpanCells`](#controlling-whether-empty-table-cells-cause-column-spanning-spancells)
 		* [Card Metadata](#card-metadata)
 			* [Card Background Colour - `CardColour`](#card-background-colour-cardcolour)
 			* [Card Border Colour - `CardBorderColour`](#card-border-colour-cardbordercolour)
@@ -129,6 +131,7 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 			* [`addTableLines`](#addtablelines)
 			* [`addTableColumnLines` And `addTableRowLines`](#addtablecolumnlines-and-addtablerowlines)
 			* [Added Table Line Attributes](#added-table-line-attributes)
+			* [`SpanCells`](#spancells)
 		* [Cards](#cards)
 			* [`CardPercent`](#cardpercent)
 			* [`CardLayout`](#cardlayout)
@@ -276,7 +279,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
-|2.6|18&nbsp;March&nbsp;2022|Support multi-column table cells - complying with the MultiMarkdown spec. Added [`deleteFirstSlide`](#deleting-the-first-(processing-summary)-slide-with-deletefirstslide).|
+|2.6|18&nbsp;March&nbsp;2022|Support [multi-column table cells](#multicolumn-table-cells) - complying with the MultiMarkdown spec. Added [`deleteFirstSlide`](#deleting-the-first-(processing-summary)-slide-with-deletefirstslide).|
 |2.5.5|5&nbsp;March&nbsp;2022|Make [`tableMargin`](#tablemargin-dynamic)&comma; [`marginBase`](#marginbase-dynamic)&comma; and [`numbersHeight`](#numbersheight-dynamic) dynamically settable.|
 |2.5.4|3&nbsp;March&nbsp;2022|Where possible use `Content-Type` HTTP header to determine graphics file type when fetched from the web.|
 |2.5.3|1&nbsp;March&nbsp;2022|Added exception handling when creating temporary file. Also when retrieving files from a URL.|
@@ -673,6 +676,23 @@ For the types of graphics supported see [Graphics File References](#graphics-fil
 For how to make such graphics clickable or have a tooltip see [Clickable Pictures](#clickable-pictures).
 
 **Note:** Regular Markdown processors don't support pictures in tables; They render the `|` characters literally. For this reason the vertical bars are optional.
+
+#### Multi-Column Table Cells
+<a id="multicolumn-table-cells"></a>
+
+Markdown supports cells that span more than one contiguous column. Here's an example:
+
+    |A||C|
+    |:-:|:-:|:-|
+    |Two cells?||One?|
+    |1|2|3|
+    ||A|B|
+
+In this example
+
+1. The empty cell in the heading line causes the "A" cell to occupy the first two columns.
+1. The empty cell after "Two Cells?" causes "Two Cells?" to occupy the first two columns.
+1. The empty cell at the beginning of the final row leads to an empty first cell. "A" is in the second column.
 
 ### Card Slides
 <a id="card-slides"></a>
@@ -1681,6 +1701,17 @@ In this case the only valid values are `1` and `2`x.
 
 You can specify all three of these on a table-by-table basis. See [Dynamic Metadata](#addtablelinesattributes-dynamic).
 
+##### Controlling Whether Empty Table Cells Cause Column Spanning - `SpanCells`
+<a id="controlling-whether-empty-table-cells-cause-column-spanning-spancells"></a>
+
+For some use cases you don't want an empty table cell to cause the cell to the left to expand into it. To prevent this code:
+
+    spanCells: no
+
+The default is `yes`.
+
+You can override this value at the slide level with [Dynamic SpanCells](#spancells-dynamic).
+
 #### Card Metadata
 
 ##### Card Background Colour - `CardColour`
@@ -2221,6 +2252,15 @@ makes the added lines 4 times wider than normal.
     <!-- md2pptx: addtablelinecount: 2 -->
 
 makes the added lines each appear as a pair of lines.
+
+<a id="spancells-dynamic"></a>
+##### `SpanCells`
+
+You can override the presentation [`SpanCells`](#controlling-whether-empty-table-cells-cause-column-spanning-spancells) value:
+
+    <!-- md2pptx: spancells: yes -->
+
+You might do this if the presentation generally tolerates multi-column table cells but this table doesn't.
 
 #### Cards
 
