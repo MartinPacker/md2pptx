@@ -12,6 +12,8 @@ import re
 import sys
 import os
 import time
+import collections 
+import collections.abc
 from pptx import Presentation
 from pptx import __version__ as pptx_version
 from pptx.util import Inches, Pt
@@ -33,7 +35,6 @@ import tempfile
 import copy
 import platform
 import shutil
-from cairosvg import helpers
 
 from lxml import etree
 from lxml.html import fromstring
@@ -42,6 +43,7 @@ from lxml.html import fromstring
 # Flag availability or otherwise
 try:
     import cairosvg
+    from cairosvg import helpers
 
     have_cairosvg = True
 except:
@@ -256,6 +258,7 @@ def resolveSymbols(text):
     text2 = text2.replace("&nu;", "ν")
     text2 = text2.replace("&pi;", "π")
     text2 = text2.replace("&rho;", "ρ")
+    text2 = text2.replace("&dash;", "-")
 
     return text2
 
@@ -4239,7 +4242,9 @@ for line in metadata_lines:
 
     elif name == "sectionsubtitlesize":
         processingOptions.setOptionValues(name, float(value))
-
+    elif name == "deletefirstslide":
+        processingOptions.setDefaultOption("deletefirstslide", True)
+        
     elif (name == "template") | (name == "master"):
         if value == "Martin Master.pptx":
             slideTemplateFile = "Martin Template.pptx"
@@ -5505,7 +5510,17 @@ for p in range(picture_count):
 if templateSlideCount > 0:
     createProcessingSummarySlide(prs, metadata)
 
-# Write out the finished presentation
+try:
+    if processingOptions.getDefaultOption("deletefirstslide"):
+        # Write out the finished presentation - Removing First Slide
+        slide_list_to_dlt = [0]
+        for sldNum in slide_list_to_dlt:
+            rId = prs.slides._sldIdLst[sldNum].rId
+            prs.part.drop_rel(rId)
+            del prs.slides._sldIdLst[sldNum]
+except:
+    pass
+
 prs.save(output_filename)
 
 elapsed_time = time.time() - start_time
