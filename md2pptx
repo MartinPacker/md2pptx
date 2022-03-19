@@ -59,8 +59,8 @@ except:
     have_pillow = False
 
 
-md2pptx_level = "2.6"
-md2pptx_date = "18 March, 2022"
+md2pptx_level = "2.6.1"
+md2pptx_date = "19 March, 2022"
 
 
 class SlideInfo:
@@ -3057,11 +3057,9 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
 
             # Remove this alignment / widths row from the table
             del tableRows[1]
-            wantTableHeading = True
         else:
             # No table heading
             tableHeadingBlurb = " without heading"
-            wantTableHeading = False
 
             # Use default width - 1 - and default alignment - l
             for c in range(columns):
@@ -3086,7 +3084,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
         shapeWidth = newTableShape.width
 
         # Set whether first row is not special
-        newTable.first_row = wantTableHeading
+        newTable.first_row = haveTableHeading
 
         print(
             "           --> "
@@ -3105,6 +3103,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
         # Get options for filling in the cells
         compactTables = processingOptions.getCurrentOption("compactTables")
         spanCells = processingOptions.getCurrentOption("spanCells")
+        tableHeadingSize = processingOptions.getCurrentOption("tableHeadingSize")
 
         # Fill in the cells
         for rowNumber, row in enumerate(tableRows):
@@ -3118,6 +3117,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
 
             for c in range(cellCount, columns):
                 row.append("")
+
             for columnNumber, cell in enumerate(row):
                 newCell = newTable.cell(rowNumber, columnNumber)
 
@@ -3126,6 +3126,11 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                         potentialAnchorCell = newCell
                     else:
                         if potentialAnchorCell is not None:
+                            # Might need to remove previous cell merge
+                            if potentialAnchorCell.span_width > 1:
+                                potentialAnchorCell.split()
+
+                            # Merge the cells from the anchor up to this one
                             potentialAnchorCell.merge(newCell)
 
                 # For compact table remove the margins around the text
@@ -3146,6 +3151,9 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                 # For compact table use specified point size for text
                 if compactTables > 0:
                     p.font.size = Pt(compactTables)
+
+                if (rowNumber == 0) & (tableHeadingSize > 0):
+                    p.font.size = Pt(tableHeadingSize)
 
                 if columnNumber >= alignments_count:
                     p.alignment = PP_ALIGN.LEFT
@@ -4046,6 +4054,7 @@ processingOptions.setOptionValuesArray(
         ["addTableLineColour", "000000"],
         ["tableMargin", Inches(0.2)],
         ["spanCells", "yes"],
+        ["tableHeadingSize", 0],
     ]
 )
 
@@ -4308,6 +4317,9 @@ for line in metadata_lines:
         processingOptions.setOptionValues(name, float(value))
 
     elif name == "compacttables":
+        processingOptions.setOptionValues(name, float(value))
+
+    elif name == "tableheadingsize":
         processingOptions.setOptionValues(name, float(value))
 
     elif name == "abstracttitle":
@@ -4825,6 +4837,12 @@ for line in linesAfterConcatenation:
                 # Valid metadata pair so parse key / value - and apply if valid
                 if metadataKey == "compacttables":
                     # Font size for tables
+                    processingOptions.dynamicallySetOption(
+                        metadataKey, metadataValue.lower(), "float"
+                    )
+
+                if metadataKey == "tableheadingsize":
+                    # Heading font size for tables
                     processingOptions.dynamicallySetOption(
                         metadataKey, metadataValue.lower(), "float"
                     )
