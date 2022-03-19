@@ -1,12 +1,12 @@
 
-mdpre Markdown Preprocessor v0.6.1 (17 March, 2022)
+mdpre Markdown Preprocessor v0.6.2 (19 March, 2022)
 ===================================================
 - opened <stdout> for writing
-Def mdpre_date = 17 March, 2022
-Def mdpre_level = 0.6.1
+Def mdpre_date = 19 March, 2022
+Def mdpre_level = 0.6.2
 Def userid = martinpacker
-Def time = 20&colon;16
-Def date = 18 March&comma; 2022
+Def time = 17&colon;27
+Def date = 19 March&comma; 2022
 Def TOC = Table Of Contents
 Def md = Markdown
 Def pp = Powerpoint
@@ -97,6 +97,7 @@ CSV Stop
 ..... ..... .....  Deleting The First (Processing Summary) Slide - with `DeleteFirstSlide`
 ..... ..... .....  Table Metadata
 ..... ..... ..... .....  Shrinking Tables With `compactTables`
+..... ..... ..... .....  Adjusting Table Heading Font Size With `tableHeadingSize`
 ..... ..... ..... .....  Adding Lines Round Tables And Cells With `addTableLines`
 ..... ..... ..... .....  Adding Lines After Table Rows And Columns With `addTableRowLines` And `addTableColumnLines`
 ..... ..... ..... .....  Specifying What The Added Table Lines Look Like With `addTableLineColour`, `addTableLineCount` and `addTableLineWidth`
@@ -147,6 +148,7 @@ CSV Stop
 ..... .....  Dynamic Metadata
 ..... ..... .....  Tables
 ..... ..... ..... .....  `CompactTables`
+..... ..... ..... .....  `TableHeadingSize`
 ..... ..... ..... .....  `addTableLines`
 ..... ..... ..... .....  `addTableColumnLines` And `addTableRowLines`
 ..... ..... ..... .....  Added Table Line Attributes

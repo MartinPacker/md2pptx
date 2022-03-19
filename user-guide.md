@@ -84,6 +84,7 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 		* [Deleting The First (Processing Summary) Slide - with `DeleteFirstSlide`](#deleting-the-first-(processing-summary)-slide-with-deletefirstslide)
 		* [Table Metadata](#table-metadata)
 			* [Shrinking Tables With `compactTables`](#shrinking-tables-with-compacttables)
+			* [Adjusting Table Heading Font Size With `tableHeadingSize`](#adjusting-table-heading-font-size-with-tableheadingsize)
 			* [Adding Lines Round Tables And Cells With `addTableLines`](#adding-lines-round-tables-and-cells-with-addtablelines)
 			* [Adding Lines After Table Rows And Columns With `addTableRowLines` And `addTableColumnLines`](#adding-lines-after-table-rows-and-columns-with-addtablerowlines-and-addtablecolumnlines)
 			* [Specifying What The Added Table Lines Look Like With `addTableLineColour`, `addTableLineCount` and `addTableLineWidth`](#specifying-what-the-added-table-lines-look-like-with-addtablelinecolour-addtablelinecount-and-addtablelinewidth)
@@ -128,6 +129,7 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 	* [Dynamic Metadata](#dynamic-metadata)
 		* [Tables](#tables)
 			* [`CompactTables`](#compacttables)
+			* [`TableHeadingSize`](#tableheadingsize)
 			* [`addTableLines`](#addtablelines)
 			* [`addTableColumnLines` And `addTableRowLines`](#addtablecolumnlines-and-addtablerowlines)
 			* [Added Table Line Attributes](#added-table-line-attributes)
@@ -279,6 +281,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|2.6.1|19&nbsp;March&nbsp;2022|Added [tableHeadingSize](#adjusting-table-heading-font-size-with-tableheadingsize) and fixed bug with cell spanning more than 2 columns.|
 |2.6|18&nbsp;March&nbsp;2022|Support [multi-column table cells](#multicolumn-table-cells) - complying with the MultiMarkdown spec. Added [`deleteFirstSlide`](#deleting-the-first-(processing-summary)-slide-with-deletefirstslide).|
 |2.5.5|5&nbsp;March&nbsp;2022|Make [`tableMargin`](#tablemargin-dynamic)&comma; [`marginBase`](#marginbase-dynamic)&comma; and [`numbersHeight`](#numbersheight-dynamic) dynamically settable.|
 |2.5.4|3&nbsp;March&nbsp;2022|Where possible use `Content-Type` HTTP header to determine graphics file type when fetched from the web.|
@@ -1639,8 +1642,19 @@ For example, to remove the margins and reduce the font size to 16pt code
 You can override this value with [Dynamic Metadata](#compacttables-dynamic).
 
 
-##### Adding Lines Round Tables And Cells With `addTableLines`
+<a id="adjusting-table-heading-font-size-with-tableheadingsize"></a>
+##### Adjusting Table Heading Font Size With `tableHeadingSize`
+
+You can adjust the size of a table heading on the slide with `tableHeadingSize`. If you specify a value larger than 0 the table heading line font will use whatever point size you specify.
+
+For example, to increase the table heading font size to 24pt code
+
+    tableHeadingSize: 24
+
+You can override this value with [Dynamic Metadata](#tableheadingsize-dynamic).
+
 <a id="adding-lines-round-tables-and-cells-with-addtablelines"></a>
+##### Adding Lines Round Tables And Cells With `addTableLines`
 
 You can add lines to tables in two ways:
 
@@ -1658,8 +1672,8 @@ You can override this metadata item with [Dynamic Metadata](#addtablelines-dynam
 
 **Note:** This capability never removes lines - for example if they are present in the template presentation.
 
-##### Adding Lines After Table Rows And Columns With `addTableRowLines` And `addTableColumnLines`
 <a id="adding-lines-after-table-rows-and-columns-with-addtablerowlines-and-addtablecolumnlines"></a>
+##### Adding Lines After Table Rows And Columns With `addTableRowLines` And `addTableColumnLines`
 
 You can add lines to the right of specific columns and below specific rows with `addTableColumnLines` and `addTableRowLines`, respectively.
 For example
@@ -1678,8 +1692,8 @@ You can override both these metadata items with [Dynamic Metadata](#addtablecolu
 
 **Note:** This capability never removes lines - for example if they are present in the template presentation.
 
-##### Specifying What The Added Table Lines Look Like With `addTableLineColour`, `addTableLineCount` and `addTableLineWidth`
 <a id="specifying-what-the-added-table-lines-look-like-with-addtablelinecolour-addtablelinecount-and-addtablelinewidth"></a>
+##### Specifying What The Added Table Lines Look Like With `addTableLineColour`, `addTableLineCount` and `addTableLineWidth`
 
 By default added table lines are black, narrow, and consist of a single line. You can change all three of these.
 
@@ -2215,6 +2229,13 @@ If you dynamically change a metadata value the new value will remain in effect f
 You can override the presentation [CompactTables](#shrinking-tables-with-compacttables) metadata value - perhaps to decrease the font size for a particularly crowded table slide:
 
     <!-- md2pptx: compacttables: 12 -->
+
+<a id="tableheadingsize-dynamic"></a>
+##### `TableHeadingSize`
+
+You can override the presentation [TableHeadingSize](#adjusting-table-heading-font-size-with-tableheadingsize) metadata value - perhaps to increase the font size for a particular table slide:
+
+    <!-- md2pptx: tableheadingsize: 36 -->
 
 <a id="addtablelines-dynamic"></a>
 ##### `addTableLines`
