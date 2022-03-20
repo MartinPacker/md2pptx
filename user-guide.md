@@ -1133,7 +1133,7 @@ md2pptx supports a few [HTML entity references](https://en.wikipedia.org/wiki/Li
 |`&comma;`|&comma;|`&infin;`|&infin;|`&exist;`|&exist;|
 |`&check;`|&check;|`&times;`|&times;|`&lambda;`|&lambda;|
 |`&mu;`|&mu;|`&nu;`|&nu;|`&pi;`|&pi;|
-|`&rho;`|&rho;|`&nbsp;`|*non-breaking space*|
+|`&rho;`|&rho;|`&nbsp;`|*non-breaking space*|`&dash;`|&dash;|
 
 ### Numeric Character References
 <a id="numeric-character-references"></a>
