@@ -59,8 +59,8 @@ except:
     have_pillow = False
 
 
-md2pptx_level = "2.6.1"
-md2pptx_date = "19 March, 2022"
+md2pptx_level = "2.6.1+"
+md2pptx_date = "23 March, 2022"
 
 
 class SlideInfo:
@@ -83,6 +83,34 @@ class SlideInfo:
         self.cards = cards
         self.code = code
         self.sequence = sequence
+
+
+# Information about a video
+class VideoInfo:
+    def __init__(self, elementString):
+        videoElement = fromstring(elementString)
+
+        if "src" in videoElement.attrib.keys():
+            self.source = videoElement.attrib["src"]
+        else:
+            self.source = ""
+
+        if "width" in videoElement.attrib.keys():
+            self.width = int(videoElement.attrib["width"])
+        else:
+            self.width = 1024
+
+        if "height" in videoElement.attrib.keys():
+            self.height = int(videoElement.attrib["height"])
+        else:
+            self.height = 768
+
+        self.aspectRatio = self.width / self.height
+
+        if "poster" in videoElement.attrib.keys():
+            self.poster = videoElement.attrib["poster"]
+        else:
+            self.poster = None
 
 
 # Expected units are those of md2pptx
@@ -484,7 +512,7 @@ def reportSlideTitle(slideNumber, indent, titleText):
     print(str(slideNumber).rjust(4) + " " + ("  " * indent) + titleText)
 
 
-def reportGraphicFileNames(leftFilename, rightFilename=""):
+def reportGraphicFilenames(leftFilename, rightFilename=""):
     if rightFilename == "":
         print("             ---> " + leftFilename.ljust(30))
     else:
@@ -515,6 +543,60 @@ def scalePicture(maxPicWidth, maxPicHeight, imageWidth, imageHeight):
         picWidth = maxPicWidth
         picHeight = heightIfWidthUsed
     return (picWidth, picHeight, usingHeightToScale)
+
+
+def parseMedia(cellString, graphicCount):
+    graphicTitle = ""
+    HTML = ""
+    videoInfo = None
+    graphicHref = ""
+    GraphicFilename = ""
+    printableGraphicFilename = ""
+
+    graphicCount += 1
+
+    if videoRegexMatch := videoRegex.match(cellString):
+        # Cell contains a video
+        videoInfo = VideoInfo(cellString)
+        _, printableGraphicFilename = handleWhateverGraphicType(videoInfo.source)
+
+    elif clickableGraphicMatch := clickableGraphicRegex.match(cellString):
+        # Cell contains a clickable graphic
+        graphicTitle = clickableGraphicMatch.group(1)
+        GraphicFilename = clickableGraphicMatch.group(2)
+        graphicHref = clickableGraphicMatch.group(3)
+
+        (
+            GraphicFilename,
+            printableGraphicFilename,
+        ) = handleWhateverGraphicType(GraphicFilename)
+
+    elif graphicMatch := graphicRegex.match(cellString):
+        # Cell contains a non-clickable graphic
+        graphicTitle = graphicMatch.group(1)
+        GraphicFilename = graphicMatch.group(2)
+
+        (
+            GraphicFilename,
+            printableGraphicFilename,
+        ) = handleWhateverGraphicType(GraphicFilename)
+
+    else:
+        # Not a graphic or video
+        GraphicFilename = ""
+        printableGraphicFilename = ""
+        HTML = cellString
+        graphicCount -= 1
+
+    return (
+        graphicTitle,
+        GraphicFilename,
+        printableGraphicFilename,
+        graphicHref,
+        HTML,
+        videoInfo,
+        graphicCount,
+    )
 
 
 # Send a shape to the back on a slide
@@ -783,7 +865,7 @@ def getGraphicDimensions(fname):
             if imghdr.what(fname) == "png":
                 check = struct.unpack(">i", head[4:8])[0]
                 if check != 0x0D0A1A0A:
-                    return
+                    return -1, -1
                 width, height = struct.unpack(">ii", head[16:24])
             elif imghdr.what(fname) == "gif":
                 width, height = struct.unpack("<HH", head[6:10])
@@ -805,8 +887,20 @@ def getGraphicDimensions(fname):
                 except Exception:  # IGNORE:W0703
                     return
             else:
-                return
+                return -1, -1
+
             return width, height
+
+    except EnvironmentError:
+        return -1, -1
+
+
+def getVideoDimensions(videoInfo):
+    try:
+        fhandle = open(videoInfo.source, "rb")
+
+        return videoInfo.width, videoInfo.height
+
     except EnvironmentError:
         return -1, -1
 
@@ -841,11 +935,6 @@ def renderText(shape, bullets):
             makeNumberedListItem(p)
 
     tf.auto_size = MSO_AUTO_SIZE.TEXT_TO_FIT_SHAPE
-
-
-# Render an array of table rows
-def renderTable(shape, bounds, tableRows):
-    x = 1
 
 
 def findTitleShape(slide):
@@ -1712,33 +1801,33 @@ def createTitleOrSectionSlide(
     return slide
 
 
-def handleWhateverGraphicType(graphicFilename):
+def handleWhateverGraphicType(GraphicFilename):
     # Handles both physical file and URI file types
-    graphicFilename = graphicFilename.strip()
+    GraphicFilename = GraphicFilename.strip()
 
     # First ensure we have the data in a file and know if the source was a URI
-    if ":" in graphicFilename:
+    if ":" in GraphicFilename:
         # Is a URI - so we have to retrieve it and store it in a temporary file
         is_uri = True
 
         # Massage the URI into a printable filename
-        if len(graphicFilename) > 50:
+        if len(GraphicFilename) > 50:
             printableGraphicFilename = (
-                graphicFilename[:25] + "..." + graphicFilename[-25:]
+                GraphicFilename[:25] + "..." + GraphicFilename[-25:]
             )
         else:
-            printableGraphicFilename = graphicFilename
+            printableGraphicFilename = GraphicFilename
 
         # Get Temporary File Directory - which might be None
         tempDir = processingOptions.getCurrentOption("tempDir")
 
         # Retrieve the data into a temporary file
         try:
-            operUrl = urllib.request.urlopen(graphicFilename)
+            operUrl = urllib.request.urlopen(GraphicFilename)
 
         except urllib.error.HTTPError as e:
             print(e)
-            print("File: " + graphicFilename)
+            print("File: " + GraphicFilename)
             print("md2pptx terminating")
             exit()
 
@@ -1753,13 +1842,13 @@ def handleWhateverGraphicType(graphicFilename):
 
             if content_type == "":
                 # Obtain file extension by searching in the URL
-                extensionPos = graphicFilename.rindex(".")
-                lastSlashPos = graphicFilename.rindex("/")
+                extensionPos = GraphicFilename.rindex(".")
+                lastSlashPos = GraphicFilename.rindex("/")
                 if lastSlashPos > extensionPos:
                     fileExt = ""
 
                 else:
-                    fileExt = graphicFilename[extensionPos:]
+                    fileExt = GraphicFilename[extensionPos:]
 
             else:
                 # Set file extension based on Content-Type header_name
@@ -1797,19 +1886,19 @@ def handleWhateverGraphicType(graphicFilename):
         is_uri = False
 
         # Files don't get their names edited
-        printableGraphicFilename = graphicFilename
-        convertibleFilename = graphicFilename
+        printableGraphicFilename = GraphicFilename
+        convertibleFilename = GraphicFilename
 
     if is_uri:
-        lastSlash = graphicFilename.rfind("/")
-        lastDot = graphicFilename.rfind(".")
+        lastSlash = GraphicFilename.rfind("/")
+        lastDot = GraphicFilename.rfind(".")
 
-        PNGname = graphicFilename[lastSlash + 1 : lastDot] + ".PNG"
+        PNGname = GraphicFilename[lastSlash + 1 : lastDot] + ".PNG"
     else:
-        PNGname = graphicFilename[:-4] + ".PNG"
+        PNGname = GraphicFilename[:-4] + ".PNG"
 
     # Process the file - whatever the origin - based on file extension
-    if ".svg" in graphicFilename.lower():
+    if ".svg" in GraphicFilename.lower():
         # is an SVG file
         if have_cairosvg:
             # Convert SVG file to temporary PNG
@@ -1830,21 +1919,21 @@ def handleWhateverGraphicType(graphicFilename):
             cairosvg.svg2png(file_obj=open(convertibleFilename), write_to=graphicFile)
 
             # Retrieve the temporary file name
-            graphicFilename = graphicFile.name
+            GraphicFilename = graphicFile.name
 
             if processingOptions.getCurrentOption("exportGraphics"):
                 try:
-                    shutil.copy(graphicFilename, PNGname)
+                    shutil.copy(GraphicFilename, PNGname)
                 except:
                     print("Copy error: " + PNGname)
 
         else:
             print("Don't have CairoSVG installed. Terminating.")
             sys.exit()
-    elif ".eps" in graphicFilename.lower():
+    elif ".eps" in GraphicFilename.lower():
         if have_pillow:
             # Get EPS file
-            im = PIL.Image.open(graphicFilename)
+            im = PIL.Image.open(GraphicFilename)
 
             # Get Temporary File Directory - which might be None
             tempDir = processingOptions.getCurrentOption("tempDir")
@@ -1867,17 +1956,17 @@ def handleWhateverGraphicType(graphicFilename):
                 sys.exit()
 
             # Retrieve the temporary file name
-            graphicFilename = graphicFile.name
+            GraphicFilename = graphicFile.name
             if processingOptions.getCurrentOption("exportGraphics"):
                 try:
-                    shutil.copy(graphicFilename, PNGname)
+                    shutil.copy(GraphicFilename, PNGname)
                 except:
                     print("Copy error: " + PNGname)
 
     else:
-        graphicFilename = convertibleFilename
+        GraphicFilename = convertibleFilename
 
-    return graphicFilename, printableGraphicFilename
+    return GraphicFilename, printableGraphicFilename
 
 
 def createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber):
@@ -2145,7 +2234,6 @@ def createAbstractSlide(presentation, slideNumber, titleText, paragraphs):
 
 # Unified creation of a table or a code or a content slide
 def createContentSlide(presentation, slideNumber, slideInfo):
-
     titleOnlyLayout = processingOptions.getCurrentOption("titleOnlyLayout")
     contentSlideLayout = processingOptions.getCurrentOption("contentSlideLayout")
     marginBase = processingOptions.getCurrentOption("marginBase")
@@ -2537,75 +2625,37 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
             gridColumns = len(tableRows[0])
         else:
             gridColumns = max(len(tableRows[0]), len(tableRows[1]))
+
         topGraphicCount = 0
 
-        # Attempt to retrieve filename for left side - top row
-        topLeftSide = tableRows[0][0]
-        if (
-            (graphicRegex.match(topLeftSide) != None)
-            | (videoRegex.match(topLeftSide) != None)
-            | (clickableGraphicRegex.match(topLeftSide) != None)
-        ):
-            if videoRegexMatch := videoRegex.match(topLeftSide):
-                topLeftVideo = topLeftSide
-            else:
-                if clickableGraphicMatch := clickableGraphicRegex.match(topLeftSide):
-                    # Clickable graphic case
-                    topLeftGraphicTitle = clickableGraphicMatch.group(1)
-                    topLeftGraphicFilename = clickableGraphicMatch.group(2)
-                    topLeftGraphicHref = clickableGraphicMatch.group(3)
-                else:
-                    # Graphic
-                    topLeftGraphicMatch = graphicRegex.match(topLeftSide)
-                    topLeftGraphicTitle = topLeftGraphicMatch.group(1)
-                    topLeftGraphicFilename = topLeftGraphicMatch.group(2)
-                    topLeftGraphicHref = ""
-                    topLeftVideo = ""
-                (
-                    topLeftGraphicFilename,
-                    printableTopLeftGraphicFilename,
-                ) = handleWhateverGraphicType(topLeftGraphicFilename)
+        topLeftCellString = tableRows[0][0]
 
-                topLeftHTML = ""
-                topGraphicCount += 1
-        else:
-            topLeftGraphicFilename = ""
-            topLeftHTML = topLeftSide
-            topLeftVideo = ""
+        # Attempt to retrieve media information for left side - top row
+        (
+            topLeftGraphicTitle,
+            topLeftGraphicFilename,
+            printableTopLeftGraphicFilename,
+            topLeftGraphicHref,
+            topLeftHTML,
+            topLeftVideo,
+            topGraphicCount,
+        ) = parseMedia(topLeftCellString, topGraphicCount)
 
         # Attempt to retrieve filename for right side - top row
-        if gridColumns == 2:
-            if len(tableRows[0]) == 2:
-                topRightSide = tableRows[0][1]
-            else:
-                topRightSide = ""
-            if (graphicRegex.match(topRightSide) != None) | (
-                clickableGraphicRegex.match(topRightSide) != None
-            ):
-                if clickableGraphicMatch := clickableGraphicRegex.match(topRightSide):
-                    # Clickable graphic case
-                    topRightGraphicTitle = clickableGraphicMatch.group(1)
-                    topRightGraphicFilename = clickableGraphicMatch.group(2)
-                    topRightGraphicHref = clickableGraphicMatch.group(3)
-                else:
-                    # Graphic
-                    topRightGraphicMatch = graphicRegex.match(topRightSide)
-                    topRightGraphicTitle = topRightGraphicMatch.group(1)
-                    topRightGraphicFilename = topRightGraphicMatch.group(2)
-                    topRightGraphicHref = ""
-
-                (
-                    topRightGraphicFilename,
-                    printableTopRightGraphicFilename,
-                ) = handleWhateverGraphicType(topRightGraphicFilename)
-                topRightHTML = ""
-                topGraphicCount += 1
-            else:
-                topRightGraphicFilename = ""
-                topRightHTML = topRightSide
+        if len(tableRows[0]) == 2:
+            topRightCellString = tableRows[0][1]
         else:
-            topRightGraphicFilename = ""
-            topRightHTML = ""
+            topRightCellString = ""
+
+        (
+            topRightGraphicTitle,
+            topRightGraphicFilename,
+            printableTopRightGraphicFilename,
+            topRightGraphicHref,
+            topRightHTML,
+            topRightVideo,
+            topGraphicCount,
+        ) = parseMedia(topRightCellString, topGraphicCount)
 
         if topGraphicCount == 0:
             # Revert to normal table processing as no graphic spec in at least one cell
@@ -2614,74 +2664,39 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
         if gridRows == 2:
             # Attempt to retrieve filename for left side - bottom row
             bottomGraphicCount = 0
-            bottomLeftSide = tableRows[1][0]
-            if (graphicRegex.match(bottomLeftSide) != None) | (
-                clickableGraphicRegex.match(bottomLeftSide) != None
-            ):
-                if clickableGraphicMatch := clickableGraphicRegex.match(bottomLeftSide):
-                    # Clickable graphic case
-                    bottomLeftGraphicTitle = clickableGraphicMatch.group(1)
-                    bottomLeftGraphicFilename = clickableGraphicMatch.group(2)
-                    bottomLeftGraphicHref = clickableGraphicMatch.group(3)
-                else:
-                    # Graphic
-                    bottomLeftGraphicMatch = graphicRegex.match(bottomLeftSide)
-                    bottomLeftGraphicTitle = bottomLeftGraphicMatch.group(1)
-                    bottomLeftGraphicFilename = bottomLeftGraphicMatch.group(2)
-                    bottomLeftGraphicHref = ""
 
-                (
-                    bottomLeftGraphicFilename,
-                    printableBottomLeftGraphicFilename,
-                ) = handleWhateverGraphicType(bottomLeftGraphicFilename)
-                bottomLeftHTML = ""
-                bottomGraphicCount += 1
-            else:
-                bottomLeftGraphicFilename = ""
-                bottomLeftHTML = bottomLeftSide
+            bottomLeftCellString = tableRows[1][0]
+
+            # Attempt to retrieve media information for left side - bottom row
+            (
+                bottomLeftGraphicTitle,
+                bottomLeftGraphicFilename,
+                printableBottomLeftGraphicFilename,
+                bottomLeftGraphicHref,
+                bottomLeftHTML,
+                bottomLeftVideo,
+                bottomGraphicCount,
+            ) = parseMedia(bottomLeftCellString, bottomGraphicCount)
 
             # Attempt to retrieve filename for right side - bottom row
             if gridColumns == 2:
                 if len(tableRows[1]) == 1:
                     # There is one cell in bottom row so this is centred "3-up"
-                    bottomRightGraphicFilename = ""
+                    bottomRightCellString = ""
                 else:
-                    # There is a bottom right so this is "4-up", though one or OTHER_MEMBERS
-                    # bottom cells might be empty
-                    bottomRightSide = tableRows[1][1]
-                    if (graphicRegex.match(bottomRightSide) != None) | (
-                        clickableGraphicRegex.match(bottomRightSide) != None
-                    ):
-                        if clickableGraphicMatch := clickableGraphicRegex.match(
-                            bottomRightSide
-                        ):
-                            # Clickable graphic case
-                            bottomRightGraphicTitle = clickableGraphicMatch.group(1)
-                            bottomRightGraphicFilename = clickableGraphicMatch.group(2)
-                            bottomRightGraphicHref = clickableGraphicMatch.group(3)
-                        else:
-                            # Graphic
-                            bottomRightGraphicMatch = graphicRegex.match(
-                                bottomRightSide
-                            )
-                            bottomRightGraphicTitle = bottomRightGraphicMatch.group(1)
-                            bottomRightGraphicFilename = bottomRightGraphicMatch.group(
-                                2
-                            )
-                            bottomRightGraphicHref = ""
-
-                        (
-                            bottomRightGraphicFilename,
-                            printableBottomRightGraphicFilename,
-                        ) = handleWhateverGraphicType(bottomRightGraphicFilename)
-                        bottomRightHTML = ""
-                        bottomGraphicCount += 1
-                    else:
-                        bottomRightGraphicFilename = ""
-                        bottomRightHTML = bottomRightSide
+                    bottomRightCellString = tableRows[1][1]
             else:
-                bottomRightGraphicFilename = ""
-                bottomRightHTML = ""
+                bottomRightCellString = ""
+
+            (
+                bottomRightGraphicTitle,
+                bottomRightGraphicFilename,
+                printableBottomRightGraphicFilename,
+                bottomRightGraphicHref,
+                bottomRightHTML,
+                bottomRightVideo,
+                bottomGraphicCount,
+            ) = parseMedia(bottomRightCellString, bottomGraphicCount)
 
             if bottomGraphicCount == 0:
                 # Revert to normal table processing as no graphic spec in at least one cell
@@ -2693,35 +2708,36 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
 
     if isGraphicsGrid == True:
         ####################################################################
-        # Print the graphic filenames                                      #
+        # Print the media filenames                                        #
         ####################################################################
         if gridColumns == 2:
             # Doing 1- or 2-row side-by-side graphics slide
-            reportGraphicFileNames(
+            reportGraphicFilenames(
                 printableTopLeftGraphicFilename, printableTopRightGraphicFilename
             )
         else:
             # Doing 2 row, single column graphics slide
-            reportGraphicFileNames(printableTopLeftGraphicFilename)
+            reportGraphicFilenames(printableTopLeftGraphicFilename)
 
         if gridRows == 2:
             # Second row of filenames
             if gridColumns == 2:
-                reportGraphicFileNames(
+                reportGraphicFilenames(
                     printableBottomLeftGraphicFilename,
                     printableBottomRightGraphicFilename,
                 )
             else:
-                reportGraphicFileNames(printableBottomLeftGraphicFilename)
+                reportGraphicFilenames(printableBottomLeftGraphicFilename)
 
         ####################################################################
-        # Get the image dimensions                                         #
+        # Get the media dimensions                                         #
         ####################################################################
+
         if topLeftGraphicFilename != "":
-            topLeftImgWidth, topLeftImgHeight = getGraphicDimensions(
+            topLeftMediaWidth, topLeftMediaHeight = getGraphicDimensions(
                 topLeftGraphicFilename
             )
-            if topLeftImgWidth == -1:
+            if topLeftMediaWidth == -1:
                 if gridRows == 2:
                     print(
                         "Missing top left image file: "
@@ -2732,13 +2748,27 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
 
                 return slide
 
+        elif topLeftVideo is not None:
+            topLeftMediaWidth, topLeftMediaHeight = getVideoDimensions(topLeftVideo)
+
+            if topLeftMediaWidth == -1:
+                if gridRows == 2:
+                    print(
+                        "Missing top left video file: "
+                        + printableTopLeftGraphicFilename
+                    )
+                else:
+                    print("Missing left video file: " + printableTopLeftGraphicFilename)
+
+                return slide
+
         if gridColumns == 2:
             # Get top right image dimensions
             if topRightGraphicFilename != "":
-                topRightImgWidth, topRightImgHeight = getGraphicDimensions(
+                topRightMediaWidth, topRightMediaHeight = getGraphicDimensions(
                     topRightGraphicFilename
                 )
-                if topRightImgWidth == -1:
+                if topRightMediaWidth == -1:
                     if gridRows == 2:
                         print(
                             "Missing top right image file: "
@@ -2752,39 +2782,95 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
 
                     return slide
 
+            elif topRightVideo is not None:
+                topRightMediaWidth, topRightMediaHeight = getVideoDimensions(
+                    topRightVideo
+                )
+
+                if topRightMediaWidth == -1:
+                    if gridRows == 2:
+                        print(
+                            "Missing top right video file: "
+                            + printableTopRightGraphicFilename
+                        )
+                    else:
+                        print(
+                            "Missing right video file: "
+                            + printableTopRightGraphicFilename
+                        )
+
+                    return slide
+
         if gridRows == 2:
             # Get bottom left image dimensions
             if bottomLeftGraphicFilename != "":
-                bottomLeftImgWidth, bottomLeftImgHeight = getGraphicDimensions(
+                bottomLeftMediaWidth, bottomLeftMediaHeight = getGraphicDimensions(
                     bottomLeftGraphicFilename
                 )
-                if bottomLeftImgWidth == -1:
+                if bottomLeftMediaWidth == -1:
                     print(
                         "Missing bottom left image file: "
                         + printableBottomLeftGraphicFilename
                     )
                     return slide
 
+            elif bottomLeftVideo is not None:
+                bottomLeftMediaWidth, bottomLeftMediaHeight = getVideoDimensions(
+                    bottomLeftVideo
+                )
+
+                if bottomLeftMediaWidth == -1:
+                    if gridRows == 2:
+                        print(
+                            "Missing bottom left video file: "
+                            + printableBottomLeftGraphicFilename
+                        )
+                    else:
+                        print(
+                            "Missing left video file: "
+                            + printableBottomLeftGraphicFilename
+                        )
+
+                    return slide
+
             if gridColumns == 2:
-                if bottomRightGraphicFilename == "":
-                    bottomRightImgWidth = 0
-                    bottomRightImgHeight = 0
-                else:
-                    # Get bottom right image dimensions
-                    if bottomRightGraphicFilename != "":
-                        (
-                            bottomRightImgWidth,
-                            bottomRightImgHeight,
-                        ) = getGraphicDimensions(bottomRightGraphicFilename)
-                        if bottomRightImgWidth == -1:
+                # Get bottom right image dimensions
+                if bottomRightGraphicFilename != "":
+                    (
+                        bottomRightMediaWidth,
+                        bottomRightMediaHeight,
+                    ) = getGraphicDimensions(bottomRightGraphicFilename)
+
+                    if bottomRightMediaWidth == -1:
+                        print(
+                            "Missing bottom right image file: "
+                            + printableBottomRightGraphicFilename
+                        )
+
+                        return slide
+
+                elif bottomRightVideo is not None:
+                    bottomRightMediaWidth, bottomRightMediaHeight = getVideoDimensions(
+                        bottomRightVideo
+                    )
+
+                    if bottomRightMediaWidth == -1:
+                        if gridRows == 2:
                             print(
-                                "Missing bottom right image file: "
+                                "Missing bottom right video file: "
                                 + printableBottomRightGraphicFilename
                             )
-                            return slide
+                        else:
+                            print(
+                                "Missing left right file: "
+                                + printableBottomRightGraphicFilename
+                            )
+
+                        return slide
 
         # Calculate maximum picture height on slide
         maxPicHeight = renderingRectangle.height
+
         if gridRows == 2:
             # Adjusted if two rows
             maxPicHeight = maxPicHeight / 2 + Inches(0.2)
@@ -2801,29 +2887,34 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
         ####################################################################
         # Calculate the size of each graphic - scaled by the above rect    #
         ####################################################################
-        if topLeftGraphicFilename != "":
+
+        if (topLeftGraphicFilename != "") | (topLeftVideo is not None):
             (topLeftPicWidth, topLeftPicHeight, usingHeightToScale,) = scalePicture(
-                maxPicWidth, maxPicHeight, topLeftImgWidth, topLeftImgHeight
+                maxPicWidth, maxPicHeight, topLeftMediaWidth, topLeftMediaHeight
             )
 
             if usingHeightToScale:
                 # Calculate horizontal start
-                if (gridColumns == 2) and (topRightGraphicFilename != ""):
-                    # Align top left picture to the left
+                if (gridColumns == 2) and (
+                    (topRightGraphicFilename != "") | (topRightVideo is not None)
+                ):
+                    # Align top left media item to the left
                     topLeftPicX = (
                         renderingRectangle.left
                         + (midGraphicsSpaceX - marginBase - topLeftPicWidth) / 2
                     )
                 else:
-                    # Center sole top picture
+                    # Center sole top media item
                     topLeftPicX = midGraphicsSpaceX - topLeftPicWidth / 2
             else:
                 # Calculate horizontal start
-                if (gridColumns == 2) & (topRightGraphicFilename != ""):
-                    # Align top left picture to the left
+                if (gridColumns == 2) and (
+                    (topRightGraphicFilename != "") | (topRightVideo is not None)
+                ):
+                    # Align top left media item to the left
                     topLeftPicX = renderingRectangle.left
                 else:
-                    # Center sole top picture
+                    # Center sole top media item
                     topLeftPicX = midGraphicsSpaceX - topLeftPicWidth / 2
 
             # Calculate vertical start
@@ -2832,6 +2923,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
             if gridRows == 2:
                 topLeftPicY -= Inches(0.2)
 
+        if topLeftGraphicFilename != "":
             topLeftPicture = slide.shapes.add_picture(
                 topLeftGraphicFilename,
                 topLeftPicX,
@@ -2846,16 +2938,25 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
             pictureInfos.append(
                 (topLeftPicture, topLeftGraphicHref, topLeftGraphicTitle)
             )
+        elif topLeftVideo is not None:
+            topLeftVideo = slide.shapes.add_movie(
+                topLeftVideo.source,
+                topLeftPicX,
+                topLeftPicY,
+                topLeftPicWidth,
+                topLeftPicHeight,
+                topLeftVideo.poster,
+            )
 
         if gridColumns == 2:
-            # Top Right Picture
-            if topRightGraphicFilename != "":
+            # Top right media item
+            if (topRightGraphicFilename != "") | (topRightVideo is not None):
                 (
                     topRightPicWidth,
                     topRightPicHeight,
                     usingHeightToScale,
                 ) = scalePicture(
-                    maxPicWidth, maxPicHeight, topRightImgWidth, topRightImgHeight
+                    maxPicWidth, maxPicHeight, topRightMediaWidth, topRightMediaHeight
                 )
 
                 if usingHeightToScale:
@@ -2877,6 +2978,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                 if gridRows == 2:
                     topRightPicY -= Inches(0.2)
 
+            if topRightGraphicFilename != "":
                 topRightPicture = slide.shapes.add_picture(
                     topRightGraphicFilename,
                     topRightPicX,
@@ -2892,21 +2994,37 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                     (topRightPicture, topRightGraphicHref, topRightGraphicTitle)
                 )
 
+            elif topRightVideo is not None:
+                topRightVideo = slide.shapes.add_movie(
+                    topRightVideo.source,
+                    topRightPicX,
+                    topRightPicY,
+                    topRightPicWidth,
+                    topRightPicHeight,
+                    topRightVideo.poster,
+                )
+
         if gridRows == 2:
-            # Need second row of pictures
-            # Bottom Left Picture
-            if bottomLeftGraphicFilename != "":
+            # Need second row of media items
+            # Bottom left media item
+            if (bottomLeftGraphicFilename != "") | (bottomLeftVideo is not None):
                 (
                     bottomLeftPicWidth,
                     bottomLeftPicHeight,
                     usingHeightToScale,
                 ) = scalePicture(
-                    maxPicWidth, maxPicHeight, bottomLeftImgWidth, bottomLeftImgHeight
+                    maxPicWidth,
+                    maxPicHeight,
+                    bottomLeftMediaWidth,
+                    bottomLeftMediaHeight,
                 )
 
                 if usingHeightToScale:
                     # Calculate horizontal start
-                    if (gridColumns == 2) & (bottomRightGraphicFilename != ""):
+                    if (gridColumns == 2) & (
+                        (bottomRightGraphicFilename != "")
+                        | (bottomRightVideo is not None)
+                    ):
                         bottomLeftPicX = (
                             marginBase
                             + (midGraphicsSpaceX - marginBase - bottomLeftPicWidth) / 2
@@ -2919,7 +3037,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                         # Align bottom left picture to the left
                         bottomLeftPicX = marginBase
                     else:
-                        # Center sole bottom picture
+                        # Center sole bottom media item
                         bottomLeftPicX = midGraphicsSpaceX - bottomLeftPicWidth / 2
 
                 # Calculate vertical start
@@ -2930,6 +3048,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                 if gridRows == 2:
                     bottomLeftPicY -= Inches(0.2)
 
+            if bottomLeftGraphicFilename != "":
                 bottomLeftPicture = slide.shapes.add_picture(
                     bottomLeftGraphicFilename,
                     bottomLeftPicX,
@@ -2945,10 +3064,19 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                     (bottomLeftPicture, bottomLeftGraphicHref, bottomLeftGraphicTitle)
                 )
 
-            if gridColumns == 2:
-                # Bottom Right Picture
+            elif bottomLeftVideo is not None:
+                bottomLeftVideo = slide.shapes.add_movie(
+                    bottomLeftVideo.source,
+                    bottomLeftPicX,
+                    bottomLeftPicY,
+                    bottomLeftPicWidth,
+                    bottomLeftPicHeight,
+                    bottomLeftVideo.poster,
+                )
 
-                if bottomRightGraphicFilename != "":
+            if gridColumns == 2:
+                # Bottom right media item
+                if (bottomRightGraphicFilename != "") | (bottomRightVideo is not None):
                     (
                         bottomRightPicWidth,
                         bottomRightPicHeight,
@@ -2956,8 +3084,8 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                     ) = scalePicture(
                         maxPicWidth,
                         maxPicHeight,
-                        bottomRightImgWidth,
-                        bottomRightImgHeight,
+                        bottomRightMediaWidth,
+                        bottomRightMediaHeight,
                     )
 
                     if usingHeightToScale:
@@ -2986,6 +3114,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                     if gridRows == 2:
                         bottomRightPicY -= Inches(0.2)
 
+                if bottomRightGraphicFilename != "":
                     if bottomRightGraphicFilename != "":
                         bottomRightPicture = slide.shapes.add_picture(
                             bottomRightGraphicFilename,
@@ -3005,9 +3134,22 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                                 bottomRightGraphicTitle,
                             )
                         )
+                elif bottomRightVideo is not None:
+                    bottomRightVideo = slide.shapes.add_movie(
+                        bottomRightVideo.source,
+                        bottomRightPicX,
+                        bottomRightPicY,
+                        bottomRightPicWidth,
+                        bottomRightPicHeight,
+                        bottomRightVideo.poster,
+                    )
 
     else:
-        # Normal table slide
+        ################
+        #              #
+        # Normal table #
+        #              #
+        ################
 
         # Calculate maximum number of columns - as this is how wide we'll make the table
         columns = 0
@@ -3883,10 +4025,11 @@ bothClickableGraphicRegex = re.compile(
     clickableGraphicRE + "(.*?)" + clickableGraphicRE
 )
 
-videoRegex = re.compile("<video (.+)></video>")
+videoRE = "<video (.*?)></video>"
+videoRegex = re.compile(videoRE)
+
 
 linkRegex = re.compile("^\[(.+)\]\((.+)\)")
-twoUpRegex = re.compile("^\|(.+?)\|(.+?)\|")
 footnoteDefinitionRegex = re.compile("^\[\^(.+?)\]: (.+)")
 spanClassRegex = re.compile("<span( )*class=")
 spanStyleRegex = re.compile("<span( )*style=")
@@ -5189,79 +5332,51 @@ for line in linesAfterConcatenation:
         inTable = False
         inTitle = False
 
-    elif match := videoRegex.match(line):
+    # Following marshals media into one or two table cells and adds the new row
+    # to either a new or existing table. It also says we're in a table
+    if startswithOneOf(line, ["<video ", "[![", "!["]):
+        # There is at least one media item in the line - so set up table
         if inTable is False:
+            # Switch to being in a table
             blockType = "table"
-            tableRows.append([])
-            inTable = True
             sequence.append("table")
+            inTable = True
             inList = False
             inCard = False
 
-        # Create a table row
+            # Create a new empty table
+            # tableRows = []
+
+        # Start the creation of a new row
         tableRow = []
-        tableRow.append(line)
+
+        # Collect the media items
+        mediaItems = []
+        for m in re.finditer(videoRegex, line):
+            # A video
+            mediaItem = [m.start(0), m.end(0), m.group(0)]
+            mediaItems.append(mediaItem)
+
+        for m in re.finditer(clickableGraphicRegex, line):
+            # A clickable graphic
+            mediaItem = [m.start(0), m.end(0), m.group(0)]
+            mediaItems.append(mediaItem)
+
+        for m in re.finditer(graphicRegex, line):
+            # A non-clickable graphic
+            mediaItem = [m.start(0), m.end(0), m.group(0)]
+            mediaItems.append(mediaItem)
+
+        # compose table row - based on start offset
+        tableRow = []
+        for mediaItem in sorted(mediaItems):
+            tableRow.append(mediaItem[2])
 
         # Add table row to saved table rows
-        tableRows[-1].append(tableRow)
-        inTitle = False
-
-    elif (graphicRegex.match(line) != None) | (
-        clickableGraphicRegex.match(line) != None
-    ):
-        # There is at least one graphic in the line - whether clickable or not
-        if inTable is False:
-            blockType = "table"
+        if len(tableRows) == 0:
             tableRows.append([])
-            inTable = True
-            sequence.append("table")
-            inList = False
-            inCard = False
-
-        # Create a table row
-        tableRow = []
-
-        if len(graphicRegex.findall(line)) == 2:
-            # Two graphics - whether clickable or not - on same line
-            if matches := bothClickableGraphicRegex.match(line):
-                leftGraphic = (
-                    "[![" + matches[1] + "](" + matches[2] + ")](" + matches[3] + ")"
-                )
-
-                rightGraphic = (
-                    "[![" + matches[5] + "](" + matches[6] + ")](" + matches[7] + ")"
-                )
-
-            elif matches := leftClickableGraphicRegex.match(line):
-                leftGraphic = (
-                    "[![" + matches[1] + "](" + matches[2] + ")](" + matches[3] + ")"
-                )
-
-                rightGraphic = "![" + matches[5] + "](" + matches[6] + ")"
-
-            elif matches := rightClickableGraphicRegex.match(line):
-                leftGraphic = "![" + matches[1] + "](" + matches[2] + ")"
-
-                rightGraphic = (
-                    "[![" + matches[4] + "](" + matches[5] + ")](" + matches[6] + ")"
-                )
-
-            else:
-                matches = neitherClickableGraphicRegex.match(line)
-                leftGraphic = "![" + matches[1] + "](" + matches[2] + ")"
-
-                rightGraphic = "![" + matches[4] + "](" + matches[5] + ")"
-
-            tableRow.append(leftGraphic)
-            tableRow.append(rightGraphic)
-
-        else:
-            # One graphic - whether clickable or not - on the line
-
-            tableRow.append(line)
-
-        # Add table row to saved table rows
         tableRows[-1].append(tableRow)
+
         inTitle = False
 
     elif line[:1] == "|":
