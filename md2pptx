@@ -60,7 +60,7 @@ except:
 
 
 md2pptx_level = "2.6.1+"
-md2pptx_date = "23 March, 2022"
+md2pptx_date = "24 March, 2022"
 
 
 class SlideInfo:
@@ -4014,16 +4014,10 @@ numberRegex = re.compile("^(\s)*(\d+)\.(.*)")
 metadataRegex = re.compile("^(.+):(.+)")
 
 graphicRE = "!\[(.*?)\]\((.+?)\)"
-clickableGraphicRE = "\[" + graphicRE + "\]\((.+?)\)"
 graphicRegex = re.compile(graphicRE)
-clickableGraphicRegex = re.compile(clickableGraphicRE)
 
-neitherClickableGraphicRegex = re.compile(graphicRE + "(.*?)" + graphicRE)
-leftClickableGraphicRegex = re.compile(clickableGraphicRE + "(.*?)" + graphicRE)
-rightClickableGraphicRegex = re.compile(graphicRE + "(.*?)" + clickableGraphicRE)
-bothClickableGraphicRegex = re.compile(
-    clickableGraphicRE + "(.*?)" + clickableGraphicRE
-)
+clickableGraphicRE = "\[" + graphicRE + "\]\((.+?)\)"
+clickableGraphicRegex = re.compile(clickableGraphicRE)
 
 videoRE = "<video (.*?)></video>"
 videoRegex = re.compile(videoRE)
