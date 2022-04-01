@@ -60,7 +60,7 @@ except:
 
 
 md2pptx_level = "2.6.1+"
-md2pptx_date = "24 March, 2022"
+md2pptx_date = "1 April, 2022"
 
 
 class SlideInfo:
@@ -895,14 +895,28 @@ def getGraphicDimensions(fname):
         return -1, -1
 
 
-def getVideoDimensions(videoInfo):
-    try:
-        fhandle = open(videoInfo.source, "rb")
+def getVideoDimensionsPlus(videoInfo):
+    if videoInfo.source.find("://") > -1:
+        # Video would be sourced from the web
+        try:
+            operUrl = urllib.request.urlopen(videoInfo.source)
+        except urllib.error.HTTPError as e:
+            print(e)
+            print("File: " + GraphicFilename)
+            print("md2pptx terminating")
+            exit()
 
-        return videoInfo.width, videoInfo.height
+        data = operUrl.read()
 
-    except EnvironmentError:
-        return -1, -1
+        return videoInfo.width, videoInfo.height, "Web", data
+    else:
+        # Video would be sourced from a local file
+        try:
+            fhandle = open(videoInfo.source, "rb")
+        except EnvironmentError:
+            return -1, -1, "Local", None
+
+        return videoInfo.width, videoInfo.height, "Local", None
 
 
 # Render a list of bullets
@@ -2610,10 +2624,11 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
     tableMargin = processingOptions.getCurrentOption("tableMargin")
     marginBase = processingOptions.getCurrentOption("marginBase")
     baseTextSize = processingOptions.getCurrentOption("baseTextSize")
+    tempDir = processingOptions.getCurrentOption("tempDir")
 
     printableTopLeftGraphicFilename = ""
     printableTopRightGraphicFilename = ""
-    printableBottomLeftGraphicFilename = ""
+    printablebottomLeftGraphicFilename = ""
     printableBottomRightGraphicFilename = ""
 
     # Handle table body
@@ -2749,7 +2764,12 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                 return slide
 
         elif topLeftVideo is not None:
-            topLeftMediaWidth, topLeftMediaHeight = getVideoDimensions(topLeftVideo)
+            (
+                topLeftMediaWidth,
+                topLeftMediaHeight,
+                topLeftVideoType,
+                topLeftVideoData,
+            ) = getVideoDimensionsPlus(topLeftVideo)
 
             if topLeftMediaWidth == -1:
                 if gridRows == 2:
@@ -2783,9 +2803,12 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                     return slide
 
             elif topRightVideo is not None:
-                topRightMediaWidth, topRightMediaHeight = getVideoDimensions(
-                    topRightVideo
-                )
+                (
+                    topRightMediaWidth,
+                    topRightMediaHeight,
+                    topRightVideoType,
+                    topRightVideoData,
+                ) = getVideoDimensionsPlus(topRightVideo)
 
                 if topRightMediaWidth == -1:
                     if gridRows == 2:
@@ -2815,9 +2838,12 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                     return slide
 
             elif bottomLeftVideo is not None:
-                bottomLeftMediaWidth, bottomLeftMediaHeight = getVideoDimensions(
-                    bottomLeftVideo
-                )
+                (
+                    bottomLeftMediaWidth,
+                    bottomLeftMediaHeight,
+                    bottomLeftVideoType,
+                    bottomLeftVideoData,
+                ) = getVideoDimensionsPlus(bottomLeftVideo)
 
                 if bottomLeftMediaWidth == -1:
                     if gridRows == 2:
@@ -2850,9 +2876,12 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                         return slide
 
                 elif bottomRightVideo is not None:
-                    bottomRightMediaWidth, bottomRightMediaHeight = getVideoDimensions(
-                        bottomRightVideo
-                    )
+                    (
+                        bottomRightMediaWidth,
+                        bottomRightMediaHeight,
+                        bottomRightVideoType,
+                        bottomRightVideoData,
+                    ) = getVideoDimensionsPlus(bottomRightVideo)
 
                     if bottomRightMediaWidth == -1:
                         if gridRows == 2:
@@ -2939,14 +2968,34 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                 (topLeftPicture, topLeftGraphicHref, topLeftGraphicTitle)
             )
         elif topLeftVideo is not None:
-            topLeftVideo = slide.shapes.add_movie(
-                topLeftVideo.source,
-                topLeftPicX,
-                topLeftPicY,
-                topLeftPicWidth,
-                topLeftPicHeight,
-                topLeftVideo.poster,
-            )
+            if topLeftVideoType == "Local":
+                # Can use local file directly
+                topLeftVideo = slide.shapes.add_movie(
+                    topLeftVideo.source,
+                    topLeftPicX,
+                    topLeftPicY,
+                    topLeftPicWidth,
+                    topLeftPicHeight,
+                    topLeftVideo.poster,
+                )
+            else:
+                # First copy video data to temporary file
+                tempVideoFile = tempfile.NamedTemporaryFile(
+                    delete=False, suffix="mp4", dir=tempDir
+                )
+                tempVideoFile.write(topLeftVideoData)
+                convertibleFilename = tempVideoFile.name
+                tempVideoFile.close()
+
+                # Use temporary file to make video
+                topLeftVideo = slide.shapes.add_movie(
+                    convertibleFilename,
+                    topLeftPicX,
+                    topLeftPicY,
+                    topLeftPicWidth,
+                    topLeftPicHeight,
+                    topLeftVideo.poster,
+                )
 
         if gridColumns == 2:
             # Top right media item
@@ -2995,14 +3044,34 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                 )
 
             elif topRightVideo is not None:
-                topRightVideo = slide.shapes.add_movie(
-                    topRightVideo.source,
-                    topRightPicX,
-                    topRightPicY,
-                    topRightPicWidth,
-                    topRightPicHeight,
-                    topRightVideo.poster,
-                )
+                if topRightVideoType == "Local":
+                    # Can use local file directly
+                    topRightVideo = slide.shapes.add_movie(
+                        topRightVideo.source,
+                        topRightPicX,
+                        topRightPicY,
+                        topRightPicWidth,
+                        topRightPicHeight,
+                        topRightVideo.poster,
+                    )
+                else:
+                    # First copy video data to temporary file
+                    tempVideoFile = tempfile.NamedTemporaryFile(
+                        delete=False, suffix="mp4", dir=tempDir
+                    )
+                    tempVideoFile.write(topRightVideoData)
+                    convertibleFilename = tempVideoFile.name
+                    tempVideoFile.close()
+
+                    # Use temporary file to make video
+                    topRightVideo = slide.shapes.add_movie(
+                        convertibleFilename,
+                        topRightPicX,
+                        topRightPicY,
+                        topRightPicWidth,
+                        topRightPicHeight,
+                        topRightVideo.poster,
+                    )
 
         if gridRows == 2:
             # Need second row of media items
@@ -3065,14 +3134,34 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                 )
 
             elif bottomLeftVideo is not None:
-                bottomLeftVideo = slide.shapes.add_movie(
-                    bottomLeftVideo.source,
-                    bottomLeftPicX,
-                    bottomLeftPicY,
-                    bottomLeftPicWidth,
-                    bottomLeftPicHeight,
-                    bottomLeftVideo.poster,
-                )
+                if bottomLeftVideoType == "Local":
+                    # Can use local file directly
+                    bottomLeftVideo = slide.shapes.add_movie(
+                        bottomLeftVideo.source,
+                        bottomLeftPicX,
+                        bottomLeftPicY,
+                        bottomLeftPicWidth,
+                        bottomLeftPicHeight,
+                        bottomLeftVideo.poster,
+                    )
+                else:
+                    # First copy video data to temporary file
+                    tempVideoFile = tempfile.NamedTemporaryFile(
+                        delete=False, suffix="mp4", dir=tempDir
+                    )
+                    tempVideoFile.write(bottomLeftVideoData)
+                    convertibleFilename = tempVideoFile.name
+                    tempVideoFile.close()
+
+                    # Use temporary file to make video
+                    bottomLeftVideo = slide.shapes.add_movie(
+                        convertibleFilename,
+                        bottomLeftPicX,
+                        bottomLeftPicY,
+                        bottomLeftPicWidth,
+                        bottomLeftPicHeight,
+                        bottomLeftVideo.poster,
+                    )
 
             if gridColumns == 2:
                 # Bottom right media item
@@ -3135,14 +3224,34 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                             )
                         )
                 elif bottomRightVideo is not None:
-                    bottomRightVideo = slide.shapes.add_movie(
-                        bottomRightVideo.source,
-                        bottomRightPicX,
-                        bottomRightPicY,
-                        bottomRightPicWidth,
-                        bottomRightPicHeight,
-                        bottomRightVideo.poster,
-                    )
+                    if bottomRightVideoType == "Local":
+                        # Can use local file directly
+                        bottomRightVideo = slide.shapes.add_movie(
+                            bottomRightVideo.source,
+                            bottomRightPicX,
+                            bottomRightPicY,
+                            bottomRightPicWidth,
+                            bottomRightPicHeight,
+                            bottomRightVideo.poster,
+                        )
+                    else:
+                        # First copy video data to temporary file
+                        tempVideoFile = tempfile.NamedTemporaryFile(
+                            delete=False, suffix="mp4", dir=tempDir
+                        )
+                        tempVideoFile.write(    bottomRightVideoData)
+                        convertibleFilename = tempVideoFile.name
+                        tempVideoFile.close()
+
+                        # Use temporary file to make video
+                        bottomRightVideo = slide.shapes.add_movie(
+                            convertibleFilename,
+                            bottomRightPicX,
+                            bottomRightPicY,
+                            bottomRightPicWidth,
+                            bottomRightPicHeight,
+                            bottomRightVideo.poster,
+                        )
 
     else:
         ################
