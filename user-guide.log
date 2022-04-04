@@ -5,8 +5,8 @@ mdpre Markdown Preprocessor v0.6.2 (19 March, 2022)
 Def mdpre_date = 19 March, 2022
 Def mdpre_level = 0.6.2
 Def userid = martinpacker
-Def time = 09&colon;50
-Def date = 20 March&comma; 2022
+Def time = 21&colon;14
+Def date = 3 April&comma; 2022
 Def TOC = Table Of Contents
 Def md = Markdown
 Def pp = Powerpoint
@@ -32,6 +32,7 @@ CSV Stop
 ..... .....  Graphics Slides
 ..... ..... .....  Clickable Pictures
 ..... ..... .....  Graphics File References
+..... .....  Video Slides
 ..... .....  Table Slides
 ..... ..... .....  Special Case: Two Graphics Side By Side
 ..... ..... .....  Special Case: Two By Two Grid Of Graphics

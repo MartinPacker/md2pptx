@@ -1092,6 +1092,7 @@ body .markdown-body
 <li><a href="#graphics-file-references">Graphics File References</a></li>
 </ul>
 </li>
+<li><a href="#video-slides">Video Slides</a></li>
 <li><a href="#table-slides">Table Slides</a><ul>
 <li><a href="#special-case-two-graphics-side-by-side">Special Case: Two Graphics Side By Side</a></li>
 <li><a href="#special-case-two-by-two-grid-of-graphics">Special Case: Two By Two Grid Of Graphics</a></li>
@@ -1380,6 +1381,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">2.6.1+</td>
+<td align="right">3&nbsp;April&nbsp;2022</td>
+<td align="left">Added <code>&lt;video&gt;</code> element support&comma; described <a href="#video-slides">here</a>.</td>
+</tr>
 <tr>
 <td align="left">2.6.1</td>
 <td align="right">19&nbsp;March&nbsp;2022</td>
@@ -1863,6 +1869,18 @@ sectionTitleSize: 30
 </ul>
 </li>
 </ol>
+<h3 id="video-slides">Video Slides<a class="headerlink" href="#video-slides" title="Permanent link"></a></h3>
+<p><a id="video-slides"></a></p>
+<p>Videos are supported in a similar way to <a href="#graphics-slides">graphics slides</a>.  However, there is no Markdown support for embedding videos. Fortunately, Markdown processors support HTML.</p>
+<p>md2pptx supports embedding videos using the HTML <code>&lt;video&gt;</code> element.</p>
+<p>Here is an example:</p>
+<pre><code>&lt;video height=300 width=400 src="waterdrop.mp4"&gt;&lt;/video&gt;
+</code></pre>
+<p>md2pptx uses the values of the <code>height</code> and <code>width</code> elements to compute the aspect ratio of the video. In this example the ratio of the width to height is 4 to 3.</p>
+<p>Optionally, you can code a <code>poster</code> attribute. This defines a static graphic to be displayed when the video isn&rsquo;t playing. Here&rsquo;s an example:</p>
+<pre><code>&lt;video width="400" height="300" src="waterdrop.mp4" poster="Battery W3M.png"&gt;
+</code></pre>
+<p><strong>Note:</strong> Unlike with graphics specified according to <a href="#graphics-slides">Graphics Slides</a>, the poster graphic&rsquo;s dimensions are not used to scale the graphic or the video.</p>
 <h3 id="table-slides">Table Slides<a class="headerlink" href="#table-slides" title="Permanent link"></a></h3>
 <p><a id="table-slides"></a></p>
 <p>You can create a table slide using Markdown&rsquo;s table format.</p>

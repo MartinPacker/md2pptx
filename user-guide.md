@@ -23,6 +23,7 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 	* [Graphics Slides](#graphics-slides)
 		* [Clickable Pictures](#clickable-pictures)
 		* [Graphics File References](#graphics-file-references)
+	* [Video Slides](#video-slides)
 	* [Table Slides](#table-slides)
 		* [Special Case: Two Graphics Side By Side](#special-case-two-graphics-side-by-side)
 		* [Special Case: Two By Two Grid Of Graphics](#special-case-two-by-two-grid-of-graphics)
@@ -281,6 +282,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|2.6.1+|3&nbsp;April&nbsp;2022|Added `<video>` element support&comma; described [here](#video-slides).|
 |2.6.1|19&nbsp;March&nbsp;2022|Added [tableHeadingSize](#adjusting-table-heading-font-size-with-tableheadingsize) and fixed bug with cell spanning more than 2 columns.|
 |2.6|18&nbsp;March&nbsp;2022|Support [multi-column table cells](#multicolumn-table-cells) - complying with the MultiMarkdown spec. Added [`deleteFirstSlide`](#deleting-the-first-(processing-summary)-slide-with-deletefirstslide).|
 |2.5.5|5&nbsp;March&nbsp;2022|Make [`tableMargin`](#tablemargin-dynamic)&comma; [`marginBase`](#marginbase-dynamic)&comma; and [`numbersHeight`](#numbersheight-dynamic) dynamically settable.|
@@ -546,6 +548,25 @@ You can optionally have md2pptx export the temporary PNG files. See [Exporting C
     * JPEG - `image/jpeg` or `image/jpg` (though the latter is unofficial)
     * SVG - `image/svg+xml` or `image/svg` (though the latter is unofficial)
     * EPS - `application/postscript`
+
+### Video Slides
+<a id="video-slides"></a>
+
+Videos are supported in a similar way to [graphics slides](#graphics-slides).  However, there is no Markdown support for embedding videos. Fortunately, Markdown processors support HTML.
+
+md2pptx supports embedding videos using the HTML `<video>` element.
+
+Here is an example:
+
+    <video height=300 width=400 src="waterdrop.mp4"></video>
+
+md2pptx uses the values of the `height` and `width` elements to compute the aspect ratio of the video. In this example the ratio of the width to height is 4 to 3.
+
+Optionally, you can code a `poster` attribute. This defines a static graphic to be displayed when the video isn't playing. Here's an example:
+
+    <video width="400" height="300" src="waterdrop.mp4" poster="Battery W3M.png">
+
+**Note:** Unlike with graphics specified according to [Graphics Slides](#graphics-slides), the poster graphic's dimensions are not used to scale the graphic or the video.
 
 ### Table Slides
 <a id="table-slides"></a>
