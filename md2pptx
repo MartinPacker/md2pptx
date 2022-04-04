@@ -4131,6 +4131,8 @@ clickableGraphicRegex = re.compile(clickableGraphicRE)
 videoRE = "<video (.*?)></video>"
 videoRegex = re.compile(videoRE)
 
+audioRE = "<audio (.*?)></audio>"
+audioRegex = re.compile(audioRE)
 
 linkRegex = re.compile("^\[(.+)\]\((.+)\)")
 footnoteDefinitionRegex = re.compile("^\[\^(.+?)\]: (.+)")
@@ -5457,6 +5459,11 @@ for line in linesAfterConcatenation:
         mediaItems = []
         for m in re.finditer(videoRegex, line):
             # A video
+            mediaItem = [m.start(0), m.end(0), m.group(0)]
+            mediaItems.append(mediaItem)
+
+        for m in re.finditer(audioRegex, line):
+            # An audio file
             mediaItem = [m.start(0), m.end(0), m.group(0)]
             mediaItems.append(mediaItem)
 
