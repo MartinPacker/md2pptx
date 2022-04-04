@@ -1322,8 +1322,17 @@ body .markdown-body
 <li>Setting (and querying) variables.</li>
 <li>Conditional processing.</li>
 <li>Conversion of CSV files to Markdown tables.</li>
+<li>Creating Table Of Contents slides.</li>
+<li>Generating a slide with annotated &ldquo;month view&rdquo; calendars.</li>
 </ul>
-<p>The author has made running mdpre and md2pptx together easier by creating a <a href="https://en.wikipedia.org/wiki/Make_(software)">make</a> file.</p>
+<p>The author has made running mdpre and md2pptx together easier by creating a <a href="https://en.wikipedia.org/wiki/Make_(software)">make</a> file. Here is an example (only tested on Mac OS).</p>
+<pre><code>Of\ Names\ And\ Numbers.pptx: Of\ Names\ And\ Numbers.md
+    md2pptx Of\ Names\ And\ Numbers.pptx &lt; Of\ Names\ And\ Numbers.md &gt;&gt; Of\ Names\ And\ Numbers.log
+    cat Of\ Names\ And\ Numbers.log
+
+Of\ Names\ And\ Numbers.md: Of\ Names\ And\ Numbers.mdp
+    mdpre -v &lt; Of\ Names\ And\ Numbers.mdp &gt; Of\ Names\ And\ Numbers.md 2&gt; Of\ Names\ And\ Numbers.log
+</code></pre>
 <h2 id="how-do-you-use-md2pptx">How Do You Use md2pptx?<a class="headerlink" href="#how-do-you-use-md2pptx" title="Permanent link"></a></h2>
 <p>You write Markdown in exactly the same way as normal, with some understanding of how Markdown is converted to slides (using the information in <a href="#creating-slides">Creating Slides</a>).</p>
 <p>To use md2pptx you need to download it and install the prerequisites.</p>

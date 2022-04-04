@@ -213,8 +213,17 @@ mdpre is a preprocessor to create Markdown. It has a number of features that mig
 * Setting (and querying) variables.
 * Conditional processing.
 * Conversion of CSV files to Markdown tables.
+* Creating Table Of Contents slides.
+* Generating a slide with annotated "month view" calendars.
 
-The author has made running mdpre and md2pptx together easier by creating a [make](https://en.wikipedia.org/wiki/Make_(software)) file.
+The author has made running mdpre and md2pptx together easier by creating a [make](https://en.wikipedia.org/wiki/Make_(software)) file. Here is an example (only tested on Mac OS).
+
+    Of\ Names\ And\ Numbers.pptx: Of\ Names\ And\ Numbers.md
+        md2pptx Of\ Names\ And\ Numbers.pptx < Of\ Names\ And\ Numbers.md >> Of\ Names\ And\ Numbers.log
+        cat Of\ Names\ And\ Numbers.log
+
+    Of\ Names\ And\ Numbers.md: Of\ Names\ And\ Numbers.mdp
+        mdpre -v < Of\ Names\ And\ Numbers.mdp > Of\ Names\ And\ Numbers.md 2> Of\ Names\ And\ Numbers.log
 
 ## How Do You Use md2pptx?
 
