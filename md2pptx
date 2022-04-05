@@ -5439,7 +5439,7 @@ for line in linesAfterConcatenation:
 
     # Following marshals media into one or two table cells and adds the new row
     # to either a new or existing table. It also says we're in a table
-    if startswithOneOf(line, ["<video ", "[![", "!["]):
+    elif startswithOneOf(line, ["<video ", "[![", "!["]):
         # There is at least one media item in the line - so set up table
         if inTable is False:
             # Switch to being in a table
