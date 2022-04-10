@@ -60,7 +60,7 @@ except:
 
 
 md2pptx_level = "2.6.1+"
-md2pptx_date = "1 April, 2022"
+md2pptx_date = "10 April, 2022"
 
 
 class SlideInfo:
@@ -86,29 +86,36 @@ class SlideInfo:
 
 
 # Information about a video
-class VideoInfo:
+class AudioVideoInfo:
     def __init__(self, elementString):
-        videoElement = fromstring(elementString)
+        audioVideoElement = fromstring(elementString)
 
-        if "src" in videoElement.attrib.keys():
-            self.source = videoElement.attrib["src"]
+        if "src" in audioVideoElement.attrib.keys():
+            self.source = audioVideoElement.attrib["src"]
         else:
             self.source = ""
 
-        if "width" in videoElement.attrib.keys():
-            self.width = int(videoElement.attrib["width"])
-        else:
+        if audioVideoElement.tag == "audio":
+            # audio element doesn't have width or height attributes so make it square
             self.width = 1024
-
-        if "height" in videoElement.attrib.keys():
-            self.height = int(videoElement.attrib["height"])
+            self.height = 1024
         else:
-            self.height = 768
+            # video element can have width and height attributes
+            # Default is 4:3
+            if "width" in audioVideoElement.attrib.keys():
+                self.width = int(audioVideoElement.attrib["width"])
+            else:
+                self.width = 1024
+
+            if "height" in audioVideoElement.attrib.keys():
+                self.height = int(audioVideoElement.attrib["height"])
+            else:
+                self.height = 768
 
         self.aspectRatio = self.width / self.height
 
-        if "poster" in videoElement.attrib.keys():
-            self.poster = videoElement.attrib["poster"]
+        if "poster" in audioVideoElement.attrib.keys():
+            self.poster = audioVideoElement.attrib["poster"]
         else:
             self.poster = None
 
@@ -548,7 +555,7 @@ def scalePicture(maxPicWidth, maxPicHeight, imageWidth, imageHeight):
 def parseMedia(cellString, graphicCount):
     graphicTitle = ""
     HTML = ""
-    videoInfo = None
+    audioVideoInfo = None
     graphicHref = ""
     GraphicFilename = ""
     printableGraphicFilename = ""
@@ -557,8 +564,13 @@ def parseMedia(cellString, graphicCount):
 
     if videoRegexMatch := videoRegex.match(cellString):
         # Cell contains a video
-        videoInfo = VideoInfo(cellString)
-        _, printableGraphicFilename = handleWhateverGraphicType(videoInfo.source)
+        audioVideoInfo = AudioVideoInfo(cellString)
+        _, printableGraphicFilename = handleWhateverGraphicType(audioVideoInfo.source)
+
+    if audioRegexMatch := audioRegex.match(cellString):
+        # Cell contains an audio
+        audioVideoInfo = AudioVideoInfo(cellString)
+        _, printableGraphicFilename = handleWhateverGraphicType(audioVideoInfo.source)
 
     elif clickableGraphicMatch := clickableGraphicRegex.match(cellString):
         # Cell contains a clickable graphic
@@ -594,7 +606,7 @@ def parseMedia(cellString, graphicCount):
         printableGraphicFilename,
         graphicHref,
         HTML,
-        videoInfo,
+        audioVideoInfo,
         graphicCount,
     )
 
@@ -895,11 +907,11 @@ def getGraphicDimensions(fname):
         return -1, -1
 
 
-def getVideoDimensionsPlus(videoInfo):
-    if videoInfo.source.find("://") > -1:
+def getVideoDimensionsPlus(audioVideoInfo):
+    if audioVideoInfo.source.find("://") > -1:
         # Video would be sourced from the web
         try:
-            operUrl = urllib.request.urlopen(videoInfo.source)
+            operUrl = urllib.request.urlopen(audioVideoInfo.source)
         except urllib.error.HTTPError as e:
             print(e)
             print("File: " + GraphicFilename)
@@ -908,15 +920,15 @@ def getVideoDimensionsPlus(videoInfo):
 
         data = operUrl.read()
 
-        return videoInfo.width, videoInfo.height, "Web", data
+        return audioVideoInfo.width, audioVideoInfo.height, "Web", data
     else:
         # Video would be sourced from a local file
         try:
-            fhandle = open(videoInfo.source, "rb")
+            fhandle = open(audioVideoInfo.source, "rb")
         except EnvironmentError:
             return -1, -1, "Local", None
 
-        return videoInfo.width, videoInfo.height, "Local", None
+        return audioVideoInfo.width, audioVideoInfo.height, "Local", None
 
 
 # Render a list of bullets
@@ -2644,7 +2656,6 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
         topGraphicCount = 0
 
         topLeftCellString = tableRows[0][0]
-
         # Attempt to retrieve media information for left side - top row
         (
             topLeftGraphicTitle,
@@ -3239,7 +3250,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                         tempVideoFile = tempfile.NamedTemporaryFile(
                             delete=False, suffix="mp4", dir=tempDir
                         )
-                        tempVideoFile.write(    bottomRightVideoData)
+                        tempVideoFile.write(bottomRightVideoData)
                         convertibleFilename = tempVideoFile.name
                         tempVideoFile.close()
 
@@ -5439,7 +5450,7 @@ for line in linesAfterConcatenation:
 
     # Following marshals media into one or two table cells and adds the new row
     # to either a new or existing table. It also says we're in a table
-    elif startswithOneOf(line, ["<video ", "[![", "!["]):
+    elif startswithOneOf(line, ["<video ", "<audio ", "[![", "!["]):
         # There is at least one media item in the line - so set up table
         if inTable is False:
             # Switch to being in a table
