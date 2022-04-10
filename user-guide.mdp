@@ -152,7 +152,7 @@ To quote from the python-pptx license statement:
 =colalign l r l
 =csv
 Level,Date,What
-2.6.1+,3&nbsp;April&nbsp;2022,Added `<video>` element support&comma; described [here](#video-slides).
+2.6.1+,10&nbsp;April&nbsp;2022,Added `<video>` and `<audio>` element support&comma; described [here](#video-and-audio-slides).
 2.6.1,19&nbsp;March&nbsp;2022,Added [tableHeadingSize](#adjusting-table-heading-font-size-with-tableheadingsize) and fixed bug with cell spanning more than 2 columns.
 2.6,18&nbsp;March&nbsp;2022,Support [multi-column table cells](#multicolumn-table-cells) - complying with the MultiMarkdown spec. Added [`deleteFirstSlide`](#deleting-the-first-(processing-summary)-slide-with-deletefirstslide).
 2.5.5,5&nbsp;March&nbsp;2022,Make [`tableMargin`](#tablemargin-dynamic)&comma; [`marginBase`](#marginbase-dynamic)&comma; and [`numbersHeight`](#numbersheight-dynamic) dynamically settable.
@@ -160,12 +160,12 @@ Level,Date,What
 2.5.3,1&nbsp;March&nbsp;2022,Added exception handling when creating temporary file. Also when retrieving files from a URL.
 2.5.2,27&nbsp;February&nbsp;2022,Added [`tempDir`](#specifying-where-temporary-files-are-stored-with-tempdir) to specify where temporary files are stored.
 2.5.1,12&nbsp;February&nbsp;2022,Fixed bug 110 - crash on bad metadata line
-2.5,14&nbsp;November&nbsp;2021,Added support for `&nbsp;`. `exportGraphics: yes` exports PNG for SVG &amp; EPS files. Added support for EPS graphics.
+2.5,14&nbsp;November&nbsp;2021,Added support for `&nbsp;`. [`exportGraphics: yes`](#exporting-converted-svg-and-png-files-exportGraphics) exports PNG for SVG &amp; EPS files. Added support for EPS graphics.
 2.4.3,24&nbsp;October&nbsp;2021,Added support for indirect links&comma; complementing reference links.
-2.4.2,18&nbsp;October&nbsp;2021,Added `hideMetadata: style` - to suppress `style.` items in the Processing Summary slide. Also flag overridden values in same.
+2.4.2,18&nbsp;October&nbsp;2021,Added [`hideMetadata: style`](#hidemetadata) - to suppress `style.` items in the Processing Summary slide. Also flag overridden values in same.
 2.4.1,2&nbsp;October&nbsp;2021,Fixed bug where code appeared in a slide's Notes slide
 2.4,19&nbsp;September&nbsp;2021,Some simple style information added to span support. fgcolor &amp; bgcolor hex RGB  metadata values are checked for validity.
-2.3.4,7&nbsp;September&nbsp;2021,Added `SectionArrows` which enables navigation buttons between Section slides. `SectionArrowsColour` sets the buttons' background colour. 
+2.3.4,7&nbsp;September&nbsp;2021,Added [`SectionArrows`](#section-navigation-buttons-sectionarrows) which enables navigation buttons between Section slides. [`SectionArrowsColour`](#section-navigation-buttons-colour-sectionarrowscolour) sets the buttons' background colour. 
 2.3.3,27&nbsp;August&nbsp;2021,Added `TOCStyle: plain` Table Of Contents layout. Also can enable internal links in TOC and Section slides. Fixed `addTableLines` bug.
 2.3.2,23&nbsp;August&nbsp;2021,Added `TOCStyle: circle` Table Of Contents layout. Also metadata to control Table Of Contents layout.
 2.3.1,21&nbsp;August&nbsp;2021,Forgot to mention "prev" / "pop" in documentation for 2.3.
@@ -215,7 +215,7 @@ Level,Date,What
 0.4.2,13&nbsp;January&nbsp;2019,Tasks slide set controllable with metadata `taskSlides` and `tasksPerSlide`
 0.4.1,9&nbsp;January&nbsp;2019,Enhanced Taskpaper support with `@due`&comma; `@tags`&comma; and `@done`&comma; and reworked as a series of table slides.
 0.4,7&nbsp;January&nbsp;2019,Support shrinking of table cell font and margins.<br/>Added two-to-by-two grid of graphics on a slide.
-0.3.2,3 January 2019,"Support \\# as a literal octothorpe/hash/pound.<br/>Tidied up reporting.<br/>Added superscript, subscript, strikethrough, and underline text effects."
+0.3.2,3 January 2019,"Support `\#` as a literal octothorpe/hash/pound.<br/>Tidied up reporting.<br/>Added superscript, subscript, strikethrough, and underline text effects."
 0.3.1,3 November 2018,Fixed support for `<br/>` so it won't create a bullet on the new line.
 0.3,22 October 2018,Added customisation for bold and italic text
 0.2,3 September 2018,Added ways of controlling bullet sizes
@@ -450,12 +450,15 @@ The file name is the same as the SVG or EPS file's name, except the extension is
     * SVG - `image/svg+xml` or `image/svg` (though the latter is unofficial)
     * EPS - `application/postscript`
 
-### Video Slides
-<a id="video-slides"></a>
+### Video And Audio Slides
+<a id="video-and-audio-slides"></a>
 
-Videos are supported in a similar way to [graphics slides](#graphics-slides).  \
-However, there is no Markdown support for embedding videos. \
+Videos and audio files are supported in a similar way to [graphics slides](#graphics-slides).  \
+However, there is no Markdown support for embedding videos or audio files. \
 Fortunately, Markdown processors support HTML.
+
+#### Video Slides
+<a id="video-slides"></a>
 
 md2pptx supports embedding videos using the HTML `<video>` element.
 
@@ -472,7 +475,32 @@ Here's an example:
 
     <video width="400" height="300" src="waterdrop.mp4" poster="Battery W3M.png">
 
-**Note:** Unlike with graphics specified according to [Graphics Slides](#graphics-slides), the poster graphic's dimensions are not used to scale the graphic or the video.
+**Notes:**
+
+1. Unlike with graphics specified according to [Graphics Slides](#graphics-slides), the poster graphic's dimensions are not used to scale the poster graphic or the video.
+1. md2pptx supports only the simplest form of the `<video>` element.
+
+#### Audio Slides
+<a id="audio-slides"></a>
+
+md2pptx supports embedding audio files using the HTML `<audio>` element.
+
+Here is an example:
+
+    <audio src="audiotest.mp4"></audio>
+
+Optionally, you can code a `poster` attribute. \
+This defines a static graphic to be displayed when the audio file isn't playing. \
+Here's an example:
+
+    <audio src="audiotest.mp4" poster="my-album-cover.png"></audio>
+
+**Notes:**
+
+1. The HTML `<audio>` element does not support `width` or `height` attributes. \
+md2pptx scales the audio file on the slide to be square.
+1. Unlike with graphics specified according to [Graphics Slides](#graphics-slides), the poster graphic's dimensions are not used to scale the poster graphic or the audio file.
+1. md2pptx supports only the simplest form of the `<audio>` element.
 
 ### Table Slides
 <a id="table-slides"></a>
@@ -1282,6 +1310,7 @@ Its format will adjust to fit all the metadata items.
 
 1. If you override a "whole presentation" metadata item by a dynamic metadata specification the key and value in this table will be coloured blue. \
 An asterisk will be appended to the metadata value.
+<a id="hidemetadata"></a>
 1. You can suppress `style.` metadata items by specifying the metadata item `hideMetadata: style`. \
 In the md2pptx developer's experience `style.` metadata items can become numerous and could obscure more important items in the Processing Summary slide. \
 The default is not to hide such items.
@@ -2277,9 +2306,8 @@ The default value is `no`.
 You can specify the background colour for the buttons with \
 [`SectionArrowsColour`](#section-navigation-buttons-sectionarrowscolour).
 
-
-##### Section Navigation Button Colour - `SectionArrowsColour`
 <a id="section-navigation-buttons-colour-sectionarrowscolour"></a>
+##### Section Navigation Button Colour - `SectionArrowsColour`
 
 You can set the background colour of the buttons specified with \
 [`SectionArrows`](#section-navigation-buttons-sectionarrows).
