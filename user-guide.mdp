@@ -152,7 +152,7 @@ To quote from the python-pptx license statement:
 =colalign l r l
 =csv
 Level,Date,What
-2.6.1+,10&nbsp;April&nbsp;2022,Added `<video>` and `<audio>` element support&comma; described [here](#video-and-audio-slides).
+3.0,11&nbsp;April&nbsp;2022,Added `<video>` and `<audio>` element support&comma; described [here](#video-and-audio-slides). Added some links to the Change Log.
 2.6.1,19&nbsp;March&nbsp;2022,Added [tableHeadingSize](#adjusting-table-heading-font-size-with-tableheadingsize) and fixed bug with cell spanning more than 2 columns.
 2.6,18&nbsp;March&nbsp;2022,Support [multi-column table cells](#multicolumn-table-cells) - complying with the MultiMarkdown spec. Added [`deleteFirstSlide`](#deleting-the-first-(processing-summary)-slide-with-deletefirstslide).
 2.5.5,5&nbsp;March&nbsp;2022,Make [`tableMargin`](#tablemargin-dynamic)&comma; [`marginBase`](#marginbase-dynamic)&comma; and [`numbersHeight`](#numbersheight-dynamic) dynamically settable.
@@ -166,9 +166,9 @@ Level,Date,What
 2.4.1,2&nbsp;October&nbsp;2021,Fixed bug where code appeared in a slide's Notes slide
 2.4,19&nbsp;September&nbsp;2021,Some simple style information added to span support. fgcolor &amp; bgcolor hex RGB  metadata values are checked for validity.
 2.3.4,7&nbsp;September&nbsp;2021,Added [`SectionArrows`](#section-navigation-buttons-sectionarrows) which enables navigation buttons between Section slides. [`SectionArrowsColour`](#section-navigation-buttons-colour-sectionarrowscolour) sets the buttons' background colour. 
-2.3.3,27&nbsp;August&nbsp;2021,Added `TOCStyle: plain` Table Of Contents layout. Also can enable internal links in TOC and Section slides. Fixed `addTableLines` bug.
-2.3.2,23&nbsp;August&nbsp;2021,Added `TOCStyle: circle` Table Of Contents layout. Also metadata to control Table Of Contents layout.
-2.3.1,21&nbsp;August&nbsp;2021,Forgot to mention "prev" / "pop" in documentation for 2.3.
+2.3.3,27&nbsp;August&nbsp;2021,Added [`TOCStyle: plain`](#plain-style-table-of-contents) Table Of Contents layout. Also can enable internal links in TOC and Section slides. Fixed `addTableLines` bug.
+2.3.2,23&nbsp;August&nbsp;2021,Added [`TOCStyle: circle`](#circle-style-table-of-contents) Table Of Contents layout. Also metadata to control Table Of Contents layout.
+2.3.1,21&nbsp;August&nbsp;2021,Forgot to mention [`prev` / `pop`](#dynamic-metadata) in documentation for 2.3.
 2.3,21&nbsp;August&nbsp;2021,Fixed "slide title as heading reference bug". Added Python release to runtime output. Refactored metadata handling.
 2.2.5,5&nbsp;August&nbsp;2021,You can turn on lines after table rows and columns with `addTableRowLines` and `addTableColumnLines`. You can also do `addTableLines` on a slide-by-slide basis. Also `addTableLineColour`&comma; `addTableLineWidth`&comma; and `addTableLineCount`.
 2.2.4,30&nbsp;July&nbsp;2021,You can turn on a border round a table or all cells with `addTableLines`. Fixed bug where slide notes appeared containing code fragments and subtitles.
