@@ -914,10 +914,10 @@ def getVideoDimensionsPlus(audioVideoInfo):
         try:
             operUrl = urllib.request.urlopen(audioVideoInfo.source)
         except urllib.error.HTTPError as e:
-            print(e.code)
-            print("File: " + GraphicFilename)
-            print("md2pptx terminating")
-            exit()
+            return -1, -1, "Web", None
+
+        except socket.error as s:
+            return -1, -1, "Web", None
 
         data = operUrl.read()
 
