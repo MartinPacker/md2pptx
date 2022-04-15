@@ -35,6 +35,7 @@ import tempfile
 import copy
 import platform
 import shutil
+import socket
 
 from lxml import etree
 from lxml.html import fromstring
@@ -59,8 +60,8 @@ except:
     have_pillow = False
 
 
-md2pptx_level = "3.0"
-md2pptx_date = "11 April, 2022"
+md2pptx_level = "3.0+"
+md2pptx_date = "15 April, 2022"
 
 
 class SlideInfo:
@@ -913,7 +914,7 @@ def getVideoDimensionsPlus(audioVideoInfo):
         try:
             operUrl = urllib.request.urlopen(audioVideoInfo.source)
         except urllib.error.HTTPError as e:
-            print(e)
+            print(e.code)
             print("File: " + GraphicFilename)
             print("md2pptx terminating")
             exit()
@@ -1852,10 +1853,12 @@ def handleWhateverGraphicType(GraphicFilename):
             operUrl = urllib.request.urlopen(GraphicFilename)
 
         except urllib.error.HTTPError as e:
-            print(e)
-            print("File: " + GraphicFilename)
-            print("md2pptx terminating")
-            exit()
+            print("HTTP error: " + str(e.code))
+            return GraphicFilename, printableGraphicFilename
+
+        except socket.error as s:
+            print("Socket error. (Web site not found).")
+            return GraphicFilename, printableGraphicFilename
 
         data = operUrl.read()
 
@@ -1900,8 +1903,7 @@ def handleWhateverGraphicType(GraphicFilename):
                 delete=False, suffix=fileExt, dir=tempDir
             )
         except IOError as e:
-            print(e)
-            print("md2pptx terminating")
+            print("Couldn't create temporary file. md2pptx terminating")
             exit()
 
         tempGraphicFile.write(data)
@@ -1938,8 +1940,7 @@ def handleWhateverGraphicType(GraphicFilename):
                     delete=False, suffix=".PNG", dir=tempDir
                 )
             except IOError as e:
-                print(e)
-                print("md2pptx terminating")
+                print("Couldn't create temporary file. md2pptx terminating")
                 exit()
 
             cairosvg.svg2png(file_obj=open(convertibleFilename), write_to=graphicFile)
@@ -1970,8 +1971,7 @@ def handleWhateverGraphicType(GraphicFilename):
                     delete=False, suffix=".PNG", dir=tempDir
                 )
             except IOError as e:
-                print(e)
-                print("md2pptx terminating")
+                print("Couldn't create temporary file. md2pptx terminating")
                 exit()
 
             try:
@@ -2902,7 +2902,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                             )
                         else:
                             print(
-                                "Missing left right file: "
+                                "Missing right video file: "
                                 + printableBottomRightGraphicFilename
                             )
 
