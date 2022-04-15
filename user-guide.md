@@ -20,12 +20,13 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 	* [Presentation Section Slides](#presentation-section-slides)
 	* [Bullet Slides](#bullet-slides)
 		* [Numbered List Items](#numbered-list-items)
-	* [Graphics Slides](#graphics-slides)
-		* [Clickable Pictures](#clickable-pictures)
-		* [Graphics File References](#graphics-file-references)
-	* [Video And Audio Slides](#video-and-audio-slides)
-		* [Video Slides](#video-slides)
-		* [Audio Slides](#audio-slides)
+	* [Graphics, Video And Audio slides](#graphics-video-and-audio-slides)
+		* [Graphics Slides](#graphics-slides)
+			* [Clickable Pictures](#clickable-pictures)
+			* [Graphics File References](#graphics-file-references)
+		* [Video And Audio Slides](#video-and-audio-slides)
+			* [Video Slides](#video-slides)
+			* [Audio Slides](#audio-slides)
 	* [Table Slides](#table-slides)
 		* [Special Case: Two Graphics Side By Side](#special-case-two-graphics-side-by-side)
 		* [Special Case: Two By Two Grid Of Graphics](#special-case-two-by-two-grid-of-graphics)
@@ -293,6 +294,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|3.0.1|15&nbsp;April&nbsp;2022|Improved error handling for embedding graphics&comma; video&comma; and audio from the web. Documented [here](#graphics-video-and-audio-slides).|
 |3.0|11&nbsp;April&nbsp;2022|Added `<video>` and `<audio>` element support&comma; described [here](#video-and-audio-slides). Added some links to the Change Log.|
 |2.6.1|19&nbsp;March&nbsp;2022|Added [tableHeadingSize](#adjusting-table-heading-font-size-with-tableheadingsize) and fixed bug with cell spanning more than 2 columns.|
 |2.6|18&nbsp;March&nbsp;2022|Support [multi-column table cells](#multicolumn-table-cells) - complying with the MultiMarkdown spec. Added [`deleteFirstSlide`](#deleting-the-first-(processing-summary)-slide-with-deletefirstslide).|
@@ -480,7 +482,25 @@ Numbering with `1.` is actually a useful practice - as it makes it easier to reo
 
 **Note:** You can mix numbered and bulleted items in a list.
 
-### Graphics Slides
+### Graphics, Video And Audio slides
+<a id="graphics-video-and-audio-slides"></a>
+
+You can embed three kinds of media in slides:
+
+* [Graphics](#graphics-slides)
+* [Videos](#video-slides)
+* [Audio files](#audio-slides)
+
+These media items can be from your file system, or over the web.
+
+If a local file is found a simple "missing" file message is printed.
+
+In the case of over the web, two kinds of errors can be detected and reported:
+
+* The domain is unreachable, reported as a socket error.
+* The domain is reachable, but an error occurred in retrieving the file. In this case the HTTP code is reported, helping you debug whether the filename is wrong (404) or some other issue.
+
+#### Graphics Slides
 <a id="graphics-slides"></a>
 
 As with [bullet slides](#bullet-slides), code the slide title as a Markdown Heading Level 3. Specify the graphic to embed with the standard Markdown image reference:
@@ -497,7 +517,7 @@ If you code a string inside the square brackets it will be used as a tooltip (or
 
 **HINT:** If you want two graphics side by side use a single-row table, described [here](#special-case-two-graphics-side-by-side). If you want two graphics one above the other use a two-row, single-column table, described [here](#special-case-one-graphic-above-another).
 
-#### Clickable Pictures
+##### Clickable Pictures
 <a id="clickable-pictures"></a>
 
 You can make a picture clickable, with an optional tooltip. This means you can click on a picture in slideshow mode to go to another slide. The tooltip is shown in slideshow mode when your mouse hovers over the picture.
@@ -518,7 +538,7 @@ To create a hyperlink to a slide with heading reference code something like this
 
 See [Hyperlinks](#hyperlinks) for more on creating hyperlinks.
 
-#### Graphics File References
+##### Graphics File References
 <a id="graphics-file-references"></a>
 
 md2pptx supports graphics references in three different formats:
@@ -560,12 +580,12 @@ You can optionally have md2pptx export the temporary PNG files. See [Exporting C
     * SVG - `image/svg+xml` or `image/svg` (though the latter is unofficial)
     * EPS - `application/postscript`
 
-### Video And Audio Slides
+#### Video And Audio Slides
 <a id="video-and-audio-slides"></a>
 
 Videos and audio files are supported in a similar way to [graphics slides](#graphics-slides).  However, there is no Markdown support for embedding videos or audio files. Fortunately, Markdown processors support HTML.
 
-#### Video Slides
+##### Video Slides
 <a id="video-slides"></a>
 
 md2pptx supports embedding videos using the HTML `<video>` element.
@@ -585,7 +605,7 @@ Optionally, you can code a `poster` attribute. This defines a static graphic to 
 1. Unlike with graphics specified according to [Graphics Slides](#graphics-slides), the poster graphic's dimensions are not used to scale the poster graphic or the video.
 1. md2pptx supports only the simplest form of the `<video>` element.
 
-#### Audio Slides
+##### Audio Slides
 <a id="audio-slides"></a>
 
 md2pptx supports embedding audio files using the HTML `<audio>` element.
