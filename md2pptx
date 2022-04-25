@@ -61,7 +61,7 @@ except:
 
 
 md2pptx_level = "3.0.1+"
-md2pptx_date = "24 April, 2022"
+md2pptx_date = "25 April, 2022"
 
 
 class SlideInfo:
@@ -844,12 +844,15 @@ def createPictureHyperlinkOrTooltip(picture, target, tooltipText=""):
     elif target.__class__.__name__ == "str":
         # Is a URL
         picture.click_action.hyperlink.address = target
+        # URL might be a macro reference
+        if target[:11] == "ppaction://":
+            # URL is indeed a macro reference, so treat it as such
+            picture.click_action.hyperlink._hlink.set("action", target)
     else:
         picture.click_action.target_slide = target
 
     if tooltipText != "":
         picture.click_action.hyperlink._hlink.set("tooltip", tooltipText)
-
 
 # If a tooltip has been set return it else return an empty string
 def getPictureTooltip(picture):
