@@ -60,8 +60,8 @@ except:
     have_pillow = False
 
 
-md2pptx_level = "3.0.1"
-md2pptx_date = "15 April, 2022"
+md2pptx_level = "3.0.1+"
+md2pptx_date = "24 April, 2022"
 
 
 class SlideInfo:
@@ -816,6 +816,7 @@ def createRunHyperlinkOrTooltip(run, to_slide, tooltipText=""):
 
     # Also clone the hyperlink click action
     hl._hlinkClick.action = sca_hl._hlink.action
+
     if tooltipText != "":
         hl._hlinkClick.set("tooltip", tooltipText)
 
@@ -1636,6 +1637,11 @@ def addFormattedText(p, text):
                     # Not an internal link so create it
                     hlink = run.hyperlink
                     hlink.address = linkURL
+                    
+                    # URL might be a macro reference
+                    if linkURL[:11] == "ppaction://":
+                        # URL is indeed a macro reference, so treat it as such
+                        hlink._hlinkClick.action = linkURL
 
             # Add the flattened text from this subfragment
             if fragType == "Link":
