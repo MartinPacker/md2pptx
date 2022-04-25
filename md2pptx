@@ -5494,8 +5494,20 @@ for line in linesAfterConcatenation:
 
         for m in re.finditer(graphicRegex, line):
             # A non-clickable graphic
-            mediaItem = [m.start(0), m.end(0), m.group(0)]
-            mediaItems.append(mediaItem)
+            start = m.start(0)
+            end = m.end(0)
+            mediaItem = [start, end, m.group(0)]
+            
+            rematch = False
+            for existingMediaItem in mediaItems:
+                if (start >= existingMediaItem[0]) & (end <= existingMediaItem[1]):
+                    # This graphic already found as part of a clickable graphic link
+                    rematch = True
+                    break
+            
+            if rematch is False:
+                # This graphic not already found as part of a clickable graphic link
+                mediaItems.append(mediaItem)
 
         # compose table row - based on start offset
         tableRow = []
