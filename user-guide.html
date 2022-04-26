@@ -1126,9 +1126,14 @@ body .markdown-body
 <li><a href="#using-a-level-3-heading-with-&nbsp;">Using A Level 3 Heading With <code>&amp;nbsp;</code></a></li>
 </ul>
 </li>
-<li><a href="#hyperlinks">Hyperlinks</a><ul>
+<li><a href="#hyperlinks-and-vba-macros">Hyperlinks And VBA Macros</a><ul>
+<li><a href="#coding-a-url-reference">Coding A URL Reference</a></li>
 <li><a href="#coding-a-heading-reference-on-a-target-slide">Coding A Heading Reference On A Target Slide</a></li>
 <li><a href="#coding-a-hyperlink-to-another-slide">Coding A Hyperlink To Another Slide</a></li>
+<li><a href="#invoking-a-vba-macro">Invoking A VBA  Macro</a><ul>
+<li><a href="#sample-macro-to-remove-the-first-slide">Sample Macro To Remove The First Slide</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#html-comments">HTML Comments</a></li>
@@ -1397,6 +1402,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">3.0.1+</td>
+<td align="right">26&nbsp;April&nbsp;2022</td>
+<td align="left">Added support for <a href="#invoking-a-vba-macro">VBA macro invocation</a> via <code>ppaction://macro?name=</code> syntax</td>
+</tr>
 <tr>
 <td align="left">3.0.1</td>
 <td align="right">15&nbsp;April&nbsp;2022</td>
@@ -2220,8 +2230,16 @@ You can also use some other kinds of markup, such as hyperlinks and <code>&lt;ab
 <pre><code>### &amp;nbsp;
 </code></pre>
 <p>This has the perhaps-useful side effect of not drawing a horizontal rule in most other Markdown processors.</p>
-<h2 id="hyperlinks">Hyperlinks<a class="headerlink" href="#hyperlinks" title="Permanent link"></a></h2>
-<p><a id="hyperlinks"></a></p>
+<h2 id="hyperlinks-and-vba-macros">Hyperlinks And VBA Macros<a class="headerlink" href="#hyperlinks-and-vba-macros" title="Permanent link"></a></h2>
+<p><a id="hyperlinks-and-vba-macros"></a></p>
+<p>md2pptx allows you to create links and invoke VBA macros. You can code</p>
+<ul>
+<li><a href="#coding-a-url-reference">URL References</a>, perhaps to an external web site.</li>
+<li><a href="#coding-a-hyperlink-to-another-slide">Hyperlink references to other slides in the same presentation</a>.</li>
+<li><a href="#invoking-a-vba-macro">Links that invoke VBA macros</a> in the same presentation.</li>
+</ul>
+<h3 id="coding-a-url-reference">Coding A URL Reference<a class="headerlink" href="#coding-a-url-reference" title="Permanent link"></a></h3>
+<p><a id="coding-a-url-reference"></a></p>
 <p>To code a hyperlink to an <strong>external</strong> URL in a slide code something like:</p>
 <pre><code>[IBM Website](https://www.ibm.com)
 </code></pre>
@@ -2276,6 +2294,37 @@ To create an internal slide reference you need to do two things:</p>
 <li>The bullet links to the slide with href <code>z15-arch</code>.</li>
 <li>You click on the word <code>here</code> in a presentation to move to the referred-to slide.</li>
 </ul>
+<h3 id="invoking-a-vba-macro">Invoking A VBA  Macro<a class="headerlink" href="#invoking-a-vba-macro" title="Permanent link"></a></h3>
+<p><a id="invoking-a-vba-macro"></a></p>
+<p>If the source presentation contains macros you can invoke them using a special Powerpoint URI of the form:</p>
+<pre><code>ppaction://macro?name=myMacro
+</code></pre>
+<p>You can use this form of URL in a text run:</p>
+<pre><code>[Run The Macro](ppaction://macro?name=myMacro)
+</code></pre>
+<p>And you can use this form <a href="#clickable-pictures">from a graphic</a>:</p>
+<pre><code>[![](button-picture1.png))](ppaction://macro?name=myMacro)
+</code></pre>
+<p>When you run the slide show these links become &ldquo;live&rdquo;; Clicking on them runs the macro. You might get a security warning - but there is some control over to what degree Powerpoint&rsquo;s macro security is managed.</p>
+<p>As documented in <a href="#deviations-from-standard-markdown">Deviations From Standard Markdown</a>, the &ldquo;ppaction://&rdquo; URI won&rsquo;t work in HTML.</p>
+<p><strong>Notes:</strong></p>
+<ol>
+<li>The template presentation must have the extension &ldquo;.pptm&rdquo; for &ldquo;Powerpoint With Macros&rdquo;.</li>
+<li>The generated presentation will also have the extension &ldquo;.pptm&rdquo;.</li>
+<li>You can only invoke macros already in the template presentation.</li>
+<li>The generated presentation can be converted to &ldquo;.pptx&rdquo; in Powerpoint itself.</li>
+</ol>
+<h4 id="sample-macro-to-remove-the-first-slide">Sample Macro To Remove The First Slide<a class="headerlink" href="#sample-macro-to-remove-the-first-slide" title="Permanent link"></a></h4>
+<p>You might want to remove the first slide - for Production. Here&rsquo;s a macro that will do that:</p>
+<p><div class="highlight"><pre>Sub removeFirstSlide()
+  ActivePresentation.Slides(1).Delete
+End Sub
+</pre></div>
+You could invoke it from a slide  with:</p>
+<div class="highlight"><pre>[Remove First Slide](ppaction://macro?name=removeFirstSlide)
+</pre></div>
+
+<p>or you could place a button to run the macro on the Processing Summary slide itself. To do that edit the slide master and place a custom button on the &ldquo;title only&rdquo; slide. Then return to the normal slide view.</p>
 <h2 id="html-comments">HTML Comments<a class="headerlink" href="#html-comments" title="Permanent link"></a></h2>
 <p><a id="html-comments"></a></p>
 <p>You can use HTML-style comments, ranging over multiple lines.</p>
@@ -3585,4 +3634,5 @@ The default value is <code>no</code>.</p>
 </li>
 <li>In tables trailing pipe (<code>|</code>) characters are optional in md2pptx.</li>
 <li>md2pptx supports inline Taskpaper format. Markdown doesn&rsquo;t. (The use of the Taskpaper <code>-</code> delimiter currently prevents md2pptx from supporting it as a list bullet marker.) See <a href="#task-list-slides">Task List Slides</a> for details of md2pptx&rsquo;s Taskpaper support.</li>
+<li>Using md2pptx&rsquo;s &ldquo;ppaction://&rdquo; URI support to <a href="#invoking-a-vba-macro">run a VBA macro</a> won&rsquo;t work in HTML.</li>
 </ul></article></body></html>

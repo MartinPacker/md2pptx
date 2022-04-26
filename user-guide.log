@@ -5,8 +5,8 @@ mdpre Markdown Preprocessor v0.6.2 (19 March, 2022)
 Def mdpre_date = 19 March, 2022
 Def mdpre_level = 0.6.2
 Def userid = martinpacker
-Def time = 21&colon;44
-Def date = 15 April&comma; 2022
+Def time = 17&colon;35
+Def date = 26 April&comma; 2022
 Def TOC = Table Of Contents
 Def md = Markdown
 Def pp = Powerpoint
@@ -54,9 +54,12 @@ CSV Stop
 .....  Slides Without Titles
 ..... .....  Using A Horizontal Rule
 ..... .....  Using A Level 3 Heading With `&nbsp;`
-.....  Hyperlinks
+.....  Hyperlinks And VBA Macros
+..... .....  Coding A URL Reference
 ..... .....  Coding A Heading Reference On A Target Slide
 ..... .....  Coding A Hyperlink To Another Slide
+..... .....  Invoking A VBA  Macro
+..... ..... .....  Sample Macro To Remove The First Slide
 .....  HTML Comments
 .....  Special Text Formatting
 CSV Start

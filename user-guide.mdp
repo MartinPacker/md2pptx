@@ -152,7 +152,7 @@ To quote from the python-pptx license statement:
 =colalign l r l
 =csv
 Level,Date,What
-3.0.1+,25&nbsp;April&nbsp;2022,
+3.0.1+,26&nbsp;April&nbsp;2022,Added support for [VBA macro invocation](#invoking-a-vba-macro) via `ppaction://macro?name=` syntax
 3.0.1,15&nbsp;April&nbsp;2022,Improved error handling for embedding graphics&comma; video&comma; and audio from the web. Documented [here](#graphics-video-and-audio-slides).
 3.0,11&nbsp;April&nbsp;2022,Added `<video>` and `<audio>` element support&comma; described [here](#video-and-audio-slides). Added some links to the Change Log.
 2.6.1,19&nbsp;March&nbsp;2022,Added [tableHeadingSize](#adjusting-table-heading-font-size-with-tableheadingsize) and fixed bug with cell spanning more than 2 columns.
@@ -961,8 +961,18 @@ Code the following on its own line:
 
 This has the perhaps-useful side effect of not drawing a horizontal rule in most other Markdown processors.
 
-## Hyperlinks
-<a id="hyperlinks"></a>
+## Hyperlinks And VBA Macros
+<a id="hyperlinks-and-vba-macros"></a>
+
+md2pptx allows you to create links and invoke VBA macros. \
+You can code
+
+* [URL References](#coding-a-url-reference), perhaps to an external web site.
+* [Hyperlink references to other slides in the same presentation](#coding-a-hyperlink-to-another-slide).
+* [Links that invoke VBA macros](#invoking-a-vba-macro) in the same presentation.
+
+### Coding A URL Reference
+<a id="coding-a-url-reference"></a>
 
 To code a hyperlink to an **external** URL in a slide code something like:
 
@@ -1032,6 +1042,53 @@ Here's an example:
 
 * The bullet links to the slide with href `z15-arch`.
 * You click on the word `here` in a presentation to move to the referred-to slide.
+
+### Invoking A VBA  Macro
+<a id="invoking-a-vba-macro"></a>
+
+If the source presentation contains macros you can invoke them using a special Powerpoint URI of the form:
+
+    ppaction://macro?name=myMacro
+
+You can use this form of URL in a text run:
+
+    [Run The Macro](ppaction://macro?name=myMacro)
+    
+And you can use this form [from a graphic](#clickable-pictures):
+
+    [![](button-picture1.png))](ppaction://macro?name=myMacro)
+
+When you run the slide show these links become "live"; Clicking on them runs the macro. \
+You might get a security warning - but there is some control over to what degree Powerpoint's macro security is managed.
+
+As documented in [Deviations From Standard Markdown](#deviations-from-standard-markdown), the "ppaction://" URI won't work in HTML.
+
+**Notes:**
+
+1. The template presentation must have the extension ".pptm" for "Powerpoint With Macros".
+1. The generated presentation will also have the extension ".pptm".
+1. You can only invoke macros already in the template presentation.
+1. The generated presentation can be converted to ".pptx" in Powerpoint itself.
+
+#### Sample Macro To Remove The First Slide
+
+You might want to remove the first slide - for Production. \
+Here's a macro that will do that:
+
+```
+Sub removeFirstSlide()
+  ActivePresentation.Slides(1).Delete
+End Sub
+```
+You could invoke it from a slide  with:
+
+```
+[Remove First Slide](ppaction://macro?name=removeFirstSlide)
+```
+
+or you could place a button to run the macro on the Processing Summary slide itself. \
+To do that edit the slide master and place a custom button on the "title only" slide. \
+Then return to the normal slide view.
 
 ## HTML Comments
 <a id="html-comments"></a>
@@ -2698,3 +2755,4 @@ See [Table Slides](#table-slides) for details of md2pptx's Tables support.
 * In tables trailing pipe (`|`) characters are optional in md2pptx.
 * md2pptx supports inline Taskpaper format. Markdown doesn't. (The use of the Taskpaper `-` delimiter currently prevents md2pptx from supporting it as a list bullet marker.) \
 See [Task List Slides](#task-list-slides) for details of md2pptx's Taskpaper support.
+* Using md2pptx's "ppaction://" URI support to [run a VBA macro](#invoking-a-vba-macro) won't work in HTML.
