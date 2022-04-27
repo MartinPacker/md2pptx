@@ -5,7 +5,7 @@ mdpre Markdown Preprocessor v0.6.2 (19 March, 2022)
 Def mdpre_date = 19 March, 2022
 Def mdpre_level = 0.6.2
 Def userid = martinpacker
-Def time = 09&colon;23
+Def time = 15&colon;36
 Def date = 27 April&comma; 2022
 Def TOC = Table Of Contents
 Def md = Markdown
@@ -60,6 +60,7 @@ CSV Stop
 ..... .....  Coding A Hyperlink To Another Slide
 ..... .....  Invoking A VBA  Macro
 ..... ..... .....  Sample Macro To Remove The First Slide
+..... ..... .....  Sample Macro To Remove The First Slide And Save As A .pptx File
 .....  HTML Comments
 .....  Special Text Formatting
 CSV Start

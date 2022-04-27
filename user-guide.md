@@ -51,6 +51,7 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 	* [Coding A Hyperlink To Another Slide](#coding-a-hyperlink-to-another-slide)
 	* [Invoking A VBA  Macro](#invoking-a-vba-macro)
 		* [Sample Macro To Remove The First Slide](#sample-macro-to-remove-the-first-slide)
+		* [Sample Macro To Remove The First Slide And Save As A .pptx File](#sample-macro-to-remove-the-first-slide-and-save-as-a-pptx-file)
 * [HTML Comments](#html-comments)
 * [Special Text Formatting](#special-text-formatting)
 	* [Using HTML `<span>` Elements To Specify Text Colours And Underlining](#using-html-<span>-elements-to-specify-text-colours-and-underlining)
@@ -297,6 +298,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|3.1+|28&nbsp;April&nbsp;2022|Clearing the Processing Summary slide no longer removes Action Button objects.|
 |3.1|27&nbsp;April&nbsp;2022|Added support for [VBA macro invocation](#invoking-a-vba-macro) via `ppaction://macro?name=` syntax|
 |3.0.1|15&nbsp;April&nbsp;2022|Improved error handling for embedding graphics&comma; video&comma; and audio from the web. Documented [here](#graphics-video-and-audio-slides).|
 |3.0|11&nbsp;April&nbsp;2022|Added `<video>` and `<audio>` element support&comma; described [here](#video-and-audio-slides). Added some links to the Change Log.|
@@ -1118,7 +1120,7 @@ As documented in [Deviations From Standard Markdown](#deviations-from-standard-m
 You might want to remove the first slide - for Production. Here's a macro that will do that:
 
 ```
-Sub removeFirstSlide()
+Sub x()
   ActivePresentation.Slides(1).Delete
 End Sub
 ```
@@ -1128,7 +1130,37 @@ You could invoke it from a slide  with:
 [Remove First Slide](ppaction://macro?name=removeFirstSlide)
 ```
 
-or you could place a button to run the macro on the Processing Summary slide itself. To do that edit the slide master and place a custom button on the "title only" slide. Then return to the normal slide view.
+or you could place an Action Button to run the `removeFirstSlide` macro on the [Processing Summary](#processing-summary) slide itself. To do that edit the template presentation and place a custom button on the first slide.
+
+#### Sample Macro To Remove The First Slide And Save As A .pptx File
+<a id="sample-macro-to-remove-the-first-slide-and-save-as-a-pptx-file"></a>
+
+Here is a sample set of macros that further prepare the presentation for Production:
+
+```
+Sub removeFirstSlide()
+  ActivePresentation.Slides(1).Delete
+End Sub
+
+Sub savePresentationAsPPTX()
+  Dim pptmName As String
+  pptmName = ActivePresentation.FullName
+
+  Dim pptxName As String
+  pptxName = Left(pptmName, InStr(pptmName, ".")) & "pptx"
+
+  ActivePresentation.SaveAs pptxName, ppSaveAsOpenXMLPresentation
+End Sub
+
+Sub removeFirstSlideAndSaveAsPPTX()
+  Call removeFirstSlide
+
+  Call savePresentationAsPPTX
+End Sub
+
+```
+
+Again, you might place an Action Button to run `removeFirstSlideAndSaveAsPPTX` on the [Processing Summary](#processing-summary) slide.
 
 ## HTML Comments
 <a id="html-comments"></a>
@@ -1405,6 +1437,7 @@ As described in [Creating Slides](#creating-slides), md2pptx will populate the f
 1. If you override a "whole presentation" metadata item by a dynamic metadata specification the key and value in this table will be coloured blue. An asterisk will be appended to the metadata value.
 <a id="hidemetadata"></a>
 1. You can suppress `style.` metadata items by specifying the metadata item `hideMetadata: style`. In the md2pptx developer's experience `style.` metadata items can become numerous and could obscure more important items in the Processing Summary slide. The default is not to hide such items.
+1. Before the metadata table is created md2pptx will remove all but the title item in this slide. The one type of item that won't be removed is any Action Buttons. See [Sample Macro To Remove The First Slide](#sample-macro-to-remove-the-first-slide) for an example of where these might be useful.
 
 ### Metadata Keys
 <a id="metadata-keys"></a>

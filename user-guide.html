@@ -1132,6 +1132,7 @@ body .markdown-body
 <li><a href="#coding-a-hyperlink-to-another-slide">Coding A Hyperlink To Another Slide</a></li>
 <li><a href="#invoking-a-vba-macro">Invoking A VBA  Macro</a><ul>
 <li><a href="#sample-macro-to-remove-the-first-slide">Sample Macro To Remove The First Slide</a></li>
+<li><a href="#sample-macro-to-remove-the-first-slide-and-save-as-a-pptx-file">Sample Macro To Remove The First Slide And Save As A .pptx File</a></li>
 </ul>
 </li>
 </ul>
@@ -1402,6 +1403,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">3.1+</td>
+<td align="right">28&nbsp;April&nbsp;2022</td>
+<td align="left">Clearing the Processing Summary slide no longer removes Action Button objects.</td>
+</tr>
 <tr>
 <td align="left">3.1</td>
 <td align="right">27&nbsp;April&nbsp;2022</td>
@@ -2316,7 +2322,7 @@ To create an internal slide reference you need to do two things:</p>
 </ol>
 <h4 id="sample-macro-to-remove-the-first-slide">Sample Macro To Remove The First Slide<a class="headerlink" href="#sample-macro-to-remove-the-first-slide" title="Permanent link"></a></h4>
 <p>You might want to remove the first slide - for Production. Here&rsquo;s a macro that will do that:</p>
-<p><div class="highlight"><pre>Sub removeFirstSlide()
+<p><div class="highlight"><pre>Sub x()
   ActivePresentation.Slides(1).Delete
 End Sub
 </pre></div>
@@ -2324,7 +2330,32 @@ You could invoke it from a slide  with:</p>
 <div class="highlight"><pre>[Remove First Slide](ppaction://macro?name=removeFirstSlide)
 </pre></div>
 
-<p>or you could place a button to run the macro on the Processing Summary slide itself. To do that edit the slide master and place a custom button on the &ldquo;title only&rdquo; slide. Then return to the normal slide view.</p>
+<p>or you could place an Action Button to run the <code>removeFirstSlide</code> macro on the <a href="#processing-summary">Processing Summary</a> slide itself. To do that edit the template presentation and place a custom button on the first slide.</p>
+<h4 id="sample-macro-to-remove-the-first-slide-and-save-as-a-pptx-file">Sample Macro To Remove The First Slide And Save As A .pptx File<a class="headerlink" href="#sample-macro-to-remove-the-first-slide-and-save-as-a-pptx-file" title="Permanent link"></a></h4>
+<p><a id="sample-macro-to-remove-the-first-slide-and-save-as-a-pptx-file"></a></p>
+<p>Here is a sample set of macros that further prepare the presentation for Production:</p>
+<div class="highlight"><pre>Sub removeFirstSlide()
+  ActivePresentation.Slides(1).Delete
+End Sub
+
+Sub savePresentationAsPPTX()
+  Dim pptmName As String
+  pptmName = ActivePresentation.FullName
+
+  Dim pptxName As String
+  pptxName = Left(pptmName, InStr(pptmName, &quot;.&quot;)) &amp; &quot;pptx&quot;
+
+  ActivePresentation.SaveAs pptxName, ppSaveAsOpenXMLPresentation
+End Sub
+
+Sub removeFirstSlideAndSaveAsPPTX()
+  Call removeFirstSlide
+
+  Call savePresentationAsPPTX
+End Sub
+</pre></div>
+
+<p>Again, you might place an Action Button to run <code>removeFirstSlideAndSaveAsPPTX</code> on the <a href="#processing-summary">Processing Summary</a> slide.</p>
 <h2 id="html-comments">HTML Comments<a class="headerlink" href="#html-comments" title="Permanent link"></a></h2>
 <p><a id="html-comments"></a></p>
 <p>You can use HTML-style comments, ranging over multiple lines.</p>
@@ -2683,6 +2714,7 @@ Keys are case insensitive. In this User Guide they are capitalised to aid compre
 <li>If you override a &ldquo;whole presentation&rdquo; metadata item by a dynamic metadata specification the key and value in this table will be coloured blue. An asterisk will be appended to the metadata value.
 <a id="hidemetadata"></a></li>
 <li>You can suppress <code>style.</code> metadata items by specifying the metadata item <code>hideMetadata: style</code>. In the md2pptx developer&rsquo;s experience <code>style.</code> metadata items can become numerous and could obscure more important items in the Processing Summary slide. The default is not to hide such items.</li>
+<li>Before the metadata table is created md2pptx will remove all but the title item in this slide. The one type of item that won&rsquo;t be removed is any Action Buttons. See <a href="#sample-macro-to-remove-the-first-slide">Sample Macro To Remove The First Slide</a> for an example of where these might be useful.</li>
 </ol>
 <h3 id="metadata-keys">Metadata Keys<a class="headerlink" href="#metadata-keys" title="Permanent link"></a></h3>
 <p><a id="metadata-keys"></a></p>
