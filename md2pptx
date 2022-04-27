@@ -60,8 +60,8 @@ except:
     have_pillow = False
 
 
-md2pptx_level = "3.0.1+"
-md2pptx_date = "25 April, 2022"
+md2pptx_level = "3.1"
+md2pptx_date = "27 April, 2022"
 
 
 class SlideInfo:
@@ -854,6 +854,7 @@ def createPictureHyperlinkOrTooltip(picture, target, tooltipText=""):
     if tooltipText != "":
         picture.click_action.hyperlink._hlink.set("tooltip", tooltipText)
 
+
 # If a tooltip has been set return it else return an empty string
 def getPictureTooltip(picture):
     if picture.click_action.hyperlink._hlink != None:
@@ -1640,7 +1641,7 @@ def addFormattedText(p, text):
                     # Not an internal link so create it
                     hlink = run.hyperlink
                     hlink.address = linkURL
-                    
+
                     # URL might be a macro reference
                     if linkURL[:11] == "ppaction://":
                         # URL is indeed a macro reference, so treat it as such
@@ -5497,14 +5498,14 @@ for line in linesAfterConcatenation:
             start = m.start(0)
             end = m.end(0)
             mediaItem = [start, end, m.group(0)]
-            
+
             rematch = False
             for existingMediaItem in mediaItems:
                 if (start >= existingMediaItem[0]) & (end <= existingMediaItem[1]):
                     # This graphic already found as part of a clickable graphic link
                     rematch = True
                     break
-            
+
             if rematch is False:
                 # This graphic not already found as part of a clickable graphic link
                 mediaItems.append(mediaItem)
