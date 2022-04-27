@@ -60,8 +60,8 @@ except:
     have_pillow = False
 
 
-md2pptx_level = "3.1"
-md2pptx_date = "27 April, 2022"
+md2pptx_level = "3.1+"
+md2pptx_date = "28 April, 2022"
 
 
 class SlideInfo:
@@ -1687,8 +1687,10 @@ def createProcessingSummarySlide(presentation, rawMetadata):
     # Use the first slide in the template presentation as the base
     slide = presentation.slides[0]
 
-    # Delete any body shape
-    deleteSimpleShape(findBodyShape(slide))
+    # Delete any body shape - other than action buttons
+    bodyShape = findBodyShape(slide)
+    if bodyShape.name.startswith("Action Button:") is False:
+        deleteSimpleShape(bodyShape)
 
     # Build "run time" text
     now = datetime.datetime.now()
