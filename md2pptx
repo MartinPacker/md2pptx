@@ -5112,7 +5112,7 @@ for line in linesAfterConcatenation:
                         metadataKey, metadataValue.lower(), "float"
                     )
 
-                if metadataKey == "tableheadingsize":
+                elif metadataKey == "tableheadingsize":
                     # Heading font size for tables
                     processingOptions.dynamicallySetOption(
                         metadataKey, metadataValue.lower(), "float"
