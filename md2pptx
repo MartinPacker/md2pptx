@@ -61,7 +61,7 @@ except:
 
 
 md2pptx_level = "3.1+"
-md2pptx_date = "28 April, 2022"
+md2pptx_date = "8 May, 2022"
 
 
 class SlideInfo:
@@ -85,6 +85,15 @@ class SlideInfo:
         self.code = code
         self.sequence = sequence
 
+# Information about a single table. (A slide might have more than one - or none.)
+class TableInfo:
+    def __init__(
+        self,
+        tableRows,
+        tableCaption
+    ):
+        self.tableRows = []
+        self.tableCaption = ""
 
 # Information about a video
 class AudioVideoInfo:
@@ -4169,7 +4178,6 @@ dynamicMetadataRegex = re.compile("^<!-- md2pptx: (.+): (.+) -->")
 indirectReferenceAnchorRegex = re.compile("^\[(.+?)\]: (.+)")
 indirectReferenceUsageRegex = re.compile("[(.+?)]\[(.+?)]")
 
-
 # Default slide layout enumeration
 processingOptions.setOptionValuesArray(
     [
@@ -4932,6 +4940,7 @@ for line in afterMetadataAndHTML:
                 (previousLine[0:2] != "# ")
                 & (previousLine[0:3] != "## ")
                 & (previousLine[0:4] != "    ")
+                & (previousLine[0] != "|")
                 & (inCode is False)
                 & (inHTMLCode is False)
             ):
@@ -4975,9 +4984,12 @@ for line in linesAfterConcatenation:
         linesAfterConcatenation[metadataLinenumber] = "<ignoreme>"
     metadataLinenumber += 1
 
+lastTableLine = -1
+tableCaptions =[]
+
 # Pass 5: Main pass over the input file, now that footnote
 # references have been gathered
-for line in linesAfterConcatenation:
+for lineNumber, line in enumerate(linesAfterConcatenation):
     # Remove trailing white space
     line = line.rstrip()
 
@@ -5526,6 +5538,11 @@ for line in linesAfterConcatenation:
 
     elif line[:1] == "|":
         # Table or side-by-side
+        lastTableLine = lineNumber
+        
+        # As we're in a table we can't have a table caption yet
+        tableCaption = ""
+
         if inTable is False:
             blockType = "table"
             tableRows.append([])
@@ -5551,9 +5568,15 @@ for line in linesAfterConcatenation:
         tableRows[-1].append(tableRow)
         inTitle = False
 
+    elif (line.startswith("[")) & line.endswith("]") & (lineNumber == lastTableLine + 1):
+        tableCaption = line[1:-1]
+        tableCaptions.append(tableCaption)
     else:
         # Not in a table
         inTable = False
+        
+        if len(tableCaptions) < len(tableRows):
+            tableCaptions.append("")
 
         if not inCode:
             # Must be a slide note line or a subtitle line
@@ -5563,6 +5586,10 @@ for line in linesAfterConcatenation:
                 slideSubtitle = slideSubtitle + "\n" + line
             elif startswithOneOf(line, ["</pre>", "</code>"]) is False:
                 notes_text = notes_text + "\n" + line
+
+# Ensure there's a blank table caption - for the case the table ended in the final line
+if len(tableCaptions) < len(tableRows):
+    tableCaptions.append(tableCaption)
 
 ######################################################################################
 #                                                                                    #
