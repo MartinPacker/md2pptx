@@ -1,12 +1,12 @@
 
-mdpre Markdown Preprocessor v0.6.2 (19 March, 2022)
-===================================================
+mdpre Markdown Preprocessor v0.6.4 (16 May, 2022)
+=================================================
 - opened <stdout> for writing
-Def mdpre_date = 19 March, 2022
-Def mdpre_level = 0.6.2
+Def mdpre_date = 16 May, 2022
+Def mdpre_level = 0.6.4
 Def userid = martinpacker
-Def time = 15&colon;36
-Def date = 27 April&comma; 2022
+Def time = 14&colon;21
+Def date = 22 May&comma; 2022
 Def TOC = Table Of Contents
 Def md = Markdown
 Def pp = Powerpoint
@@ -82,7 +82,6 @@ CSV Stop
 ..... .....  Specifying Metadata
 ..... ..... .....  Processing Summary
 ..... .....  Metadata Keys
-..... ..... .....  Slide Numbers - `numbers`
 ..... ..... .....  Page Title Size - `pageTitleSize`
 ..... ..... .....  Section Title Size - `sectionTitleSize`
 ..... ..... .....  Section Subtitle Size - `sectionSubtitleSize`
@@ -99,7 +98,6 @@ CSV Stop
 ..... ..... .....  Specifying Bold And Italic Text Effects With `BoldBold` And `ItalicItalic`
 ..... ..... .....  Controlling Task Slide Production With `taskSlides` and `tasksPerSlide`
 ..... ..... .....  Controlling Glossary Slide Production With `glossaryTitle`, `glossaryTerm`, `glossaryMeaning`,`glossaryMeaningWidth`, and `glossaryTermsPerPage`
-..... ..... .....  Specifying How Much Space To Reserve For Slide Numbers With `NumbersHeight`
 ..... ..... .....  Specifying How Many Spaces Represent An Indentation Level With `IndentSpaces`
 ..... ..... .....   Specifying Where Temporary Files Are Stored With `tempDir`
 ..... ..... .....  Deleting The First (Processing Summary) Slide - with `DeleteFirstSlide`
@@ -128,6 +126,10 @@ CSV Stop
 ..... ..... ..... .....  Fixed Pitch Height To Width Ratio - `FPRatio`
 ..... ..... ..... .....  Foreground Colour - `CodeForeground`
 ..... ..... ..... .....  Background Colour - `CodeBackground`
+..... ..... .....  Footer Metadata
+..... ..... ..... .....  Slide Numbers - `numbers`
+..... ..... ..... .....  Specifying How Much Space To Reserve For Slide Numbers With `NumbersHeight`
+..... ..... ..... .....  Specifying Footer Text
 ..... ..... .....  Slide Heading Levels - `TopHeadingLevel`
 Column Alignment - spec 'r l'
 CSV Start
@@ -196,7 +198,7 @@ CSV Stop
 ..... ..... .....   Blank Slide - `BlankLayout`
 ..... ..... .....  Content Slide - `ContentSlideLayout`
 .....  Deviations From Standard Markdown
----------------------------------------------------
+-------------------------------------------------
 - Processing completed.
----------------------------------------------------
+-------------------------------------------------
 
