@@ -60,8 +60,8 @@ except:
     have_pillow = False
 
 
-md2pptx_level = "3.1+"
-md2pptx_date = "8 May, 2022"
+md2pptx_level = "3.2.1"
+md2pptx_date = "8 June, 2022"
 
 
 class SlideInfo:
@@ -3798,7 +3798,14 @@ def createSlide(presentation, slideNumber, slideInfo):
     tocTitle = processingOptions.getCurrentOption("tocTitle")
     tocStyle = processingOptions.getCurrentOption("tocStyle")
     sectionTitleSize = processingOptions.getCurrentOption("sectionTitleSize")
+    presTitleSize = processingOptions.getCurrentOption("presTitleSize")
     sectionSubtitleSize = processingOptions.getCurrentOption("sectionSubtitleSize")
+    presSubtitleSize = processingOptions.getCurrentOption("presSubtitleSize")
+    leftFooterText = processingOptions.getCurrentOption("leftFooterText")
+    middleFooterText = processingOptions.getCurrentOption("middleFooterText")
+    rightFooterText = processingOptions.getCurrentOption("rightFooterText")
+    sectionFooters = processingOptions.getCurrentOption("sectionFooters")
+    liveFooters = processingOptions.getCurrentOption("liveFooters")
 
     if slideInfo.blockType in ["content", "code", "table"]:
         if (tocStyle != "") & (tocTitle == slideInfo.titleText):
@@ -3854,12 +3861,70 @@ def createSlide(presentation, slideNumber, slideInfo):
             slideNumber,
             slideInfo.titleText,
             processingOptions.getCurrentOption("titleSlideLayout"),
-            sectionTitleSize,
+            presTitleSize,
             slideInfo.subtitleText,
-            sectionSubtitleSize,
+            presSubtitleSize,
             notes_text,
         )
 
+    footerFontSize = Pt(8.0)
+    footerBoxTop = prs.slide_height - numbersHeight / 2 - footerFontSize
+    footerBoxHeight = footerFontSize * 2
+    
+    if slideInfo.blockType in ["title", "section"]:
+        if sectionFooters == "yes":
+            wantFooters = True
+        else:
+            wantFooters = False
+        
+        if slideInfo.blockType == "section":
+            prs.lastSectionTitle = slideInfo.titleText
+            prs.lastSectionSlide = slide
+
+    else:
+        wantFooters = True
+
+    if wantFooters:
+        # Left pseudo-footer
+        if leftFooterText != "":
+            leftFooterMargin = Inches(0.5)
+            leftFooterBoxLeft = leftFooterMargin
+            leftFooterBoxWidth = prs.slide_width / 3 - leftFooterMargin
+            leftFooter = slide.shapes.add_textbox(leftFooterBoxLeft, footerBoxTop, leftFooterBoxWidth, footerBoxHeight)
+            leftFooter.text = leftFooterText.replace("<section>", prs.lastSectionTitle).split("<br/>")[0]
+
+            if (prs.lastSectionSlide is not None) & (leftFooterText.find("<section>") > -1) & (liveFooters == "yes"):
+                createShapeHyperlinkAndTooltip(leftFooter, prs.lastSectionSlide, "")
+
+            leftFooter.text_frame.paragraphs[0].alignment = PP_ALIGN.LEFT
+            leftFooter.text_frame.paragraphs[0].font.size = footerFontSize
+
+        # Middle pseudo-footer
+        if middleFooterText != "":
+            middleFooterBoxLeft = prs.slide_width / 3
+            middleFooterBoxWidth = prs.slide_width / 3
+            middleFooter = slide.shapes.add_textbox(middleFooterBoxLeft, footerBoxTop, middleFooterBoxWidth, footerBoxHeight)
+            middleFooter.text = middleFooterText.replace("<section>", prs.lastSectionTitle).split("<br/>")[0]
+
+            if (prs.lastSectionSlide is not None) & (middleFooterText.find("<section>") > -1) & (liveFooters == "yes"):
+                createShapeHyperlinkAndTooltip(middleFooter, prs.lastSectionSlide, "")
+             
+            middleFooter.text_frame.paragraphs[0].alignment = PP_ALIGN.CENTER
+            middleFooter.text_frame.paragraphs[0].font.size = footerFontSize
+    
+        # Right pseudo-footer
+        if rightFooterText != "":
+            rightFooterMargin = Inches(0.25)
+            rightFooterBoxLeft = prs.slide_width * 2 / 3
+            rightFooterBoxWidth = prs.slide_width / 3 - rightFooterMargin
+            rightFooter = slide.shapes.add_textbox(rightFooterBoxLeft, footerBoxTop, rightFooterBoxWidth, footerBoxHeight)
+            rightFooter.text = rightFooterText.replace("<section>", prs.lastSectionTitle).split("<br/>")[0]
+            if (prs.lastSectionSlide is not None) & (rightFooterText.find("<section>") > -1) & (liveFooters == "yes"):
+                createShapeHyperlinkAndTooltip(rightFooter, prs.lastSectionSlide, "")
+
+            rightFooter.text_frame.paragraphs[0].alignment = PP_ALIGN.RIGHT
+            rightFooter.text_frame.paragraphs[0].font.size = footerFontSize
+    
     slideNumber = slideNumber + 1
 
     sequence = []
@@ -4366,9 +4431,14 @@ processingOptions.setOptionValues("indentSpaces", 2)
 # Whether titles are adjusted or not
 processingOptions.setOptionValues("adjustTitles", True)
 
-# Section defaults
+# Title and section defaults
 processingOptions.setOptionValuesArray(
-    [["sectionTitleSize", 40], ["sectionSubtitleSize", 28]]
+    [
+        ["sectionTitleSize", 40],
+        ["sectionSubtitleSize", 28],
+        ["presTitleSize", 40],
+        ["presSubtitleSize", 28]
+    ]
 )
 
 processingOptions.setOptionValues("monoFont", "Courier")
@@ -4419,6 +4489,16 @@ processingOptions.setOptionValuesArray(
 processingOptions.setOptionValues("marginBase", Inches(0.2))
 
 processingOptions.setOptionValues("deleteFirstSlide", False)
+
+processingOptions.setOptionValuesArray(
+    [
+        ["leftFooterText", ""],
+        ["middleFooterText", ""],
+        ["rightFooterText", ""],
+        ["sectionFooters", "no"],
+        ["liveFooters", "no"],
+    ]
+)
 
 TOCEntries = []
 
@@ -4533,10 +4613,7 @@ for line in metadata_lines:
     elif name == "basetextdecrement":
         processingOptions.setOptionValues(name, float(value))
 
-    elif name == "sectiontitlesize":
-        processingOptions.setOptionValues(name, float(value))
-
-    elif name == "sectionsubtitlesize":
+    elif name in ["sectiontitlesize", "sectionsubtitlesize", "prestitlesize", "pressubtitlesize"]:
         processingOptions.setOptionValues(name, float(value))
 
     elif name == "deletefirstslide":
@@ -4602,6 +4679,9 @@ for line in metadata_lines:
         processingOptions.setOptionValues(name, float(value))
 
     elif name == "abstracttitle":
+        processingOptions.setOptionValues(name, value)
+
+    elif name in ["leftfootertext", "middlefootertext", "rightfootertext", "sectionfooters", "livefooters"]:
         processingOptions.setOptionValues(name, value)
 
     elif name == "boldbold":
@@ -4857,6 +4937,10 @@ else:
         print("\nWriting processing summary slide with metadata on it.")
     else:
         print("\nNo slide to document metadata on. Continuing without it.")
+
+# Following might be used in slide footers
+prs.lastSectionTitle = ""
+prs.lastSectionSlide = None
 
 print("")
 print("Slides:")
