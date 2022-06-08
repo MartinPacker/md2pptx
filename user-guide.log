@@ -1,0 +1,207 @@
+
+mdpre Markdown Preprocessor v0.6.4+ (7 June, 2022)
+==================================================
+- opened <stdout> for writing
+Def mdpre_date = 7 June, 2022
+Def mdpre_level = 0.6.4+
+Def userid = martinpacker
+Def time = 19&colon;46
+Def date = 8 June&comma; 2022
+Def TOC = Table Of Contents
+Def md = Markdown
+Def pp = Powerpoint
+Markdown To Powerpoint User Guide
+Table Of Contents - spec '2 * Table Of Contents'
+2 5 Table Of Contents
+.....  Why md2pptx?
+..... .....  A Real World Use Case
+..... .....  Using md2pptx With mdpre
+.....  How Do You Use md2pptx?
+..... .....  Installation
+..... .....  Use
+.....  python-pptx license
+.....  Change Log
+Column Alignment - spec 'l r l'
+CSV Start
+CSV Stop
+.....  Creating Slides
+..... .....  Presentation Title Slides
+..... .....  Presentation Section Slides
+..... .....  Bullet Slides
+..... ..... .....  Numbered List Items
+..... .....  Graphics, Video And Audio slides
+..... ..... .....  Graphics Slides
+..... ..... ..... .....  Clickable Pictures
+..... ..... ..... .....  Graphics File References
+..... ..... .....  Video And Audio Slides
+..... ..... ..... .....  Video Slides
+..... ..... ..... .....  Audio Slides
+..... .....  Table Slides
+..... ..... .....  Special Case: Two Graphics Side By Side
+..... ..... .....  Special Case: Two By Two Grid Of Graphics
+..... ..... .....  Special Case: Three Graphics On A Slide
+..... ..... .....  Special Case: One Graphic Above Another
+..... ..... .....  Multi-Column Table Cells
+..... .....  Card Slides
+..... .....  Code Slides
+..... ..... .....  `<code>`
+..... ..... .....  Triple Backticks (```)
+..... ..... .....  Indented Text
+..... ..... .....  `<pre>`
+..... .....  Task List Slides
+..... .....  Slides With More Than One Content Block
+..... .....  Adding Slide Notes
+.....  Slides Without Titles
+..... .....  Using A Horizontal Rule
+..... .....  Using A Level 3 Heading With `&nbsp;`
+.....  Hyperlinks And VBA Macros
+..... .....  Coding A URL Reference
+..... .....  Coding A Heading Reference On A Target Slide
+..... .....  Coding A Hyperlink To Another Slide
+..... .....  Invoking A VBA  Macro
+..... ..... .....  Sample Macro To Remove The First Slide
+..... ..... .....  Sample Macro To Remove The First Slide And Save As A .pptx File
+.....  HTML Comments
+.....  Special Text Formatting
+CSV Start
+CSV Stop
+..... .....  Using HTML `<span>` Elements To Specify Text Colours And Underlining
+..... ..... .....   Using HTML `<span>` Elements with `class`
+..... ..... .....   Using HTML `<span>` Elements with `style`
+..... .....  HTML Entity References
+CSV Start
+CSV Stop
+..... .....  Numeric Character References
+..... .....   Escaped Characters
+..... .....  CriticMarkup
+.....  Creating A Glossary Of Terms
+.....  Creating Footnotes
+..... .....  Creating A Footnote
+..... .....  Referring To A Footnote
+.....  Controlling The Presentation With Metadata
+..... .....  Specifying Metadata
+..... ..... .....  Processing Summary
+..... .....  Metadata Keys
+..... ..... .....  Title And Subtitle Font Sizes
+..... ..... ..... .....  Page Title Size - `pageTitleSize`
+..... ..... ..... .....  Section Title Size - `sectionTitleSize`
+..... ..... ..... .....  Section Subtitle Size - `sectionSubtitleSize`
+..... ..... ..... .....  Presentation Title Size - `presTitleSize`
+..... ..... ..... .....  Presentation Subtitle Size - `presSubtitleSize`
+..... ..... .....  Monospace Font - `monoFont`
+..... ..... .....  Margin size - `marginBase` and `tableMargin`
+..... ..... .....  Controlling Adjusting Title Positions And Sizes - `AdjustTitles`
+..... ..... .....  Associating A Class Name with A Background Colour With `style.bgcolor`
+..... ..... .....  Associating A Class Name with A Foreground Colour With `style.fgcolor`
+..... ..... .....  Associating A Class Name With Text Emphasis With `style.emphasis`
+..... ..... .....  Template Presentation - `template`
+..... ..... .....  Specifying An Abstract Slide With `abstractTitle`
+..... ..... .....  Specifying Text Size With `baseTextSize` And `baseTextDecrement`
+..... ..... .....  Specifying Bold And Italic Text Colour With `BoldColour` And `ItalicColour`
+..... ..... .....  Specifying Bold And Italic Text Effects With `BoldBold` And `ItalicItalic`
+..... ..... .....  Controlling Task Slide Production With `taskSlides` and `tasksPerSlide`
+..... ..... .....  Controlling Glossary Slide Production With `glossaryTitle`, `glossaryTerm`, `glossaryMeaning`,`glossaryMeaningWidth`, and `glossaryTermsPerPage`
+..... ..... .....  Specifying How Many Spaces Represent An Indentation Level With `IndentSpaces`
+..... ..... .....   Specifying Where Temporary Files Are Stored With `tempDir`
+..... ..... .....  Deleting The First (Processing Summary) Slide - with `DeleteFirstSlide`
+..... ..... .....  Table Metadata
+..... ..... ..... .....  Shrinking Tables With `compactTables`
+..... ..... ..... .....  Adjusting Table Heading Font Size With `tableHeadingSize`
+..... ..... ..... .....  Adding Lines Round Tables And Cells With `addTableLines`
+..... ..... ..... .....  Adding Lines After Table Rows And Columns With `addTableRowLines` And `addTableColumnLines`
+..... ..... ..... .....  Specifying What The Added Table Lines Look Like With `addTableLineColour`, `addTableLineCount` and `addTableLineWidth`
+..... ..... ..... .....  Controlling Whether Empty Table Cells Cause Column Spanning - `SpanCells`
+..... ..... .....  Card Metadata
+..... ..... ..... .....  Card Background Colour - `CardColour`
+..... ..... ..... .....  Card Border Colour - `CardBorderColour`
+..... ..... ..... .....  Card Border Width - `CardBorderWidth`
+..... ..... ..... .....  Card Title Size - `CardTitleSize`
+..... ..... ..... .....   Card Shadow - `CardShadow`
+..... ..... ..... .....  Card Size - `CardPercent`
+..... ..... ..... .....  Card Layout Direction - `CardLayout`
+..... ..... ..... .....  Card Title Alignment - `CardTitleAlign`
+..... ..... ..... .....  Card Title Position - `CardTitlePosition`
+..... ..... ..... .....  Card Shape - `CardShape`
+..... ..... ..... .....  Card Horizontal Gap - `CardHorizontalGap`
+..... ..... ..... .....  Card Vertical Gap - `CardVerticalGap`
+..... ..... .....  Code Metadata
+..... ..... ..... .....  Code Column Count - `CodeColumns`
+..... ..... ..... .....  Fixed Pitch Height To Width Ratio - `FPRatio`
+..... ..... ..... .....  Foreground Colour - `CodeForeground`
+..... ..... ..... .....  Background Colour - `CodeBackground`
+..... ..... .....  Footer Metadata
+..... ..... ..... .....  Slide Numbers - `numbers`
+..... ..... ..... .....  Specifying How Much Space To Reserve For Slide Numbers With `NumbersHeight`
+..... ..... ..... .....  Specifying Footer Text
+..... ..... .....  Slide Heading Levels - `TopHeadingLevel`
+Column Alignment - spec 'r l'
+CSV Start
+CSV Stop
+Column Alignment - spec 'r l'
+CSV Start
+CSV Stop
+..... ..... .....  Slides With Multiple Content Blocks
+..... ..... ..... .....  Horizontal Or Vertical Split - `ContentSplitDirection`
+..... ..... ..... .....  Split Proportions - `ContentSplit`
+..... ..... .....  Graphics Metadata
+..... ..... ..... .....  Exporting Converted SVG And PNG Files - `exportGraphics`
+..... ..... .....  Table Of Contents And Section Slide Metadata
+..... ..... ..... .....  "Chevron Style" Table Of Contents
+..... ..... ..... .....  "Circle Style" Table Of Contents
+..... ..... ..... .....  "Plain Style" Table Of Contents
+..... ..... ..... .....  Table Of Contents Style - `tocStyle`
+..... ..... ..... .....  Table Of Contents Title - `tocTitle`
+..... ..... ..... .....  Table Of Contents Live Links - `tocLinks`
+..... ..... ..... .....  Table Of Contents Item Height - `TOCItemHeight`
+..... ..... ..... .....  Table Of Contents Item Colour - `TOCItemColour`
+..... ..... ..... .....  Table Of Contents Row Gap - `TOCRowGap`
+..... ..... ..... .....  Table Of Contents Font Size - `TOCFontSize`
+..... ..... ..... .....  Section Navigation Buttons - `SectionArrows`
+..... ..... ..... .....  Section Navigation Button Colour - `SectionArrowsColour`
+..... .....  Dynamic Metadata
+..... ..... .....  Tables
+..... ..... ..... .....  `CompactTables`
+..... ..... ..... .....  `TableHeadingSize`
+..... ..... ..... .....  `addTableLines`
+..... ..... ..... .....  `addTableColumnLines` And `addTableRowLines`
+..... ..... ..... .....  Added Table Line Attributes
+..... ..... ..... .....  `SpanCells`
+..... ..... .....  Cards
+..... ..... ..... .....  `CardPercent`
+..... ..... ..... .....  `CardLayout`
+..... ..... ..... .....  `CardTitleAlign`
+..... ..... ..... .....  `CardTitlePosition`
+..... ..... ..... .....  `CardShape`
+..... ..... ..... .....  `CardHorizontalGap`
+..... ..... ..... .....  `CardVerticalGap`
+..... ..... .....  Code
+..... ..... ..... .....  `CodeColumns`
+..... ..... ..... .....  `FPRatio`
+..... ..... ..... .....  `CodeForeground`
+..... ..... ..... .....  `CodeBackground`
+..... ..... .....  `PageTitleSize`
+..... ..... .....  `BaseTextSize`
+..... ..... .....  `BaseTextDecrement`
+..... ..... .....  `ContentSplitDirection`
+..... ..... .....  `ContentSplit`
+..... ..... .....  `IndentSpaces`
+..... ..... .....   `MarginBase`
+..... ..... .....   `NumbersHeight`
+..... ..... .....  TableMargin
+.....  Modifying The Slide Template
+..... .....  Basics
+..... .....  Slide Template Sequence
+Column Alignment - spec 'l l l l'
+CSV Start
+CSV Stop
+..... .....  Template Slide Types
+..... ..... .....  Title Slide - `TitleSlideLayout`
+..... ..... .....  Section Slide - `SectionSlideLayout`
+..... ..... .....  Title Only Slide - `TitleOnlyLayout`
+..... ..... .....   Blank Slide - `BlankLayout`
+..... ..... .....  Content Slide - `ContentSlideLayout`
+.....  Deviations From Standard Markdown
+--------------------------------------------------
+- Processing completed.
+--------------------------------------------------
+
