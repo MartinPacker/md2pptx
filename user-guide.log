@@ -1,12 +1,12 @@
 
-mdpre Markdown Preprocessor v0.6.4 (16 May, 2022)
-=================================================
+mdpre Markdown Preprocessor v0.6.4+ (24 May, 2022)
+==================================================
 - opened <stdout> for writing
-Def mdpre_date = 16 May, 2022
-Def mdpre_level = 0.6.4
+Def mdpre_date = 24 May, 2022
+Def mdpre_level = 0.6.4+
 Def userid = martinpacker
-Def time = 14&colon;21
-Def date = 22 May&comma; 2022
+Def time = 16&colon;49
+Def date = 8 June&comma; 2022
 Def TOC = Table Of Contents
 Def md = Markdown
 Def pp = Powerpoint
@@ -82,9 +82,12 @@ CSV Stop
 ..... .....  Specifying Metadata
 ..... ..... .....  Processing Summary
 ..... .....  Metadata Keys
-..... ..... .....  Page Title Size - `pageTitleSize`
-..... ..... .....  Section Title Size - `sectionTitleSize`
-..... ..... .....  Section Subtitle Size - `sectionSubtitleSize`
+..... ..... .....  Title And Subtitle Font Sizes
+..... ..... ..... .....  Page Title Size - `pageTitleSize`
+..... ..... ..... .....  Section Title Size - `sectionTitleSize`
+..... ..... ..... .....  Section Subtitle Size - `sectionSubtitleSize`
+..... ..... ..... .....  Presentation Title Size - `presTitleSize`
+..... ..... ..... .....  Presentation Subtitle Size - `presSubtitleSize`
 ..... ..... .....  Monospace Font - `monoFont`
 ..... ..... .....  Margin size - `marginBase` and `tableMargin`
 ..... ..... .....  Controlling Adjusting Title Positions And Sizes - `AdjustTitles`
@@ -198,7 +201,7 @@ CSV Stop
 ..... ..... .....   Blank Slide - `BlankLayout`
 ..... ..... .....  Content Slide - `ContentSlideLayout`
 .....  Deviations From Standard Markdown
--------------------------------------------------
+--------------------------------------------------
 - Processing completed.
--------------------------------------------------
+--------------------------------------------------
 

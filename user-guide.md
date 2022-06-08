@@ -69,9 +69,12 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 	* [Specifying Metadata](#specifying-metadata)
 		* [Processing Summary](#processing-summary)
 	* [Metadata Keys](#metadata-keys)
-		* [Page Title Size - `pageTitleSize`](#page-title-size-pagetitlesize)
-		* [Section Title Size - `sectionTitleSize`](#section-title-size-sectiontitlesize)
-		* [Section Subtitle Size - `sectionSubtitleSize`](#section-subtitle-size-sectionsubtitlesize)
+		* [Title And Subtitle Font Sizes](#title-and-subtitle-font-sizes)
+			* [Page Title Size - `pageTitleSize`](#page-title-size-pagetitlesize)
+			* [Section Title Size - `sectionTitleSize`](#section-title-size-sectiontitlesize)
+			* [Section Subtitle Size - `sectionSubtitleSize`](#section-subtitle-size-sectionsubtitlesize)
+			* [Presentation Title Size - `presTitleSize`](#presentation-title-size-prestitlesize)
+			* [Presentation Subtitle Size - `presSubtitleSize`](#presentation-subtitle-size-pressubtitlesize)
 		* [Monospace Font - `monoFont`](#monospace-font-monofont)
 		* [Margin size - `marginBase` and `tableMargin`](#margin-size-marginbase-and-tablemargin)
 		* [Controlling Adjusting Title Positions And Sizes - `AdjustTitles`](#controlling-adjusting-title-positions-and-sizes-adjusttitles)
@@ -300,6 +303,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|3.2.1|8&nbsp;June&nbsp;2022|Added [presTitleSize](#presentation-title-size-prestitlesize) and [presSubtitleSize](#presentation-subtitle-size-pressubtitlesize).|
 |3.2|22&nbsp;May&nbsp;2022|Clearing the Processing Summary slide no longer removes Action Button objects. [Pseudo-footers can be created](#specifying-footer-text).|
 |3.1|27&nbsp;April&nbsp;2022|Added support for [VBA macro invocation](#invoking-a-vba-macro) via `ppaction://macro?name=` syntax|
 |3.0.1|15&nbsp;April&nbsp;2022|Improved error handling for embedding graphics&comma; video&comma; and audio from the web. Documented [here](#graphics-video-and-audio-slides).|
@@ -1446,7 +1450,8 @@ As described in [Creating Slides](#creating-slides), md2pptx will populate the f
 
 The following sections describe each of the metadata keys.
 
-#### Page Title Size - `pageTitleSize`
+#### Title And Subtitle Font Sizes
+##### Page Title Size - `pageTitleSize`
 <a id="page-title-size-pagetitlesize"></a>
 
 You can specify the point size of each slide that isn't a section divider or title slide. The size is specified in points.
@@ -1459,10 +1464,10 @@ The default is 30 points.
 
 You can override this value on a slide-by-slide basis with [Dynamic PageTitleSize](#pagetitlesize-dynamic).
 
-#### Section Title Size - `sectionTitleSize`
+##### Section Title Size - `sectionTitleSize`
 <a id="section-title-size-sectiontitlesize"></a>
 
-You can specify the point size of the title text for each slide that's a section divider or title slide. The size is specified in points.
+You can specify the point size of the title text for each slide that's a section divider slide. The size is specified in points.
 
 Example:
 
@@ -1470,16 +1475,40 @@ Example:
 
 The default is 40 points.
 
-#### Section Subtitle Size - `sectionSubtitleSize`
+##### Section Subtitle Size - `sectionSubtitleSize`
 <a id="section-subtitle-size-sectionsubtitlesize"></a>
 
-You can specify the point size of the subtitle text for each slide that's a section divider or title slide. The size is specified in points.
+You can specify the point size of the subtitle text for each slide that's a section divider slide. The size is specified in points.
 
 The subtitle text is the second and subsequent lines of the title - generally a separate text shape on the slide.
 
 Example:
 
 	sectionSubtitleSize: 24
+
+The default is 28 points.
+
+##### Presentation Title Size - `presTitleSize`
+<a id="presentation-title-size-prestitlesize"></a>
+
+You can specify the point size of the title text for each slide that's a presentation title slide. The size is specified in points.
+
+Example:
+
+	presTitleSize: 42
+
+The default is 40 points.
+
+##### Presentation Subtitle Size - `presSubtitleSize`
+<a id="presentation-subtitle-size-pressubtitlesize"></a>
+
+You can specify the point size of the subtitle text for each slide that's a presentation title slide. The size is specified in points.
+
+The subtitle text is the second and subsequent lines of the title - generally a separate text shape on the slide.
+
+Example:
+
+	presSubtitleSize: 24
 
 The default is 28 points.
 

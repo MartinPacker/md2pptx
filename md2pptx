@@ -60,8 +60,8 @@ except:
     have_pillow = False
 
 
-md2pptx_level = "3.2"
-md2pptx_date = "22 May, 2022"
+md2pptx_level = "3.2.1"
+md2pptx_date = "8 June, 2022"
 
 
 class SlideInfo:
@@ -3798,7 +3798,9 @@ def createSlide(presentation, slideNumber, slideInfo):
     tocTitle = processingOptions.getCurrentOption("tocTitle")
     tocStyle = processingOptions.getCurrentOption("tocStyle")
     sectionTitleSize = processingOptions.getCurrentOption("sectionTitleSize")
+    presTitleSize = processingOptions.getCurrentOption("presTitleSize")
     sectionSubtitleSize = processingOptions.getCurrentOption("sectionSubtitleSize")
+    presSubtitleSize = processingOptions.getCurrentOption("presSubtitleSize")
     leftFooterText = processingOptions.getCurrentOption("leftFooterText")
     middleFooterText = processingOptions.getCurrentOption("middleFooterText")
     rightFooterText = processingOptions.getCurrentOption("rightFooterText")
@@ -3859,9 +3861,9 @@ def createSlide(presentation, slideNumber, slideInfo):
             slideNumber,
             slideInfo.titleText,
             processingOptions.getCurrentOption("titleSlideLayout"),
-            sectionTitleSize,
+            presTitleSize,
             slideInfo.subtitleText,
-            sectionSubtitleSize,
+            presSubtitleSize,
             notes_text,
         )
 
@@ -4429,9 +4431,14 @@ processingOptions.setOptionValues("indentSpaces", 2)
 # Whether titles are adjusted or not
 processingOptions.setOptionValues("adjustTitles", True)
 
-# Section defaults
+# Title and section defaults
 processingOptions.setOptionValuesArray(
-    [["sectionTitleSize", 40], ["sectionSubtitleSize", 28]]
+    [
+        ["sectionTitleSize", 40],
+        ["sectionSubtitleSize", 28],
+        ["presTitleSize", 40],
+        ["presSubtitleSize", 28]
+    ]
 )
 
 processingOptions.setOptionValues("monoFont", "Courier")
@@ -4606,10 +4613,7 @@ for line in metadata_lines:
     elif name == "basetextdecrement":
         processingOptions.setOptionValues(name, float(value))
 
-    elif name == "sectiontitlesize":
-        processingOptions.setOptionValues(name, float(value))
-
-    elif name == "sectionsubtitlesize":
+    elif name in ["sectiontitlesize", "sectionsubtitlesize", "prestitlesize", "pressubtitlesize"]:
         processingOptions.setOptionValues(name, float(value))
 
     elif name == "deletefirstslide":
