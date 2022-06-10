@@ -120,6 +120,7 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 			* [Slide Numbers - `numbers`](#slide-numbers-numbers)
 			* [Specifying How Much Space To Reserve For Slide Numbers With `NumbersHeight`](#specifying-how-much-space-to-reserve-for-slide-numbers-with-numbersheight)
 			* [Specifying Footer Text](#specifying-footer-text)
+				* [Footer Flexibility](#footer-flexibility)
 		* [Slide Heading Levels - `TopHeadingLevel`](#slide-heading-levels-topheadinglevel)
 		* [Slides With Multiple Content Blocks](#slides-with-multiple-content-blocks)
 			* [Horizontal Or Vertical Split - `ContentSplitDirection`](#horizontal-or-vertical-split-contentsplitdirection)
@@ -303,6 +304,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|3.2.2|10&nbsp;June&nbsp;2022|Enhanced [custom footer text](#footer-flexibility) with presentation title and subtitle. Added specifying individual lines from these and section titles. Handle `<br/>`.|
 |3.2.1|8&nbsp;June&nbsp;2022|Added [presTitleSize](#presentation-title-size-prestitlesize) and [presSubtitleSize](#presentation-subtitle-size-pressubtitlesize).|
 |3.2|22&nbsp;May&nbsp;2022|Clearing the Processing Summary slide no longer removes Action Button objects. [Pseudo-footers can be created](#specifying-footer-text).|
 |3.1|27&nbsp;April&nbsp;2022|Added support for [VBA macro invocation](#invoking-a-vba-macro) via `ppaction://macro?name=` syntax|
@@ -2136,11 +2138,14 @@ You can control whether Title and Section slides have footers. To turn them on c
 
 The default is `no`.
 
-Unlike real footers, md2pptx's footer support can be flexible: You can specify if the current section's title is included in a footer. For example:
+<a id="footer-flexibility"></a>
+###### Footer Flexibility
+
+Unlike real footers, md2pptx's footer support can be flexible: You can specify a number of things that can be included in a footer. For example:
 
     leftFooterText: Section <section>
 
-will lead to a left-side footer with the text "Section ", followed by the current section title.
+will lead to a left-side footer with the text "Section ", followed by the first line of the current section title.
 
 You can turn any footer that references a section title into a live link by specifying:
 
@@ -2148,11 +2153,27 @@ You can turn any footer that references a section title into a live link by spec
 
 The default is `no`.
 
+You can specify the following special values:
+
+* `<section>` for the first line of the current section slide's title.
+* `<section1>`, `<section2>`, or `<section3>` for, respectively, the first, second, and third lines of the current section slide's title.
+* `<presTitle>` for the first line of the presentation title slide's title.
+* `<presTitle1>`, `<presTitle2>`, or `<presTitle3>` for, respectively, the first, second, and third lines of the presentation title slide's title.
+* `<presSubtitle>` for the first line of the presentation title slide's subtitle.
+* `<presSubtitle1>`, `<presSubtitle2>`, or `<presSubtitle3>` for, respectively, the first, second, and third lines of the presentation title slide's subtitle.
+
+You can trigger a line break in a footer using `<br/>`. For example:
+
+    rightFooterText: <presTitle1><br/><presSubtitle1>
+
+will place the first line of the presentation title and the first line of the presentation subtitle in the right footer - on two lines.
+
 **Notes**
 
-1. Only the first line of the section title (before any `<br/>`) will appear.
+1. Lines are separated by`<br/>`).
 1. For slides before the first Section Slide the title will be empty.
 1. There will be no symbol substitution - beyond what was in the section title.
+1. The case of the terms must be as shown. For example, `<presTitle1>` must be coded exactly as shown.
 
 <a id="slide-heading-levels-topheadinglevel"></a>
 #### Slide Heading Levels - `TopHeadingLevel`

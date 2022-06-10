@@ -1,18 +1,18 @@
 
-mdpre Markdown Preprocessor v0.6.4+ (7 June, 2022)
+mdpre Markdown Preprocessor v0.6.4+ (24 May, 2022)
 ==================================================
 - opened <stdout> for writing
-Def mdpre_date = 7 June, 2022
+Def mdpre_date = 24 May, 2022
 Def mdpre_level = 0.6.4+
 Def userid = martinpacker
-Def time = 19&colon;46
-Def date = 8 June&comma; 2022
+Def time = 17&colon;08
+Def date = 10 June&comma; 2022
 Def TOC = Table Of Contents
 Def md = Markdown
 Def pp = Powerpoint
 Markdown To Powerpoint User Guide
 Table Of Contents - spec '2 * Table Of Contents'
-2 5 Table Of Contents
+2 6 Table Of Contents
 .....  Why md2pptx?
 ..... .....  A Real World Use Case
 ..... .....  Using md2pptx With mdpre
@@ -133,6 +133,7 @@ CSV Stop
 ..... ..... ..... .....  Slide Numbers - `numbers`
 ..... ..... ..... .....  Specifying How Much Space To Reserve For Slide Numbers With `NumbersHeight`
 ..... ..... ..... .....  Specifying Footer Text
+..... ..... ..... ..... .....  Footer Flexibility
 ..... ..... .....  Slide Heading Levels - `TopHeadingLevel`
 Column Alignment - spec 'r l'
 CSV Start

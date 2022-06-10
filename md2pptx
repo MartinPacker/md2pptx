@@ -60,8 +60,8 @@ except:
     have_pillow = False
 
 
-md2pptx_level = "3.2.1"
-md2pptx_date = "8 June, 2022"
+md2pptx_level = "3.2.2"
+md2pptx_date = "10 June, 2022"
 
 
 class SlideInfo:
@@ -313,6 +313,49 @@ def resolveSymbols(text):
 
     return text2
 
+def substituteFooterVariables(footerText, liveFooters):
+    # Decide if the footer should be a live link to the section slide
+    wantLiveFooter = ((prs.lastSectionSlide is not None) & (footerText.find("<section") > -1) & (liveFooters == "yes"))
+
+    # Substitute any section title occurrences
+    sectionTitleLines = prs.lastSectionTitle.split("<br/>")
+
+    footerText = footerText.replace("<section>", sectionTitleLines[0])
+    footerText = footerText.replace("<section1>", sectionTitleLines[0])
+    
+    if len(sectionTitleLines) > 1:
+        footerText = footerText.replace("<section2>", sectionTitleLines[1])
+    
+    if len(sectionTitleLines) > 2:
+        footerText = footerText.replace("<section3>", sectionTitleLines[2])
+
+    # Substitute any presentation title occurrences
+    presTitleLines = prs.lastPresTitle.split("<br/>")
+    footerText = footerText.replace("<presTitle>", presTitleLines[0])
+    footerText = footerText.replace("<presTitle1>", presTitleLines[0])
+
+    if len(presTitleLines) > 1:
+        footerText = footerText.replace("<presTitle2>", presTitleLines[1])
+
+    if len(presTitleLines) > 2: 
+        footerText = footerText.replace("<presTitle3>", presTitleLines[2])
+
+    # Substitute any presentation subtitle occurrences
+    presSubtitleLines = prs.lastPresSubtitle.split("<br/>")
+
+    footerText = footerText.replace("<presSubtitle>", presSubtitleLines[0])
+    footerText = footerText.replace("<presSubtitle1>", presSubtitleLines[0])
+    
+    if len(presSubtitleLines) > 1:
+        footerText = footerText.replace("<presSubtitle2>", presSubtitleLines[1])
+
+    if len(presSubtitleLines) > 2:
+        footerText = footerText.replace("<presSubtitle3>", presSubtitleLines[2])
+    
+    # Make newlines happen
+    footerText = footerText.replace("<br/>","\n")
+    
+    return footerText, wantLiveFooter
 
 def _applyCellBorderStyling(
     tcPr, linePosition, lineWidthMultiplier=1, lineCount=1, lineColour="000000"
@@ -3792,7 +3835,6 @@ def createTOCSlide(presentation, slideNumber, titleText, bullets, tocStyle):
 
     return slide
 
-
 def createSlide(presentation, slideNumber, slideInfo):
     abstractTitle = processingOptions.getCurrentOption("abstractTitle")
     tocTitle = processingOptions.getCurrentOption("tocTitle")
@@ -3878,8 +3920,11 @@ def createSlide(presentation, slideNumber, slideInfo):
             wantFooters = False
         
         if slideInfo.blockType == "section":
-            prs.lastSectionTitle = slideInfo.titleText
+            prs.lastSectionTitle = slideInfo.titleText.strip()
             prs.lastSectionSlide = slide
+        elif slideInfo.blockType == "title":
+            prs.lastPresTitle = slideInfo.titleText.strip()
+            prs.lastPresSubtitle = slideInfo.subtitleText.strip()
 
     else:
         wantFooters = True
@@ -3891,26 +3936,30 @@ def createSlide(presentation, slideNumber, slideInfo):
             leftFooterBoxLeft = leftFooterMargin
             leftFooterBoxWidth = prs.slide_width / 3 - leftFooterMargin
             leftFooter = slide.shapes.add_textbox(leftFooterBoxLeft, footerBoxTop, leftFooterBoxWidth, footerBoxHeight)
-            leftFooter.text = leftFooterText.replace("<section>", prs.lastSectionTitle).split("<br/>")[0]
 
-            if (prs.lastSectionSlide is not None) & (leftFooterText.find("<section>") > -1) & (liveFooters == "yes"):
+            leftFooter.text, wantHyperLink = substituteFooterVariables(leftFooterText, liveFooters)
+
+            if wantHyperLink:
                 createShapeHyperlinkAndTooltip(leftFooter, prs.lastSectionSlide, "")
-
-            leftFooter.text_frame.paragraphs[0].alignment = PP_ALIGN.LEFT
-            leftFooter.text_frame.paragraphs[0].font.size = footerFontSize
+            
+            for fp in leftFooter.text_frame.paragraphs:
+                fp.alignment = PP_ALIGN.LEFT
+                fp.font.size = footerFontSize
 
         # Middle pseudo-footer
         if middleFooterText != "":
             middleFooterBoxLeft = prs.slide_width / 3
             middleFooterBoxWidth = prs.slide_width / 3
             middleFooter = slide.shapes.add_textbox(middleFooterBoxLeft, footerBoxTop, middleFooterBoxWidth, footerBoxHeight)
-            middleFooter.text = middleFooterText.replace("<section>", prs.lastSectionTitle).split("<br/>")[0]
 
-            if (prs.lastSectionSlide is not None) & (middleFooterText.find("<section>") > -1) & (liveFooters == "yes"):
+            middleFooter.text, wantHyperLink = substituteFooterVariables(middleFooterText, liveFooters)
+
+            if wantHyperLink:
                 createShapeHyperlinkAndTooltip(middleFooter, prs.lastSectionSlide, "")
-             
-            middleFooter.text_frame.paragraphs[0].alignment = PP_ALIGN.CENTER
-            middleFooter.text_frame.paragraphs[0].font.size = footerFontSize
+            
+            for fp in middleFooter.text_frame.paragraphs:
+                fp.alignment = PP_ALIGN.CENTER
+                fp.font.size = footerFontSize
     
         # Right pseudo-footer
         if rightFooterText != "":
@@ -3918,12 +3967,15 @@ def createSlide(presentation, slideNumber, slideInfo):
             rightFooterBoxLeft = prs.slide_width * 2 / 3
             rightFooterBoxWidth = prs.slide_width / 3 - rightFooterMargin
             rightFooter = slide.shapes.add_textbox(rightFooterBoxLeft, footerBoxTop, rightFooterBoxWidth, footerBoxHeight)
-            rightFooter.text = rightFooterText.replace("<section>", prs.lastSectionTitle).split("<br/>")[0]
-            if (prs.lastSectionSlide is not None) & (rightFooterText.find("<section>") > -1) & (liveFooters == "yes"):
-                createShapeHyperlinkAndTooltip(rightFooter, prs.lastSectionSlide, "")
 
-            rightFooter.text_frame.paragraphs[0].alignment = PP_ALIGN.RIGHT
-            rightFooter.text_frame.paragraphs[0].font.size = footerFontSize
+            rightFooter.text, wantHyperLink = substituteFooterVariables(rightFooterText, liveFooters)
+
+            if wantHyperLink:
+                createShapeHyperlinkAndTooltip(rightFooter, prs.lastSectionSlide, "")
+            
+            for fp in rightFooter.text_frame.paragraphs:
+                fp.alignment = PP_ALIGN.RIGHT
+                fp.font.size = footerFontSize
     
     slideNumber = slideNumber + 1
 
@@ -4941,6 +4993,8 @@ else:
 # Following might be used in slide footers
 prs.lastSectionTitle = ""
 prs.lastSectionSlide = None
+prs.lastPresTitle = ""
+prs.lastPresSubtitle = ""
 
 print("")
 print("Slides:")
