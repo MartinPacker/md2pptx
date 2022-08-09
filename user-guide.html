@@ -1223,7 +1223,10 @@ body .markdown-body
 <li><a href="#footer-metadata">Footer Metadata</a><ul>
 <li><a href="#slide-numbers-numbers">Slide Numbers - <code>numbers</code></a></li>
 <li><a href="#specifying-how-much-space-to-reserve-for-slide-numbers-with-numbersheight">Specifying How Much Space To Reserve For Slide Numbers With <code>NumbersHeight</code></a></li>
-<li><a href="#specifying-footer-text">Specifying Footer Text</a></li>
+<li><a href="#specifying-footer-text">Specifying Footer Text</a><ul>
+<li><a href="#footer-flexibility">Footer Flexibility</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#slide-heading-levels-topheadinglevel">Slide Heading Levels - <code>TopHeadingLevel</code></a></li>
@@ -1249,6 +1252,7 @@ body .markdown-body
 <li><a href="#table-of-contents-font-size-tocfontsize">Table Of Contents Font Size - <code>TOCFontSize</code></a></li>
 <li><a href="#section-navigation-buttons-sectionarrows">Section Navigation Buttons - <code>SectionArrows</code></a></li>
 <li><a href="#section-navigation-button-colour-sectionarrowscolour">Section Navigation Button Colour - <code>SectionArrowsColour</code></a></li>
+<li><a href="#make-expandable-sections-sectionsexpand">Make Expandable Sections - <code>SectionsExpand</code></a></li>
 </ul>
 </li>
 </ul>
@@ -1415,6 +1419,16 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">3.3</td>
+<td align="right">9&nbsp;August&nbsp;2022</td>
+<td align="left">Added <a href="#make-expandable-sections-sectionsexpand">sectionsExpand</a> to enable sections to expand and contract.</td>
+</tr>
+<tr>
+<td align="left">3.2.2</td>
+<td align="right">10&nbsp;June&nbsp;2022</td>
+<td align="left">Enhanced <a href="#footer-flexibility">custom footer text</a> with presentation title and subtitle. Added specifying individual lines from these and section titles. Handle <code>&lt;br/&gt;</code>.</td>
+</tr>
 <tr>
 <td align="left">3.2.1</td>
 <td align="right">8&nbsp;June&nbsp;2022</td>
@@ -1827,7 +1841,11 @@ sectionTitleSize: 30
 <pre><code>## This Is A Section
 </code></pre>
 <p>You can code multiple lines, as with <a href="#presentation-title-slides">Presentation Title slides</a>.</p>
-<p>(You can adjust the Markdown heading level for this type of slide with <a href="#slide-heading-levels-topheadinglevel"><code>TopHeadingLevel</code></a>.)</p>
+<p><strong>Notes:</strong></p>
+<ul>
+<li>You can adjust the Markdown heading level for this type of slide with <a href="#slide-heading-levels-topheadinglevel"><code>TopHeadingLevel</code></a></li>
+<li>You can make the section slides be the start of expandable and contractable sections with <a href="#make-expandable-sections-sectionsexpand"><code>sectionsExpand</code></a>.</li>
+</ul>
 <h3 id="bullet-slides">Bullet Slides<a class="headerlink" href="#bullet-slides" title="Permanent link"></a></h3>
 <p><a id="bullet-slides"></a></p>
 <p>Bullet slides use Markdown bulleted lists, which can be nested. This example shows two levels of nesting.</p>
@@ -3197,19 +3215,35 @@ For example</p>
 <pre><code>sectionFooters: yes
 </code></pre>
 <p>The default is <code>no</code>.</p>
-<p>Unlike real footers, md2pptx&rsquo;s footer support can be flexible: You can specify if the current section&rsquo;s title is included in a footer. For example:</p>
+<p><a id="footer-flexibility"></a></p>
+<h6 id="footer-flexibility">Footer Flexibility<a class="headerlink" href="#footer-flexibility" title="Permanent link"></a></h6>
+<p>Unlike real footers, md2pptx&rsquo;s footer support can be flexible: You can specify a number of things that can be included in a footer. For example:</p>
 <pre><code>leftFooterText: Section &lt;section&gt;
 </code></pre>
-<p>will lead to a left-side footer with the text &ldquo;Section &ldquo;, followed by the current section title.</p>
+<p>will lead to a left-side footer with the text &ldquo;Section &ldquo;, followed by the first line of the current section title.</p>
 <p>You can turn any footer that references a section title into a live link by specifying:</p>
 <pre><code>liveFooters: yes
 </code></pre>
 <p>The default is <code>no</code>.</p>
+<p>You can specify the following special values:</p>
+<ul>
+<li><code>&lt;section&gt;</code> for the first line of the current section slide&rsquo;s title.</li>
+<li><code>&lt;section1&gt;</code>, <code>&lt;section2&gt;</code>, or <code>&lt;section3&gt;</code> for, respectively, the first, second, and third lines of the current section slide&rsquo;s title.</li>
+<li><code>&lt;presTitle&gt;</code> for the first line of the presentation title slide&rsquo;s title.</li>
+<li><code>&lt;presTitle1&gt;</code>, <code>&lt;presTitle2&gt;</code>, or <code>&lt;presTitle3&gt;</code> for, respectively, the first, second, and third lines of the presentation title slide&rsquo;s title.</li>
+<li><code>&lt;presSubtitle&gt;</code> for the first line of the presentation title slide&rsquo;s subtitle.</li>
+<li><code>&lt;presSubtitle1&gt;</code>, <code>&lt;presSubtitle2&gt;</code>, or <code>&lt;presSubtitle3&gt;</code> for, respectively, the first, second, and third lines of the presentation title slide&rsquo;s subtitle.</li>
+</ul>
+<p>You can trigger a line break in a footer using <code>&lt;br/&gt;</code>. For example:</p>
+<pre><code>rightFooterText: &lt;presTitle1&gt;&lt;br/&gt;&lt;presSubtitle1&gt;
+</code></pre>
+<p>will place the first line of the presentation title and the first line of the presentation subtitle in the right footer - on two lines.</p>
 <p><strong>Notes</strong></p>
 <ol>
-<li>Only the first line of the section title (before any <code>&lt;br/&gt;</code>) will appear.</li>
+<li>Lines are separated by<code>&lt;br/&gt;</code>).</li>
 <li>For slides before the first Section Slide the title will be empty.</li>
 <li>There will be no symbol substitution - beyond what was in the section title.</li>
+<li>The case of the terms must be as shown. For example, <code>&lt;presTitle1&gt;</code> must be coded exactly as shown.</li>
 </ol>
 <p><a id="slide-heading-levels-topheadinglevel"></a></p>
 <h4 id="slide-heading-levels-topheadinglevel">Slide Heading Levels - <code>TopHeadingLevel</code><a class="headerlink" href="#slide-heading-levels-topheadinglevel" title="Permanent link"></a></h4>
@@ -3454,7 +3488,20 @@ The default value is <code>no</code>.</p>
 </code></pre>
 <p>leads to each item&rsquo;s background colour being pale blue. This is a hexadecimal RGB (Red, Green, Blue) value.</p>
 <p>If you don&rsquo;t specify this the default Powerpoint background colour for shapes is used.</p>
-<p><a id="dynamic-metadata"></a></p>
+<p><a id="make-expandable-sections-sectionsexpand"></a></p>
+<h5 id="make-expandable-sections-sectionsexpand">Make Expandable Sections - <code>SectionsExpand</code><a class="headerlink" href="#make-expandable-sections-sectionsexpand" title="Permanent link"></a></h5>
+<p>You can make expandable and collapsable sections. In this context a section begins with a section slide and continues until the next section slide.</p>
+<p>When collapsed the PowerPoint side bar shows the section name and the number of slides in that section. When expanded the side bar shows the section name above the first slide in the section.</p>
+<p>To make expandable and contractable sections code:</p>
+<pre><code>sectionsExpand: yes
+</code></pre>
+<p>The default is <code>no</code>.</p>
+<p><strong>Notes:</strong></p>
+<ul>
+<li>The section name is derived from the first line in the section slide&rsquo;s title.</li>
+<li>In testing only PowerPoint has demonstrated the ability to display collapsible sections. Neither LibreOffice nor Keynote showed any understanding of collapsible sections, though both otherwise loaded the test presentation fine.
+<a id="dynamic-metadata"></a></li>
+</ul>
 <h3 id="dynamic-metadata">Dynamic Metadata<a class="headerlink" href="#dynamic-metadata" title="Permanent link"></a></h3>
 <p>md2pptx can alter some in-effect settings, starting at a particular slide. Straight after the heading code a special form of (HTML) comment like so:</p>
 <pre><code>### Origins Of Mainframe, Performance, Topics Podcast

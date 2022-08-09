@@ -1,12 +1,12 @@
 
-mdpre Markdown Preprocessor v0.6.4+ (24 May, 2022)
-==================================================
+mdpre Markdown Preprocessor v0.6.4+ (19 June, 2022)
+===================================================
 - opened <stdout> for writing
-Def mdpre_date = 24 May, 2022
+Def mdpre_date = 19 June, 2022
 Def mdpre_level = 0.6.4+
 Def userid = martinpacker
-Def time = 17&colon;08
-Def date = 10 June&comma; 2022
+Def time = 17&colon;12
+Def date = 9 August&comma; 2022
 Def TOC = Table Of Contents
 Def md = Markdown
 Def pp = Powerpoint
@@ -159,6 +159,7 @@ CSV Stop
 ..... ..... ..... .....  Table Of Contents Font Size - `TOCFontSize`
 ..... ..... ..... .....  Section Navigation Buttons - `SectionArrows`
 ..... ..... ..... .....  Section Navigation Button Colour - `SectionArrowsColour`
+..... ..... ..... .....  Make Expandable Sections - `SectionsExpand`
 ..... .....  Dynamic Metadata
 ..... ..... .....  Tables
 ..... ..... ..... .....  `CompactTables`
@@ -202,7 +203,7 @@ CSV Stop
 ..... ..... .....   Blank Slide - `BlankLayout`
 ..... ..... .....  Content Slide - `ContentSlideLayout`
 .....  Deviations From Standard Markdown
---------------------------------------------------
+---------------------------------------------------
 - Processing completed.
---------------------------------------------------
+---------------------------------------------------
 

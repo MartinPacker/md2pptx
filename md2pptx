@@ -36,6 +36,8 @@ import copy
 import platform
 import shutil
 import socket
+from pptx.oxml import parse_xml
+import uuid
 
 from lxml import etree
 from lxml.html import fromstring
@@ -60,8 +62,8 @@ except:
     have_pillow = False
 
 
-md2pptx_level = "3.2.2"
-md2pptx_date = "10 June, 2022"
+md2pptx_level = "3.3"
+md2pptx_date = "9 August, 2022"
 
 
 class SlideInfo:
@@ -218,6 +220,76 @@ class ProcessingOptions:
 
         self.dynamicallyChangedOptions[lowerName] = True
 
+# Find the extLst element - if it exists in presentation.xml
+def findExtLst(prs):
+  for child in prs._element.getchildren():
+    if child.tag.endswith("}extLst"):
+      return child
+
+  return None
+
+def createSectionsXML(prs):
+  sectionSlideLayout = processingOptions.getCurrentOption("SectionSlideLayout")
+
+  xml = ''
+  xml += '  <p:ext xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"\n'
+
+  # ext URI has to be {521415D9-36F7-43E2-AB2F-B90AF26B5E84} as it's a registered extension
+  xml += '    uri="{521415D9-36F7-43E2-AB2F-B90AF26B5E84}">\n'
+  xml += '    <p14:sectionLst xmlns:p14="http://schemas.microsoft.com/office/powerpoint/2010/main">\n'
+
+  sectionCount = 0
+  for slide in prs.slides:
+    slideID =str(slide.slide_id)
+
+    for idx, slide_layout in enumerate(prs.slide_layouts):
+      if slide.slide_layout == slide_layout:
+        layoutNumber = idx
+        break;
+
+    if layoutNumber == sectionSlideLayout:
+      # Have a section to contribute
+      sectionCount += 1
+
+      # Confect section name from first part of section slide title
+      title = findTitleShape(slide)
+      sectionName = title.text.split("\n")[0]
+
+      # section URI's just need to be a GUID wrapped in braces
+      xml += '      <p14:section name="' + sectionName +'" id="{' + str(uuid.uuid4()).upper() +'}">\n'
+      
+      # Only the first slide in the section is added - as section will continue until the next section
+      # anyway
+      xml += '        <p14:sldIdLst>\n'
+      xml += '          <p14:sldId id="' + slideID + '" />\n'
+      xml += '        </p14:sldIdLst>\n'
+      xml += '      </p14:section>\n'
+
+  # Close out the section list
+  xml += '    </p14:sectionLst>\n'
+  
+  # Close out the sections extension
+  xml += '  </p:ext>\n'
+
+  return parse_xml(xml), sectionCount
+
+def createExpandingSections(prs):
+  # Use the slides' layouts to create an XML fragment with sections in
+  xmlFragment, sectionCount = createSectionsXML(prs)
+  
+  if sectionCount > 0:
+    # Have sections to insert as an XML fragment
+    if (extLstElement := findExtLst(prs)) is not None:
+      # Need to remove the extension list element before adding a new one
+      prs._element.remove(extLstElement)
+
+    # Insert a new extension list element
+    extLst = OxmlElement("p:extLst")
+    prs._element.insert(-1, extLst)
+
+
+    # Insert the fragment in the extension list in presentation.xml
+    extLst.insert(0, xmlFragment)
 
 def deleteSlide(prs, slideNumber):
     rId = prs.slides._sldIdLst[slideNumber].rId
@@ -4489,7 +4561,8 @@ processingOptions.setOptionValuesArray(
         ["sectionTitleSize", 40],
         ["sectionSubtitleSize", 28],
         ["presTitleSize", 40],
-        ["presSubtitleSize", 28]
+        ["presSubtitleSize", 28],
+        ["sectionsExpand", False]
     ]
 )
 
@@ -4669,6 +4742,12 @@ for line in metadata_lines:
         processingOptions.setOptionValues(name, float(value))
 
     elif name == "deletefirstslide":
+        if value.lower() == "yes":
+            processingOptions.setOptionValues(name, True)
+        else:
+            processingOptions.setOptionValues(name, False)
+
+    elif name == "sectionsexpand":
         if value.lower() == "yes":
             processingOptions.setOptionValues(name, True)
         else:
@@ -5969,6 +6048,9 @@ try:
 except:
     pass
 
+if processingOptions.getCurrentOption("SectionsExpand"):
+  createExpandingSections(prs)
+
 prs.save(output_filename)
 
 elapsed_time = time.time() - start_time
@@ -5978,5 +6060,6 @@ print(
     + str(int(1000 * elapsed_time) / 1000)
     + "s"
 )
+
 
 sys.exit()

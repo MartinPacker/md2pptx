@@ -140,6 +140,7 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 			* [Table Of Contents Font Size - `TOCFontSize`](#table-of-contents-font-size-tocfontsize)
 			* [Section Navigation Buttons - `SectionArrows`](#section-navigation-buttons-sectionarrows)
 			* [Section Navigation Button Colour - `SectionArrowsColour`](#section-navigation-button-colour-sectionarrowscolour)
+			* [Make Expandable Sections - `SectionsExpand`](#make-expandable-sections-sectionsexpand)
 	* [Dynamic Metadata](#dynamic-metadata)
 		* [Tables](#tables)
 			* [`CompactTables`](#compacttables)
@@ -304,6 +305,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|3.3|9&nbsp;August&nbsp;2022|Added [sectionsExpand](#make-expandable-sections-sectionsexpand) to enable sections to expand and contract.|
 |3.2.2|10&nbsp;June&nbsp;2022|Enhanced [custom footer text](#footer-flexibility) with presentation title and subtitle. Added specifying individual lines from these and section titles. Handle `<br/>`.|
 |3.2.1|8&nbsp;June&nbsp;2022|Added [presTitleSize](#presentation-title-size-prestitlesize) and [presSubtitleSize](#presentation-subtitle-size-pressubtitlesize).|
 |3.2|22&nbsp;May&nbsp;2022|Clearing the Processing Summary slide no longer removes Action Button objects. [Pseudo-footers can be created](#specifying-footer-text).|
@@ -447,7 +449,10 @@ You code a presentation section slide with a Markdown Heading Level 2:
 
 You can code multiple lines, as with [Presentation Title slides](#presentation-title-slides).
 
-(You can adjust the Markdown heading level for this type of slide with [`TopHeadingLevel`](#slide-heading-levels-topheadinglevel).)
+**Notes:**
+
+* You can adjust the Markdown heading level for this type of slide with [`TopHeadingLevel`](#slide-heading-levels-topheadinglevel)
+* You can make the section slides be the start of expandable and contractable sections with [`sectionsExpand`](#make-expandable-sections-sectionsexpand).
 
 ### Bullet Slides
 <a id="bullet-slides"></a>
@@ -2469,6 +2474,23 @@ leads to each item's background colour being pale blue. This is a hexadecimal RG
 
 If you don't specify this the default Powerpoint background colour for shapes is used.
 
+<a id="make-expandable-sections-sectionsexpand"></a>
+##### Make Expandable Sections - `SectionsExpand`
+
+You can make expandable and collapsable sections. In this context a section begins with a section slide and continues until the next section slide.
+
+When collapsed the PowerPoint side bar shows the section name and the number of slides in that section. When expanded the side bar shows the section name above the first slide in the section.
+
+To make expandable and contractable sections code:
+
+    sectionsExpand: yes
+
+The default is `no`.
+
+**Notes:**
+
+* The section name is derived from the first line in the section slide's title.
+* In testing only PowerPoint has demonstrated the ability to display collapsible sections. Neither LibreOffice nor Keynote showed any understanding of collapsible sections, though both otherwise loaded the test presentation fine.
 <a id="dynamic-metadata"></a>
 ### Dynamic Metadata
 
