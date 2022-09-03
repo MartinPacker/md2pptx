@@ -305,6 +305,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|3.3.1|3&nbsp;September&nbsp;2022|[Processing Summary](#processing-summary) slide can have up to 5 column pairs. `<span class=>` matching lower cased.|
 |3.3|9&nbsp;August&nbsp;2022|Added [sectionsExpand](#make-expandable-sections-sectionsexpand) to enable sections to expand and contract.|
 |3.2.2|10&nbsp;June&nbsp;2022|Enhanced [custom footer text](#footer-flexibility) with presentation title and subtitle. Added specifying individual lines from these and section titles. Handle `<br/>`.|
 |3.2.1|8&nbsp;June&nbsp;2022|Added [presTitleSize](#presentation-title-size-prestitlesize) and [presSubtitleSize](#presentation-subtitle-size-pressubtitlesize).|
@@ -1248,9 +1249,11 @@ the result would be something like this:
 I would like to highlight <span style="color: #FFFF00">this bit</span> but not **this** bit.
 
 
-**Note:** A fragment of text in a span can't use any other text effect, such as bolding or italics.
+**Notes:**
 
-The class name can be specified with double quotes, single quotes, or no quotes at all.
+1. A fragment of text in a span can't use any other text effect, such as bolding or italics.
+1. The class name can be specified with double quotes, single quotes, or no quotes at all.
+1. Class name matching is done in a case-insensitive way.
 
 If you want to be able to process the text using a normal Markdown processor you can code Cascading Style Sheet (CSS) using the HTML `<style>` element. md2pptx will ignore any HTML after the metadata and before the first real Markdown text. For example:
 

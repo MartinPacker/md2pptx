@@ -62,8 +62,8 @@ except:
     have_pillow = False
 
 
-md2pptx_level = "3.3"
-md2pptx_date = "9 August, 2022"
+md2pptx_level = "3.3.1"
+md2pptx_date = "3 September, 2022"
 
 
 class SlideInfo:
@@ -1560,7 +1560,7 @@ def parseText(text):
                 # Span with class
                 splitting = fragment.split(">")
                 spanText = splitting[1]
-                className = splitting[0].strip().strip("'").strip('"')
+                className = splitting[0].strip().strip("'").strip('"').lower()
                 styleText = ""
                 if (
                     (className in bgcolors)
@@ -1840,7 +1840,11 @@ def createProcessingSummarySlide(presentation, rawMetadata):
     metadataRows = len(metadata)
 
     maxMetadataRowsPerColumn = 15
-    if metadataRows > 2 * maxMetadataRowsPerColumn:
+    if metadataRows > 4 * maxMetadataRowsPerColumn:
+        metadataColumnPairs = 5
+    elif metadataRows > 3 * maxMetadataRowsPerColumn:
+        metadataColumnPairs = 4
+    elif metadataRows > 2 * maxMetadataRowsPerColumn:
         metadataColumnPairs = 3
     elif metadataRows > maxMetadataRowsPerColumn:
         metadataColumnPairs = 2
@@ -1900,7 +1904,13 @@ def createProcessingSummarySlide(presentation, rawMetadata):
             # Set text of metadata value cell - without asterisk
             newTable.cell(row, column + 1).text = value
 
-        if metadataColumnPairs == 3:
+        if metadataColumnPairs == 5:
+            newTable.cell(row, column).text_frame.paragraphs[0].font.size = Pt(8)
+            newTable.cell(row, column + 1).text_frame.paragraphs[0].font.size = Pt(8)
+        elif metadataColumnPairs == 4:
+            newTable.cell(row, column).text_frame.paragraphs[0].font.size = Pt(10)
+            newTable.cell(row, column + 1).text_frame.paragraphs[0].font.size = Pt(10)
+        elif metadataColumnPairs == 3:
             newTable.cell(row, column).text_frame.paragraphs[0].font.size = Pt(12)
             newTable.cell(row, column + 1).text_frame.paragraphs[0].font.size = Pt(12)
         elif metadataColumnPairs == 2:

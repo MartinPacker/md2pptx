@@ -1420,6 +1420,11 @@ THE SOFTWARE.
 </thead>
 <tbody>
 <tr>
+<td align="left">3.3.1</td>
+<td align="right">3&nbsp;September&nbsp;2022</td>
+<td align="left"><a href="#processing-summary">Processing Summary</a> slide can have up to 5 column pairs. <code>&lt;span class=&gt;</code> matching lower cased.</td>
+</tr>
+<tr>
 <td align="left">3.3</td>
 <td align="right">9&nbsp;August&nbsp;2022</td>
 <td align="left">Added <a href="#make-expandable-sections-sectionsexpand">sectionsExpand</a> to enable sections to expand and contract.</td>
@@ -2469,8 +2474,12 @@ End Sub
 </code></pre>
 <p>the result would be something like this:</p>
 <p>I would like to highlight <span style="color: #FFFF00">this bit</span> but not <strong>this</strong> bit.</p>
-<p><strong>Note:</strong> A fragment of text in a span can&rsquo;t use any other text effect, such as bolding or italics.</p>
-<p>The class name can be specified with double quotes, single quotes, or no quotes at all.</p>
+<p><strong>Notes:</strong></p>
+<ol>
+<li>A fragment of text in a span can&rsquo;t use any other text effect, such as bolding or italics.</li>
+<li>The class name can be specified with double quotes, single quotes, or no quotes at all.</li>
+<li>Class name matching is done in a case-insensitive way.</li>
+</ol>
 <p>If you want to be able to process the text using a normal Markdown processor you can code Cascading Style Sheet (CSS) using the HTML <code>&lt;style&gt;</code> element. md2pptx will ignore any HTML after the metadata and before the first real Markdown text. For example:</p>
 <pre><code>&lt;style&gt;
 .mytest{
