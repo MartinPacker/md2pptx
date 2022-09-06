@@ -1420,6 +1420,11 @@ THE SOFTWARE.
 </thead>
 <tbody>
 <tr>
+<td align="left">3.3.2</td>
+<td align="right">6&nbsp;September&nbsp;2022</td>
+<td align="left">Fixed bug where expanding sections crashed md2pptx. Clarified supported section name characters. See <a href="#make-expandable-sections-sectionsexpand">sectionsExpand</a>.</td>
+</tr>
+<tr>
 <td align="left">3.3.1</td>
 <td align="right">3&nbsp;September&nbsp;2022</td>
 <td align="left"><a href="#processing-summary">Processing Summary</a> slide can have up to 5 column pairs. <code>&lt;span class=&gt;</code> matching lower cased.</td>
@@ -3507,10 +3512,16 @@ The default value is <code>no</code>.</p>
 <p>The default is <code>no</code>.</p>
 <p><strong>Notes:</strong></p>
 <ul>
-<li>The section name is derived from the first line in the section slide&rsquo;s title.</li>
-<li>In testing only PowerPoint has demonstrated the ability to display collapsible sections. Neither LibreOffice nor Keynote showed any understanding of collapsible sections, though both otherwise loaded the test presentation fine.
-<a id="dynamic-metadata"></a></li>
+<li>The section name is derived from the section slide&rsquo;s title. The following characters are passed through to the section name:<ul>
+<li>Alphanumerics</li>
+<li><code>&amp;-+!/</code></li>
+<li>Spaces</li>
+<li>Asterisks (coded as <code>&amp;lowast;</code>)</li>
 </ul>
+</li>
+<li>In testing only PowerPoint has demonstrated the ability to display collapsible sections. Neither LibreOffice nor Keynote showed any understanding of collapsible sections, though both otherwise loaded the test presentation fine.</li>
+</ul>
+<p><a id="dynamic-metadata"></a></p>
 <h3 id="dynamic-metadata">Dynamic Metadata<a class="headerlink" href="#dynamic-metadata" title="Permanent link"></a></h3>
 <p>md2pptx can alter some in-effect settings, starting at a particular slide. Straight after the heading code a special form of (HTML) comment like so:</p>
 <pre><code>### Origins Of Mainframe, Performance, Topics Podcast

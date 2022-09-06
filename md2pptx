@@ -62,8 +62,8 @@ except:
     have_pillow = False
 
 
-md2pptx_level = "3.3.1"
-md2pptx_date = "3 September, 2022"
+md2pptx_level = "3.3.2"
+md2pptx_date = "6 September, 2022"
 
 
 class SlideInfo:
@@ -254,7 +254,18 @@ def createSectionsXML(prs):
       # Confect section name from first part of section slide title
       title = findTitleShape(slide)
       sectionName = title.text.split("\n")[0]
-
+      
+      # Clean up section name
+      sectionName = ''.join(letter for letter in sectionName if 
+      (
+      (letter.isalnum()) 
+      | (letter in "&-+") 
+      | (letter in "!/*") 
+      | (letter == " ")
+      ))
+      
+      sectionName = sectionName.replace("& ","&amp; ").replace("\r"," ").replace("\n"," ")
+      
       # section URI's just need to be a GUID wrapped in braces
       xml += '      <p14:section name="' + sectionName +'" id="{' + str(uuid.uuid4()).upper() +'}">\n'
       
@@ -271,7 +282,9 @@ def createSectionsXML(prs):
   # Close out the sections extension
   xml += '  </p:ext>\n'
 
-  return parse_xml(xml), sectionCount
+  parsed_xml = parse_xml(xml)
+  
+  return parsed_xml, sectionCount
 
 def createExpandingSections(prs):
   # Use the slides' layouts to create an XML fragment with sections in
