@@ -62,8 +62,8 @@ except:
     have_pillow = False
 
 
-md2pptx_level = "3.3.2"
-md2pptx_date = "6 September, 2022"
+md2pptx_level = "3.3.3"
+md2pptx_date = "8 October, 2022"
 
 
 class SlideInfo:
@@ -4383,8 +4383,7 @@ footnoteDefinitionRegex = re.compile("^\[\^(.+?)\]: (.+)")
 spanClassRegex = re.compile("<span( )*class=")
 spanStyleRegex = re.compile("<span( )*style=")
 RGBRegex = re.compile("#([0-9a-fA-F]{6})")
-slideHrefRegex = re.compile("(.+)\[(.+)\]")
-# slideHrefRegex = re.compile("\[(.+)\]\(.+\)")
+slideHrefRegex = re.compile("(.+)\[(.+)\]$")
 anchorRegex = re.compile("^<a id=[\"'](.+)[\"']></a>")
 dynamicMetadataRegex = re.compile("^<!-- md2pptx: (.+): (.+) -->")
 indirectReferenceAnchorRegex = re.compile("^\[(.+?)\]: (.+)")
