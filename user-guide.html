@@ -1292,7 +1292,7 @@ body .markdown-body
 <li><a href="#indentspaces"><code>IndentSpaces</code></a></li>
 <li><a href="#marginbase"><code>MarginBase</code></a></li>
 <li><a href="#numbersheight"><code>NumbersHeight</code></a></li>
-<li><a href="#tablemargin">TableMargin</a></li>
+<li><a href="#tablemargin"><code>TableMargin</code></a></li>
 </ul>
 </li>
 </ul>
@@ -1419,6 +1419,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">3.3.3</td>
+<td align="right">8&nbsp;October&nbsp;2022</td>
+<td align="left">Fixed bug where coding a MultiMarkdown style heading ID deleted the text to the right. Noted outbound links from headings are a <a href="#deviations-from-standard-markdown">deviation from standard Markdown</a>.</td>
+</tr>
 <tr>
 <td align="left">3.3.2</td>
 <td align="right">6&nbsp;September&nbsp;2022</td>
@@ -2289,6 +2294,8 @@ You can also use some other kinds of markup, such as hyperlinks and <code>&lt;ab
 <li><a href="#coding-a-hyperlink-to-another-slide">Hyperlink references to other slides in the same presentation</a>.</li>
 <li><a href="#invoking-a-vba-macro">Links that invoke VBA macros</a> in the same presentation.</li>
 </ul>
+<p>You can code such references in the body of a slide or its heading (though, as documented in <a href="#deviations-from-standard-markdown">Deviations From Standard Markdown</a>, the latter is not standard Markdown).
+)</p>
 <h3 id="coding-a-url-reference">Coding A URL Reference<a class="headerlink" href="#coding-a-url-reference" title="Permanent link"></a></h3>
 <p><a id="coding-a-url-reference"></a></p>
 <p>To code a hyperlink to an <strong>external</strong> URL in a slide code something like:</p>
@@ -3685,7 +3692,7 @@ The default value is <code>no</code>.</p>
 </code></pre>
 <p>You might do this along with a <a href="#marginbase-dynamic">Dynamic MarginBase</a> value of 0 to allow something to occupy the whole slide.</p>
 <p><a id="tablemargin-dynamic"></a></p>
-<h4 id="tablemargin">TableMargin<a class="headerlink" href="#tablemargin" title="Permanent link"></a></h4>
+<h4 id="tablemargin"><code>TableMargin</code><a class="headerlink" href="#tablemargin" title="Permanent link"></a></h4>
 <p>You can override the presentation <a href="#margin-size-marginbase-and-tablemargin">TableMargin</a> specification on a slide-by-slide-basis:</p>
 <pre><code>&lt;!-- md2pptx: tablemargin: 0.25 --&gt;
 </code></pre>
@@ -3806,4 +3813,5 @@ The default value is <code>no</code>.</p>
 <li>In tables trailing pipe (<code>|</code>) characters are optional in md2pptx.</li>
 <li>md2pptx supports inline Taskpaper format. Markdown doesn&rsquo;t. (The use of the Taskpaper <code>-</code> delimiter currently prevents md2pptx from supporting it as a list bullet marker.) See <a href="#task-list-slides">Task List Slides</a> for details of md2pptx&rsquo;s Taskpaper support.</li>
 <li>Using md2pptx&rsquo;s &ldquo;ppaction://&rdquo; URI support to <a href="#invoking-a-vba-macro">run a VBA macro</a> won&rsquo;t work in HTML.</li>
+<li>Using <strong>outbound</strong> hyperlinks in a heading is not standard Markdown - whether within the document or to the web.</li>
 </ul></article></body></html>

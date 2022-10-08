@@ -1,4 +1,3 @@
-
 # Markdown To Powerpoint User Guide
 
 This document describes the md2pptx Markdown preprocessor, which turns Markdown text into a Powerpoint pptx presentation.
@@ -170,7 +169,7 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 		* [`IndentSpaces`](#indentspaces)
 		* [`MarginBase`](#marginbase)
 		* [`NumbersHeight`](#numbersheight)
-		* [TableMargin](#tablemargin)
+		* [`TableMargin`](#tablemargin)
 * [Modifying The Slide Template](#modifying-the-slide-template)
 	* [Basics](#basics)
 	* [Slide Template Sequence](#slide-template-sequence)
@@ -305,6 +304,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|3.3.3|8&nbsp;October&nbsp;2022|Fixed bug where coding a MultiMarkdown style heading ID deleted the text to the right. Noted outbound links from headings are a [deviation from standard Markdown](#deviations-from-standard-markdown).|
 |3.3.2|6&nbsp;September&nbsp;2022|Fixed bug where expanding sections crashed md2pptx. Clarified supported section name characters. See [sectionsExpand](#make-expandable-sections-sectionsexpand).|
 |3.3.1|3&nbsp;September&nbsp;2022|[Processing Summary](#processing-summary) slide can have up to 5 column pairs. `<span class=>` matching lower cased.|
 |3.3|9&nbsp;August&nbsp;2022|Added [sectionsExpand](#make-expandable-sections-sectionsexpand) to enable sections to expand and contract.|
@@ -1038,6 +1038,8 @@ md2pptx allows you to create links and invoke VBA macros. You can code
 * [Hyperlink references to other slides in the same presentation](#coding-a-hyperlink-to-another-slide).
 * [Links that invoke VBA macros](#invoking-a-vba-macro) in the same presentation.
 
+You can code such references in the body of a slide or its heading (though, as documented in [Deviations From Standard Markdown](#deviations-from-standard-markdown), the latter is not standard Markdown).
+)
 ### Coding A URL Reference
 <a id="coding-a-url-reference"></a>
 
@@ -2735,7 +2737,7 @@ You can override the presentation [NumbersHeight](#specifying-how-much-space-to-
 You might do this along with a [Dynamic MarginBase](#marginbase-dynamic) value of 0 to allow something to occupy the whole slide.
 
 <a id="tablemargin-dynamic"></a>
-#### TableMargin
+#### `TableMargin`
 
 You can override the presentation [TableMargin](#margin-size-marginbase-and-tablemargin) specification on a slide-by-slide-basis:
 
@@ -2829,3 +2831,4 @@ Known deviations are:
 * In tables trailing pipe (`|`) characters are optional in md2pptx.
 * md2pptx supports inline Taskpaper format. Markdown doesn't. (The use of the Taskpaper `-` delimiter currently prevents md2pptx from supporting it as a list bullet marker.) See [Task List Slides](#task-list-slides) for details of md2pptx's Taskpaper support.
 * Using md2pptx's "ppaction://" URI support to [run a VBA macro](#invoking-a-vba-macro) won't work in HTML.
+* Using **outbound** hyperlinks in a heading is not standard Markdown - whether within the document or to the web.
