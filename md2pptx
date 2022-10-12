@@ -62,8 +62,8 @@ except:
     have_pillow = False
 
 
-md2pptx_level = "3.3.3"
-md2pptx_date = "8 October, 2022"
+md2pptx_level = "3.3.3+"
+md2pptx_date = "12 October, 2022"
 
 
 class SlideInfo:
@@ -4075,7 +4075,47 @@ def createSlide(presentation, slideNumber, slideInfo):
     slideNumber = slideNumber + 1
 
     sequence = []
+    
+    addTransition(slide,"none")
+
+    
     return [slideNumber, slide, sequence]
+
+# Add a transition effect - for transitioning INTO the slide.
+# The following are known to work - reveal, ripple
+def addTransition(slide,transitionType):
+    # Handle "no transition" case
+    if (transitionType == "none") | (transitionType == ""):
+        return
+    
+    # Construct first boilerplate XML fragment
+    xml = '''
+      <mc:AlternateContent xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006">
+    <mc:Choice xmlns:p14="http://schemas.microsoft.com/office/powerpoint/2010/main" Requires="p14">
+      <p:transition xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main" spd="slow" p14:dur="3400">
+      '''
+      
+    # Add in transition element
+    xml += "         <p14:" + transitionType + " />\n"
+
+    # Construct last boilerplate XML fragment
+
+    xml += '''
+      </p:transition>
+    </mc:Choice>
+    <mc:Fallback>
+      <p:transition xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main" spd="slow">
+        <p:fade />
+      </p:transition>
+    </mc:Fallback>
+  </mc:AlternateContent>
+   '''
+
+    # Turn this into an XML fragment
+    xmlFragment = parse_xml(xml)
+
+    # Add to slide's XML
+    slide.element.insert(-1, xmlFragment)
 
 
 def createTaskSlides(prs, slideNumber, tasks, titleStem):
