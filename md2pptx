@@ -62,8 +62,8 @@ except:
     have_pillow = False
 
 
-md2pptx_level = "3.3.3+"
-md2pptx_date = "12 October, 2022"
+md2pptx_level = "3.4"
+md2pptx_date = "16 October, 2022"
 
 
 class SlideInfo:
@@ -3943,6 +3943,7 @@ def createSlide(presentation, slideNumber, slideInfo):
     rightFooterText = processingOptions.getCurrentOption("rightFooterText")
     sectionFooters = processingOptions.getCurrentOption("sectionFooters")
     liveFooters = processingOptions.getCurrentOption("liveFooters")
+    transition = processingOptions.getCurrentOption("transition")
 
     if slideInfo.blockType in ["content", "code", "table"]:
         if (tocStyle != "") & (tocTitle == slideInfo.titleText):
@@ -4076,13 +4077,12 @@ def createSlide(presentation, slideNumber, slideInfo):
 
     sequence = []
     
-    addTransition(slide,"none")
+    addTransition(slide,transition)
 
     
     return [slideNumber, slide, sequence]
 
 # Add a transition effect - for transitioning INTO the slide.
-# The following are known to work - reveal, ripple
 def addTransition(slide,transitionType):
     # Handle "no transition" case
     if (transitionType == "none") | (transitionType == ""):
@@ -4675,6 +4675,8 @@ processingOptions.setOptionValuesArray(
 
 processingOptions.setOptionValues("marginBase", Inches(0.2))
 
+processingOptions.setOptionValues("transition", "none")
+
 processingOptions.setOptionValues("deleteFirstSlide", False)
 
 processingOptions.setOptionValuesArray(
@@ -5095,6 +5097,15 @@ for line in metadata_lines:
 
     elif name == "tempdir":
         processingOptions.setOptionValues(name, os.path.expanduser(value))
+
+    elif name == "transition":
+        if value.lower() in ["none","ripple", "reveal", "honeycomb", "shred",]:
+            # Valid transition name
+            processingOptions.setOptionValues(name, value.lower())
+        else:
+            print(f"Invalid value for {name} - {value}. Ignoring.")
+
+
 
 slideTemplateFile = processingOptions.getCurrentOption("slideTemplateFile")
 if slideTemplateFile != "":
@@ -5624,6 +5635,26 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
                         metadataValue,
                         "",
                     )
+
+                elif metadataKey == "transition":
+                    if metadataValue.lower() in [
+                        "none",
+                        "ripple",
+                        "reveal",
+                        "honeycomb",
+                        "shred",
+                        "pres",
+                        "default",
+                        "pop",
+                        "prev",
+                    ]:
+                        processingOptions.dynamicallySetOption(
+                            metadataKey,
+                            metadataValue,
+                            "",
+                        )
+                    else:
+                        print(f"Invalid value for {metadataKey}: {metadataValue} in '{line}")
 
                 else:
                     # Invalid dynamic metadata specification
