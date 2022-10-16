@@ -1,6 +1,7 @@
+
 # Markdown To Powerpoint User Guide
 
-This document describes the md2pptx Markdown preprocessor, which turns Markdown text into a Powerpoint pptx presentation.
+This document describes the md2pptx Markdown preprocessor, which turns Markdown text into a Powerpoint presentation (whether .pptx or [.pptm](#invoking-a-vba-macro)).
 
 In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee tee ex".
 
@@ -140,6 +141,7 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 			* [Section Navigation Buttons - `SectionArrows`](#section-navigation-buttons-sectionarrows)
 			* [Section Navigation Button Colour - `SectionArrowsColour`](#section-navigation-button-colour-sectionarrowscolour)
 			* [Make Expandable Sections - `SectionsExpand`](#make-expandable-sections-sectionsexpand)
+		* [Slide Transitions - `Transition`](#slide-transitions-transition)
 	* [Dynamic Metadata](#dynamic-metadata)
 		* [Tables](#tables)
 			* [`CompactTables`](#compacttables)
@@ -170,6 +172,7 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 		* [`MarginBase`](#marginbase)
 		* [`NumbersHeight`](#numbersheight)
 		* [`TableMargin`](#tablemargin)
+		* [`Transition`](#transition)
 * [Modifying The Slide Template](#modifying-the-slide-template)
 	* [Basics](#basics)
 	* [Slide Template Sequence](#slide-template-sequence)
@@ -304,6 +307,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|3.4|16&nbsp;October&nbsp;2022|Added support for a small number of [slide transitions](#slide-transitions-transition).|
 |3.3.3|8&nbsp;October&nbsp;2022|Fixed bug where coding a MultiMarkdown style heading ID deleted the text to the right. Noted outbound links from headings are a [deviation from standard Markdown](#deviations-from-standard-markdown).|
 |3.3.2|6&nbsp;September&nbsp;2022|Fixed bug where expanding sections crashed md2pptx. Clarified supported section name characters. See [sectionsExpand](#make-expandable-sections-sectionsexpand).|
 |3.3.1|3&nbsp;September&nbsp;2022|[Processing Summary](#processing-summary) slide can have up to 5 column pairs. `<span class=>` matching lower cased.|
@@ -2502,6 +2506,26 @@ The default is `no`.
     * Asterisks (coded as `&lowast;`)
 * In testing only PowerPoint has demonstrated the ability to display collapsible sections. Neither LibreOffice nor Keynote showed any understanding of collapsible sections, though both otherwise loaded the test presentation fine.
 
+<a id="slide-transitions-transition"></a>
+#### Slide Transitions - `Transition`
+
+With md2pptx you can create transitions between slides.
+
+To do so code, for example:
+
+    transition: ripple
+
+A limited number have been successfully tested:
+
+* `ripple`
+* `reveal`
+* `honeycomb`
+* `shred`
+
+The default is `no` - which prevents slide transition effects being generated.
+
+You can override this value with [Dynamic Metadata](#transition-dynamic).
+
 <a id="dynamic-metadata"></a>
 ### Dynamic Metadata
 
@@ -2742,6 +2766,16 @@ You might do this along with a [Dynamic MarginBase](#marginbase-dynamic) value o
 You can override the presentation [TableMargin](#margin-size-marginbase-and-tablemargin) specification on a slide-by-slide-basis:
 
     <!-- md2pptx: tablemargin: 0.25 -->
+
+<a id="transition-dynamic"></a>
+#### `Transition`
+
+You can override the presentation [Transition](#slide-transitions-transition) specification on a slide-by-slide basis:
+
+    <!-- md2pptx: transition: reveal -->
+
+It's important to note that doing this will affect the transition **into** this slide. Likewise all subsequent slides - until overridden again or reverted.
+
 
 ## Modifying The Slide Template
 <a id="modifying-the-slide-template"></a>

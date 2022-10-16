@@ -1067,7 +1067,7 @@ body .markdown-body
 .highlight .il{color:#009999}
 .highlight .gc{color:#999;background-color:#EAF2F5}
 </style><title>user-guide</title></head><body><article class="markdown-body"><h1 id="markdown-to-powerpoint-user-guide">Markdown To Powerpoint User Guide<a class="headerlink" href="#markdown-to-powerpoint-user-guide" title="Permanent link"></a></h1>
-<p>This document describes the md2pptx Markdown preprocessor, which turns Markdown text into a Powerpoint pptx presentation.</p>
+<p>This document describes the md2pptx Markdown preprocessor, which turns Markdown text into a Powerpoint presentation (whether .pptx or <a href="#invoking-a-vba-macro">.pptm</a>).</p>
 <p>In this document we&rsquo;ll refer to it as &ldquo;md2pptx&rdquo;, pronounced &ldquo;em dee to pee pee tee ex&rdquo;.</p>
 <h3 id="table-of-contents">Table Of Contents<a class="headerlink" href="#table-of-contents" title="Permanent link"></a></h3>
 <ul>
@@ -1255,6 +1255,7 @@ body .markdown-body
 <li><a href="#make-expandable-sections-sectionsexpand">Make Expandable Sections - <code>SectionsExpand</code></a></li>
 </ul>
 </li>
+<li><a href="#slide-transitions-transition">Slide Transitions - <code>Transition</code></a></li>
 </ul>
 </li>
 <li><a href="#dynamic-metadata">Dynamic Metadata</a><ul>
@@ -1293,6 +1294,7 @@ body .markdown-body
 <li><a href="#marginbase"><code>MarginBase</code></a></li>
 <li><a href="#numbersheight"><code>NumbersHeight</code></a></li>
 <li><a href="#tablemargin"><code>TableMargin</code></a></li>
+<li><a href="#transition"><code>Transition</code></a></li>
 </ul>
 </li>
 </ul>
@@ -1419,6 +1421,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">3.4</td>
+<td align="right">16&nbsp;October&nbsp;2022</td>
+<td align="left">Added support for a small number of <a href="#slide-transitions-transition">slide transitions</a>.</td>
+</tr>
 <tr>
 <td align="left">3.3.3</td>
 <td align="right">8&nbsp;October&nbsp;2022</td>
@@ -3528,6 +3535,21 @@ The default value is <code>no</code>.</p>
 </li>
 <li>In testing only PowerPoint has demonstrated the ability to display collapsible sections. Neither LibreOffice nor Keynote showed any understanding of collapsible sections, though both otherwise loaded the test presentation fine.</li>
 </ul>
+<p><a id="slide-transitions-transition"></a></p>
+<h4 id="slide-transitions-transition">Slide Transitions - <code>Transition</code><a class="headerlink" href="#slide-transitions-transition" title="Permanent link"></a></h4>
+<p>With md2pptx you can create transitions between slides.</p>
+<p>To do so code, for example:</p>
+<pre><code>transition: ripple
+</code></pre>
+<p>A limited number have been successfully tested:</p>
+<ul>
+<li><code>ripple</code></li>
+<li><code>reveal</code></li>
+<li><code>honeycomb</code></li>
+<li><code>shred</code></li>
+</ul>
+<p>The default is <code>no</code> - which prevents slide transition effects being generated.</p>
+<p>You can override this value with <a href="#transition-dynamic">Dynamic Metadata</a>.</p>
 <p><a id="dynamic-metadata"></a></p>
 <h3 id="dynamic-metadata">Dynamic Metadata<a class="headerlink" href="#dynamic-metadata" title="Permanent link"></a></h3>
 <p>md2pptx can alter some in-effect settings, starting at a particular slide. Straight after the heading code a special form of (HTML) comment like so:</p>
@@ -3696,6 +3718,12 @@ The default value is <code>no</code>.</p>
 <p>You can override the presentation <a href="#margin-size-marginbase-and-tablemargin">TableMargin</a> specification on a slide-by-slide-basis:</p>
 <pre><code>&lt;!-- md2pptx: tablemargin: 0.25 --&gt;
 </code></pre>
+<p><a id="transition-dynamic"></a></p>
+<h4 id="transition"><code>Transition</code><a class="headerlink" href="#transition" title="Permanent link"></a></h4>
+<p>You can override the presentation <a href="#slide-transitions-transition">Transition</a> specification on a slide-by-slide basis:</p>
+<pre><code>&lt;!-- md2pptx: transition: reveal --&gt;
+</code></pre>
+<p>It&rsquo;s important to note that doing this will affect the transition <strong>into</strong> this slide. Likewise all subsequent slides - until overridden again or reverted.</p>
 <h2 id="modifying-the-slide-template">Modifying The Slide Template<a class="headerlink" href="#modifying-the-slide-template" title="Permanent link"></a></h2>
 <p><a id="modifying-the-slide-template"></a></p>
 <p>The included template presentation - Martin Template.pptx - is what the author tested with and gives good results. However, you probably want to develop your own template from it.</p>
