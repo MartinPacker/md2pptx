@@ -307,6 +307,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|3.4.1|23&nbsp;October&nbsp;2022|Added support for a few more [slide transitions](#slide-transitions-transition): `wipe`&comma; `vortex`&comma; `fracture`&comma; `split`&comma; and `push`.|
 |3.4|16&nbsp;October&nbsp;2022|Added support for a small number of [slide transitions](#slide-transitions-transition).|
 |3.3.3|8&nbsp;October&nbsp;2022|Fixed bug where coding a MultiMarkdown style heading ID deleted the text to the right. Noted outbound links from headings are a [deviation from standard Markdown](#deviations-from-standard-markdown).|
 |3.3.2|6&nbsp;September&nbsp;2022|Fixed bug where expanding sections crashed md2pptx. Clarified supported section name characters. See [sectionsExpand](#make-expandable-sections-sectionsexpand).|
@@ -2521,6 +2522,11 @@ A limited number have been successfully tested:
 * `reveal`
 * `honeycomb`
 * `shred`
+* `wipe`
+* `vortex`
+* `fracture`
+* `split`
+* `push`
 
 The default is `no` - which prevents slide transition effects being generated.
 

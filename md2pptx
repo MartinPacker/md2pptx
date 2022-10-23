@@ -62,7 +62,7 @@ except:
     have_pillow = False
 
 
-md2pptx_level = "3.4+"
+md2pptx_level = "3.4.1"
 md2pptx_date = "23 October, 2022"
 
 namespaceURL = {
