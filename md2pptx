@@ -62,8 +62,8 @@ except:
     have_pillow = False
 
 
-md2pptx_level = "3.4"
-md2pptx_date = "16 October, 2022"
+md2pptx_level = "3.4+"
+md2pptx_date = "19 October, 2022"
 
 
 class SlideInfo:
@@ -4096,7 +4096,20 @@ def addTransition(slide,transitionType):
       '''
       
     # Add in transition element
-    xml += "         <p14:" + transitionType + " />\n"
+    if transitionType in [
+        "wipe",
+    ]:
+        xml += "         <p:" + transitionType + " />\n"
+    elif transitionType in [
+        "push",
+    ]:
+        xml += "         <p:" + transitionType + " dir=\"u\"/>\n"
+    elif transitionType in [
+        "vortex",
+    ]:
+        xml += "         <p14:" + transitionType + " dir=\"r\"/>\n"
+    else:
+        xml += "         <p14:" + transitionType + " />\n"
 
     # Construct last boilerplate XML fragment
 
@@ -5099,7 +5112,16 @@ for line in metadata_lines:
         processingOptions.setOptionValues(name, os.path.expanduser(value))
 
     elif name == "transition":
-        if value.lower() in ["none","ripple", "reveal", "honeycomb", "shred",]:
+        if value.lower() in [
+            "none",
+            "ripple",
+            "reveal",
+            "honeycomb",
+            "shred",
+            "wipe",
+            "push",
+            "vortex",
+        ]:
             # Valid transition name
             processingOptions.setOptionValues(name, value.lower())
         else:
@@ -5643,6 +5665,9 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
                         "reveal",
                         "honeycomb",
                         "shred",
+                        "wipe",
+                        "push",
+                        "vortex",
                         "pres",
                         "default",
                         "pop",
