@@ -63,8 +63,14 @@ except:
 
 
 md2pptx_level = "3.4+"
-md2pptx_date = "19 October, 2022"
+md2pptx_date = "23 October, 2022"
 
+namespaceURL = {
+    "mc" : "http://schemas.openxmlformats.org/markup-compatibility/2006",
+    "p" : "http://schemas.openxmlformats.org/presentationml/2006/main",
+    "p14" : "http://schemas.microsoft.com/office/powerpoint/2010/main",
+    "p15" : "http://schemas.microsoft.com/office/powerpoint/2012/main",
+}
 
 class SlideInfo:
     def __init__(
@@ -231,12 +237,12 @@ def findExtLst(prs):
 def createSectionsXML(prs):
   sectionSlideLayout = processingOptions.getCurrentOption("SectionSlideLayout")
 
-  xml = ''
-  xml += '  <p:ext xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"\n'
+  xml = '  <p:ext xmlns:p="' + namespaceURL["p"] + '"\n'
 
   # ext URI has to be {521415D9-36F7-43E2-AB2F-B90AF26B5E84} as it's a registered extension
   xml += '    uri="{521415D9-36F7-43E2-AB2F-B90AF26B5E84}">\n'
-  xml += '    <p14:sectionLst xmlns:p14="http://schemas.microsoft.com/office/powerpoint/2010/main">\n'
+
+  xml += '    <p14:sectionLst xmlns:p14="' + namespaceURL["p14"] + '">\n'
 
   sectionCount = 0
   for slide in prs.slides:
@@ -4077,37 +4083,53 @@ def createSlide(presentation, slideNumber, slideInfo):
 
     sequence = []
     
-    addTransition(slide,transition)
+    addSlideTransition(slide,transition)
 
     
     return [slideNumber, slide, sequence]
 
 # Add a transition effect - for transitioning INTO the slide.
-def addTransition(slide,transitionType):
+def addSlideTransition(slide,transitionType):
     # Handle "no transition" case
     if (transitionType == "none") | (transitionType == ""):
         return
+        
+    if transitionType in ["fracture",]:
+        choiceNS = "p15"
+    else:
+        choiceNS = "p14"
     
     # Construct first boilerplate XML fragment
-    xml = '''
-      <mc:AlternateContent xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006">
-    <mc:Choice xmlns:p14="http://schemas.microsoft.com/office/powerpoint/2010/main" Requires="p14">
-      <p:transition xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main" spd="slow" p14:dur="3400">
-      '''
+    xml = '      <mc:AlternateContent xmlns:mc="' + namespaceURL["mc"] + '">\n'
+    xml += '    <mc:Choice xmlns:' + choiceNS +'="' + namespaceURL[choiceNS] + '" Requires="' + choiceNS + '">\n'
+    xml += '<p:transition xmlns:p="' + namespaceURL["p"] + '" xmlns:p14="' + namespaceURL["p14"] + '" spd="slow" p14:dur="3400">\n'
       
     # Add in transition element
     if transitionType in [
         "wipe",
     ]:
         xml += "         <p:" + transitionType + " />\n"
+
     elif transitionType in [
         "push",
     ]:
         xml += "         <p:" + transitionType + " dir=\"u\"/>\n"
+
     elif transitionType in [
         "vortex",
     ]:
         xml += "         <p14:" + transitionType + " dir=\"r\"/>\n"
+
+    elif transitionType in [
+        "split",
+    ]:
+        xml += "         <p:" + transitionType + " orient=\"vert\"/>\n"
+
+    elif transitionType in [
+       "fracture",
+    ]:
+        xml += "                 <p15:prstTrans prst=\"fracture\" />\n"
+    
     else:
         xml += "         <p14:" + transitionType + " />\n"
 
@@ -4117,8 +4139,19 @@ def addTransition(slide,transitionType):
       </p:transition>
     </mc:Choice>
     <mc:Fallback>
-      <p:transition xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main" spd="slow">
-        <p:fade />
+    '''
+    
+    xml += '      <p:transition xmlns:p="' + namespaceURL["p"] + '" spd="slow">\n'
+    
+    if transitionType in [
+        "split",
+    ]:
+        xml += '        <p:' + transitionType + ' orient=\"vert\" xmlns:p="' + namespaceURL["p"] + '"/>\n'
+    
+    else:
+        xml += '        <p:fade />\n'
+        
+    xml += '''
       </p:transition>
     </mc:Fallback>
   </mc:AlternateContent>
@@ -5121,6 +5154,8 @@ for line in metadata_lines:
             "wipe",
             "push",
             "vortex",
+            "split",
+            "fracture",
         ]:
             # Valid transition name
             processingOptions.setOptionValues(name, value.lower())
@@ -5668,6 +5703,8 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
                         "wipe",
                         "push",
                         "vortex",
+                        "split",
+                        "fracture",
                         "pres",
                         "default",
                         "pop",
