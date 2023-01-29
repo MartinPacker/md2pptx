@@ -49,6 +49,7 @@ try:
     from cairosvg import helpers
 
     have_cairosvg = True
+
 except:
     have_cairosvg = False
 
@@ -58,12 +59,25 @@ try:
     import PIL
 
     have_pillow = True
+
 except:
     have_pillow = False
 
+# Try to import graphviz - which might not be installed.
+# Flag availability or otherwise
 
-md2pptx_level = "3.4.1"
-md2pptx_date = "23 October, 2022"
+try:
+	import graphviz
+	print("Have graphviz")
+	
+	have_graphviz = True
+
+except:
+	have_graphviz = False
+
+
+md2pptx_level = "3.4.1+"
+md2pptx_date = "29 January, 2023"
 
 namespaceURL = {
     "mc" : "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -233,6 +247,12 @@ def findExtLst(prs):
       return child
 
   return None
+
+def addSlide(presentation, slideLayout, slideInfo = None):
+  slide = presentation.slides.add_slide(slideLayout)
+  slide.slideInfo = slideInfo
+  
+  return slide
 
 def createSectionsXML(prs):
   sectionSlideLayout = processingOptions.getCurrentOption("SectionSlideLayout")
@@ -1954,7 +1974,7 @@ def createTitleOrSectionSlide(
 ):
     marginBase = processingOptions.getCurrentOption("marginBase")
 
-    slide = presentation.slides.add_slide(presentation.slide_layouts[layout])
+    slide = addSlide(presentation, presentation.slide_layouts[layout], None)
 
     # Add title
     title = findTitleShape(slide)
@@ -2372,7 +2392,7 @@ def createAbstractSlide(presentation, slideNumber, titleText, paragraphs):
     marginBase = processingOptions.getCurrentOption("marginBase")
     pageTitleSize = processingOptions.getCurrentOption("pageTitleSize")
 
-    slide = presentation.slides.add_slide(presentation.slide_layouts[titleOnlyLayout])
+    slide =addSlide(presentation, presentation.slide_layouts[titleOnlyLayout], None)
 
     shapes = slide.shapes
 
@@ -2444,7 +2464,8 @@ def createContentSlide(presentation, slideNumber, slideInfo):
     else:
         slideLayout = contentSlideLayout
         haveBulletsCards = True
-    slide = presentation.slides.add_slide(presentation.slide_layouts[slideLayout])
+    
+    slide = addSlide(presentation, presentation.slide_layouts[slideLayout], slideInfo)
 
     # Check for table / graphics content
     if slideInfo.tableRows == []:
@@ -3770,9 +3791,7 @@ def createTOCSlide(presentation, slideNumber, titleText, bullets, tocStyle):
         return slide
 
     else:
-        slide = presentation.slides.add_slide(
-            presentation.slide_layouts[titleOnlyLayout]
-        )
+        slide = addSlide(presentation, presentation.slide_layouts[titleOnlyLayout], None)
         title = findTitleShape(slide)
 
     SectionSlides[titleText] = slide
@@ -4083,7 +4102,7 @@ def createSlide(presentation, slideNumber, slideInfo):
 
     sequence = []
     
-    addSlideTransition(slide,transition)
+    addSlideTransition(slide, transition)
 
     
     return [slideNumber, slide, sequence]
@@ -4417,6 +4436,11 @@ if have_cairosvg:
     print("CairoSVG: " + cairosvg.__version__)
 else:
     print("CairoSVG: Not Installed")
+
+if have_graphviz:
+    print("graphviz: " + graphviz.__version__)
+else:
+    print("graphviz: Not Installed")
 
 
 input_file = []
@@ -5198,6 +5222,10 @@ else:
         print("\nWriting processing summary slide with metadata on it.")
     else:
         print("\nNo slide to document metadata on. Continuing without it.")
+    
+    # Prime template slides with slideInfo as None
+    for slide in prs.slides:
+      slide.slideInfo = None
 
 # Following might be used in slide footers
 prs.lastSectionTitle = ""
@@ -6216,5 +6244,11 @@ print(
     + "s"
 )
 
+# Run a script against every slide
+script = 'if slide.slideInfo is not None:\n  print(slide.slideInfo)'
+script = ''
+for slide in prs.slides:
+  exec(script)
+    
 
 sys.exit()
