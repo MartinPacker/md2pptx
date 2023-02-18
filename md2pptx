@@ -76,7 +76,7 @@ except:
 
 
 md2pptx_level = "3.4.1+"
-md2pptx_date = "14 February, 2023"
+md2pptx_date = "18 February, 2023"
 
 namespaceURL = {
     "mc" : "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -2178,6 +2178,29 @@ def handleWhateverGraphicType(GraphicFilename):
 
     return GraphicFilename, printableGraphicFilename
 
+def handleGraphViz(slide, renderingRectangle, codeLines):
+	temp = "\n".join(codeLines[1:-1])
+	s = graphviz.Source(temp, format="png")
+	
+	dotFile = "md2pptx-temporary-dotfile.png"
+
+	s.render(cleanup=True, outfile=dotFile)
+
+	dotGraphicWidth, dotGraphicHeight = getGraphicDimensions(dotFile)
+
+	(dotPicWidth, dotPicHeight, scaledByHeight) = scalePicture(
+		renderingRectangle.width, renderingRectangle.height, dotGraphicWidth, dotGraphicHeight
+	)
+
+	slide.shapes.add_picture(
+		dotFile,
+		renderingRectangle.left + (renderingRectangle.width - dotPicWidth) / 2,
+		renderingRectangle.top + (renderingRectangle.height - dotPicHeight) / 2,
+		dotPicWidth,
+		dotPicHeight,
+	)
+	
+	os.remove(dotFile)
 
 def createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber):
     monoFont = processingOptions.getCurrentOption("monoFont")
@@ -2201,30 +2224,16 @@ def createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber):
             codeType = codeLines[0][3:].strip()
             if codeType == "dot":
                 # GraphViz dot
-                temp = "\n".join(codeLines[1:-1])
-                s = graphviz.Source(temp, format="png")
+                if have_graphviz is False:
+                    # Don't have GraphViz so warn and treat as basic backticks
+                    sys.stderr.write("GraphViz not installed. Rendering as backticks.\n")
+                    
+                    codeType = "backticks"
+                else:
+                    # Have GraphViz installed so use it ti add a picture
+                    handleGraphViz(slide, renderingRectangle, codeLines)
                 
-                dotFile = "md2pptx-temporary-dotfile.png"
-
-                s.render(cleanup=True, outfile=dotFile)
-
-                dotGraphicWidth, dotGraphicHeight = getGraphicDimensions(dotFile)
-
-                (dotPicWidth, dotPicHeight, scaledByHeight) = scalePicture(
-                    renderingRectangle.width, renderingRectangle.height, dotGraphicWidth, dotGraphicHeight
-                )
-
-                dotPicture = slide.shapes.add_picture(
-                    dotFile,
-                    renderingRectangle.left + (renderingRectangle.width - dotPicWidth) / 2,
-                    renderingRectangle.top + (renderingRectangle.height - dotPicHeight) / 2,
-                    dotPicWidth,
-                    dotPicHeight,
-                )
-                
-                os.remove(dotFile)
-                
-                return slide
+                    return slide
                 
             else:
                 # Some other type with backticks
