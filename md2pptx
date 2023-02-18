@@ -2179,19 +2179,25 @@ def handleWhateverGraphicType(GraphicFilename):
     return GraphicFilename, printableGraphicFilename
 
 def handleGraphViz(slide, renderingRectangle, codeLines):
+	# Condition GraphViz source
 	temp = "\n".join(codeLines[1:-1])
 	s = graphviz.Source(temp, format="png")
 	
+	# Invent a temporary filename for the rendered graphic
 	dotFile = "md2pptx-temporary-dotfile.png"
 
+	# Render the .dot source as a graphic
 	s.render(cleanup=True, outfile=dotFile)
 
+	# Figure out the dimensions of the rendered graphic
 	dotGraphicWidth, dotGraphicHeight = getGraphicDimensions(dotFile)
 
+	# Adjust those dimensions with the usual scaling rules
 	(dotPicWidth, dotPicHeight, scaledByHeight) = scalePicture(
 		renderingRectangle.width, renderingRectangle.height, dotGraphicWidth, dotGraphicHeight
 	)
 
+	# Add the picture to the current slide
 	slide.shapes.add_picture(
 		dotFile,
 		renderingRectangle.left + (renderingRectangle.width - dotPicWidth) / 2,
@@ -2200,6 +2206,7 @@ def handleGraphViz(slide, renderingRectangle, codeLines):
 		dotPicHeight,
 	)
 	
+	# Delete the temporary graphic file
 	os.remove(dotFile)
 
 def createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber):
