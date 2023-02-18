@@ -68,7 +68,6 @@ except:
 
 try:
 	import graphviz
-	print("Have graphviz")
 	
 	have_graphviz = True
 
@@ -77,7 +76,7 @@ except:
 
 
 md2pptx_level = "3.4.1+"
-md2pptx_date = "29 January, 2023"
+md2pptx_date = "14 February, 2023"
 
 namespaceURL = {
     "mc" : "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -2194,7 +2193,43 @@ def createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber):
     elif codeLines[0].startswith("<code"):
         codeType = "code"
     elif codeLines[0].startswith("```"):
-        codeType = "backticks"
+        if codeLines[0] == "```":
+            # Plain backticks
+            codeType = "backticks"
+        else:
+            # Some other type - such as GraphViz .dot
+            codeType = codeLines[0][3:].strip()
+            if codeType == "dot":
+                # GraphViz dot
+                temp = "\n".join(codeLines[1:-1])
+                s = graphviz.Source(temp, format="png")
+                
+                dotFile = "md2pptx-temporary-dotfile.png"
+
+                s.render(cleanup=True, outfile=dotFile)
+
+                dotGraphicWidth, dotGraphicHeight = getGraphicDimensions(dotFile)
+
+                (dotPicWidth, dotPicHeight, scaledByHeight) = scalePicture(
+                    renderingRectangle.width, renderingRectangle.height, dotGraphicWidth, dotGraphicHeight
+                )
+
+                dotPicture = slide.shapes.add_picture(
+                    dotFile,
+                    renderingRectangle.left + (renderingRectangle.width - dotPicWidth) / 2,
+                    renderingRectangle.top + (renderingRectangle.height - dotPicHeight) / 2,
+                    dotPicWidth,
+                    dotPicHeight,
+                )
+                
+                os.remove(dotFile)
+                
+                return slide
+                
+            else:
+                # Some other type with backticks
+                codeType = "backticks"
+
     else:
         codeType = "indented"
 
