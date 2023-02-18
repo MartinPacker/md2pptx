@@ -152,6 +152,7 @@ To quote from the python-pptx license statement:
 =colalign l r l
 =csv
 Level,Date,What
+3.5,18&nbsp;February&nbsp;2023,Added support for GraphViz .dot file rendering within triple backticks
 3.4.1,23&nbsp;October&nbsp;2022,Added support for a few more [slide transitions](#slide-transitions-transition): `wipe`&comma; `vortex`&comma; `fracture`&comma; `split`&comma; and `push`.
 3.4,16&nbsp;October&nbsp;2022,Added support for a small number of [slide transitions](#slide-transitions-transition).
 3.3.3,8&nbsp;October&nbsp;2022,Fixed bug where coding a MultiMarkdown style heading ID deleted the text to the right. Noted outbound links from headings are a [deviation from standard Markdown](#deviations-from-standard-markdown).
@@ -789,6 +790,47 @@ Surround the block of text by them:
     ```
 
 **Note:** It does not support `<span>` elements.
+
+<a id="special-processing-of-code-within-triple-backticks"></a>
+##### Special Processing Of Code Within Triple Backticks
+
+If you have GraphViz installed you can render GraphViz diagrams as graphics.
+
+<a id="graphviz"></a>
+###### GraphViz
+
+On startup md2pptx will check whether the graphviz Python package is installed. \
+It cannot check if the GraphViz application is installed - but you need that as well to process GraphViz .dot data.
+
+If both the graphviz package and the GraphViz application are installed you can render .dot file format lines. \
+Here is an example:
+
+	```dot
+	digraph G{
+	edge [dir=forward]
+	node [shape=plaintext]
+	
+	0 [label="0 (None)"]
+	0 -> 5 [label="root" color = blue]
+	1 [label="1 (Hello)"]
+	2 [label="2 (how)"]
+	2 -> 1 [label="advmod"]
+	3 [label="3 (are)" fontcolor = green]
+	4 [label="4 (you)"]
+	5 [label="5 (doing)"]
+	5 -> 3 [label="aux"]
+	5 -> 2 [label="advanced mod"]
+	5 -> 4 [label="nsubj"]
+	}
+	```
+
+This will be rendered as a graphic and inserted in the current slide. \
+The graphic will be scaled as appropriate.
+
+This is how the above code is rendered
+
+
+![](graphviz-rendered.png)
 
 #### Indented Text
 
@@ -2947,7 +2989,8 @@ It is expected the template slide will have a title shape.
 <a id="deviations-from-standard-markdown"></a>
 
 While a key aim of the md2pptx project is to keep as closely as possible to standard Markdown (or at any rate Multimarkdown) there are some known incompatibilities. \
-Apart from the fact md2pptx doesn't support all Markdown (or HTML) syntax, the deviations are intended to be useful and optional.
+Apart from the fact md2pptx doesn't support all Markdown (or HTML) syntax, the deviations are intended to be useful and optional. \
+(The ability to generate presentations with a simple text format is the paramount consideration.)
 
 This section lists the known ones so you can make judgments about which deviations to tolerate.
 
@@ -2965,3 +3008,4 @@ See [Table Slides](#table-slides) for details of md2pptx's Tables support.
 See [Task List Slides](#task-list-slides) for details of md2pptx's Taskpaper support.
 * Using md2pptx's "ppaction://" URI support to [run a VBA macro](#invoking-a-vba-macro) won't work in HTML.
 * Using **outbound** hyperlinks in a heading is not standard Markdown - whether within the document or to the web.
+* [GraphViz .dot files](#graphviz) aren't rendered by most Markdown processors.
