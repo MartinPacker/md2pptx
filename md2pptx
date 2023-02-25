@@ -5601,52 +5601,46 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
             metadataValue = DMMatch.group(2).lower()
             if (metadataKey != "") & (metadataValue != ""):
                 # Valid metadata pair so parse key / value - and apply if valid
-                if metadataKey == "compacttables":
+                
+                # Floating point values where metadata key matches directly
+                if metadataKey in [
                     # Font size for tables
-                    processingOptions.dynamicallySetOption(
-                        metadataKey, metadataValue.lower(), "float"
-                    )
-
-                elif metadataKey == "tableheadingsize":
+                    "compacttables",
+                    
                     # Heading font size for tables
-                    processingOptions.dynamicallySetOption(
-                        metadataKey, metadataValue.lower(), "float"
-                    )
-
-                elif metadataKey == "pagetitlesize":
+                    "tableheadingsize",
+                    
                     # Page Title Font size
-                    processingOptions.dynamicallySetOption(
-                        metadataKey, metadataValue, "float"
-                    )
-
-                elif metadataKey == "pagesubtitlesize":
+                    "pagetitlesize",
+                    
                     # Page Subtitle Font size
-                    processingOptions.dynamicallySetOption(
-                        metadataKey, metadataValue, "float"
-                    )
-
-                elif metadataKey == "cardpercent":
+                    "pagesubtitlesize",
+                    
                     # Cards' vertical percent of content area
+                    "cardpercent",
+                    
+                    # Base text size
+                    "basetextsize",
+                    
+                    # Base text decrement
+                    "basetextdecrement",
+                    
+                    # Horizontal card gap
+                    "horizontalcardgap",
+                    
+                    # Vertical card gap
+                    "verticalcardgap",
+
+                ] :
                     processingOptions.dynamicallySetOption(
-                        metadataKey, metadataValue, "float"
+                        # Use the metadata key directly
+                        metadataKey, metadataValue.lower(), "float"
                     )
 
                 elif metadataKey == "cardlayout":
                     # Cards' layout - horizontal or vertical
                     processingOptions.dynamicallySetOption(
                         metadataKey, metadataValue, ""
-                    )
-
-                elif metadataKey == "basetextsize":
-                    # Base text size
-                    processingOptions.dynamicallySetOption(
-                        metadataKey, metadataValue, "float"
-                    )
-
-                elif metadataKey == "basetextdecrement":
-                    # Base text decrement
-                    processingOptions.dynamicallySetOption(
-                        metadataKey, metadataValue, "float"
                     )
 
                 elif metadataKey == "numbersheight":
@@ -5720,10 +5714,6 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
                         metadataKey, metadataValue, ""
                     )
 
-                elif metadataKey in ["horizontalcardgap", "verticalcardgap"]:
-                    processingOptions.dynamicallySetOption(
-                        metadataKey, metadataValue, "float"
-                    )
 
                 # Note: Actual value handling prevents using dynamicallySetOption
                 elif metadataKey == "contentsplit":
