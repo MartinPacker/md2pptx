@@ -75,8 +75,8 @@ except:
 	have_graphviz = False
 
 
-md2pptx_level = "3.5"
-md2pptx_date = "18 February, 2023"
+md2pptx_level = "3.5+"
+md2pptx_date = "25 February, 2023"
 
 namespaceURL = {
     "mc" : "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -1168,7 +1168,7 @@ def getContentRect(presentation, slide, topOfContent, margin):
 
 # Finds the title and adds the text to it, returning title bottom, title shape, and
 # flattened title
-def formatTitle(presentation, slide, titleText, titleFontSize):
+def formatTitle(presentation, slide, titleText, titleFontSize, subtitleFontSize):
     marginBase = processingOptions.getCurrentOption("marginBase")
 
     # Find title
@@ -1185,19 +1185,47 @@ def formatTitle(presentation, slide, titleText, titleFontSize):
         title.width = presentation.slide_width - marginBase * 2
 
     # Figure out how many lines title will need (ignoring overflow)
-    titleLineCount = len(titleText.split("<br/>"))
+    titleLineCount = len(titleLines := titleText.split("<br/>"))
 
-    # Add the title text to the first paragraph
-    flattenedTitle = addFormattedText(title.text_frame.paragraphs[0], titleText)
+    # This will hold the flattened title lines to be printed
+    flattenedTitleLines = [] 
 
-    if processingOptions.getCurrentOption("adjustTitles"):
-        title.height = Pt(titleFontSize) * titleLineCount
+    # Add the first line of the title text to the first paragraph
+    flattenedTitleLines.append(
+        addFormattedText(title.text_frame.paragraphs[0], titleLines[0])
+    )
 
-    title.text_frame.paragraphs[0].font.size = Pt(titleFontSize)
+    # Set anchor to top
     title.text_frame.vertical_anchor = MSO_ANCHOR.TOP
 
+    # Set this paragraph's font size using pageTitleSize
+    title.text_frame.paragraphs[0].font.size = Pt(titleFontSize)
+
+    # If there are additional title lines then add them
+    for lineNumber, titleLine in enumerate(titleLines[1:]):
+        # Each title line requires a new paragraph
+        newPara = title.text_frame.add_paragraph()
+        
+        # Use this new paragraph, adding flattened title line to the list
+        flattenedTitleLines.append(
+            addFormattedText(newPara, titleLine)
+        )
+        
+        # Set this paragraph's font size using pageSubtitleSize
+        newPara.font.size = Pt(subtitleFontSize)
+
+    # Note: Working off pageTitleSize and pageSubtitleSize
+    if processingOptions.getCurrentOption("adjustTitles"):
+        title.height = Pt(titleFontSize) + Pt(subtitleFontSize) * (titleLineCount - 1)
+
+    # Massage title line for printing a little
+    if(titleLineCount > 1):
+        flattenedTitleText = flattenedTitleLines[0] + " ..."
+    else:
+        flattenedTitleText = flattenedTitleLines[0]
+
     # Return where the next shape below the title would be - vertically
-    return (title.top + title.height + Inches(0.1), title, flattenedTitle)
+    return (title.top + title.height + Inches(0.1), title, flattenedTitleText)
 
 
 # Parse the string after the e.g. ### for a displayable title and
@@ -1846,6 +1874,7 @@ def deleteSimpleShape(shape):
 def createProcessingSummarySlide(presentation, rawMetadata):
     tableMargin = processingOptions.getCurrentOption("tableMargin")
     pageTitleSize = processingOptions.getCurrentOption("pageTitleSize")
+    pageSubtitleSize = processingOptions.getCurrentOption("pageSubtitleSize")
     # Use the first slide in the template presentation as the base
     slide = presentation.slides[0]
 
@@ -1862,7 +1891,11 @@ def createProcessingSummarySlide(presentation, rawMetadata):
 
     # Format title and add title text
     slideTitleBottom, title, flattenedTitle = formatTitle(
-        presentation, slide, banner + "<br/>" + runDateTime, pageTitleSize
+        presentation,
+        slide,
+        banner + "<br/>" + runDateTime,
+        pageTitleSize,
+        pageSubtitleSize
     )
 
     # Work out how many pairs of columns we need
@@ -2442,6 +2475,7 @@ def createAbstractSlide(presentation, slideNumber, titleText, paragraphs):
     titleOnlyLayout = processingOptions.getCurrentOption("titleOnlyLayout")
     marginBase = processingOptions.getCurrentOption("marginBase")
     pageTitleSize = processingOptions.getCurrentOption("pageTitleSize")
+    pageSubtitleSize = processingOptions.getCurrentOption("pageSubtitleSize")
 
     slide =addSlide(presentation, presentation.slide_layouts[titleOnlyLayout], None)
 
@@ -2449,7 +2483,11 @@ def createAbstractSlide(presentation, slideNumber, titleText, paragraphs):
 
     # Add title and constrain its size and placement
     slideTitleBottom, title, flattenedTitle = formatTitle(
-        presentation, slide, titleText, pageTitleSize
+        presentation,
+        slide,
+        titleText,
+        pageTitleSize,
+        pageSubtitleSize
     )
 
     reportSlideTitle(slideNumber, 3, "Abstract: " + flattenedTitle)
@@ -2500,6 +2538,7 @@ def createContentSlide(presentation, slideNumber, slideInfo):
     contentSlideLayout = processingOptions.getCurrentOption("contentSlideLayout")
     marginBase = processingOptions.getCurrentOption("marginBase")
     pageTitleSize = processingOptions.getCurrentOption("pageTitleSize")
+    pageSubtitleSize = processingOptions.getCurrentOption("pageSubtitleSize")
 
     # slideInfo's body text is only filled in if there is code - and that's
     # where the code - plus preamble and postamble is.
@@ -2532,7 +2571,11 @@ def createContentSlide(presentation, slideNumber, slideInfo):
     # Add slide title
     titleText = slideInfo.titleText
     slideTitleBottom, title, flattenedTitle = formatTitle(
-        presentation, slide, titleText, pageTitleSize
+        presentation,
+        slide,
+        titleText,
+        pageTitleSize,
+        pageSubtitleSize
     )
 
     # Log slide's title
@@ -2621,6 +2664,7 @@ def createListBlock(slideInfo, slide, renderingRectangle):
     cardColour = processingOptions.getCurrentOption("cardcolour")
     marginBase = processingOptions.getCurrentOption("marginBase")
     pageTitleSize = processingOptions.getCurrentOption("pageTitleSize")
+    pageSubtitleSize = processingOptions.getCurrentOption("pageSubtitleSize")
 
     # Get bulleted text shape - either for bullets above cards or first card's body shape
     bulletsShape = findBodyShape(slide)
@@ -3795,6 +3839,7 @@ def createTOCSlide(presentation, slideNumber, titleText, bullets, tocStyle):
     tocTitle = processingOptions.getCurrentOption("tocTitle")
     marginBase = processingOptions.getCurrentOption("marginBase")
     pageTitleSize = processingOptions.getCurrentOption("pageTitleSize")
+    pageSubtitleSize = processingOptions.getCurrentOption("pageSubtitleSize")
 
     if tocStyle != "plain":
         if titleText == tocTitle:
@@ -3853,7 +3898,11 @@ def createTOCSlide(presentation, slideNumber, titleText, bullets, tocStyle):
     if titleText == tocTitle:
         # Is TOC slide so add title
         slideTitleBottom, title, flattenedTitle = formatTitle(
-            presentation, slide, tocTitle, pageTitleSize
+            presentation,
+            slide,
+            tocTitle,
+            pageTitleSize,
+            pageSubtitleSize
         )
     else:
         # Is not TOC slide so delete title shape and adjust where title bottom
@@ -4667,7 +4716,12 @@ processingOptions.setOptionValues("tempDir", None)
 #                                                                                    #
 ######################################################################################
 
-processingOptions.setOptionValues("pageTitleSize", 30)
+processingOptions.setOptionValuesArray(
+    [
+        ["pageTitleSize", 30],
+        ["pageSubtitleSize", 30],
+    ]
+)
 
 processingOptions.setOptionValues("baseTextSize", 18)
 
@@ -4915,6 +4969,9 @@ for line in metadata_lines:
             want_numbers_content = False
 
     elif name == "pagetitlesize":
+        processingOptions.setOptionValues(name, float(value))
+
+    elif name == "pagesubtitlesize":
         processingOptions.setOptionValues(name, float(value))
 
     elif name == "basetextsize":
@@ -5558,6 +5615,12 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
 
                 elif metadataKey == "pagetitlesize":
                     # Page Title Font size
+                    processingOptions.dynamicallySetOption(
+                        metadataKey, metadataValue, "float"
+                    )
+
+                elif metadataKey == "pagesubtitlesize":
+                    # Page Subtitle Font size
                     processingOptions.dynamicallySetOption(
                         metadataKey, metadataValue, "float"
                     )
