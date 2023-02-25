@@ -73,6 +73,7 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 	* [Metadata Keys](#metadata-keys)
 		* [Title And Subtitle Font Sizes](#title-and-subtitle-font-sizes)
 			* [Page Title Size - `pageTitleSize`](#page-title-size-pagetitlesize)
+			* [Page Subtitle Size - `pageSubtitleSize`](#page-subtitle-size-pagesubtitlesize)
 			* [Section Title Size - `sectionTitleSize`](#section-title-size-sectiontitlesize)
 			* [Section Subtitle Size - `sectionSubtitleSize`](#section-subtitle-size-sectionsubtitlesize)
 			* [Presentation Title Size - `presTitleSize`](#presentation-title-size-prestitlesize)
@@ -166,6 +167,7 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 			* [`CodeForeground`](#codeforeground)
 			* [`CodeBackground`](#codebackground)
 		* [`PageTitleSize`](#pagetitlesize)
+		* [`PageSubtitleSize`](#pagesubtitlesize)
 		* [`BaseTextSize`](#basetextsize)
 		* [`BaseTextDecrement`](#basetextdecrement)
 		* [`ContentSplitDirection`](#contentsplitdirection)
@@ -209,7 +211,7 @@ The flat file format that md2pptx uses is Markdown. Using Markdown has further a
 * Markdown is compact; The files are tiny.
 * Markdown is used in popular sites, such as [Github](https://github.com).
 
-Every piece of text you use to create a Powerpoint presentation with md2pptx is valid Markdown - with very few exceptions. While it might not render exactly the same way put through another Markdown processor, it is generally equivalent. This is one of the key aims of md2pptx.
+Every piece of text you use to create a Powerpoint presentation with md2pptx is valid Markdown - [with very few exceptions](#deviations-from-standard-markdown). While it might not render exactly the same way put through another Markdown processor, it is generally equivalent. This is one of the key aims of md2pptx.
 
 One final advantage of the md2pptx approach is you can generate presentations without using PowerPoint itself. Indeed you can create presentations on machines where PowerPoint won't even run. All you need is to be able to run Python 3 and install python-pptx.
 
@@ -309,6 +311,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|3.5.1|25&nbsp;February&nbsp;2023|Added support for separately scaling second and subsequent slide title lines - with [`pageSubtitleSize`](#page-subtitle-size-pagesubtitlesize).|
 |3.5|18&nbsp;February&nbsp;2023|Added support for GraphViz .dot file rendering within triple backticks|
 |3.4.1|23&nbsp;October&nbsp;2022|Added support for a few more [slide transitions](#slide-transitions-transition): `wipe`&comma; `vortex`&comma; `fracture`&comma; `split`&comma; and `push`.|
 |3.4|16&nbsp;October&nbsp;2022|Added support for a small number of [slide transitions](#slide-transitions-transition).|
@@ -469,8 +472,6 @@ You can code multiple lines, as with [Presentation Title slides](#presentation-t
 
 Bullet slides use Markdown bulleted lists, which can be nested. This example shows two levels of nesting.
 
-The title of the slide is defined by coding a Markdown Heading Level 3.
-
 
 	### This Is A Bullet Slide
 
@@ -480,15 +481,20 @@ The title of the slide is defined by coding a Markdown Heading Level 3.
 	* Bullet Two
 	* Bullet Three
 
+The title of the slide is defined by coding a Markdown Heading Level 3 (`###`).
+
+**Note:** You can allow the title to spill onto a second line but it is better to break titles up using `<br/>`. Doing so enables md2pptx to layout slide contents below the title better. It also allows you to specify a different (probably) smaller font size for the second and subsequent lines of the title.
+
+
 Bulleted list items are introduced by an asterisk.
 
-**NOTE:** Some dialects of Markdown allow other bullet markers but md2pptx doesn't. You can be sure by coding `*` you have valid Markdown that md2pptx can also process correctly. For an explanation of why you have to stick to `*` see [here](#task-list-slides).
+**Note:** Some dialects of Markdown allow other bullet markers but md2pptx doesn't. You can be sure by coding `*` you have valid Markdown that md2pptx can also process correctly. For an explanation of why you have to stick to `*` see [here](#task-list-slides).
 
 To nest bullets use a tab character or 2 spaces to indent the sub-bullets. md2pptx doesn't have a limit on the level of nesting but Powerpoint probably does.
 
 Terminate the bulleted list slide with a blank line.
 
-**NOTE:** You can alter the number of spaces that represent each level of indenting. See [Specifying How Many Spaces Represent An Indentation Level With `IndentSpaces`](#specifying-how-many-spaces-represent-an-indentation-level-with-indentspaces). If you use tabs they will be converted to the the appropriate number of spaces internally.
+**Note:** You can alter the number of spaces that represent each level of indenting. See [Specifying How Many Spaces Represent An Indentation Level With `IndentSpaces`](#specifying-how-many-spaces-represent-an-indentation-level-with-indentspaces). If you use tabs they will be converted to the the appropriate number of spaces internally.
 
 #### Numbered List Items
 <a id="numbered-items"></a>
@@ -1238,7 +1244,7 @@ md2pptx will throw away HTML comments, rather than adding them to the output fil
 
 The one exception is the use of [Dynamic Metadata](#dynamic-metadata). md2pptx will honour these.
 
-**NOTE:** Other Markdown processors will copy the comment into the output file. Put nothing in the comments that is sensitive.
+**Note:** Other Markdown processors will copy the comment into the output file. Put nothing in the comments that is sensitive.
 
 ## Special Text Formatting
 <a id="special-text-formatting"></a>
@@ -1510,10 +1516,13 @@ As described in [Creating Slides](#creating-slides), md2pptx will populate the f
 The following sections describe each of the metadata keys.
 
 #### Title And Subtitle Font Sizes
+
+You can change the font sizes for titles and subtitles throughout the presentation.
+
 ##### Page Title Size - `pageTitleSize`
 <a id="page-title-size-pagetitlesize"></a>
 
-You can specify the point size of each slide that isn't a section divider or title slide. The size is specified in points.
+You can specify the point size of the first title line of each slide that isn't a section divider or title slide. The size is specified in points.
 
 Example:
 
@@ -1522,6 +1531,30 @@ Example:
 The default is 30 points.
 
 You can override this value on a slide-by-slide basis with [Dynamic PageTitleSize](#pagetitlesize-dynamic).
+
+**Notes:**
+
+1. The first title line is terminated by `<br/>`. There might be only one line in the title.
+1. When a title spills onto a second line that is not treated as a new title line.
+1. Lines after the first line can have a different font size. (See [`pageSubtitleSize`](#page-subtitle-size-pagesubtitlesize).)
+
+##### Page Subtitle Size - `pageSubtitleSize`
+<a id="page-subtitle-size-pagesubtitlesize"></a>
+
+You can specify the point size of the second and subsequent title lines of each slide that isn't a section divider or title slide. The size is specified in points.
+
+Example:
+
+	pageSubtitleSize: 22
+
+The default is 30 points (the same as [`pageTitleSize`](#page-title-size-pagetitlesize).)
+
+You can override this value on a slide-by-slide basis with [Dynamic PageSubtitleSize](#pagesubtitlesize-dynamic).
+
+**Notes:**
+
+1. The title lines are terminated by `<br/>`.
+1. When a title spills onto another line that is not treated as a new title line.
 
 ##### Section Title Size - `sectionTitleSize`
 <a id="section-title-size-sectiontitlesize"></a>
@@ -2749,6 +2782,13 @@ You can override the presentation [CodeBackground](#background-colour-codebackgr
 You can override the presentation [PageTitleSize](#page-title-size-pagetitlesize) metadata value - perhaps to allow room for more text in the title of a slide:
 
     <!-- md2pptx: pagetitlesize: 16 -->
+
+<a id="pagesubtitlesize-dynamic"></a>
+#### `PageSubtitleSize`
+
+You can override the presentation [PageSubtitleSize](#page-subtitle-size-pagesubtitlesize) metadata value - perhaps to allow room for more text in the title of a slide:
+
+    <!-- md2pptx: pagesubtitlesize: 14 -->
 
 <a id="basetextsize-dynamic"></a>
 #### `BaseTextSize`

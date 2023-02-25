@@ -36,7 +36,7 @@ Builds of this very documentation are checked that way.
 * Markdown is compact; The files are tiny.
 * Markdown is used in popular sites, such as [Github](https://github.com).
 
-Every piece of text you use to create a &pp; presentation with md2pptx is valid &md; - with very few exceptions. \
+Every piece of text you use to create a &pp; presentation with md2pptx is valid &md; - [with very few exceptions](#deviations-from-standard-markdown). \
 While it might not render exactly the same way put through another &md; processor, it is generally equivalent. \
 This is one of the key aims of md2pptx.
 
@@ -152,6 +152,7 @@ To quote from the python-pptx license statement:
 =colalign l r l
 =csv
 Level,Date,What
+3.5.1,25&nbsp;February&nbsp;2023,Added support for separately scaling second and subsequent slide title lines - with [`pageSubtitleSize`](#page-subtitle-size-pagesubtitlesize).
 3.5,18&nbsp;February&nbsp;2023,Added support for GraphViz .dot file rendering within triple backticks
 3.4.1,23&nbsp;October&nbsp;2022,Added support for a few more [slide transitions](#slide-transitions-transition): `wipe`&comma; `vortex`&comma; `fracture`&comma; `split`&comma; and `push`.
 3.4,16&nbsp;October&nbsp;2022,Added support for a small number of [slide transitions](#slide-transitions-transition).
@@ -323,8 +324,6 @@ You can code multiple lines, as with [Presentation Title slides](#presentation-t
 Bullet slides use &md; bulleted lists, which can be nested. \
 This example shows two levels of nesting.
 
-The title of the slide is defined by coding a &md; Heading Level 3.
-
 
 	### This Is A Bullet Slide
 
@@ -334,9 +333,18 @@ The title of the slide is defined by coding a &md; Heading Level 3.
 	* Bullet Two
 	* Bullet Three
 
+The title of the slide is defined by coding a &md; Heading Level 3 (`###`).
+
+**Note:** \
+You can allow the title to spill onto a second line but it is better to break titles up using `<br/>`. \
+Doing so enables md2pptx to layout slide contents below the title better. \
+It also allows you to specify a different (probably) smaller font size for the second and subsequent lines of the title.
+
+
 Bulleted list items are introduced by an asterisk.
 
-**NOTE:** Some dialects of &md; allow other bullet markers but md2pptx doesn't. \
+**Note:** \
+Some dialects of &md; allow other bullet markers but md2pptx doesn't. \
 You can be sure by coding `*` you have valid &md; that md2pptx can also process correctly. \
 For an explanation of why you have to stick to `*` see [here](#task-list-slides).
 
@@ -345,7 +353,8 @@ md2pptx doesn't have a limit on the level of nesting but &pp; probably does.
 
 Terminate the bulleted list slide with a blank line.
 
-**NOTE:** You can alter the number of spaces that represent each level of indenting. See [Specifying How Many Spaces Represent An Indentation Level With `IndentSpaces`](#specifying-how-many-spaces-represent-an-indentation-level-with-indentspaces). \
+**Note:** \
+You can alter the number of spaces that represent each level of indenting. See [Specifying How Many Spaces Represent An Indentation Level With `IndentSpaces`](#specifying-how-many-spaces-represent-an-indentation-level-with-indentspaces). \
 If you use tabs they will be converted to the the appropriate number of spaces internally.
 
 #### Numbered List Items
@@ -370,7 +379,8 @@ While the first will indeed be numbered "1" the second will be numbered "2", des
 
 Numbering with `1.` is actually a useful practice - as it makes it easier to reorder a numbered list (by moving the lines around).
 
-**Note:** You can mix numbered and bulleted items in a list.
+**Note:** \
+You can mix numbered and bulleted items in a list.
 
 ### Graphics, Video And Audio slides
 <a id="graphics-video-and-audio-slides"></a>
@@ -589,7 +599,8 @@ For the types of graphics supported see [Graphics File References](#graphics-fil
 
 For how to make such graphics clickable or have a tooltip see [Clickable Pictures](#clickable-pictures).
 
-**Note:** Regular Markdown processors don't support pictures in tables; They render the `|` characters literally. \
+**Note:** \
+Regular Markdown processors don't support pictures in tables; They render the `|` characters literally. \
 For this reason the vertical bars are optional.
 
 #### Special Case: Two By Two Grid Of Graphics
@@ -613,7 +624,8 @@ For the types of graphics supported see [Graphics File References](#graphics-fil
 
 For how to make such graphics clickable or have a tooltip see [Clickable Pictures](#clickable-pictures).
 
-**Note:** Regular Markdown processors don't support pictures in tables; They render the `|` characters literally. \
+**Note:** \
+Regular Markdown processors don't support pictures in tables; They render the `|` characters literally. \
 For this reason the vertical bars are optional.
 
 #### Special Case: Three Graphics On A Slide
@@ -658,7 +670,8 @@ For the types of graphics supported see [Graphics File References](#graphics-fil
 
 For how to make such graphics clickable or have a tooltip see [Clickable Pictures](#clickable-pictures).
 
-**Note:** Regular Markdown processors don't support pictures in tables; They render the `|` characters literally. \
+**Note:** \
+Regular Markdown processors don't support pictures in tables; They render the `|` characters literally. \
 For this reason the vertical bars are optional.
 
 #### Special Case: One Graphic Above Another
@@ -681,7 +694,8 @@ For the types of graphics supported see [Graphics File References](#graphics-fil
 
 For how to make such graphics clickable or have a tooltip see [Clickable Pictures](#clickable-pictures).
 
-**Note:** Regular Markdown processors don't support pictures in tables; They render the `|` characters literally. \
+**Note:** \
+Regular Markdown processors don't support pictures in tables; They render the `|` characters literally. \
 For this reason the vertical bars are optional.
 
 #### Multi-Column Table Cells
@@ -759,7 +773,8 @@ For example you might code `&#x2776;` to place &#x2776; next to a line of code. 
 You could then code the same thing in a table below the code fragment, where each row explains a line of code.
 
 
-**Note:** You can more precisely control how code slides are laid out and their colours with [Code Metadata](#code-metadata).
+**Note:** \
+You can more precisely control how code slides are laid out and their colours with [Code Metadata](#code-metadata).
 
 #### `<code>`
 
@@ -774,7 +789,8 @@ Surround the block of text by `<code>` and `</code`:
     }
     </code>
 
-**Note:** It, as in HTML, does not support `<span>` elements.
+**Note:** \
+It, as in HTML, does not support `<span>` elements.
 
 #### Triple Backticks (```)
 
@@ -789,7 +805,8 @@ Surround the block of text by them:
     }
     ```
 
-**Note:** It does not support `<span>` elements.
+**Note:** \
+It does not support `<span>` elements.
 
 <a id="special-processing-of-code-within-triple-backticks"></a>
 ##### Special Processing Of Code Within Triple Backticks
@@ -841,7 +858,8 @@ Each line of the code fragment - to be displayed in a monospace font - is indent
 	    for i in range(10):
 	        print(i)
 
-**Note:** It does not support `<span>` elements.
+**Note:** \
+It does not support `<span>` elements.
 
 #### `<pre>`
 
@@ -856,7 +874,8 @@ Surround the block of text by `<pre>` and `</pre`:
     }
     </pre>
 
-**Note:** It, as in HTML, **does** support `<span>` elements. \
+**Note:** \
+It, as in HTML, **does** support `<span>` elements. \
 This is the best way to provide syntax colouring. \
 You can use `style.fgcolor`, `style.bgcolor`, and `style.emphasis` to style the text. \
 To do this you use the `class` attribute:
@@ -996,7 +1015,8 @@ For those cases you can start a slide in a two basic ways:
 
 The most likely use case is for code slides, though you might continue a bulleted-list slide this way.
 
-**Note:** If you continue a numbered list onto a new slide its number will reset to 1.
+**Note:** \
+If you continue a numbered list onto a new slide its number will reset to 1.
 
 ### Using A Horizontal Rule
 
@@ -1189,7 +1209,8 @@ md2pptx will throw away HTML comments, rather than adding them to the output fil
 The one exception is the use of [Dynamic Metadata](#dynamic-metadata). \
 md2pptx will honour these.
 
-**NOTE:** Other &md; processors will copy the comment into the output file. \
+**Note:** \
+Other &md; processors will copy the comment into the output file. \
 Put nothing in the comments that is sensitive.
 
 ## Special Text Formatting
@@ -1488,10 +1509,13 @@ The one type of item that won't be removed is any Action Buttons. See [Sample Ma
 The following sections describe each of the metadata keys.
 
 #### Title And Subtitle Font Sizes
+
+You can change the font sizes for titles and subtitles throughout the presentation.
+
 ##### Page Title Size - `pageTitleSize`
 <a id="page-title-size-pagetitlesize"></a>
 
-You can specify the point size of each slide that isn't a section divider or title slide. \
+You can specify the point size of the first title line of each slide that isn't a section divider or title slide. \
 The size is specified in points.
 
 Example:
@@ -1501,6 +1525,31 @@ Example:
 The default is 30 points.
 
 You can override this value on a slide-by-slide basis with [Dynamic PageTitleSize](#pagetitlesize-dynamic).
+
+**Notes:**
+
+1. The first title line is terminated by `<br/>`. There might be only one line in the title.
+1. When a title spills onto a second line that is not treated as a new title line.
+1. Lines after the first line can have a different font size. (See [`pageSubtitleSize`](#page-subtitle-size-pagesubtitlesize).)
+
+##### Page Subtitle Size - `pageSubtitleSize`
+<a id="page-subtitle-size-pagesubtitlesize"></a>
+
+You can specify the point size of the second and subsequent title lines of each slide that isn't a section divider or title slide. \
+The size is specified in points.
+
+Example:
+
+	pageSubtitleSize: 22
+
+The default is 30 points (the same as [`pageTitleSize`](#page-title-size-pagetitlesize).)
+
+You can override this value on a slide-by-slide basis with [Dynamic PageSubtitleSize](#pagesubtitlesize-dynamic).
+
+**Notes:**
+
+1. The title lines are terminated by `<br/>`.
+1. When a title spills onto another line that is not treated as a new title line.
 
 ##### Section Title Size - `sectionTitleSize`
 <a id="section-title-size-sectiontitlesize"></a>
@@ -1744,7 +1793,8 @@ The values you can use for `BoldColour` and `ItalicColour` are:
 
 As you can probably guess, these are standard values for python-pptx and, ultimately, PowerPoint.
 
-**Note:** For the values you can use any capitalisation you like (or none). e.g. `ItalicColor: dark 1`.
+**Note:** \
+For the values you can use any capitalisation you like (or none). e.g. `ItalicColor: dark 1`.
 
 #### Specifying Bold And Italic Text Effects With `BoldBold` And `ItalicItalic`
 <a id="specifying-bold-and-italic-text-effects-with-boldbold-and-italicitalic"></a>
@@ -1859,7 +1909,8 @@ To remove it specify:
 
 The default is `no`.
 
-**Note:** If you don't have a Processing Summary slide - perhaps because the slide master you used doesn't have a slide - the first slide would still be removed if you specified `removeFirstSlide: yes`. \
+**Note:** \
+If you don't have a Processing Summary slide - perhaps because the slide master you used doesn't have a slide - the first slide would still be removed if you specified `removeFirstSlide: yes`. \
 This is probably not what you want to have happen.
 
 #### Table Metadata
@@ -1907,7 +1958,8 @@ The default is `addTableLines: no` which doesn't add any table lines.
 
 You can override this metadata item with [Dynamic Metadata](#addtablelines-dynamic).
 
-**Note:** This capability never removes lines - for example if they are present in the template presentation.
+**Note:** \
+This capability never removes lines - for example if they are present in the template presentation.
 
 <a id="adding-lines-after-table-rows-and-columns-with-addtablerowlines-and-addtablecolumnlines"></a>
 ##### Adding Lines After Table Rows And Columns With `addTableRowLines` And `addTableColumnLines`
@@ -1927,7 +1979,8 @@ specifies tables will have horizontal lines below the first row (often a header)
 
 You can override both these metadata items with [Dynamic Metadata](#addtablecolumnlines-and-addtablerowlines-dynamic).
 
-**Note:** This capability never removes lines - for example if they are present in the template presentation.
+**Note:** \
+This capability never removes lines - for example if they are present in the template presentation.
 
 <a id="specifying-what-the-added-table-lines-look-like-with-addtablelinecolour-addtablelinecount-and-addtablelinewidth"></a>
 ##### Specifying What The Added Table Lines Look Like With `addTableLineColour`, `addTableLineCount` and `addTableLineWidth`
@@ -2173,7 +2226,8 @@ You can specify a number of things about the bottom of each slide:
 * You can specify how much space to reserve at the bottom of the slide for things like slide numbers - with [`NumbersHeight`](#specifying-how-much-space-to-reserve-for-slide-numbers-with-numbersheight).
 * You can add "pseudo-footer" information in three places at the bottom of the slide. These are not genuine footer elements but are more flexible. See [Specifying Footer Text](#specifying-footer-text).
 
-**Note:** This user guide will use the term "footer" rather than "pseudo-footer".
+**Note:** \
+This user guide will use the term "footer" rather than "pseudo-footer".
 
 ##### Slide Numbers - `numbers`
 <a id="slide-numbers-numbers"></a>
@@ -2295,7 +2349,8 @@ To achieve this demotion you only need to specify the top level in the slide hie
 
 The other heading levels will be adjusted accordingly.
 
-**Note:** You obviously need to code the Title Slide at Heading Level 2, for example.
+**Note:** \
+You obviously need to code the Title Slide at Heading Level 2, for example.
 
 <a id="slides-with-multiple-content-blocks"></a>
 #### Slides With Multiple Content Blocks
@@ -2448,7 +2503,8 @@ If you create a "Plain Style" &TOC; slide, it will look something like this:
 <img src="https://raw.githubusercontent.com/MartinPacker/md2pptx/master/plainTOC.png" />
 </div>
 
-**Note:** With Plain Style, Section slides are unaffected; \
+**Note:** \
+With Plain Style, Section slides are unaffected; \
 They are rendered as if no &TOC; functions were used.
 
 ##### Table Of Contents Style - `tocStyle`
@@ -2482,7 +2538,8 @@ Enable live links by coding
 
 	tocLinks: yes
 
-**Note:** You cannot control the colour of links in Powerpoint. \
+**Note:** \
+You cannot control the colour of links in Powerpoint. \
 For that reason you might need to change the background colour of items using [TOCItemColour](#table-of-contents-item-colour-tocitemcolour).
 
 
@@ -2517,7 +2574,8 @@ If you don't specify this the default Powerpoint background colour for shapes is
 
 This option was introduced because when [live links](#table-of-contents-live-links-toclinks) are used in &TOC; and Section slides the link text might be nearly invisible.
 
-**Note:** This option doesn't affect the background colour of the highlighted item on a Section slide; That remains unfilled.
+**Note:** \
+This option doesn't affect the background colour of the highlighted item on a Section slide; That remains unfilled.
 
 ##### Table Of Contents Row Gap - `TOCRowGap`
 <a id="table-of-contents-row-gap-tocrowgap"></a>
@@ -2664,7 +2722,8 @@ Here are the values you can specify for the metadata:
 
 If you dynamically change a metadata value the new value will remain in effect for the remainder of the presentation, unless changed again.
 
-**Note:** After tweaking a slide you might well want to revert to your presentation's overall value (or even the md2pptx default). \
+**Note:** \
+After tweaking a slide you might well want to revert to your presentation's overall value (or even the md2pptx default). \
 Instead of this you might use `prev` or`pop`, though these are destructive.
 
 #### Tables
@@ -2824,6 +2883,13 @@ You can override the presentation [CodeBackground](#background-colour-codebackgr
 You can override the presentation [PageTitleSize](#page-title-size-pagetitlesize) metadata value - perhaps to allow room for more text in the title of a slide:
 
     <!-- md2pptx: pagetitlesize: 16 -->
+
+<a id="pagesubtitlesize-dynamic"></a>
+#### `PageSubtitleSize`
+
+You can override the presentation [PageSubtitleSize](#page-subtitle-size-pagesubtitlesize) metadata value - perhaps to allow room for more text in the title of a slide:
+
+    <!-- md2pptx: pagesubtitlesize: 14 -->
 
 <a id="basetextsize-dynamic"></a>
 #### `BaseTextSize`
