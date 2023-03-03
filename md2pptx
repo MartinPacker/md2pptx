@@ -21,7 +21,7 @@ from pptx.dml.color import RGBColor, MSO_THEME_COLOR
 from pptx.enum.text import MSO_AUTO_SIZE, PP_ALIGN
 from pptx.enum.shapes import PP_PLACEHOLDER
 from pptx.enum.shapes import MSO_SHAPE, MSO_CONNECTOR
-from pptx.enum.text import MSO_ANCHOR, PP_ALIGN
+from pptx.enum.text import MSO_ANCHOR
 from pptx.enum.action import PP_ACTION
 from pptx.enum.dml import MSO_PATTERN
 from pptx.dml.color import RGBColor
@@ -75,8 +75,8 @@ except:
 	have_graphviz = False
 
 
-md2pptx_level = "3.5.1"
-md2pptx_date = "25 February, 2023"
+md2pptx_level = "3.5.1+"
+md2pptx_date = "3 March, 2023"
 
 namespaceURL = {
     "mc" : "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -1191,15 +1191,27 @@ def formatTitle(presentation, slide, titleText, titleFontSize, subtitleFontSize)
     flattenedTitleLines = [] 
 
     # Add the first line of the title text to the first paragraph
+    firstTitleParagraph = title.text_frame.paragraphs[0]
     flattenedTitleLines.append(
-        addFormattedText(title.text_frame.paragraphs[0], titleLines[0])
+        addFormattedText(firstTitleParagraph, titleLines[0])
     )
 
     # Set anchor to top
     title.text_frame.vertical_anchor = MSO_ANCHOR.TOP
 
+    paragraphAlignment = PP_ALIGN.LEFT
+	
     # Set this paragraph's font size using pageTitleSize
-    title.text_frame.paragraphs[0].font.size = Pt(titleFontSize)
+    firstTitleParagraph.font.size = Pt(titleFontSize)
+
+    # No space before the paragraph
+    firstTitleParagraph.space_after = Pt(0)
+
+	# Set first title paragraph's alignment
+    firstTitleParagraph.alignment = paragraphAlignment
+	
+    if subtitleFontSize == "same":
+        subtitleFontSize = titleFontSize
 
     # If there are additional title lines then add them
     for lineNumber, titleLine in enumerate(titleLines[1:]):
@@ -1211,8 +1223,15 @@ def formatTitle(presentation, slide, titleText, titleFontSize, subtitleFontSize)
             addFormattedText(newPara, titleLine)
         )
         
+        # No space before the paragraph
+        newPara.space_before = Pt(0)
+        
         # Set this paragraph's font size using pageSubtitleSize
         newPara.font.size = Pt(subtitleFontSize)
+
+		# Set this paragraph's alignment
+        newPara.alignment = paragraphAlignment
+
 
     # Note: Working off pageTitleSize and pageSubtitleSize
     if processingOptions.getCurrentOption("adjustTitles"):
@@ -4719,7 +4738,7 @@ processingOptions.setOptionValues("tempDir", None)
 processingOptions.setOptionValuesArray(
     [
         ["pageTitleSize", 30],
-        ["pageSubtitleSize", 30],
+        ["pageSubtitleSize", "same"],
     ]
 )
 
@@ -4972,7 +4991,10 @@ for line in metadata_lines:
         processingOptions.setOptionValues(name, float(value))
 
     elif name == "pagesubtitlesize":
-        processingOptions.setOptionValues(name, float(value))
+        if value == "same":
+            processingOptions.setOptionValues(name, value)
+        else:
+            processingOptions.setOptionValues(name, float(value))
 
     elif name == "basetextsize":
         processingOptions.setOptionValues(name, float(value))
@@ -5602,8 +5624,14 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
             if (metadataKey != "") & (metadataValue != ""):
                 # Valid metadata pair so parse key / value - and apply if valid
                 
+                if (metadataKey == "pagesubtitlesize") & (metadataValue == "same"):
+                    # Cards' layout - horizontal or vertical
+                    processingOptions.dynamicallySetOption(
+                        metadataKey, metadataValue, ""
+                    )
+                
                 # Floating point values where metadata key matches directly
-                if metadataKey in [
+                elif metadataKey in [
                     # Font size for tables
                     "compacttables",
                     
