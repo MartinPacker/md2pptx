@@ -1429,6 +1429,11 @@ THE SOFTWARE.
 </thead>
 <tbody>
 <tr>
+<td align="left">3.5.1+</td>
+<td align="right">3&nbsp;March&nbsp;2023</td>
+<td align="left"><a href="#page-subtitle-size-pagesubtitlesize"><code>pageSubtitleSize</code></a> supports <code>same</code> meaning &ldquo;same font size as first line&rdquo;.</td>
+</tr>
+<tr>
 <td align="left">3.5.1</td>
 <td align="right">25&nbsp;February&nbsp;2023</td>
 <td align="left">Added support for separately scaling second and subsequent slide title lines - with <a href="#page-subtitle-size-pagesubtitlesize"><code>pageSubtitleSize</code></a>.</td>
@@ -2862,6 +2867,7 @@ Keys are case insensitive. In this User Guide they are capitalised to aid compre
 <ol>
 <li>The title lines are terminated by <code>&lt;br/&gt;</code>.</li>
 <li>When a title spills onto another line that is not treated as a new title line.</li>
+<li>You can specify <code>same</code> and it will match the <a href="#page-title-size-pagetitlesize"><code>pageTitleSize</code></a> value.</li>
 </ol>
 <h5 id="section-title-size-sectiontitlesize">Section Title Size - <code>sectionTitleSize</code><a class="headerlink" href="#section-title-size-sectiontitlesize" title="Permanent link"></a></h5>
 <p><a id="section-title-size-sectiontitlesize"></a></p>
@@ -3756,6 +3762,7 @@ The default value is <code>no</code>.</p>
 <p>You can override the presentation <a href="#page-subtitle-size-pagesubtitlesize">PageSubtitleSize</a> metadata value - perhaps to allow room for more text in the title of a slide:</p>
 <pre><code>&lt;!-- md2pptx: pagesubtitlesize: 14 --&gt;
 </code></pre>
+<p>You can specify <code>same</code> and it will match the <a href="#page-title-size-pagetitlesize"><code>pageTitleSize</code></a> value.</p>
 <p><a id="basetextsize-dynamic"></a></p>
 <h4 id="basetextsize"><code>BaseTextSize</code><a class="headerlink" href="#basetextsize" title="Permanent link"></a></h4>
 <p>You can override the presentation <a href="#specifying-text-size-with-basetextsize-and-basetextdecrement">BaseTextSize</a> metadata value. For example:</p>

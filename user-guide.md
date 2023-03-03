@@ -311,6 +311,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|3.5.1+|3&nbsp;March&nbsp;2023|[`pageSubtitleSize`](#page-subtitle-size-pagesubtitlesize) supports `same` meaning "same font size as first line".|
 |3.5.1|25&nbsp;February&nbsp;2023|Added support for separately scaling second and subsequent slide title lines - with [`pageSubtitleSize`](#page-subtitle-size-pagesubtitlesize).|
 |3.5|18&nbsp;February&nbsp;2023|Added support for GraphViz .dot file rendering within triple backticks|
 |3.4.1|23&nbsp;October&nbsp;2022|Added support for a few more [slide transitions](#slide-transitions-transition): `wipe`&comma; `vortex`&comma; `fracture`&comma; `split`&comma; and `push`.|
@@ -1555,6 +1556,7 @@ You can override this value on a slide-by-slide basis with [Dynamic PageSubtitle
 
 1. The title lines are terminated by `<br/>`.
 1. When a title spills onto another line that is not treated as a new title line.
+1. You can specify `same` and it will match the [`pageTitleSize`](#page-title-size-pagetitlesize) value.
 
 ##### Section Title Size - `sectionTitleSize`
 <a id="section-title-size-sectiontitlesize"></a>
@@ -2789,6 +2791,8 @@ You can override the presentation [PageTitleSize](#page-title-size-pagetitlesize
 You can override the presentation [PageSubtitleSize](#page-subtitle-size-pagesubtitlesize) metadata value - perhaps to allow room for more text in the title of a slide:
 
     <!-- md2pptx: pagesubtitlesize: 14 -->
+
+You can specify `same` and it will match the [`pageTitleSize`](#page-title-size-pagetitlesize) value.
 
 <a id="basetextsize-dynamic"></a>
 #### `BaseTextSize`
