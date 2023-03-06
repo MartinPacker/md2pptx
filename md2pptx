@@ -76,7 +76,7 @@ except:
 
 
 md2pptx_level = "3.5.1+"
-md2pptx_date = "3 March, 2023"
+md2pptx_date = "6 March, 2023"
 
 namespaceURL = {
     "mc" : "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -1170,6 +1170,15 @@ def getContentRect(presentation, slide, topOfContent, margin):
 # flattened title
 def formatTitle(presentation, slide, titleText, titleFontSize, subtitleFontSize):
     marginBase = processingOptions.getCurrentOption("marginBase")
+    pageTitleAlign = processingOptions.getCurrentOption("pagetitlealign")
+    
+    # Convert page title alignment text value to constant
+    if pageTitleAlign == "left":
+        titleAlignment = PP_ALIGN.LEFT
+    elif pageTitleAlign == "right":
+        titleAlignment = PP_ALIGN.RIGHT
+    else:
+        titleAlignment = PP_ALIGN.CENTER
 
     # Find title
     title = findTitleShape(slide)
@@ -1198,8 +1207,6 @@ def formatTitle(presentation, slide, titleText, titleFontSize, subtitleFontSize)
 
     # Set anchor to top
     title.text_frame.vertical_anchor = MSO_ANCHOR.TOP
-
-    paragraphAlignment = PP_ALIGN.LEFT
 	
     # Set this paragraph's font size using pageTitleSize
     firstTitleParagraph.font.size = Pt(titleFontSize)
@@ -1208,7 +1215,7 @@ def formatTitle(presentation, slide, titleText, titleFontSize, subtitleFontSize)
     firstTitleParagraph.space_after = Pt(0)
 
 	# Set first title paragraph's alignment
-    firstTitleParagraph.alignment = paragraphAlignment
+    firstTitleParagraph.alignment = titleAlignment
 	
     if subtitleFontSize == "same":
         subtitleFontSize = titleFontSize
@@ -1230,8 +1237,7 @@ def formatTitle(presentation, slide, titleText, titleFontSize, subtitleFontSize)
         newPara.font.size = Pt(subtitleFontSize)
 
 		# Set this paragraph's alignment
-        newPara.alignment = paragraphAlignment
-
+        newPara.alignment = titleAlignment
 
     # Note: Working off pageTitleSize and pageSubtitleSize
     if processingOptions.getCurrentOption("adjustTitles"):
@@ -2589,6 +2595,7 @@ def createContentSlide(presentation, slideNumber, slideInfo):
 
     # Add slide title
     titleText = slideInfo.titleText
+
     slideTitleBottom, title, flattenedTitle = formatTitle(
         presentation,
         slide,
@@ -4693,6 +4700,7 @@ for line in input_file:
 
         else:
             inHTML = True
+
         continue
 
     elif line.startswith("```"):
@@ -4739,6 +4747,7 @@ processingOptions.setOptionValuesArray(
     [
         ["pageTitleSize", 30],
         ["pageSubtitleSize", "same"],
+        ["pageTitleAlign","left"],
     ]
 )
 
@@ -4989,6 +4998,19 @@ for line in metadata_lines:
 
     elif name == "pagetitlesize":
         processingOptions.setOptionValues(name, float(value))
+
+    elif name == "pagetitlealign":
+        if value in ["left", "right", "center", "centre", "l", "r", "c"]:
+            if value[:1] == 'l':
+                processingOptions.setOptionValues(name, "left")
+            elif value[:1] == 'r':
+                processingOptions.setOptionValues(name, "right")
+            elif value[:1] == 'c':
+                processingOptions.setOptionValues(name, "center")
+        else:
+            print(
+                f'PageTitleAlign value \'{value}\' unsupported. "left", "right", "centre", or "center" required.'
+            )
 
     elif name == "pagesubtitlesize":
         if value == "same":
