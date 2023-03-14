@@ -71,13 +71,14 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 	* [Specifying Metadata](#specifying-metadata)
 		* [Processing Summary](#processing-summary)
 	* [Metadata Keys](#metadata-keys)
-		* [Title And Subtitle Font Sizes](#title-and-subtitle-font-sizes)
+		* [Title And Subtitle Font Sizes And Alignment](#title-and-subtitle-font-sizes-and-alignment)
 			* [Page Title Size - `pageTitleSize`](#page-title-size-pagetitlesize)
 			* [Page Subtitle Size - `pageSubtitleSize`](#page-subtitle-size-pagesubtitlesize)
 			* [Section Title Size - `sectionTitleSize`](#section-title-size-sectiontitlesize)
 			* [Section Subtitle Size - `sectionSubtitleSize`](#section-subtitle-size-sectionsubtitlesize)
 			* [Presentation Title Size - `presTitleSize`](#presentation-title-size-prestitlesize)
 			* [Presentation Subtitle Size - `presSubtitleSize`](#presentation-subtitle-size-pressubtitlesize)
+			* [Page Title Alignment `pagetitlealign`](#page-title-alignment-pagetitlealign)
 		* [Monospace Font - `monoFont`](#monospace-font-monofont)
 		* [Margin size - `marginBase` and `tableMargin`](#margin-size-marginbase-and-tablemargin)
 		* [Controlling Adjusting Title Positions And Sizes - `AdjustTitles`](#controlling-adjusting-title-positions-and-sizes-adjusttitles)
@@ -311,7 +312,8 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
-|3.5.1+|3&nbsp;March&nbsp;2023|[`pageSubtitleSize`](#page-subtitle-size-pagesubtitlesize) supports `same` meaning "same font size as first line".|
+|3.5.2|14&nbsp;March&nbsp;2023|Added [`pageTitleAlign`](#page-title-alignment-pagetitlealign) - for content page title alignment.|
+|3.5.1|3&nbsp;March&nbsp;2023|[`pageSubtitleSize`](#page-subtitle-size-pagesubtitlesize) supports `same` meaning "same font size as first line".|
 |3.5.1|25&nbsp;February&nbsp;2023|Added support for separately scaling second and subsequent slide title lines - with [`pageSubtitleSize`](#page-subtitle-size-pagesubtitlesize).|
 |3.5|18&nbsp;February&nbsp;2023|Added support for GraphViz .dot file rendering within triple backticks|
 |3.4.1|23&nbsp;October&nbsp;2022|Added support for a few more [slide transitions](#slide-transitions-transition): `wipe`&comma; `vortex`&comma; `fracture`&comma; `split`&comma; and `push`.|
@@ -1516,9 +1518,11 @@ As described in [Creating Slides](#creating-slides), md2pptx will populate the f
 
 The following sections describe each of the metadata keys.
 
-#### Title And Subtitle Font Sizes
+#### Title And Subtitle Font Sizes And Alignment
 
 You can change the font sizes for titles and subtitles throughout the presentation.
+
+You can change the alignment for titles of content slides.
 
 ##### Page Title Size - `pageTitleSize`
 <a id="page-title-size-pagetitlesize"></a>
@@ -1557,6 +1561,7 @@ You can override this value on a slide-by-slide basis with [Dynamic PageSubtitle
 1. The title lines are terminated by `<br/>`.
 1. When a title spills onto another line that is not treated as a new title line.
 1. You can specify `same` and it will match the [`pageTitleSize`](#page-title-size-pagetitlesize) value.
+
 
 ##### Section Title Size - `sectionTitleSize`
 <a id="section-title-size-sectiontitlesize"></a>
@@ -1605,6 +1610,23 @@ Example:
 	presSubtitleSize: 24
 
 The default is 28 points.
+
+##### Page Title Alignment `pagetitlealign`
+<a id="page-title-alignment-pagetitlealign"></a>
+
+You can change the horizontal alignment of content pages using `pageTitleAlign`. Alignment can be:
+
+* Left - with `left` or `l`
+* Right - with `right` or `r`
+* Center - with `center`, `centre` or `c`
+
+The default is `left`.
+
+Example:
+
+	pageTitleAlign: center
+
+centres content page titles.
 
 #### Monospace Font - `monoFont`
 <a id="monospace-font-monofont"></a>

@@ -5,8 +5,8 @@ mdpre Markdown Preprocessor v0.6.5 (17 February, 2023)
 Def mdpre_date = 17 February, 2023
 Def mdpre_level = 0.6.5
 Def userid = martinpacker
-Def time = 12&colon;58
-Def date = 3 March&comma; 2023
+Def time = 17&colon;42
+Def date = 14 March&comma; 2023
 Def TOC = Table Of Contents
 Def md = Markdown
 Def pp = Powerpoint
@@ -84,13 +84,14 @@ CSV Stop
 ..... .....  Specifying Metadata
 ..... ..... .....  Processing Summary
 ..... .....  Metadata Keys
-..... ..... .....  Title And Subtitle Font Sizes
+..... ..... .....  Title And Subtitle Font Sizes And Alignment
 ..... ..... ..... .....  Page Title Size - `pageTitleSize`
 ..... ..... ..... .....  Page Subtitle Size - `pageSubtitleSize`
 ..... ..... ..... .....  Section Title Size - `sectionTitleSize`
 ..... ..... ..... .....  Section Subtitle Size - `sectionSubtitleSize`
 ..... ..... ..... .....  Presentation Title Size - `presTitleSize`
 ..... ..... ..... .....  Presentation Subtitle Size - `presSubtitleSize`
+..... ..... ..... .....  Page Title Alignment `pagetitlealign`
 ..... ..... .....  Monospace Font - `monoFont`
 ..... ..... .....  Margin size - `marginBase` and `tableMargin`
 ..... ..... .....  Controlling Adjusting Title Positions And Sizes - `AdjustTitles`

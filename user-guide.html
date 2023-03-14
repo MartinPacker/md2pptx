@@ -1170,13 +1170,14 @@ body .markdown-body
 </ul>
 </li>
 <li><a href="#metadata-keys">Metadata Keys</a><ul>
-<li><a href="#title-and-subtitle-font-sizes">Title And Subtitle Font Sizes</a><ul>
+<li><a href="#title-and-subtitle-font-sizes-and-alignment">Title And Subtitle Font Sizes And Alignment</a><ul>
 <li><a href="#page-title-size-pagetitlesize">Page Title Size - <code>pageTitleSize</code></a></li>
 <li><a href="#page-subtitle-size-pagesubtitlesize">Page Subtitle Size - <code>pageSubtitleSize</code></a></li>
 <li><a href="#section-title-size-sectiontitlesize">Section Title Size - <code>sectionTitleSize</code></a></li>
 <li><a href="#section-subtitle-size-sectionsubtitlesize">Section Subtitle Size - <code>sectionSubtitleSize</code></a></li>
 <li><a href="#presentation-title-size-prestitlesize">Presentation Title Size - <code>presTitleSize</code></a></li>
 <li><a href="#presentation-subtitle-size-pressubtitlesize">Presentation Subtitle Size - <code>presSubtitleSize</code></a></li>
+<li><a href="#page-title-alignment-pagetitlealign">Page Title Alignment <code>pagetitlealign</code></a></li>
 </ul>
 </li>
 <li><a href="#monospace-font-monofont">Monospace Font - <code>monoFont</code></a></li>
@@ -1429,7 +1430,12 @@ THE SOFTWARE.
 </thead>
 <tbody>
 <tr>
-<td align="left">3.5.1+</td>
+<td align="left">3.5.2</td>
+<td align="right">14&nbsp;March&nbsp;2023</td>
+<td align="left">Added <a href="#page-title-alignment-pagetitlealign"><code>pageTitleAlign</code></a> - for content page title alignment.</td>
+</tr>
+<tr>
+<td align="left">3.5.1</td>
 <td align="right">3&nbsp;March&nbsp;2023</td>
 <td align="left"><a href="#page-subtitle-size-pagesubtitlesize"><code>pageSubtitleSize</code></a> supports <code>same</code> meaning &ldquo;same font size as first line&rdquo;.</td>
 </tr>
@@ -2839,8 +2845,9 @@ Keys are case insensitive. In this User Guide they are capitalised to aid compre
 <h3 id="metadata-keys">Metadata Keys<a class="headerlink" href="#metadata-keys" title="Permanent link"></a></h3>
 <p><a id="metadata-keys"></a></p>
 <p>The following sections describe each of the metadata keys.</p>
-<h4 id="title-and-subtitle-font-sizes">Title And Subtitle Font Sizes<a class="headerlink" href="#title-and-subtitle-font-sizes" title="Permanent link"></a></h4>
+<h4 id="title-and-subtitle-font-sizes-and-alignment">Title And Subtitle Font Sizes And Alignment<a class="headerlink" href="#title-and-subtitle-font-sizes-and-alignment" title="Permanent link"></a></h4>
 <p>You can change the font sizes for titles and subtitles throughout the presentation.</p>
+<p>You can change the alignment for titles of content slides.</p>
 <h5 id="page-title-size-pagetitlesize">Page Title Size - <code>pageTitleSize</code><a class="headerlink" href="#page-title-size-pagetitlesize" title="Permanent link"></a></h5>
 <p><a id="page-title-size-pagetitlesize"></a></p>
 <p>You can specify the point size of the first title line of each slide that isn&rsquo;t a section divider or title slide. The size is specified in points.</p>
@@ -2899,6 +2906,19 @@ Keys are case insensitive. In this User Guide they are capitalised to aid compre
 <pre><code>presSubtitleSize: 24
 </code></pre>
 <p>The default is 28 points.</p>
+<h5 id="page-title-alignment-pagetitlealign">Page Title Alignment <code>pagetitlealign</code><a class="headerlink" href="#page-title-alignment-pagetitlealign" title="Permanent link"></a></h5>
+<p><a id="page-title-alignment-pagetitlealign"></a></p>
+<p>You can change the horizontal alignment of content pages using <code>pageTitleAlign</code>. Alignment can be:</p>
+<ul>
+<li>Left - with <code>left</code> or <code>l</code></li>
+<li>Right - with <code>right</code> or <code>r</code></li>
+<li>Center - with <code>center</code>, <code>centre</code> or <code>c</code></li>
+</ul>
+<p>The default is <code>left</code>.</p>
+<p>Example:</p>
+<pre><code>pageTitleAlign: center
+</code></pre>
+<p>centres content page titles.</p>
 <h4 id="monospace-font-monofont">Monospace Font - <code>monoFont</code><a class="headerlink" href="#monospace-font-monofont" title="Permanent link"></a></h4>
 <p><a id="monospace-font-monofont"></a></p>
 <p>You can specify which font to use for monospaced text - such as on <a href="#code-slides">code slides</a>.</p>
