@@ -75,8 +75,8 @@ except:
 	have_graphviz = False
 
 
-md2pptx_level = "3.5.2"
-md2pptx_date = "14 March, 2023"
+md2pptx_level = "3.5.2+"
+md2pptx_date = "16 March, 2023"
 
 namespaceURL = {
     "mc" : "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -2931,6 +2931,8 @@ def createListBlock(slideInfo, slide, renderingRectangle):
 
         if cardBorderWidth > 0:
             lf.width = Pt(cardBorderWidth)
+        elif cardBorderWidth == 0:
+            lf.fill.background()
 
         if cardShadow:
             createShadow(cardBackgroundShape)
