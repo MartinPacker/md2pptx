@@ -2687,6 +2687,7 @@ def createListBlock(slideInfo, slide, renderingRectangle):
     cardTitleSize = processingOptions.getCurrentOption("cardtitlesize")
     cardBorderWidth = processingOptions.getCurrentOption("cardborderwidth")
     cardBorderColour = processingOptions.getCurrentOption("cardbordercolour")
+    cardTitleColour = processingOptions.getCurrentOption("cardtitlecolour")
     cardColours = processingOptions.getCurrentOption("cardcolour")
     marginBase = processingOptions.getCurrentOption("marginBase")
     pageTitleSize = processingOptions.getCurrentOption("pageTitleSize")
@@ -2911,6 +2912,10 @@ def createListBlock(slideInfo, slide, renderingRectangle):
         # Position card title
         cardTitleShape.top = cardTop[c]
         cardTitleShape.height = cardTitleHeight
+        
+        # Colour the title - if cardTitleColour specified
+        if cardTitleColour != "":
+           cardTitleShape.text_frame.paragraphs[0].font.color.theme_color = cardTitleColour
 
         # Calculate positions and heights within card background of body
         if cardTitlePosition == "above":
@@ -4839,6 +4844,7 @@ processingOptions.setOptionValuesArray(
         ["cardTitleSize", 0],
         ["cardBorderWidth", 0],
         ["cardBorderColour", ""],
+        ["cardTitleColour", ""],
         ["cardColour", [""]],
     ]
 )
@@ -5156,6 +5162,9 @@ for line in metadata_lines:
 
     elif (name == "cardbordercolour") | (name == "cardbordercolor"):
         processingOptions.setOptionValues("cardBorderColour", parseThemeColour(value))
+
+    elif (name == "cardtitlecolour") | (name == "cardtitlecolor"):
+        processingOptions.setOptionValues("cardTitleColour", parseThemeColour(value))
 
     elif name == "cardborderwidth":
         processingOptions.setOptionValues(name, float(value))
