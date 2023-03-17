@@ -2687,7 +2687,7 @@ def createListBlock(slideInfo, slide, renderingRectangle):
     cardTitleSize = processingOptions.getCurrentOption("cardtitlesize")
     cardBorderWidth = processingOptions.getCurrentOption("cardborderwidth")
     cardBorderColour = processingOptions.getCurrentOption("cardbordercolour")
-    cardColour = processingOptions.getCurrentOption("cardcolour")
+    cardColours = processingOptions.getCurrentOption("cardcolour")
     marginBase = processingOptions.getCurrentOption("marginBase")
     pageTitleSize = processingOptions.getCurrentOption("pageTitleSize")
     pageSubtitleSize = processingOptions.getCurrentOption("pageSubtitleSize")
@@ -2880,10 +2880,10 @@ def createListBlock(slideInfo, slide, renderingRectangle):
             fill.background()
 
             # Fill in card's background - if necessary
-            if (cardColour != "") & (cardShape != "line"):
+            if (cardColours[0] != "") & (cardShape != "line"):
                 fill = cardBackgroundShape.fill
                 fill.solid()
-                fill.fore_color.theme_color = cardColour
+                fill.fore_color.theme_color = cardColours[c % len(cardColours)]
 
     # Adjust bullets shape height - and calculate verticals for any cards
 
@@ -4839,7 +4839,7 @@ processingOptions.setOptionValuesArray(
         ["cardTitleSize", 0],
         ["cardBorderWidth", 0],
         ["cardBorderColour", ""],
-        ["cardColour", ""],
+        ["cardColour", [""]],
     ]
 )
 
@@ -5150,7 +5150,9 @@ for line in metadata_lines:
         processingOptions.setOptionValues("italicColour", parseThemeColour(value))
 
     elif (name == "cardcolour") | (name == "cardcolor"):
-        processingOptions.setOptionValues("cardColour", parseThemeColour(value))
+        cardColours = value.split(",")
+        valueArray = [parseThemeColour(v.strip()) for v in cardColours]
+        processingOptions.setOptionValues("cardColour", valueArray)
 
     elif (name == "cardbordercolour") | (name == "cardbordercolor"):
         processingOptions.setOptionValues("cardBorderColour", parseThemeColour(value))
