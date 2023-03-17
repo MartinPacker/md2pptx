@@ -76,7 +76,7 @@ except:
 
 
 md2pptx_level = "3.5.2+"
-md2pptx_date = "16 March, 2023"
+md2pptx_date = "17 March, 2023"
 
 namespaceURL = {
     "mc" : "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -2860,6 +2860,11 @@ def createListBlock(slideInfo, slide, renderingRectangle):
                 )
 
             cardBackgroundShapes.append(cardBackgroundShape)
+
+            if cardShape == "line":
+                cardBackgroundShape.fill.background()
+
+            
             sendToBack(slide.shapes, cardBackgroundShape)
 
             # Card shape modeled on bulleted list
@@ -2875,7 +2880,7 @@ def createListBlock(slideInfo, slide, renderingRectangle):
             fill.background()
 
             # Fill in card's background - if necessary
-            if cardColour != "":
+            if (cardColour != "") & (cardShape != "line"):
                 fill = cardBackgroundShape.fill
                 fill.solid()
                 fill.fore_color.theme_color = cardColour
@@ -2916,6 +2921,29 @@ def createListBlock(slideInfo, slide, renderingRectangle):
             cardBackgroundShape.top = cardTop[c]
             cardBodyHeight = cardHeight
             cardBackgroundShape.height = cardBodyHeight
+            
+            if (c > 0) & (cardShape == "line"):
+                if cardLayout == "horizontal":
+                    dividingLine = createLine(
+                        cardBackgroundShape.left - int(Inches(horizontalCardGap / 2)) ,
+                        cardBackgroundShape.top + Inches(1),
+                        cardBackgroundShape.left - int(Inches(horizontalCardGap / 2)) ,
+                        cardBackgroundShape.top + cardBackgroundShape.height - Inches(1),
+                        slide.shapes,
+                    )
+                else:
+                    dividingLine = createLine(
+                        cardBackgroundShape.left + Inches(1),
+                        cardBackgroundShape.top - int(Inches(verticalCardGap / 2)) ,
+
+                        cardBackgroundShape.left + cardBackgroundShape.width - int(Inches(1)) ,
+                        cardBackgroundShape.top - int(Inches(verticalCardGap / 2)) ,
+                        slide.shapes,
+                    )
+            
+
+                dividingLine.line.color.rgb = RGBColor(0, 0, 0)
+                dividingLine.line.width = Pt(2.0)
 
         # Position card
         cardBodyShape.top = cardBodyTop[c]
@@ -2926,10 +2954,12 @@ def createListBlock(slideInfo, slide, renderingRectangle):
 
         lf = cardBackgroundShape.line
 
-        if cardBorderColour != "":
+        if (cardBorderColour != "") & (cardShape != "line"):
             lf.color.theme_color = cardBorderColour
 
-        if cardBorderWidth > 0:
+        if cardShape == "line":
+            lf.fill.background()
+        elif cardBorderWidth > 0:
             lf.width = Pt(cardBorderWidth)
         elif cardBorderWidth == 0:
             lf.fill.background()
@@ -3843,6 +3873,8 @@ def createLine(x0, y0, x1, y1, shapes):
     # Set shape's outline attributes
     line.line.color.rgb = RGBColor(191, 191, 191)
     line.line.width = Pt(4.0)
+    
+    return line
 
 
 def delinkify(text):
@@ -5145,11 +5177,11 @@ for line in metadata_lines:
             )
 
     elif name == "cardshape":
-        if value in ["squared", "rounded"]:
+        if value in ["squared", "rounded", "line"]:
             processingOptions.setOptionValues(name, value)
         else:
             print(
-                f'CardShape value \'{value}\' unsupported. "squared" or "rounded" required.'
+                f'CardShape value \'{value}\' unsupported. "squared", "rounded", or "line" required.'
             )
 
     elif name == "cardtitleposition":
@@ -5167,8 +5199,9 @@ for line in metadata_lines:
         else:
             print(f"CardAlign value '{value}' unsupported.")
 
-    elif name == ["horizontalcardgap", "verticalcardgap"]:
+    elif name in ["horizontalcardgap", "verticalcardgap"]:
         processingOptions.setOptionValues(name, float(value))
+        print(float(value))
 
     elif name == "contentsplit":
         splitValue = value.split()
