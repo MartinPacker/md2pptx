@@ -1210,6 +1210,7 @@ body .markdown-body
 <li><a href="#card-border-colour-cardbordercolour">Card Border Colour - <code>CardBorderColour</code></a></li>
 <li><a href="#card-border-width-cardborderwidth">Card Border Width - <code>CardBorderWidth</code></a></li>
 <li><a href="#card-title-size-cardtitlesize">Card Title Size - <code>CardTitleSize</code></a></li>
+<li><a href="#card-title-colour-cardtitlecolour">Card Title Colour - <code>cardTitleColour</code></a></li>
 <li><a href="#card-shadow-cardshadow">Card Shadow - <code>CardShadow</code></a></li>
 <li><a href="#card-size-cardpercent">Card Size - <code>CardPercent</code></a></li>
 <li><a href="#card-layout-direction-cardlayout">Card Layout Direction - <code>CardLayout</code></a></li>
@@ -1429,6 +1430,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">3.6</td>
+<td align="right">18&nbsp;March&nbsp;2023</td>
+<td align="left">Added <a href="#card-title-colour-cardtitlecolour"><code>cardTitleColour</code></a> &amp; <code>line</code> for <a href="#card-shape-cardshape"><code>cardshape</code></a>. Allow multiple colours for <a href="#card-background-colour-cardcolour"><code>cardColour</code></a>.</td>
+</tr>
 <tr>
 <td align="left">3.5.2</td>
 <td align="right">14&nbsp;March&nbsp;2023</td>
@@ -2167,6 +2173,7 @@ sectionTitleSize: 30
 <li><a href="#card-border-colour-cardbordercolour">Card Border Colour</a></li>
 <li><a href="#card-border-width-cardborderwidth">Card Border Width</a></li>
 <li><a href="#card-title-size-cardtitlesize">Card Title Font Size</a></li>
+<li><a href="#card-title-colour-cardtitlecolour">Card Title Colour</a></li>
 <li><a href="#card-shadow-cardshadow">Card Shadow</a></li>
 <li><a href="#card-size-cardpercent">Card Size</a></li>
 <li><a href="#card-layout-direction-cardlayout">Card Layout Direction</a></li>
@@ -2176,6 +2183,12 @@ sectionTitleSize: 30
 <li><a href="#card-horizontal-gap-cardhorizontalgap">Card Horizontal Gap</a></li>
 <li><a href="#card-vertical-gap-cardverticalgap">Card Vertical Gap</a></li>
 </ul>
+<p>One example of using a different style is this:</p>
+<p><img alt="" src="/Users/martinpacker/md2pptx/cardslide-lines.png" /></p>
+<p>Here the card background is invisible but the cards are separated by lines. You achieve this by coding:</p>
+<pre><code>CardShape: line
+</code></pre>
+<p>(See <a href="#card-shape-cardshape">Card Shape</a> for more information.)</p>
 <h3 id="code-slides">Code Slides<a class="headerlink" href="#code-slides" title="Permanent link"></a></h3>
 <p><a id="code-slides"></a></p>
 <p>You can create a slide where the body is in a monospace font, without bullets, in a number of different ways:</p>
@@ -3195,6 +3208,17 @@ For example</p>
 <pre><code>CardColour: BACKGROUND 2
 </code></pre>
 <p>If you don&rsquo;t specify this the default text box background colour - from the template - will be used.</p>
+<p>You can specify a series of card background colours, separated by commas. For example:</p>
+<pre><code>CardColour: ACCENT 1, ACCENT 2, ACCENT 3
+</code></pre>
+<p>If you specify more than one value each successive card will use the next colour in rotation. For example, with the above, a five-card slide would have backgrounds:</p>
+<ol>
+<li>ACCENT 1</li>
+<li>ACCENT 2</li>
+<li>ACCENT 3</li>
+<li>ACCENT 1</li>
+<li>ACCENT 2</li>
+</ol>
 <h5 id="card-border-colour-cardbordercolour">Card Border Colour - <code>CardBorderColour</code><a class="headerlink" href="#card-border-colour-cardbordercolour" title="Permanent link"></a></h5>
 <p><a id="card-border-colour-cardbordercolour"></a></p>
 <p>You can specify which of the theme colours to use for the border of each card in a <a href="#card-slides">Card Slide</a> - using <code>CardBorderColour</code> (or <code>CardBorderColor</code>).For example:</p>
@@ -3207,12 +3231,19 @@ For example</p>
 <pre><code>CardBorderWidth: 1
 </code></pre>
 <p>If you don&rsquo;t specify this the cards will use the default text box border width - from the template.</p>
+<p>Specifying <code>0</code> will prevent a border from being drawn.</p>
 <h5 id="card-title-size-cardtitlesize">Card Title Size - <code>CardTitleSize</code><a class="headerlink" href="#card-title-size-cardtitlesize" title="Permanent link"></a></h5>
 <p><a id="card-title-size-cardtitlesize"></a></p>
 <p>You can specify the size of the font (in points) for the cards&rsquo; title - using <code>CardTitleSize</code>. For example:</p>
 <pre><code>CardTitleSize: 15
 </code></pre>
 <p>If you don&rsquo;t specify this the card titles will be 2/3 the size of the slide&rsquo;s title.</p>
+<h5 id="card-title-colour-cardtitlecolour">Card Title Colour - <code>cardTitleColour</code><a class="headerlink" href="#card-title-colour-cardtitlecolour" title="Permanent link"></a></h5>
+<p><a id="card-title-colour-cardtitlecolour"></a></p>
+<p>You can specify the colour of cards&rsquo; titles with <code>cardTitleColour</code>. For example:</p>
+<pre><code>CardTitleColour: DARK 1
+</code></pre>
+<p>would set the cards&rsquo; titles to the theme&rsquo;s &ldquo;DARK 1&rdquo; colour.</p>
 <h5 id="card-shadow-cardshadow">Card Shadow - <code>CardShadow</code><a class="headerlink" href="#card-shadow-cardshadow" title="Permanent link"></a></h5>
 <p><a id="card-shadow-cardshadow"></a></p>
 <p>You can specify whether a card has a shadow - using <code>CardShadow</code>. For example:</p>
@@ -3258,8 +3289,12 @@ For example</p>
 <p>To specify the cards&rsquo; bodies will be squared off, at the top, code:</p>
 <pre><code>CardShape: squared
 </code></pre>
-<p>The default value is <code>rounded</code>.</p>
-<p>You can override this value on a slide-by-slide basis with <a href="#cardshape-dynamic">Dynamic CardShape</a>.</p>
+<p>You can explicitly code <code>rounded</code> for the default &ldquo;playing card&rdquo; shape.</p>
+<p>To specify the cards won&rsquo;t have backgrounds but will be separated by lines, code:</p>
+<pre><code>CardShape: line
+</code></pre>
+<p>If the card layout direction is vertical the lines will be horizontal. Conversely, if the card layout direction is horizontal the lines will be vertical.</p>
+<p>You can override the <code>cardShape</code> value on a slide-by-slide basis with <a href="#cardshape-dynamic">Dynamic CardShape</a>.</p>
 <p><a id="card-horizontal-gap-cardhorizontalgap"></a></p>
 <h5 id="card-horizontal-gap-cardhorizontalgap">Card Horizontal Gap - <code>CardHorizontalGap</code><a class="headerlink" href="#card-horizontal-gap-cardhorizontalgap" title="Permanent link"></a></h5>
 <p>You can adjust the horizontal space between cards that are laid out side by side using <code>CardHorizontalGap</code>. For example:</p>

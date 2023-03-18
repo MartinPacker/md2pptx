@@ -107,6 +107,7 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 			* [Card Border Colour - `CardBorderColour`](#card-border-colour-cardbordercolour)
 			* [Card Border Width - `CardBorderWidth`](#card-border-width-cardborderwidth)
 			* [Card Title Size - `CardTitleSize`](#card-title-size-cardtitlesize)
+			* [Card Title Colour - `cardTitleColour`](#card-title-colour-cardtitlecolour)
 			* [Card Shadow - `CardShadow`](#card-shadow-cardshadow)
 			* [Card Size - `CardPercent`](#card-size-cardpercent)
 			* [Card Layout Direction - `CardLayout`](#card-layout-direction-cardlayout)
@@ -312,6 +313,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|3.6|18&nbsp;March&nbsp;2023|Added [`cardTitleColour`](#card-title-colour-cardtitlecolour) &amp; `line` for [`cardshape`](#card-shape-cardshape). Allow multiple colours for [`cardColour`](#card-background-colour-cardcolour).|
 |3.5.2|14&nbsp;March&nbsp;2023|Added [`pageTitleAlign`](#page-title-alignment-pagetitlealign) - for content page title alignment.|
 |3.5.1|3&nbsp;March&nbsp;2023|[`pageSubtitleSize`](#page-subtitle-size-pagesubtitlesize) supports `same` meaning "same font size as first line".|
 |3.5.1|25&nbsp;February&nbsp;2023|Added support for separately scaling second and subsequent slide title lines - with [`pageSubtitleSize`](#page-subtitle-size-pagesubtitlesize).|
@@ -837,6 +839,7 @@ In the above example there has been a small amount of tweaking of the format, us
 * [Card Border Colour](#card-border-colour-cardbordercolour)
 * [Card Border Width](#card-border-width-cardborderwidth)
 * [Card Title Font Size](#card-title-size-cardtitlesize)
+* [Card Title Colour](#card-title-colour-cardtitlecolour)
 * [Card Shadow](#card-shadow-cardshadow)
 * [Card Size](#card-size-cardpercent)
 * [Card Layout Direction](#card-layout-direction-cardlayout)
@@ -845,6 +848,17 @@ In the above example there has been a small amount of tweaking of the format, us
 * [Card Shape](#card-shape-cardshape)
 * [Card Horizontal Gap](#card-horizontal-gap-cardhorizontalgap)
 * [Card Vertical Gap](#card-vertical-gap-cardverticalgap)
+
+One example of using a different style is this:
+
+![](cardslide-lines.png)
+
+Here the card background is invisible but the cards are separated by lines. You achieve this by coding:
+
+    CardShape: line
+
+(See [Card Shape](#card-shape-cardshape) for more information.)
+
 ### Code Slides
 <a id="code-slides"></a>
 
@@ -2029,6 +2043,19 @@ You can specify which of the theme colours to use for the background of each car
 
 If you don't specify this the default text box background colour - from the template - will be used.
 
+You can specify a series of card background colours, separated by commas. For example:
+
+    CardColour: ACCENT 1, ACCENT 2, ACCENT 3
+
+If you specify more than one value each successive card will use the next colour in rotation. For example, with the above, a five-card slide would have backgrounds:
+
+1. ACCENT 1
+1. ACCENT 2
+1. ACCENT 3
+1. ACCENT 1
+1. ACCENT 2
+
+
 ##### Card Border Colour - `CardBorderColour`
 <a id="card-border-colour-cardbordercolour"></a>
 
@@ -2047,6 +2074,8 @@ You can specify the thickness of the border (in points) of each card in a [Card 
 
 If you don't specify this the cards will use the default text box border width - from the template.
 
+Specifying `0` will prevent a border from being drawn.
+
 ##### Card Title Size - `CardTitleSize`
 <a id="card-title-size-cardtitlesize"></a>
 
@@ -2055,6 +2084,15 @@ You can specify the size of the font (in points) for the cards' title - using `C
     CardTitleSize: 15
 
 If you don't specify this the card titles will be 2/3 the size of the slide's title.
+
+##### Card Title Colour - `cardTitleColour`
+<a id="card-title-colour-cardtitlecolour"></a>
+
+You can specify the colour of cards' titles with `cardTitleColour`. For example:
+
+    CardTitleColour: DARK 1
+
+would set the cards' titles to the theme's "DARK 1" colour.
 
 #####  Card Shadow - `CardShadow`
 <a id="card-shadow-cardshadow"></a>
@@ -2126,10 +2164,15 @@ To specify the cards' bodies will be squared off, at the top, code:
 
     CardShape: squared
 
-The default value is `rounded`.
+You can explicitly code `rounded` for the default "playing card" shape.
 
-You can override this value on a slide-by-slide basis with [Dynamic CardShape](#cardshape-dynamic).
+To specify the cards won't have backgrounds but will be separated by lines, code:
 
+    CardShape: line
+
+If the card layout direction is vertical the lines will be horizontal. Conversely, if the card layout direction is horizontal the lines will be vertical.
+
+You can override the `cardShape` value on a slide-by-slide basis with [Dynamic CardShape](#cardshape-dynamic).
 
 <a id="card-horizontal-gap-cardhorizontalgap"></a>
 ##### Card Horizontal Gap - `CardHorizontalGap`

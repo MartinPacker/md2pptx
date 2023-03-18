@@ -75,8 +75,8 @@ except:
 	have_graphviz = False
 
 
-md2pptx_level = "3.5.2+"
-md2pptx_date = "17 March, 2023"
+md2pptx_level = "3.6"
+md2pptx_date = "18 March, 2023"
 
 namespaceURL = {
     "mc" : "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -2927,28 +2927,28 @@ def createListBlock(slideInfo, slide, renderingRectangle):
             cardBodyHeight = cardHeight
             cardBackgroundShape.height = cardBodyHeight
             
-            if (c > 0) & (cardShape == "line"):
-                if cardLayout == "horizontal":
-                    dividingLine = createLine(
-                        cardBackgroundShape.left - int(Inches(horizontalCardGap / 2)) ,
-                        cardBackgroundShape.top + Inches(1),
-                        cardBackgroundShape.left - int(Inches(horizontalCardGap / 2)) ,
-                        cardBackgroundShape.top + cardBackgroundShape.height - Inches(1),
-                        slide.shapes,
-                    )
-                else:
-                    dividingLine = createLine(
-                        cardBackgroundShape.left + Inches(1),
-                        cardBackgroundShape.top - int(Inches(verticalCardGap / 2)) ,
+        if (c > 0) & (cardShape == "line"):
+            if cardLayout == "horizontal":
+                dividingLine = createLine(
+                    cardBackgroundShape.left - int(Inches(horizontalCardGap / 2)) ,
+                    cardBackgroundShape.top + Inches(0.75),
+                    cardBackgroundShape.left - int(Inches(horizontalCardGap / 2)) ,
+                    cardBackgroundShape.top + cardBackgroundShape.height - Inches(0.75),
+                    slide.shapes,
+                )
+            else:
+                dividingLine = createLine(
+                    cardBackgroundShape.left + Inches(0.75),
+                    cardBackgroundShape.top - int(Inches(verticalCardGap / 2)) ,
 
-                        cardBackgroundShape.left + cardBackgroundShape.width - int(Inches(1)) ,
-                        cardBackgroundShape.top - int(Inches(verticalCardGap / 2)) ,
-                        slide.shapes,
-                    )
+                    cardBackgroundShape.left + cardBackgroundShape.width - int(Inches(0.75)) ,
+                    cardBackgroundShape.top - int(Inches(verticalCardGap / 2)) ,
+                    slide.shapes,
+                )
             
 
-                dividingLine.line.color.rgb = RGBColor(0, 0, 0)
-                dividingLine.line.width = Pt(2.0)
+            dividingLine.line.color.rgb = RGBColor(0, 0, 0)
+            dividingLine.line.width = Pt(2.0)
 
         # Position card
         cardBodyShape.top = cardBodyTop[c]
@@ -5810,6 +5810,16 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
                         metadataKey, metadataValue, ""
                     )
 
+                elif metadataKey == "cardshape":
+                    # Card shape
+                    if metadataValue in ["squared", "rounded", "line"]:
+                        processingOptions.dynamicallySetOption(
+                            metadataKey, metadataValue, ""
+                        )
+                    else:
+                        print(
+                            f'CardShape value \'{metadataValue}\' unsupported. "squared", "rounded", or "line" required.'
+                        )
 
                 # Note: Actual value handling prevents using dynamicallySetOption
                 elif metadataKey == "contentsplit":
