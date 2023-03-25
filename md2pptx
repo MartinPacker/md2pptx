@@ -2895,10 +2895,16 @@ def createListBlock(slideInfo, slide, renderingRectangle):
             fill.background()
 
             # Fill in card's background - if necessary
-            if (cardColours[0] != "") & (cardShape != "line"):
+            if (cardColours[0] != ("None", "")) & (cardShape != "line"):
+                ccType, ccColour = cardColours[c % len(cardColours)]
+
                 fill = cardBackgroundShape.fill
                 fill.solid()
-                fill.fore_color.theme_color = cardColours[c % len(cardColours)]
+
+                if ccType == "Theme":
+                    fill.fore_color.theme_color = ccColour
+                else:
+                    fill.fore_color.rgb = RGBColor.from_string(ccColour[1:])
 
     # Adjust bullets shape height - and calculate verticals for any cards
 
@@ -4860,7 +4866,7 @@ processingOptions.setOptionValuesArray(
         ["cardBorderWidth", 0],
         ["cardBorderColour", ""],
         ["cardTitleColour", ""],
-        ["cardColour", [""]],
+        ["cardColour", [("None", "")]],
     ]
 )
 
@@ -5178,8 +5184,15 @@ for line in metadata_lines:
 
     elif (name == "cardcolour") | (name == "cardcolor"):
         cardColours = value.split(",")
-        valueArray = [parseThemeColour(v.strip()) for v in cardColours]
-        processingOptions.setOptionValues("cardColour", valueArray)
+        valueArray2 = []
+        for value in cardColours:
+            value2 = value.strip()
+            if value2[0] == "#":
+                valueArray2.append(("RGB", value2))
+            else:
+                valueArray2.append(("Theme", parseThemeColour(value2)))
+
+        processingOptions.setOptionValues("cardColour", valueArray2)
 
     elif (name == "cardbordercolour") | (name == "cardbordercolor"):
         processingOptions.setOptionValues("cardBorderColour", parseThemeColour(value))
