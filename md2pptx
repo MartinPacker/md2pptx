@@ -2703,6 +2703,7 @@ def createListBlock(slideInfo, slide, renderingRectangle):
     cardBorderColour = processingOptions.getCurrentOption("cardbordercolour")
     cardTitleColour = processingOptions.getCurrentOption("cardtitlecolour")
     cardColours = processingOptions.getCurrentOption("cardcolour")
+    cardDividerColour = processingOptions.getCurrentOption("carddividercolour")
     marginBase = processingOptions.getCurrentOption("marginBase")
     pageTitleSize = processingOptions.getCurrentOption("pageTitleSize")
     pageSubtitleSize = processingOptions.getCurrentOption("pageSubtitleSize")
@@ -2970,8 +2971,13 @@ def createListBlock(slideInfo, slide, renderingRectangle):
                     slide.shapes,
                 )
             
+            if cardDividerColour != ("None", ""):
+                colourType, dividerColour = cardDividerColour
+                if colourType == "Theme":
+                    dividingLine.line.color.theme_color = dividerColour
+                else:
+                    dividingLine.line.color.rgb = RGBColor.from_string(dividerColour[1:])
 
-            dividingLine.line.color.rgb = RGBColor(0, 0, 0)
             dividingLine.line.width = Pt(2.0)
 
         # Position card
@@ -4875,6 +4881,7 @@ processingOptions.setOptionValuesArray(
         ["cardBorderColour", ("None", "")],
         ["cardTitleColour", ("None", "")],
         ["cardColour", [("None", "")]],
+        ["cardDividerColour", ("RGB", "#000000")],
     ]
 )
 
@@ -5213,6 +5220,12 @@ for line in metadata_lines:
             processingOptions.setOptionValues("cardTitleColour", ("RGB", value))
         else:
             processingOptions.setOptionValues("cardTitleColour", ("Theme", parseThemeColour(value)))
+
+    elif (name == "carddividercolour") | (name == "carddividercolor"):
+        if value[0] == "#":
+            processingOptions.setOptionValues("cardDividerColour", ("RGB", value))
+        else:
+            processingOptions.setOptionValues("cardDividerColour", ("Theme", parseThemeColour(value)))
 
     elif name == "cardborderwidth":
         processingOptions.setOptionValues(name, float(value))
