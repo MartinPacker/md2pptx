@@ -38,6 +38,7 @@ import shutil
 import socket
 from pptx.oxml import parse_xml
 import uuid
+import funnel
 
 from lxml import etree
 from lxml.html import fromstring
@@ -75,8 +76,8 @@ except:
 	have_graphviz = False
 
 
-md2pptx_level = "3.6"
-md2pptx_date = "18 March, 2023"
+md2pptx_level = "3.6+"
+md2pptx_date = "25 March, 2023"
 
 namespaceURL = {
     "mc" : "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -1806,8 +1807,12 @@ def addFormattedText(p, text):
                 font = run.font
                 if boldBold == True:
                     font.bold = True
-                if boldColour != "":
-                    font.color.theme_color = boldColour
+                if boldColour != ("None", ""):
+                    boldType, boldColour2 = boldColour
+                    if boldType == "Theme":
+                        font.color.theme_color = boldColour2
+                    else:
+                        font.color.rgb = RGBColor.from_string(boldColour2[1:])
             elif fragType == "C":
                 font = run.font
                 font.name = monoFont
@@ -4607,6 +4612,7 @@ if have_graphviz:
 else:
     print("graphviz: Not Installed")
 
+print (f"funnel: {funnel.__version__}")
 
 input_file = []
 
@@ -4810,7 +4816,7 @@ processingOptions.setOptionValuesArray(
         ["italicItalic", True],
         ["italicColour", ""],
         ["boldBold", True],
-        ["boldColour", ""],
+        ["boldColour", ("None", "")],
     ]
 )
 
@@ -5146,7 +5152,10 @@ for line in metadata_lines:
             processingOptions.setOptionValues("boldBold", False)
 
     elif (name == "boldcolour") | (name == "boldcolor"):
-        processingOptions.setOptionValues("boldColour", parseThemeColour(value))
+        if value[0] == "#":
+            processingOptions.setOptionValues("boldColour", ("RGB", value))
+        else:
+            processingOptions.setOptionValues("boldColour", ("Theme", parseThemeColour(value)))
 
     elif name == "italicitalic":
         if value == "no":
