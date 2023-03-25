@@ -1772,10 +1772,16 @@ def addFormattedText(p, text):
 
             if fragType == "I":
                 font = run.font
+
                 if italicItalic == True:
                     font.italic = True
-                if italicColour != "":
-                    font.color.theme_color = italicColour
+
+                if italicColour != ("None", ""):
+                    italicType, italicColour2 = italicColour
+                    if italicType == "Theme":
+                        font.color.theme_color = italicColour2
+                    else:
+                        font.color.rgb = RGBColor.from_string(italicColour2[1:])
 
             elif fragType == "Gloss":
                 # Add this run to abbrevRunsDictionary - for Glossary fix ups later
@@ -1805,14 +1811,17 @@ def addFormattedText(p, text):
 
             elif fragType == "B2":
                 font = run.font
+
                 if boldBold == True:
                     font.bold = True
+                
                 if boldColour != ("None", ""):
                     boldType, boldColour2 = boldColour
                     if boldType == "Theme":
                         font.color.theme_color = boldColour2
                     else:
                         font.color.rgb = RGBColor.from_string(boldColour2[1:])
+
             elif fragType == "C":
                 font = run.font
                 font.name = monoFont
@@ -4814,7 +4823,7 @@ processingOptions.setOptionValuesArray(
 processingOptions.setOptionValuesArray(
     [
         ["italicItalic", True],
-        ["italicColour", ""],
+        ["italicColour", ("None", "")],
         ["boldBold", True],
         ["boldColour", ("None", "")],
     ]
@@ -5162,7 +5171,10 @@ for line in metadata_lines:
             processingOptions.setOptionValues("italicItalic", False)
 
     elif (name == "italiccolour") | (name == "italiccolor"):
-        processingOptions.setOptionValues("italicColour", parseThemeColour(value))
+        if value[0] == "#":
+            processingOptions.setOptionValues("italicColour", ("RGB", value))
+        else:
+            processingOptions.setOptionValues("italicColour", ("Theme", parseThemeColour(value)))
 
     elif (name == "cardcolour") | (name == "cardcolor"):
         cardColours = value.split(",")
