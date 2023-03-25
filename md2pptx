@@ -2934,8 +2934,12 @@ def createListBlock(slideInfo, slide, renderingRectangle):
         cardTitleShape.height = cardTitleHeight
         
         # Colour the title - if cardTitleColour specified
-        if cardTitleColour != "":
-           cardTitleShape.text_frame.paragraphs[0].font.color.theme_color = cardTitleColour
+        if cardTitleColour != ("None", ""):
+            colourType, titleColour = cardTitleColour
+            if colourType == "Theme":
+                fill.cardTitleShape.text_frame.paragraphs[0].font.color.theme_color = titleColour
+            else:
+                cardTitleShape.text_frame.paragraphs[0].font.color.rgb = RGBColor.from_string(titleColour[1:])
 
         # Calculate positions and heights within card background of body
         if cardTitlePosition == "above":
@@ -2979,8 +2983,12 @@ def createListBlock(slideInfo, slide, renderingRectangle):
 
         lf = cardBackgroundShape.line
 
-        if (cardBorderColour != "") & (cardShape != "line"):
-            lf.color.theme_color = cardBorderColour
+        if (cardBorderColour != ("None", "")) & (cardShape != "line"):
+            colourType, borderColour = cardBorderColour
+            if colourType == "Theme":
+                lf.color.theme_color = borderColour
+            else:
+                lf.color.rgb = RGBColor.from_string(borderColour[1:])
 
         if cardShape == "line":
             lf.fill.background()
@@ -4864,8 +4872,8 @@ processingOptions.setOptionValuesArray(
         ["cardShadow", False],
         ["cardTitleSize", 0],
         ["cardBorderWidth", 0],
-        ["cardBorderColour", ""],
-        ["cardTitleColour", ""],
+        ["cardBorderColour", ("None", "")],
+        ["cardTitleColour", ("None", "")],
         ["cardColour", [("None", "")]],
     ]
 )
@@ -5195,10 +5203,16 @@ for line in metadata_lines:
         processingOptions.setOptionValues("cardColour", valueArray2)
 
     elif (name == "cardbordercolour") | (name == "cardbordercolor"):
-        processingOptions.setOptionValues("cardBorderColour", parseThemeColour(value))
+        if value[0] == "#":
+            processingOptions.setOptionValues("cardBorderColour", ("RGB", value))
+        else:
+            processingOptions.setOptionValues("cardBorderColour", ("Theme", parseThemeColour(value)))
 
     elif (name == "cardtitlecolour") | (name == "cardtitlecolor"):
-        processingOptions.setOptionValues("cardTitleColour", parseThemeColour(value))
+        if value[0] == "#":
+            processingOptions.setOptionValues("cardTitleColour", ("RGB", value))
+        else:
+            processingOptions.setOptionValues("cardTitleColour", ("Theme", parseThemeColour(value)))
 
     elif name == "cardborderwidth":
         processingOptions.setOptionValues(name, float(value))
