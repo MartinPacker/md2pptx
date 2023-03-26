@@ -5,6 +5,8 @@ This document describes the md2pptx Markdown preprocessor, which turns Markdown 
 
 In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee tee ex".
 
+As you can see in the [change log](#change-log), md2pptx is frequently updated - both for bug fixes and enhancements.
+
 ### Table Of Contents
 
 * [Why md2pptx?](#why-md2pptx)
@@ -70,6 +72,9 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 * [Controlling The Presentation With Metadata](#controlling-the-presentation-with-metadata)
 	* [Specifying Metadata](#specifying-metadata)
 		* [Processing Summary](#processing-summary)
+		* [Specifying Colours](#specifying-colours)
+			* [Theme Colours](#theme-colours)
+			* [RGB Colours](#rgb-colours)
 	* [Metadata Keys](#metadata-keys)
 		* [Title And Subtitle Font Sizes And Alignment](#title-and-subtitle-font-sizes-and-alignment)
 			* [Page Title Size - `pageTitleSize`](#page-title-size-pagetitlesize)
@@ -108,6 +113,7 @@ In this document we'll refer to it as "md2pptx", pronounced "em dee to pee pee t
 			* [Card Border Width - `CardBorderWidth`](#card-border-width-cardborderwidth)
 			* [Card Title Size - `CardTitleSize`](#card-title-size-cardtitlesize)
 			* [Card Title Colour - `cardTitleColour`](#card-title-colour-cardtitlecolour)
+			* [Card Divider Colour - `cardDividerColour`](#card-divider-colour-carddividercolour)
 			* [Card Shadow - `CardShadow`](#card-shadow-cardshadow)
 			* [Card Size - `CardPercent`](#card-size-cardpercent)
 			* [Card Layout Direction - `CardLayout`](#card-layout-direction-cardlayout)
@@ -313,6 +319,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|3.7|26&nbsp;March&nbsp;2023|Added [`cardDividerColour`](#card-divider-colour-carddividercolour). Most colours now RGB or Theme Colour (documented in [Specifying Colours](#specifying-colours)).|
 |3.6|18&nbsp;March&nbsp;2023|Added [`cardTitleColour`](#card-title-colour-cardtitlecolour) &amp; `line` for [`cardshape`](#card-shape-cardshape). Allow multiple colours for [`cardColour`](#card-background-colour-cardcolour).|
 |3.5.2|14&nbsp;March&nbsp;2023|Added [`pageTitleAlign`](#page-title-alignment-pagetitlealign) - for content page title alignment.|
 |3.5.1|3&nbsp;March&nbsp;2023|[`pageSubtitleSize`](#page-subtitle-size-pagesubtitlesize) supports `same` meaning "same font size as first line".|
@@ -840,6 +847,7 @@ In the above example there has been a small amount of tweaking of the format, us
 * [Card Border Width](#card-border-width-cardborderwidth)
 * [Card Title Font Size](#card-title-size-cardtitlesize)
 * [Card Title Colour](#card-title-colour-cardtitlecolour)
+* [Card Divider Colour](#card-divider-colour-carddividercolour)
 * [Card Shadow](#card-shadow-cardshadow)
 * [Card Size](#card-size-cardpercent)
 * [Card Layout Direction](#card-layout-direction-cardlayout)
@@ -1527,6 +1535,61 @@ As described in [Creating Slides](#creating-slides), md2pptx will populate the f
 1. You can suppress `style.` metadata items by specifying the metadata item `hideMetadata: style`. In the md2pptx developer's experience `style.` metadata items can become numerous and could obscure more important items in the Processing Summary slide. The default is not to hide such items.
 1. Before the metadata table is created md2pptx will remove all but the title item in this slide. The one type of item that won't be removed is any Action Buttons. See [Sample Macro To Remove The First Slide](#sample-macro-to-remove-the-first-slide) for an example of where these might be useful.
 
+#### Specifying Colours
+<a id="specifying-colours"></a>
+
+In most places where you specify colours they can be of one of two forms:
+
+* A theme colour
+* An RGB value
+
+##### Theme Colours
+<a id="theme-colours"></a>
+
+Powerpoint themes have named theme colours. The names you can use with md2pptx are:
+
+* NONE
+* ACCENT 1
+* ACCENT 2
+* ACCENT 3
+* ACCENT 4
+* ACCENT 5
+* ACCENT 6
+* BACKGROUND 1
+* BACKGROUND 2
+* DARK 1
+* DARK 2
+* FOLLOWED HYPERLINK
+* HYPERLINK
+* LIGHT 1
+* LIGHT 2
+* TEXT 1
+* TEXT 2
+* MIXED
+
+As you can probably guess, these are standard values for python-pptx and, ultimately, PowerPoint.
+
+Here is an example:
+
+    BoldColour: ACCENT 1
+
+This will give you more consistent colouring than [RGB Colours](#rgb-colours).
+
+**Note:** For the values you can use any capitalisation you like (or none). e.g. `ItalicColor: dark 1`.
+
+##### RGB Colours
+<a id="rgb-colours"></a>
+
+RGB stands for "Red, Green, and Blue". You specify RGB values as 6 hexadecimal digits. For example:
+
+    ItalicColour: #FF0000
+
+Each pair of hexadecimal digits represents Red, Green, and Blue, respectively. Each is a hexadecimal encoding of 0-255, with 0 being "none of this colour" and 255 being "saturated in this colour".
+
+This will give you more precise colouring than [Theme Colours](#theme-colours).
+
+**Note:** You must include the octothorpe (`#`) before the hexadecimal value.
+
 ### Metadata Keys
 <a id="metadata-keys"></a>
 
@@ -1798,30 +1861,6 @@ For example:
 
 Will cause text marked like so `**I am bold**` to be rendered in the presentation's smartmaster's "Accent 1" colour.
 
-The values you can use for `BoldColour` and `ItalicColour` are:
-
-* NONE
-* ACCENT 1
-* ACCENT 2
-* ACCENT 3
-* ACCENT 4
-* ACCENT 5
-* ACCENT 6
-* BACKGROUND 1
-* BACKGROUND 2
-* DARK 1
-* DARK 2
-* FOLLOWED HYPERLINK
-* HYPERLINK
-* LIGHT 1
-* LIGHT 2
-* TEXT 1
-* TEXT 2
-* MIXED
-
-As you can probably guess, these are standard values for python-pptx and, ultimately, PowerPoint.
-
-**Note:** For the values you can use any capitalisation you like (or none). e.g. `ItalicColor: dark 1`.
 
 #### Specifying Bold And Italic Text Effects With `BoldBold` And `ItalicItalic`
 <a id="specifying-bold-and-italic-text-effects-with-boldbold-and-italicitalic"></a>
@@ -2093,6 +2132,15 @@ You can specify the colour of cards' titles with `cardTitleColour`. For example:
     CardTitleColour: DARK 1
 
 would set the cards' titles to the theme's "DARK 1" colour.
+
+##### Card Divider Colour - `cardDividerColour`
+<a id="card-divider-colour-carddividercolour"></a>
+
+You can specify the colour of lines between cards - if the `line` style is chosen. For example:
+
+    CardLineColour: ACCENT 1
+
+would set the lines between cards to the theme's "ACCENT 1" colour.
 
 #####  Card Shadow - `CardShadow`
 <a id="card-shadow-cardshadow"></a>

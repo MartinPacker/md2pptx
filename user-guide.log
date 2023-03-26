@@ -5,8 +5,8 @@ mdpre Markdown Preprocessor v0.6.5 (17 February, 2023)
 Def mdpre_date = 17 February, 2023
 Def mdpre_level = 0.6.5
 Def userid = martinpacker
-Def time = 14&colon;13
-Def date = 18 March&comma; 2023
+Def time = 13&colon;59
+Def date = 26 March&comma; 2023
 Def TOC = Table Of Contents
 Def md = Markdown
 Def pp = Powerpoint
@@ -83,6 +83,9 @@ CSV Stop
 .....  Controlling The Presentation With Metadata
 ..... .....  Specifying Metadata
 ..... ..... .....  Processing Summary
+..... ..... .....  Specifying Colours
+..... ..... ..... .....  Theme Colours
+..... ..... ..... .....  RGB Colours
 ..... .....  Metadata Keys
 ..... ..... .....  Title And Subtitle Font Sizes And Alignment
 ..... ..... ..... .....  Page Title Size - `pageTitleSize`
@@ -121,6 +124,7 @@ CSV Stop
 ..... ..... ..... .....  Card Border Width - `CardBorderWidth`
 ..... ..... ..... .....  Card Title Size - `CardTitleSize`
 ..... ..... ..... .....  Card Title Colour - `cardTitleColour`
+..... ..... ..... .....  Card Divider Colour - `cardDividerColour`
 ..... ..... ..... .....   Card Shadow - `CardShadow`
 ..... ..... ..... .....  Card Size - `CardPercent`
 ..... ..... ..... .....  Card Layout Direction - `CardLayout`

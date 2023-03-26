@@ -1068,6 +1068,7 @@ body .markdown-body
 </style><title>user-guide</title></head><body><article class="markdown-body"><h1 id="markdown-to-powerpoint-user-guide">Markdown To Powerpoint User Guide<a class="headerlink" href="#markdown-to-powerpoint-user-guide" title="Permanent link"></a></h1>
 <p>This document describes the md2pptx Markdown preprocessor, which turns Markdown text into a Powerpoint presentation (whether .pptx or <a href="#invoking-a-vba-macro">.pptm</a>).</p>
 <p>In this document we&rsquo;ll refer to it as &ldquo;md2pptx&rdquo;, pronounced &ldquo;em dee to pee pee tee ex&rdquo;.</p>
+<p>As you can see in the <a href="#change-log">change log</a>, md2pptx is frequently updated - both for bug fixes and enhancements.</p>
 <h3 id="table-of-contents">Table Of Contents<a class="headerlink" href="#table-of-contents" title="Permanent link"></a></h3>
 <ul>
 <li><a href="#why-md2pptx">Why md2pptx?</a><ul>
@@ -1167,6 +1168,11 @@ body .markdown-body
 <li><a href="#controlling-the-presentation-with-metadata">Controlling The Presentation With Metadata</a><ul>
 <li><a href="#specifying-metadata">Specifying Metadata</a><ul>
 <li><a href="#processing-summary">Processing Summary</a></li>
+<li><a href="#specifying-colours">Specifying Colours</a><ul>
+<li><a href="#theme-colours">Theme Colours</a></li>
+<li><a href="#rgb-colours">RGB Colours</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#metadata-keys">Metadata Keys</a><ul>
@@ -1211,6 +1217,7 @@ body .markdown-body
 <li><a href="#card-border-width-cardborderwidth">Card Border Width - <code>CardBorderWidth</code></a></li>
 <li><a href="#card-title-size-cardtitlesize">Card Title Size - <code>CardTitleSize</code></a></li>
 <li><a href="#card-title-colour-cardtitlecolour">Card Title Colour - <code>cardTitleColour</code></a></li>
+<li><a href="#card-divider-colour-carddividercolour">Card Divider Colour - <code>cardDividerColour</code></a></li>
 <li><a href="#card-shadow-cardshadow">Card Shadow - <code>CardShadow</code></a></li>
 <li><a href="#card-size-cardpercent">Card Size - <code>CardPercent</code></a></li>
 <li><a href="#card-layout-direction-cardlayout">Card Layout Direction - <code>CardLayout</code></a></li>
@@ -1430,6 +1437,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">3.7</td>
+<td align="right">26&nbsp;March&nbsp;2023</td>
+<td align="left">Added <a href="#card-divider-colour-carddividercolour"><code>cardDividerColour</code></a>. Most colours now RGB or Theme Colour (documented in <a href="#specifying-colours">Specifying Colours</a>).</td>
+</tr>
 <tr>
 <td align="left">3.6</td>
 <td align="right">18&nbsp;March&nbsp;2023</td>
@@ -2174,6 +2186,7 @@ sectionTitleSize: 30
 <li><a href="#card-border-width-cardborderwidth">Card Border Width</a></li>
 <li><a href="#card-title-size-cardtitlesize">Card Title Font Size</a></li>
 <li><a href="#card-title-colour-cardtitlecolour">Card Title Colour</a></li>
+<li><a href="#card-divider-colour-carddividercolour">Card Divider Colour</a></li>
 <li><a href="#card-shadow-cardshadow">Card Shadow</a></li>
 <li><a href="#card-size-cardpercent">Card Size</a></li>
 <li><a href="#card-layout-direction-cardlayout">Card Layout Direction</a></li>
@@ -2855,6 +2868,50 @@ Keys are case insensitive. In this User Guide they are capitalised to aid compre
 <li>You can suppress <code>style.</code> metadata items by specifying the metadata item <code>hideMetadata: style</code>. In the md2pptx developer&rsquo;s experience <code>style.</code> metadata items can become numerous and could obscure more important items in the Processing Summary slide. The default is not to hide such items.</li>
 <li>Before the metadata table is created md2pptx will remove all but the title item in this slide. The one type of item that won&rsquo;t be removed is any Action Buttons. See <a href="#sample-macro-to-remove-the-first-slide">Sample Macro To Remove The First Slide</a> for an example of where these might be useful.</li>
 </ol>
+<h4 id="specifying-colours">Specifying Colours<a class="headerlink" href="#specifying-colours" title="Permanent link"></a></h4>
+<p><a id="specifying-colours"></a></p>
+<p>In most places where you specify colours they can be of one of two forms:</p>
+<ul>
+<li>A theme colour</li>
+<li>An RGB value</li>
+</ul>
+<h5 id="theme-colours">Theme Colours<a class="headerlink" href="#theme-colours" title="Permanent link"></a></h5>
+<p><a id="theme-colours"></a></p>
+<p>Powerpoint themes have named theme colours. The names you can use with md2pptx are:</p>
+<ul>
+<li>NONE</li>
+<li>ACCENT 1</li>
+<li>ACCENT 2</li>
+<li>ACCENT 3</li>
+<li>ACCENT 4</li>
+<li>ACCENT 5</li>
+<li>ACCENT 6</li>
+<li>BACKGROUND 1</li>
+<li>BACKGROUND 2</li>
+<li>DARK 1</li>
+<li>DARK 2</li>
+<li>FOLLOWED HYPERLINK</li>
+<li>HYPERLINK</li>
+<li>LIGHT 1</li>
+<li>LIGHT 2</li>
+<li>TEXT 1</li>
+<li>TEXT 2</li>
+<li>MIXED</li>
+</ul>
+<p>As you can probably guess, these are standard values for python-pptx and, ultimately, PowerPoint.</p>
+<p>Here is an example:</p>
+<pre><code>BoldColour: ACCENT 1
+</code></pre>
+<p>This will give you more consistent colouring than <a href="#rgb-colours">RGB Colours</a>.</p>
+<p><strong>Note:</strong> For the values you can use any capitalisation you like (or none). e.g. <code>ItalicColor: dark 1</code>.</p>
+<h5 id="rgb-colours">RGB Colours<a class="headerlink" href="#rgb-colours" title="Permanent link"></a></h5>
+<p><a id="rgb-colours"></a></p>
+<p>RGB stands for &ldquo;Red, Green, and Blue&rdquo;. You specify RGB values as 6 hexadecimal digits. For example:</p>
+<pre><code>ItalicColour: #FF0000
+</code></pre>
+<p>Each pair of hexadecimal digits represents Red, Green, and Blue, respectively. Each is a hexadecimal encoding of 0-255, with 0 being &ldquo;none of this colour&rdquo; and 255 being &ldquo;saturated in this colour&rdquo;.</p>
+<p>This will give you more precise colouring than <a href="#theme-colours">Theme Colours</a>.</p>
+<p><strong>Note:</strong> You must include the octothorpe (<code>#</code>) before the hexadecimal value.</p>
 <h3 id="metadata-keys">Metadata Keys<a class="headerlink" href="#metadata-keys" title="Permanent link"></a></h3>
 <p><a id="metadata-keys"></a></p>
 <p>The following sections describe each of the metadata keys.</p>
@@ -3039,29 +3096,6 @@ baseTextDecrement: 1
 <pre><code>BoldColour: ACCENT 1
 </code></pre>
 <p>Will cause text marked like so <code>**I am bold**</code> to be rendered in the presentation&rsquo;s smartmaster&rsquo;s &ldquo;Accent 1&rdquo; colour.</p>
-<p>The values you can use for <code>BoldColour</code> and <code>ItalicColour</code> are:</p>
-<ul>
-<li>NONE</li>
-<li>ACCENT 1</li>
-<li>ACCENT 2</li>
-<li>ACCENT 3</li>
-<li>ACCENT 4</li>
-<li>ACCENT 5</li>
-<li>ACCENT 6</li>
-<li>BACKGROUND 1</li>
-<li>BACKGROUND 2</li>
-<li>DARK 1</li>
-<li>DARK 2</li>
-<li>FOLLOWED HYPERLINK</li>
-<li>HYPERLINK</li>
-<li>LIGHT 1</li>
-<li>LIGHT 2</li>
-<li>TEXT 1</li>
-<li>TEXT 2</li>
-<li>MIXED</li>
-</ul>
-<p>As you can probably guess, these are standard values for python-pptx and, ultimately, PowerPoint.</p>
-<p><strong>Note:</strong> For the values you can use any capitalisation you like (or none). e.g. <code>ItalicColor: dark 1</code>.</p>
 <h4 id="specifying-bold-and-italic-text-effects-with-boldbold-and-italicitalic">Specifying Bold And Italic Text Effects With <code>BoldBold</code> And <code>ItalicItalic</code><a class="headerlink" href="#specifying-bold-and-italic-text-effects-with-boldbold-and-italicitalic" title="Permanent link"></a></h4>
 <p><a id="specifying-bold-and-italic-text-effects-with-boldbold-and-italicitalic"></a></p>
 <p>You can modify how md2pptx formats bold and italic text.</p>
@@ -3244,6 +3278,12 @@ For example</p>
 <pre><code>CardTitleColour: DARK 1
 </code></pre>
 <p>would set the cards&rsquo; titles to the theme&rsquo;s &ldquo;DARK 1&rdquo; colour.</p>
+<h5 id="card-divider-colour-carddividercolour">Card Divider Colour - <code>cardDividerColour</code><a class="headerlink" href="#card-divider-colour-carddividercolour" title="Permanent link"></a></h5>
+<p><a id="card-divider-colour-carddividercolour"></a></p>
+<p>You can specify the colour of lines between cards - if the <code>line</code> style is chosen. For example:</p>
+<pre><code>CardLineColour: ACCENT 1
+</code></pre>
+<p>would set the lines between cards to the theme&rsquo;s &ldquo;ACCENT 1&rdquo; colour.</p>
 <h5 id="card-shadow-cardshadow">Card Shadow - <code>CardShadow</code><a class="headerlink" href="#card-shadow-cardshadow" title="Permanent link"></a></h5>
 <p><a id="card-shadow-cardshadow"></a></p>
 <p>You can specify whether a card has a shadow - using <code>CardShadow</code>. For example:</p>
