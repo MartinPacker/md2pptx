@@ -76,8 +76,8 @@ except:
 	have_graphviz = False
 
 
-md2pptx_level = "3.7"
-md2pptx_date = "26 March, 2023"
+md2pptx_level = "3.7+"
+md2pptx_date = "27 March, 2023"
 
 namespaceURL = {
     "mc" : "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -3905,13 +3905,19 @@ def createOval(
             shape.fill.fore_color.rgb = RGBColor.from_string(unhighlightedBackground)
 
 
-def createLine(x0, y0, x1, y1, shapes):
+def createLine(x0, y0, x1, y1, shapes, colour = ("RGB","#BFBFBF"), width = 4.0):
     # Create line
     line = shapes.add_shape(MSO_SHAPE.LINE_INVERSE, x0, y0, x1 - x0, y1 - y0)
 
     # Set shape's outline attributes
-    line.line.color.rgb = RGBColor(191, 191, 191)
-    line.line.width = Pt(4.0)
+    colourType, colourValue = colour
+    if colourType == "Theme":
+        line.line.color.theme_colour = parseThemeColour(colourValue)
+    else:
+        line.line.color.rgb = RGBColor.from_string(colourValue[1:])
+    
+    
+    line.line.width = Pt(width)
     
     return line
 
