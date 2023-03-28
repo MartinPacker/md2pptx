@@ -24,7 +24,7 @@ from pptx.enum.shapes import MSO_SHAPE, MSO_CONNECTOR
 from pptx.enum.text import MSO_ANCHOR
 from pptx.enum.action import PP_ACTION
 from pptx.enum.dml import MSO_PATTERN
-from pptx.dml.color import RGBColor
+
 import imghdr, struct
 import datetime
 import html.parser
@@ -39,6 +39,7 @@ import socket
 from pptx.oxml import parse_xml
 import uuid
 import funnel
+from rectangle import Rectangle
 
 from lxml import etree
 from lxml.html import fromstring
@@ -77,7 +78,7 @@ except:
 
 
 md2pptx_level = "3.7+"
-md2pptx_date = "27 March, 2023"
+md2pptx_date = "28 March, 2023"
 
 namespaceURL = {
     "mc" : "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -150,16 +151,6 @@ class AudioVideoInfo:
             self.poster = audioVideoElement.attrib["poster"]
         else:
             self.poster = None
-
-
-# Expected units are those of md2pptx
-class Rectangle:
-    def __init__(self, top, left, height, width):
-        self.top = top
-        self.left = left
-        self.height = height
-        self.width = width
-
 
 # Note: Options stored with lower case keys
 class ProcessingOptions:
@@ -2281,6 +2272,13 @@ def handleGraphViz(slide, renderingRectangle, codeLines):
 	# Delete the temporary graphic file
 	os.remove(dotFile)
 
+
+def handleFunnel(slide, renderingRectangle, codeLines):
+    # Remove triple backticks at bottom and top
+    funnelParts = codeLines[1 : -1]
+    f = funnel.Funnel()
+    f.makeFunnel(slide, renderingRectangle, funnelParts)
+
 def createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber):
     monoFont = processingOptions.getCurrentOption("monoFont")
     baseTextSize = processingOptions.getCurrentOption("baseTextSize")
@@ -2300,7 +2298,8 @@ def createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber):
             codeType = "backticks"
         else:
             # Some other type - such as GraphViz .dot
-            codeType = codeLines[0][3:].strip()
+            codeType = codeLines[0][3:].strip().lower()
+            
             if codeType == "dot":
                 # GraphViz dot
                 if have_graphviz is False:
@@ -2314,6 +2313,12 @@ def createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber):
                 
                     return slide
                 
+            elif codeType == "funnel":
+                # Built-in Funnel Diagram
+                handleFunnel(slide, renderingRectangle, codeLines)
+                
+                return slide
+            
             else:
                 # Some other type with backticks
                 codeType = "backticks"
