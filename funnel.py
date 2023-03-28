@@ -41,10 +41,11 @@ class Funnel:
         tipHeight = funnelBodyRectangle.height / 3
         
         partColours = [
-            MSO_THEME_COLOR.ACCENT_1,
-            MSO_THEME_COLOR.ACCENT_2,
-            MSO_THEME_COLOR.ACCENT_3,
-            MSO_THEME_COLOR.ACCENT_4,
+            ("Theme", MSO_THEME_COLOR.ACCENT_1),
+            ("Theme", MSO_THEME_COLOR.ACCENT_2),
+            ("Theme", MSO_THEME_COLOR.ACCENT_3),
+            ("Theme", MSO_THEME_COLOR.ACCENT_4),
+            ("RGB","#CCCCCC"),
         ]
         
         partColourCount = len(partColours)
@@ -122,6 +123,11 @@ class Funnel:
             s.text = body
             s.text_frame.paragraphs[0].alignment = PP_ALIGN.CENTER
             s.fill.solid()
-            s.fill.fore_color.theme_color = partColours[b % partColourCount]
+            
+            partColourType, partColourValue = partColours[b % partColourCount]
+            if partColourType == "Theme":
+                s.fill.fore_color.theme_color = partColourValue
+            else:
+                s.fill.fore_color.rgb = RGBColor.from_string(partColourValue[1:])
 
 
