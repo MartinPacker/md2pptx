@@ -12,6 +12,7 @@ from rectangle import Rectangle
 from pptx.util import Inches, Pt
 from pptx.enum.text import PP_ALIGN
 from pptx.dml.color import RGBColor, MSO_THEME_COLOR
+from colour import setColour
 
 class Funnel:
     def __init__(
