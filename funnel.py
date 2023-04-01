@@ -19,7 +19,14 @@ class Funnel:
     ):
         pass
 
-    def makeFunnel(self, slide, renderingRectangle, funnelParts):
+    def makeFunnel(
+        self, 
+        slide, 
+        renderingRectangle, 
+        funnelParts,
+        partColours
+    ):
+
         funnelLabelsProportion = 0.1
 
         # Define labels rectangle
@@ -40,13 +47,6 @@ class Funnel:
 
         tipHeight = funnelBodyRectangle.height / 3
         
-        partColours = [
-            ("Theme", MSO_THEME_COLOR.ACCENT_1),
-            ("Theme", MSO_THEME_COLOR.ACCENT_2),
-            ("Theme", MSO_THEME_COLOR.ACCENT_3),
-            ("Theme", MSO_THEME_COLOR.ACCENT_4),
-            ("RGB","#CCCCCC"),
-        ]
         
         partColourCount = len(partColours)
     

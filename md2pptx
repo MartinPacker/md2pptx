@@ -78,7 +78,7 @@ except:
 
 
 md2pptx_level = "3.7+"
-md2pptx_date = "28 March, 2023"
+md2pptx_date = "31 March, 2023"
 
 namespaceURL = {
     "mc" : "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -2274,10 +2274,12 @@ def handleGraphViz(slide, renderingRectangle, codeLines):
 
 
 def handleFunnel(slide, renderingRectangle, codeLines):
+    funnelColours = processingOptions.getCurrentOption("funnelColours")
+    print(funnelColours)
     # Remove triple backticks at bottom and top
     funnelParts = codeLines[1 : -1]
     f = funnel.Funnel()
-    f.makeFunnel(slide, renderingRectangle, funnelParts)
+    f.makeFunnel(slide, renderingRectangle, funnelParts, funnelColours)
 
 def createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber):
     monoFont = processingOptions.getCurrentOption("monoFont")
@@ -5003,6 +5005,22 @@ processingOptions.setOptionValuesArray(
         ["exportGraphics", False],
     ]
 )
+
+# Funnel options
+processingOptions.setOptionValuesArray(
+    [
+        ["funnelColours", [
+                ("Theme", MSO_THEME_COLOR.ACCENT_1),
+                ("Theme", MSO_THEME_COLOR.ACCENT_2),
+                ("Theme", MSO_THEME_COLOR.ACCENT_3),
+                ("Theme", MSO_THEME_COLOR.ACCENT_4),
+                ("Theme", MSO_THEME_COLOR.ACCENT_5),
+                ("Theme", MSO_THEME_COLOR.ACCENT_6),
+            ]
+        ]
+    ]
+)
+
 ######################################################################################
 #                                                                                    #
 #  Prime for style. metadata                                                         #
@@ -5456,7 +5474,17 @@ for line in metadata_lines:
         else:
             print(f"Invalid value for {name} - {value}. Ignoring.")
 
+    elif (name == "funnelcolours") | (name == "funnelcolors"): 
+        funnelColours = value.split(",")
+        valueArray2 = []
+        for value in funnelColours:
+            value2 = value.strip()
+            if value2[0] == "#":
+                valueArray2.append(("RGB", value2))
+            else:
+                valueArray2.append(("Theme", parseThemeColour(value2)))
 
+        processingOptions.setOptionValues("funnelColours", valueArray2)
 
 slideTemplateFile = processingOptions.getCurrentOption("slideTemplateFile")
 if slideTemplateFile != "":
@@ -5759,7 +5787,7 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
         # Dynamic metadata line
         inTitle = False
         if DMMatch := dynamicMetadataRegex.match(line):
-            metadataKey = DMMatch.group(1).lower()
+            metadataKey = DMMatch.group(1).lower().strip()
             metadataValue = DMMatch.group(2).lower()
             if (metadataKey != "") & (metadataValue != ""):
                 # Valid metadata pair so parse key / value - and apply if valid
@@ -5892,6 +5920,34 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
                         print(
                             f'CardShape value \'{metadataValue}\' unsupported. "squared", "rounded", or "line" required.'
                         )
+
+                elif metadataKey in ["cardcolour", "cardcolor"]:
+                    cardColours = metadataValue.split(",")
+                    valueArray2 = []
+                    for value in cardColours:
+                        value2 = value.strip()
+                        if value2[0] == "#":
+                            valueArray2.append(("RGB", value2))
+                        else:
+                            valueArray2.append(("Theme", parseThemeColour(value2)))
+
+                    processingOptions.dynamicallySetOption(
+                        "cardColour", valueArray2, ""
+                    )
+
+                elif metadataKey in ["funnelcolours", "funnelcolours"]:
+                    funnelColours = metadataValue.split(",")
+                    valueArray2 = []
+                    for value in funnelColours:
+                        value2 = value.strip()
+                        if value2[0] == "#":
+                            valueArray2.append(("RGB", value2))
+                        else:
+                            valueArray2.append(("Theme", parseThemeColour(value2)))
+
+                    processingOptions.dynamicallySetOption(
+                        "funnelColours", valueArray2, ""
+                    )
 
                 # Note: Actual value handling prevents using dynamicallySetOption
                 elif metadataKey == "contentsplit":
