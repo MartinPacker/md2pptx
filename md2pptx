@@ -78,7 +78,7 @@ except:
 
 
 md2pptx_level = "3.7+"
-md2pptx_date = "31 March, 2023"
+md2pptx_date = "1 April, 2023"
 
 namespaceURL = {
     "mc" : "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -877,6 +877,19 @@ def parseThemeColour(value):
         return MSO_THEME_COLOR.TEXT_2
     elif value2 == "MIXED":
         return MSO_THEME_COLOR.MIXED
+
+def parseColour(value):
+    if value[0] == "#":
+        return ("RGB", value)
+    else:
+        return ("Theme", parseThemeColour(value))
+
+def setColour(x, colour):
+    colourType, colourValue = colour
+    if colourType == "Theme":
+        x.theme_color = colourValue
+    else:
+        x.rgb = RGBColor.from_string(colourValue[1:])
 
 
 # Following functions are workarounds for python-pptx not having these functions for the font object
@@ -1768,11 +1781,7 @@ def addFormattedText(p, text):
                     font.italic = True
 
                 if italicColour != ("None", ""):
-                    italicType, italicColour2 = italicColour
-                    if italicType == "Theme":
-                        font.color.theme_color = italicColour2
-                    else:
-                        font.color.rgb = RGBColor.from_string(italicColour2[1:])
+                    setColour(font.color, italicColour)
 
             elif fragType == "Gloss":
                 # Add this run to abbrevRunsDictionary - for Glossary fix ups later
@@ -1807,11 +1816,7 @@ def addFormattedText(p, text):
                     font.bold = True
                 
                 if boldColour != ("None", ""):
-                    boldType, boldColour2 = boldColour
-                    if boldType == "Theme":
-                        font.color.theme_color = boldColour2
-                    else:
-                        font.color.rgb = RGBColor.from_string(boldColour2[1:])
+                    setColour(font.color, boldColour)
 
             elif fragType == "C":
                 font = run.font
@@ -2275,7 +2280,7 @@ def handleGraphViz(slide, renderingRectangle, codeLines):
 
 def handleFunnel(slide, renderingRectangle, codeLines):
     funnelColours = processingOptions.getCurrentOption("funnelColours")
-    print(funnelColours)
+
     # Remove triple backticks at bottom and top
     funnelParts = codeLines[1 : -1]
     f = funnel.Funnel()
@@ -2904,15 +2909,12 @@ def createListBlock(slideInfo, slide, renderingRectangle):
 
             # Fill in card's background - if necessary
             if (cardColours[0] != ("None", "")) & (cardShape != "line"):
-                ccType, ccColour = cardColours[c % len(cardColours)]
+                cardColour = cardColours[c % len(cardColours)]
 
                 fill = cardBackgroundShape.fill
                 fill.solid()
 
-                if ccType == "Theme":
-                    fill.fore_color.theme_color = ccColour
-                else:
-                    fill.fore_color.rgb = RGBColor.from_string(ccColour[1:])
+                setColour(fill.fore_color, cardColour)
 
     # Adjust bullets shape height - and calculate verticals for any cards
 
@@ -2943,11 +2945,7 @@ def createListBlock(slideInfo, slide, renderingRectangle):
         
         # Colour the title - if cardTitleColour specified
         if cardTitleColour != ("None", ""):
-            colourType, titleColour = cardTitleColour
-            if colourType == "Theme":
-                fill.cardTitleShape.text_frame.paragraphs[0].font.color.theme_color = titleColour
-            else:
-                cardTitleShape.text_frame.paragraphs[0].font.color.rgb = RGBColor.from_string(titleColour[1:])
+            setColour(cardTitleShape.text_frame.paragraphs[0].font.color, cardTitleColour)
 
         # Calculate positions and heights within card background of body
         if cardTitlePosition == "above":
@@ -2979,11 +2977,7 @@ def createListBlock(slideInfo, slide, renderingRectangle):
                 )
             
             if cardDividerColour != ("None", ""):
-                colourType, dividerColour = cardDividerColour
-                if colourType == "Theme":
-                    dividingLine.line.color.theme_color = dividerColour
-                else:
-                    dividingLine.line.color.rgb = RGBColor.from_string(dividerColour[1:])
+                setColour(dividingLine.line.color, cardDividerColour)
 
             dividingLine.line.width = Pt(2.0)
 
@@ -2997,11 +2991,7 @@ def createListBlock(slideInfo, slide, renderingRectangle):
         lf = cardBackgroundShape.line
 
         if (cardBorderColour != ("None", "")) & (cardShape != "line"):
-            colourType, borderColour = cardBorderColour
-            if colourType == "Theme":
-                lf.color.theme_color = borderColour
-            else:
-                lf.color.rgb = RGBColor.from_string(borderColour[1:])
+            setColour(lf.color, cardBorderColour)
 
         if cardShape == "line":
             lf.fill.background()
@@ -3917,12 +3907,7 @@ def createLine(x0, y0, x1, y1, shapes, colour = ("RGB","#BFBFBF"), width = 4.0):
     line = shapes.add_shape(MSO_SHAPE.LINE_INVERSE, x0, y0, x1 - x0, y1 - y0)
 
     # Set shape's outline attributes
-    colourType, colourValue = colour
-    if colourType == "Theme":
-        line.line.color.theme_colour = parseThemeColour(colourValue)
-    else:
-        line.line.color.rgb = RGBColor.from_string(colourValue[1:])
-    
+    setColour(line.line.color, colour)
     
     line.line.width = Pt(width)
     
@@ -5211,50 +5196,28 @@ for line in metadata_lines:
             processingOptions.setOptionValues("boldBold", False)
 
     elif (name == "boldcolour") | (name == "boldcolor"):
-        if value[0] == "#":
-            processingOptions.setOptionValues("boldColour", ("RGB", value))
-        else:
-            processingOptions.setOptionValues("boldColour", ("Theme", parseThemeColour(value)))
+        processingOptions.setOptionValues("boldColour", (parseColour(value.strip())))
 
     elif name == "italicitalic":
         if value == "no":
             processingOptions.setOptionValues("italicItalic", False)
 
     elif (name == "italiccolour") | (name == "italiccolor"):
-        if value[0] == "#":
-            processingOptions.setOptionValues("italicColour", ("RGB", value))
-        else:
-            processingOptions.setOptionValues("italicColour", ("Theme", parseThemeColour(value)))
+        processingOptions.setOptionValues("italicColour", (parseColour(value.strip())))
 
-    elif (name == "cardcolour") | (name == "cardcolor"):
-        cardColours = value.split(",")
-        valueArray2 = []
-        for value in cardColours:
-            value2 = value.strip()
-            if value2[0] == "#":
-                valueArray2.append(("RGB", value2))
-            else:
-                valueArray2.append(("Theme", parseThemeColour(value2)))
+    elif name in ["cardcolour", "cardcolor", "cardcolours", "cardcolors"]:
+        valueArray2 = [parseColour(c.strip()) for c in value.split(",")]
 
         processingOptions.setOptionValues("cardColour", valueArray2)
 
     elif (name == "cardbordercolour") | (name == "cardbordercolor"):
-        if value[0] == "#":
-            processingOptions.setOptionValues("cardBorderColour", ("RGB", value))
-        else:
-            processingOptions.setOptionValues("cardBorderColour", ("Theme", parseThemeColour(value)))
+        processingOptions.setOptionValues("cardBorderColour", parseColour(value.strip()))
 
     elif (name == "cardtitlecolour") | (name == "cardtitlecolor"):
-        if value[0] == "#":
-            processingOptions.setOptionValues("cardTitleColour", ("RGB", value))
-        else:
-            processingOptions.setOptionValues("cardTitleColour", ("Theme", parseThemeColour(value)))
+        processingOptions.setOptionValues("cardTitleColour", parseColour(value.strip()))
 
     elif (name == "carddividercolour") | (name == "carddividercolor"):
-        if value[0] == "#":
-            processingOptions.setOptionValues("cardDividerColour", ("RGB", value))
-        else:
-            processingOptions.setOptionValues("cardDividerColour", ("Theme", parseThemeColour(value)))
+        processingOptions.setOptionValues("cardDividerColour", parseColour(value.strip()))
 
     elif name == "cardborderwidth":
         processingOptions.setOptionValues(name, float(value))
@@ -5475,14 +5438,7 @@ for line in metadata_lines:
             print(f"Invalid value for {name} - {value}. Ignoring.")
 
     elif (name == "funnelcolours") | (name == "funnelcolors"): 
-        funnelColours = value.split(",")
-        valueArray2 = []
-        for value in funnelColours:
-            value2 = value.strip()
-            if value2[0] == "#":
-                valueArray2.append(("RGB", value2))
-            else:
-                valueArray2.append(("Theme", parseThemeColour(value2)))
+        valueArray2 = [parseColour(c.strip()) for c in value.split(",")]
 
         processingOptions.setOptionValues("funnelColours", valueArray2)
 
@@ -5921,29 +5877,15 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
                             f'CardShape value \'{metadataValue}\' unsupported. "squared", "rounded", or "line" required.'
                         )
 
-                elif metadataKey in ["cardcolour", "cardcolor"]:
-                    cardColours = metadataValue.split(",")
-                    valueArray2 = []
-                    for value in cardColours:
-                        value2 = value.strip()
-                        if value2[0] == "#":
-                            valueArray2.append(("RGB", value2))
-                        else:
-                            valueArray2.append(("Theme", parseThemeColour(value2)))
+                elif metadataKey in ["cardcolour", "cardcolor", "cardcolours", "cardcolors"]:
+                    valueArray2 = [parseColour(c.strip()) for c in metadataValue.split(",")]
 
                     processingOptions.dynamicallySetOption(
                         "cardColour", valueArray2, ""
                     )
 
                 elif metadataKey in ["funnelcolours", "funnelcolours"]:
-                    funnelColours = metadataValue.split(",")
-                    valueArray2 = []
-                    for value in funnelColours:
-                        value2 = value.strip()
-                        if value2[0] == "#":
-                            valueArray2.append(("RGB", value2))
-                        else:
-                            valueArray2.append(("Theme", parseThemeColour(value2)))
+                    valueArray2 = [parseColour(c.strip()) for c in metadataValue.split(",")]
 
                     processingOptions.dynamicallySetOption(
                         "funnelColours", valueArray2, ""
