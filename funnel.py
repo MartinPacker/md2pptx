@@ -19,17 +19,21 @@ class Funnel:
         self,
     ):
         pass
-
+    
     def makeFunnel(
         self, 
         slide, 
         renderingRectangle, 
         funnelParts,
-        partColours
+        partColours,
+        codeType,
+        funnelBorderColour,
+        funnelTitleColour,
+        funnelTextColour,
+        funnelLabelsPercent,
     ):
-
-        funnelLabelsProportion = 0.1
-
+        funnelLabelsProportion = funnelLabelsPercent / 100
+        
         # Define labels rectangle
         funnelLabelsRectangle = Rectangle(
             renderingRectangle.top,
@@ -83,9 +87,12 @@ class Funnel:
                 funnelLabelsRectangle.height,
             )
             
-            tb.text = label
-            tb.text_frame.paragraphs[0].alignment = PP_ALIGN.CENTER
-        
+            tb.text = label.replace("<br/>","\n")
+            for p in tb.text_frame.paragraphs:
+                p.alignment = PP_ALIGN.CENTER
+                if funnelTitleColour != ("None", ""):
+                    setColour(p.font.color, funnelTitleColour)
+
         # Create the parts of the funnel§
         for b, body in enumerate(funnelBody):
             partLeft = funnelBodyRectangle.left + b * partWidth
@@ -121,8 +128,13 @@ class Funnel:
             )
     
             s = ffBuilder.convert_to_shape()
-            s.text = body
-            s.text_frame.paragraphs[0].alignment = PP_ALIGN.CENTER
+            s.text = body.replace("<br/>","\n")
+            
+            for p in s.text_frame.paragraphs:
+                p.alignment = PP_ALIGN.CENTER
+                if funnelTextColour != ("None", ""):
+                    setColour(p.font.color, funnelTextColour)
+
             s.fill.solid()
             
             partColourType, partColourValue = partColours[b % partColourCount]
@@ -130,5 +142,9 @@ class Funnel:
                 s.fill.fore_color.theme_color = partColourValue
             else:
                 s.fill.fore_color.rgb = RGBColor.from_string(partColourValue[1:])
+            
+            if funnelBorderColour != ("None", ""):
+                setColour(s.line.color, funnelBorderColour)
+
 
 

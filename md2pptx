@@ -71,16 +71,16 @@ except:
 # Flag availability or otherwise
 
 try:
-	import graphviz
-	
-	have_graphviz = True
+    import graphviz
+    
+    have_graphviz = True
 
 except:
-	have_graphviz = False
+    have_graphviz = False
 
 
 md2pptx_level = "3.7+"
-md2pptx_date = "1 April, 2023"
+md2pptx_date = "2 April, 2023"
 
 namespaceURL = {
     "mc" : "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -1152,16 +1152,16 @@ def formatTitle(presentation, slide, titleText, titleFontSize, subtitleFontSize)
 
     # Set anchor to top
     title.text_frame.vertical_anchor = MSO_ANCHOR.TOP
-	
+    
     # Set this paragraph's font size using pageTitleSize
     firstTitleParagraph.font.size = Pt(titleFontSize)
 
     # No space before the paragraph
     firstTitleParagraph.space_after = Pt(0)
 
-	# Set first title paragraph's alignment
+    # Set first title paragraph's alignment
     firstTitleParagraph.alignment = titleAlignment
-	
+    
     if subtitleFontSize == "same":
         subtitleFontSize = titleFontSize
 
@@ -1181,7 +1181,7 @@ def formatTitle(presentation, slide, titleText, titleFontSize, subtitleFontSize)
         # Set this paragraph's font size using pageSubtitleSize
         newPara.font.size = Pt(subtitleFontSize)
 
-		# Set this paragraph's alignment
+        # Set this paragraph's alignment
         newPara.alignment = titleAlignment
 
     # Note: Working off pageTitleSize and pageSubtitleSize
@@ -2186,45 +2186,57 @@ def handleWhateverGraphicType(GraphicFilename):
 
     return GraphicFilename, printableGraphicFilename
 
-def handleGraphViz(slide, renderingRectangle, codeLines):
-	# Condition GraphViz source
-	temp = "\n".join(codeLines[1:-1])
-	s = graphviz.Source(temp, format="png")
-	
-	# Invent a temporary filename for the rendered graphic
-	dotFile = "md2pptx-temporary-dotfile.png"
+def handleGraphViz(slide, renderingRectangle, codeLines, codeType):
+    # Condition GraphViz source
+    s = graphviz.Source("\n".join(codeLines), format="png")
+    
+    # Invent a temporary filename for the rendered graphic
+    dotFile = "md2pptx-temporary-dotfile.png"
 
-	# Render the .dot source as a graphic
-	s.render(cleanup=True, outfile=dotFile)
+    # Render the .dot source as a graphic
+    s.render(cleanup=True, outfile=dotFile)
 
-	# Figure out the dimensions of the rendered graphic
-	dotGraphicWidth, dotGraphicHeight = getGraphicDimensions(dotFile)
+    # Figure out the dimensions of the rendered graphic
+    dotGraphicWidth, dotGraphicHeight = getGraphicDimensions(dotFile)
 
-	# Adjust those dimensions with the usual scaling rules
-	(dotPicWidth, dotPicHeight, scaledByHeight) = scalePicture(
-		renderingRectangle.width, renderingRectangle.height, dotGraphicWidth, dotGraphicHeight
-	)
+    # Adjust those dimensions with the usual scaling rules
+    (dotPicWidth, dotPicHeight, scaledByHeight) = scalePicture(
+        renderingRectangle.width, renderingRectangle.height, dotGraphicWidth, dotGraphicHeight
+    )
 
-	# Add the picture to the current slide
-	slide.shapes.add_picture(
-		dotFile,
-		renderingRectangle.left + (renderingRectangle.width - dotPicWidth) / 2,
-		renderingRectangle.top + (renderingRectangle.height - dotPicHeight) / 2,
-		dotPicWidth,
-		dotPicHeight,
-	)
-	
-	# Delete the temporary graphic file
-	os.remove(dotFile)
+    # Add the picture to the current slide
+    slide.shapes.add_picture(
+        dotFile,
+        renderingRectangle.left + (renderingRectangle.width - dotPicWidth) / 2,
+        renderingRectangle.top + (renderingRectangle.height - dotPicHeight) / 2,
+        dotPicWidth,
+        dotPicHeight,
+    )
+    
+    # Delete the temporary graphic file
+    os.remove(dotFile)
 
 
-def handleFunnel(slide, renderingRectangle, codeLines):
+def handleFunnel(slide, renderingRectangle, codeLines, codeType):
     funnelColours = processingOptions.getCurrentOption("funnelColours")
+    funnelBorderColour = processingOptions.getCurrentOption("funnelBorderColour")
+    funnelTitleColour = processingOptions.getCurrentOption("funnelTitleColour")
+    funnelTextColour = processingOptions.getCurrentOption("funnelTextColour")
+    funnelLabelsPercent = processingOptions.getCurrentOption("funnelLabelsPercent")
 
-    # Remove triple backticks at bottom and top
-    funnelParts = codeLines[1 : -1]
     f = funnel.Funnel()
-    f.makeFunnel(slide, renderingRectangle, funnelParts, funnelColours)
+
+    f.makeFunnel(
+        slide, 
+        renderingRectangle, 
+        codeLines, 
+        funnelColours,
+        codeType,
+        funnelBorderColour,
+        funnelTitleColour,
+        funnelTextColour,
+        funnelLabelsPercent,
+   )
 
 def createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber):
     monoFont = processingOptions.getCurrentOption("monoFont")
@@ -2247,7 +2259,7 @@ def createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber):
             # Some other type - such as GraphViz .dot
             codeType = codeLines[0][3:].strip().lower()
             
-            if codeType == "dot":
+            if codeType.startswith("dot"):
                 # GraphViz dot
                 if have_graphviz is False:
                     # Don't have GraphViz so warn and treat as basic backticks
@@ -2256,13 +2268,13 @@ def createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber):
                     codeType = "backticks"
                 else:
                     # Have GraphViz installed so use it ti add a picture
-                    handleGraphViz(slide, renderingRectangle, codeLines)
+                    handleGraphViz(slide, renderingRectangle, codeLines[1:-1], codeType)
                 
                     return slide
                 
-            elif codeType == "funnel":
+            elif codeType.startswith("funnel"):
                 # Built-in Funnel Diagram
-                handleFunnel(slide, renderingRectangle, codeLines)
+                handleFunnel(slide, renderingRectangle, codeLines[1:-1], codeType)
                 
                 return slide
             
@@ -4941,7 +4953,11 @@ processingOptions.setOptionValuesArray(
                 ("Theme", MSO_THEME_COLOR.ACCENT_5),
                 ("Theme", MSO_THEME_COLOR.ACCENT_6),
             ]
-        ]
+        ],
+        ["funnelBorderColour", ("None", "")],
+        ["funnelTitleColour", ("None", "")],
+        ["funnelTextColour", ("None", "")],
+        ["funnelLabelsPercent", 10],
     ]
 )
 
@@ -5389,6 +5405,20 @@ for line in metadata_lines:
         valueArray2 = [parseColour(c.strip()) for c in value.split(",")]
 
         processingOptions.setOptionValues("funnelColours", valueArray2)
+
+    elif (name == "funnelbordercolour") | (name == "funnelbordercolor"):
+        processingOptions.setOptionValues("funnelBorderColour", parseColour(value.strip()))
+
+    elif (name == "funneltitlecolour") | (name == "funneltitlecolor"):
+        processingOptions.setOptionValues("funnelTitleColour", parseColour(value.strip()))
+
+    elif (name == "funneltextcolour") | (name == "funneltextcolor"):
+        processingOptions.setOptionValues("funnelTextColour", parseColour(value.strip()))
+
+    elif name == "funnellabelspercent":
+        processingOptions.setOptionValues(name, float(value))
+
+
 
 slideTemplateFile = processingOptions.getCurrentOption("slideTemplateFile")
 if slideTemplateFile != "":
