@@ -154,6 +154,7 @@ To quote from the python-pptx license statement:
 =colalign l r l
 =csv
 Level,Date,What
+4.0,7&nbsp;April&nbsp;2023,Added [Funnel](#funnels) support. [`CardColour`](#card-background-colour-cardcolour) can now be pluralised: `CardColors` or `CardColours`.
 3.7,26&nbsp;March&nbsp;2023,Added [`cardDividerColour`](#card-divider-colour-carddividercolour). Most colours now RGB or Theme Colour (documented in [Specifying Colours](#specifying-colours)).
 3.6,18&nbsp;March&nbsp;2023,Added [`cardTitleColour`](#card-title-colour-cardtitlecolour) &amp; `line` for [`cardshape`](#card-shape-cardshape). Allow multiple colours for [`cardColour`](#card-background-colour-cardcolour).
 3.5.2,14&nbsp;March&nbsp;2023,Added [`pageTitleAlign`](#page-title-alignment-pagetitlealign) - for content page title alignment.
@@ -902,6 +903,47 @@ To do this you use the `class` attribute:
 
     <span class="keyword">for</span> (i = 0; i < 10; i ++)
 
+### Funnels
+<a id="funnels"></a>
+
+Funnels depict a funnel, with the wide part to the left. \
+Each successive stage in the funnel narrows the funnel. \
+In a sense this is like a pipeline, with stages. \
+Here each stage but the last narrows the pipe. \
+md2pptx can create such slides from CSV data. \
+A typical result looks like this:
+
+![](funnel-slide.png)
+
+In this example the funnel is rendered below some bullets. \
+You can render funnels on the same slide as other items, which can be of any type.
+
+The code to create this slide is:
+
+    ### This Is A Funnel Slide
+    <!-- md2pptx: contentSplit: 1 3 -->
+    <!-- md2pptx: funnelColours: ACCENT 3, ACCENT 4, ACCENT 5 , ACCENT 6 -->
+    
+    * Here is some text above the funnel diagram
+      * The funnel parts are described by two-column CSV rows
+        * Columns after the first two are ignored
+
+    ``` funnel
+    1000 / Week<br/>(Roughly),Website<br/>Hits
+    100 / Week,Enquiries
+    80 / Week,Qualified
+    70 / Week,Signed
+    65 / Week,Delivered
+    ```
+Each row leads to a funnel stage. \
+The first column is the text for the label above each stage body. \
+The second column is the text for the stage body.
+
+**Notes:**
+
+1. You can force line breaks in both the funnel stage titles and the funnel stage bodies.
+1. You can specify aspects of funnels' appearance with [metadata](#funnel-metadata).
+1. Any CSV columns after the first two are ignored.
 
 ### Task List Slides
 <a id="task-list-slides"></a>
@@ -2102,7 +2144,7 @@ You can override this value at the slide level with [Dynamic SpanCells](#spancel
 ##### Card Background Colour - `CardColour`
 <a id="card-background-colour-cardcolour"></a>
 
-You can specify which of the theme colours to use for the background of each card in a [Card Slide](#card-slides) - using `CardColour` (or `CardColor`). \
+You can specify which colours to use for the background of each card in a [Card Slide](#card-slides) - using `CardColour` (or `CardColor` or `CardColours` or `CardColors`). \
 For example:
 
     CardColour: BACKGROUND 2
@@ -2337,8 +2379,96 @@ You can override this by specifying an RGB colour, such as black:
 
 You can override this on a slide-by-slide basis with [Dynamic codeBackground](#dynamic-codebackground).
 
-<a id="footer-metadata"></a>
+#### Funnel Metadata
+<a id="funnel-metadata"></a>
+
+You can specify a number of things about how [funnels](#funnels) are rendered:
+
+* You can specify colours for text, shape outlines and shape interiors.
+* You can specify the percentage of the vertical space to be set aside for labels.
+
+##### Funnel Fill Colours - `funnelColours`
+<a id="funnel-fill-colours-funnelcolours"></a>
+
+By default the interior of each stage is coloured ACCENT 1, ACCENT 2, ... , ACCENT 6, and back round to ACCENT 1 again. \
+You can override this by specifying your own list of colours. \
+How to specify colours is described in [Specifying Colours](#specifying-colours).
+
+For example, coding
+
+    funnelColours: ACCENT 2, ACCENT 1
+
+rotates the colours between ACCENT 1 and ACCENT 2 in the presentation's theme.
+
+Using RGB colours, you could create the almost unusable rotation of
+
+    funnelColours: #FF0000, #00FF00, #0000FF
+
+(which is red, then green, then blue, then back to red ...)
+
+You can use the alternate spelling `FunnelColors`.
+
+You can do this dynamically (on a slide-by-slide basis) with [`funnelColours`](#funnelcolours-dynamic).
+
+##### Funnel Border Colour - `funnelBorderColour`
+<a id="funnel-border-colour-funnelbordercolour"></a>
+
+You can specify which colour to use for the border of each stage in a [funnel](#funnels) - using `FunnelBorderColour` (or `FunnelBorderColor`).\
+For example:
+
+    FunnelBorderColour: #000000
+
+which yields a black border round each stage.
+
+If you don't specify this the stages won't have a border.
+
+You can do this dynamically (on a slide-by-slide basis) with [`funnelBorderColour`](#funnelbordercolour-dynamic).
+
+##### Funnel Title Colour - `funnelTitleColour`
+<a id="funnel-title-colour-funneltitlecolour"></a>
+
+You can specify which colour to use for the label of each stage in a [funnel](#funnels) - using `FunnelTitleColour` (or `FunnelTitleColor`).\
+For example:
+
+    FunnelTitleColour: #000000
+
+which yields black text for each stage.
+
+You can do this dynamically (on a slide-by-slide basis) with [`funnelTitleColour`](#funneltitlecolour-dynamic).
+
+##### Funnel Text Colour - `funnelTextColour`
+<a id="funnel-text-colour-funneltextcolour"></a>
+
+You can specify which colour to use for the text in the body of each stage in a [funnel](#funnels) - using `FunnelTextColour` (or `FunnelTextColor`).\
+For example:
+
+    FunnelTextColour: #FF0000
+
+which yields red text in the body of each stage.
+
+You can do this dynamically (on a slide-by-slide basis) with [`funnelTextColour`](#funneltextcolour-dynamic).
+
+##### Funnel Labels Space - `funnelLabelsPercent`
+<a id="funnel-labels-space-funnellabelspercent"></a>
+
+When a [funnel](#funnels) is constructed vertical space is set aside for the labels above each stage body. \
+Generally the default (10%) of the vertical space for labels plus funnel body is enough. \
+However, particularly if some of the labels occupy more than one line, you might need to adjust this percentage.
+
+You can alter the space proportion using `FunnelLabelsPercent`. \
+For example:
+
+    funnelLabelsPercent: 15
+
+In this example 15% of the vertical space is set aside for labels. \
+In testing this appeared to be enough for two-line labels and not too much for the labels that were single line.
+
+You can do this dynamically (on a slide-by-slide basis) with [`funnelLabelsPercent`](#funnellabelspercent-dynamic).
+
+**Note:** Multiple lines in a label are separated by `<br/>`.
+
 #### Footer Metadata
+<a id="footer-metadata"></a>
 
 You can specify a number of things about the bottom of each slide:
 
@@ -2997,6 +3127,44 @@ You can override the presentation [CodeBackground](#background-colour-codebackgr
 
     <!-- md2pptx: codebackground: FFFFFF -->
 
+<a id="funnel-dynamic"></a>
+#### Funnel
+
+<a id="funnelcolours-dynamic"></a>
+##### `FunnelColours`
+
+You can override the presentation [FunnelColours](#funnel-fill-colours-funnelcolours) metadata value:
+
+    <!-- md2pptx: funnelcolours: ACCENT 3, ACCENT 4 -->
+
+<a id="funnelbordercolour-dynamic"></a>
+##### `FunnelBorderColour`
+
+You can override the presentation [FunnelBorderColour](#funnel-border-colour-funnelbordercolour) metadata value:
+
+    <!-- md2pptx: funnelbordercolour: ACCENT 5 -->
+
+<a id="funneltitlecolour-dynamic"></a>
+##### `FunnelTitleColour`
+
+You can override the presentation [FunnelTitleColour](#funnel-title-colour-funneltitlecolour) metadata value:
+
+    <!-- md2pptx: funneltitlecolour: ACCENT 5 -->
+
+<a id="funneltextcolour-dynamic"></a>
+##### `FunnelTextColour`
+
+You can override the presentation [FunnelTextColour](#funnel-text-colour-funneltextcolour) metadata value:
+
+    <!-- md2pptx: funneltextcolour: #000000 -->
+
+<a id="funnellabelspercent-dynamic"></a>
+##### `FunnelLabelsPercent`
+
+You can override the presentation [FunnelLabelsPercent](#funnel-labels-space-funnellabelspercent) metadata value:
+
+    <!-- md2pptx: funnellabelspercent: 20 -->
+
 <a id="pagetitlesize-dynamic"></a>
 #### `PageTitleSize`
 
@@ -3197,3 +3365,4 @@ See [Task List Slides](#task-list-slides) for details of md2pptx's Taskpaper sup
 * Using md2pptx's "ppaction://" URI support to [run a VBA macro](#invoking-a-vba-macro) won't work in HTML.
 * Using **outbound** hyperlinks in a heading is not standard Markdown - whether within the document or to the web.
 * [GraphViz .dot files](#graphviz) aren't rendered by most Markdown processors.
+* [Funnels](#funnels) aren't rendered by any other Markdown processor.

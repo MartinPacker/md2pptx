@@ -13,6 +13,21 @@ from pptx.util import Inches, Pt
 from pptx.enum.text import PP_ALIGN
 from pptx.dml.color import RGBColor, MSO_THEME_COLOR
 from colour import setColour
+from symbols import resolveSymbols
+
+def massageFunnelText(text):
+    fragment = ""
+    for c in text:
+        if ord(c) == 236:
+            fragment = fragment + "<"
+
+        elif ord(c) == 237:
+            fragment = fragment + ">"
+
+        else:
+            fragment = fragment + c
+            
+    return fragment
 
 class Funnel:
     def __init__(
@@ -87,7 +102,7 @@ class Funnel:
                 funnelLabelsRectangle.height,
             )
             
-            tb.text = label.replace("<br/>","\n")
+            tb.text = massageFunnelText(resolveSymbols(label.replace("<br/>","\n")))
             for p in tb.text_frame.paragraphs:
                 p.alignment = PP_ALIGN.CENTER
                 if funnelTitleColour != ("None", ""):
@@ -128,7 +143,7 @@ class Funnel:
             )
     
             s = ffBuilder.convert_to_shape()
-            s.text = body.replace("<br/>","\n")
+            s.text = massageFunnelText(resolveSymbols(body.replace("<br/>","\n")))
             
             for p in s.text_frame.paragraphs:
                 p.alignment = PP_ALIGN.CENTER

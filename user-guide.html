@@ -1125,6 +1125,7 @@ body .markdown-body
 <li><a href="#&lt;pre&gt;"><code>&lt;pre&gt;</code></a></li>
 </ul>
 </li>
+<li><a href="#funnels">Funnels</a></li>
 <li><a href="#task-list-slides">Task List Slides</a></li>
 <li><a href="#slides-with-more-than-one-content-block">Slides With More Than One Content Block</a></li>
 <li><a href="#adding-slide-notes">Adding Slide Notes</a></li>
@@ -1235,6 +1236,14 @@ body .markdown-body
 <li><a href="#background-colour-codebackground">Background Colour - <code>CodeBackground</code></a></li>
 </ul>
 </li>
+<li><a href="#funnel-metadata">Funnel Metadata</a><ul>
+<li><a href="#funnel-fill-colours-funnelcolours">Funnel Fill Colours - <code>funnelColours</code></a></li>
+<li><a href="#funnel-border-colour-funnelbordercolour">Funnel Border Colour - <code>funnelBorderColour</code></a></li>
+<li><a href="#funnel-title-colour-funneltitlecolour">Funnel Title Colour - <code>funnelTitleColour</code></a></li>
+<li><a href="#funnel-text-colour-funneltextcolour">Funnel Text Colour - <code>funnelTextColour</code></a></li>
+<li><a href="#funnel-labels-space-funnellabelspercent">Funnel Labels Space - <code>funnelLabelsPercent</code></a></li>
+</ul>
+</li>
 <li><a href="#footer-metadata">Footer Metadata</a><ul>
 <li><a href="#slide-numbers-numbers">Slide Numbers - <code>numbers</code></a></li>
 <li><a href="#specifying-how-much-space-to-reserve-for-slide-numbers-with-numbersheight">Specifying How Much Space To Reserve For Slide Numbers With <code>NumbersHeight</code></a></li>
@@ -1298,6 +1307,14 @@ body .markdown-body
 <li><a href="#fpratio"><code>FPRatio</code></a></li>
 <li><a href="#codeforeground"><code>CodeForeground</code></a></li>
 <li><a href="#codebackground"><code>CodeBackground</code></a></li>
+</ul>
+</li>
+<li><a href="#funnel">Funnel</a><ul>
+<li><a href="#funnelcolours"><code>FunnelColours</code></a></li>
+<li><a href="#funnelbordercolour"><code>FunnelBorderColour</code></a></li>
+<li><a href="#funneltitlecolour"><code>FunnelTitleColour</code></a></li>
+<li><a href="#funneltextcolour"><code>FunnelTextColour</code></a></li>
+<li><a href="#funnellabelspercent"><code>FunnelLabelsPercent</code></a></li>
 </ul>
 </li>
 <li><a href="#pagetitlesize"><code>PageTitleSize</code></a></li>
@@ -1437,6 +1454,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">4.0</td>
+<td align="right">7&nbsp;April&nbsp;2023</td>
+<td align="left">Added <a href="#funnels">Funnel</a> support. <a href="#card-background-colour-cardcolour"><code>CardColour</code></a> can now be pluralised: <code>CardColors</code> or <code>CardColours</code>.</td>
+</tr>
 <tr>
 <td align="left">3.7</td>
 <td align="right">26&nbsp;March&nbsp;2023</td>
@@ -2285,6 +2307,35 @@ for(i = 0; i &lt; 10; i++){
 <p><strong>Note:</strong> It, as in HTML, <strong>does</strong> support <code>&lt;span&gt;</code> elements. This is the best way to provide syntax colouring. You can use <code>style.fgcolor</code>, <code>style.bgcolor</code>, and <code>style.emphasis</code> to style the text. To do this you use the <code>class</code> attribute:</p>
 <pre><code>&lt;span class="keyword"&gt;for&lt;/span&gt; (i = 0; i &lt; 10; i ++)
 </code></pre>
+<h3 id="funnels">Funnels<a class="headerlink" href="#funnels" title="Permanent link"></a></h3>
+<p><a id="funnels"></a></p>
+<p>Funnels depict a funnel, with the wide part to the left. Each successive stage in the funnel narrows the funnel. In a sense this is like a pipeline, with stages. Here each stage but the last narrows the pipe. md2pptx can create such slides from CSV data. A typical result looks like this:</p>
+<p><img alt="" src="/Users/martinpacker/md2pptx/funnel-slide.png" /></p>
+<p>In this example the funnel is rendered below some bullets. You can render funnels on the same slide as other items, which can be of any type.</p>
+<p>The code to create this slide is:</p>
+<pre><code>### This Is A Funnel Slide
+&lt;!-- md2pptx: contentSplit: 1 3 --&gt;
+&lt;!-- md2pptx: funnelColours: ACCENT 3, ACCENT 4, ACCENT 5 , ACCENT 6 --&gt;
+
+* Here is some text above the funnel diagram
+  * The funnel parts are described by two-column CSV rows
+    * Columns after the first two are ignored
+
+``` funnel
+1000 / Week&lt;br/&gt;(Roughly),Website&lt;br/&gt;Hits
+100 / Week,Enquiries
+80 / Week,Qualified
+70 / Week,Signed
+65 / Week,Delivered
+```
+</code></pre>
+<p>Each row leads to a funnel stage. The first column is the text for the label above each stage body. The second column is the text for the stage body.</p>
+<p><strong>Notes:</strong></p>
+<ol>
+<li>You can force line breaks in both the funnel stage titles and the funnel stage bodies.</li>
+<li>You can specify aspects of funnels&rsquo; appearance with <a href="#funnel-metadata">metadata</a>.</li>
+<li>Any CSV columns after the first two are ignored.</li>
+</ol>
 <h3 id="task-list-slides">Task List Slides<a class="headerlink" href="#task-list-slides" title="Permanent link"></a></h3>
 <p><a id="task-list-slides"></a></p>
 <p>You can create tasks in a subset of the <a href="https://support.omnigroup.com/omnifocus-taskpaper-reference/">Taskpaper</a> format by coding a line that starts with a <code>-</code>:</p>
@@ -3238,7 +3289,7 @@ For example</p>
 <h4 id="card-metadata">Card Metadata<a class="headerlink" href="#card-metadata" title="Permanent link"></a></h4>
 <h5 id="card-background-colour-cardcolour">Card Background Colour - <code>CardColour</code><a class="headerlink" href="#card-background-colour-cardcolour" title="Permanent link"></a></h5>
 <p><a id="card-background-colour-cardcolour"></a></p>
-<p>You can specify which of the theme colours to use for the background of each card in a <a href="#card-slides">Card Slide</a> - using <code>CardColour</code> (or <code>CardColor</code>). For example:</p>
+<p>You can specify which colours to use for the background of each card in a <a href="#card-slides">Card Slide</a> - using <code>CardColour</code> (or <code>CardColor</code> or <code>CardColours</code> or <code>CardColors</code>). For example:</p>
 <pre><code>CardColour: BACKGROUND 2
 </code></pre>
 <p>If you don&rsquo;t specify this the default text box background colour - from the template - will be used.</p>
@@ -3377,8 +3428,59 @@ For example</p>
 <pre><code>codeBackground: 000000
 </code></pre>
 <p>You can override this on a slide-by-slide basis with <a href="#dynamic-codebackground">Dynamic codeBackground</a>.</p>
-<p><a id="footer-metadata"></a></p>
+<h4 id="funnel-metadata">Funnel Metadata<a class="headerlink" href="#funnel-metadata" title="Permanent link"></a></h4>
+<p><a id="funnel-metadata"></a></p>
+<p>You can specify a number of things about how <a href="#funnels">funnels</a> are rendered:</p>
+<ul>
+<li>You can specify colours for text, shape outlines and shape interiors.</li>
+<li>You can specify the percentage of the vertical space to be set aside for labels.</li>
+</ul>
+<h5 id="funnel-fill-colours-funnelcolours">Funnel Fill Colours - <code>funnelColours</code><a class="headerlink" href="#funnel-fill-colours-funnelcolours" title="Permanent link"></a></h5>
+<p><a id="funnel-fill-colours-funnelcolours"></a></p>
+<p>By default the interior of each stage is coloured ACCENT 1, ACCENT 2, &hellip; , ACCENT 6, and back round to ACCENT 1 again. You can override this by specifying your own list of colours. How to specify colours is described in <a href="#specifying-colours">Specifying Colours</a>.</p>
+<p>For example, coding</p>
+<pre><code>funnelColours: ACCENT 2, ACCENT 1
+</code></pre>
+<p>rotates the colours between ACCENT 1 and ACCENT 2 in the presentation&rsquo;s theme.</p>
+<p>Using RGB colours, you could create the almost unusable rotation of</p>
+<pre><code>funnelColours: #FF0000, #00FF00, #0000FF
+</code></pre>
+<p>(which is red, then green, then blue, then back to red &hellip;)</p>
+<p>You can use the alternate spelling <code>FunnelColors</code>.</p>
+<p>You can do this dynamically (on a slide-by-slide basis) with <a href="#funnelcolours-dynamic"><code>funnelColours</code></a>.</p>
+<h5 id="funnel-border-colour-funnelbordercolour">Funnel Border Colour - <code>funnelBorderColour</code><a class="headerlink" href="#funnel-border-colour-funnelbordercolour" title="Permanent link"></a></h5>
+<p><a id="funnel-border-colour-funnelbordercolour"></a></p>
+<p>You can specify which colour to use for the border of each stage in a <a href="#funnels">funnel</a> - using <code>FunnelBorderColour</code> (or <code>FunnelBorderColor</code>).For example:</p>
+<pre><code>FunnelBorderColour: #000000
+</code></pre>
+<p>which yields a black border round each stage.</p>
+<p>If you don&rsquo;t specify this the stages won&rsquo;t have a border.</p>
+<p>You can do this dynamically (on a slide-by-slide basis) with <a href="#funnelbordercolour-dynamic"><code>funnelBorderColour</code></a>.</p>
+<h5 id="funnel-title-colour-funneltitlecolour">Funnel Title Colour - <code>funnelTitleColour</code><a class="headerlink" href="#funnel-title-colour-funneltitlecolour" title="Permanent link"></a></h5>
+<p><a id="funnel-title-colour-funneltitlecolour"></a></p>
+<p>You can specify which colour to use for the label of each stage in a <a href="#funnels">funnel</a> - using <code>FunnelTitleColour</code> (or <code>FunnelTitleColor</code>).For example:</p>
+<pre><code>FunnelTitleColour: #000000
+</code></pre>
+<p>which yields black text for each stage.</p>
+<p>You can do this dynamically (on a slide-by-slide basis) with <a href="#funneltitlecolour-dynamic"><code>funnelTitleColour</code></a>.</p>
+<h5 id="funnel-text-colour-funneltextcolour">Funnel Text Colour - <code>funnelTextColour</code><a class="headerlink" href="#funnel-text-colour-funneltextcolour" title="Permanent link"></a></h5>
+<p><a id="funnel-text-colour-funneltextcolour"></a></p>
+<p>You can specify which colour to use for the text in the body of each stage in a <a href="#funnels">funnel</a> - using <code>FunnelTextColour</code> (or <code>FunnelTextColor</code>).For example:</p>
+<pre><code>FunnelTextColour: #FF0000
+</code></pre>
+<p>which yields red text in the body of each stage.</p>
+<p>You can do this dynamically (on a slide-by-slide basis) with <a href="#funneltextcolour-dynamic"><code>funnelTextColour</code></a>.</p>
+<h5 id="funnel-labels-space-funnellabelspercent">Funnel Labels Space - <code>funnelLabelsPercent</code><a class="headerlink" href="#funnel-labels-space-funnellabelspercent" title="Permanent link"></a></h5>
+<p><a id="funnel-labels-space-funnellabelspercent"></a></p>
+<p>When a <a href="#funnels">funnel</a> is constructed vertical space is set aside for the labels above each stage body. Generally the default (10%) of the vertical space for labels plus funnel body is enough. However, particularly if some of the labels occupy more than one line, you might need to adjust this percentage.</p>
+<p>You can alter the space proportion using <code>FunnelLabelsPercent</code>. For example:</p>
+<pre><code>funnelLabelsPercent: 15
+</code></pre>
+<p>In this example 15% of the vertical space is set aside for labels. In testing this appeared to be enough for two-line labels and not too much for the labels that were single line.</p>
+<p>You can do this dynamically (on a slide-by-slide basis) with <a href="#funnellabelspercent-dynamic"><code>funnelLabelsPercent</code></a>.</p>
+<p><strong>Note:</strong> Multiple lines in a label are separated by <code>&lt;br/&gt;</code>.</p>
 <h4 id="footer-metadata">Footer Metadata<a class="headerlink" href="#footer-metadata" title="Permanent link"></a></h4>
+<p><a id="footer-metadata"></a></p>
 <p>You can specify a number of things about the bottom of each slide:</p>
 <ul>
 <li>You can specify whether slide numbers are to be generated by md2pptx - with <a href="#slide-numbers-numbers"><code>numbers</code></a>.</li>
@@ -3847,6 +3949,33 @@ The default value is <code>no</code>.</p>
 <p>You can override the presentation <a href="#background-colour-codebackground">CodeBackground</a> code slide background colour on a slide-by-slide basis:</p>
 <pre><code>&lt;!-- md2pptx: codebackground: FFFFFF --&gt;
 </code></pre>
+<p><a id="funnel-dynamic"></a></p>
+<h4 id="funnel">Funnel<a class="headerlink" href="#funnel" title="Permanent link"></a></h4>
+<p><a id="funnelcolours-dynamic"></a></p>
+<h5 id="funnelcolours"><code>FunnelColours</code><a class="headerlink" href="#funnelcolours" title="Permanent link"></a></h5>
+<p>You can override the presentation <a href="#funnel-fill-colours-funnelcolours">FunnelColours</a> metadata value:</p>
+<pre><code>&lt;!-- md2pptx: funnelcolours: ACCENT 3, ACCENT 4 --&gt;
+</code></pre>
+<p><a id="funnelbordercolour-dynamic"></a></p>
+<h5 id="funnelbordercolour"><code>FunnelBorderColour</code><a class="headerlink" href="#funnelbordercolour" title="Permanent link"></a></h5>
+<p>You can override the presentation <a href="#funnel-border-colour-funnelbordercolour">FunnelBorderColour</a> metadata value:</p>
+<pre><code>&lt;!-- md2pptx: funnelbordercolour: ACCENT 5 --&gt;
+</code></pre>
+<p><a id="funneltitlecolour-dynamic"></a></p>
+<h5 id="funneltitlecolour"><code>FunnelTitleColour</code><a class="headerlink" href="#funneltitlecolour" title="Permanent link"></a></h5>
+<p>You can override the presentation <a href="#funnel-title-colour-funneltitlecolour">FunnelTitleColour</a> metadata value:</p>
+<pre><code>&lt;!-- md2pptx: funneltitlecolour: ACCENT 5 --&gt;
+</code></pre>
+<p><a id="funneltextcolour-dynamic"></a></p>
+<h5 id="funneltextcolour"><code>FunnelTextColour</code><a class="headerlink" href="#funneltextcolour" title="Permanent link"></a></h5>
+<p>You can override the presentation <a href="#funnel-text-colour-funneltextcolour">FunnelTextColour</a> metadata value:</p>
+<pre><code>&lt;!-- md2pptx: funneltextcolour: #000000 --&gt;
+</code></pre>
+<p><a id="funnellabelspercent-dynamic"></a></p>
+<h5 id="funnellabelspercent"><code>FunnelLabelsPercent</code><a class="headerlink" href="#funnellabelspercent" title="Permanent link"></a></h5>
+<p>You can override the presentation <a href="#funnel-labels-space-funnellabelspercent">FunnelLabelsPercent</a> metadata value:</p>
+<pre><code>&lt;!-- md2pptx: funnellabelspercent: 20 --&gt;
+</code></pre>
 <p><a id="pagetitlesize-dynamic"></a></p>
 <h4 id="pagetitlesize"><code>PageTitleSize</code><a class="headerlink" href="#pagetitlesize" title="Permanent link"></a></h4>
 <p>You can override the presentation <a href="#page-title-size-pagetitlesize">PageTitleSize</a> metadata value - perhaps to allow room for more text in the title of a slide:</p>
@@ -4027,4 +4156,5 @@ The default value is <code>no</code>.</p>
 <li>Using md2pptx&rsquo;s &ldquo;ppaction://&rdquo; URI support to <a href="#invoking-a-vba-macro">run a VBA macro</a> won&rsquo;t work in HTML.</li>
 <li>Using <strong>outbound</strong> hyperlinks in a heading is not standard Markdown - whether within the document or to the web.</li>
 <li><a href="#graphviz">GraphViz .dot files</a> aren&rsquo;t rendered by most Markdown processors.</li>
+<li><a href="#funnels">Funnels</a> aren&rsquo;t rendered by any other Markdown processor.</li>
 </ul></article></body></html>

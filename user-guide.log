@@ -5,8 +5,8 @@ mdpre Markdown Preprocessor v0.6.5 (17 February, 2023)
 Def mdpre_date = 17 February, 2023
 Def mdpre_level = 0.6.5
 Def userid = martinpacker
-Def time = 13&colon;59
-Def date = 26 March&comma; 2023
+Def time = 10&colon;05
+Def date = 7 April&comma; 2023
 Def TOC = Table Of Contents
 Def md = Markdown
 Def pp = Powerpoint
@@ -50,6 +50,7 @@ CSV Stop
 ..... ..... ..... ..... .....  GraphViz
 ..... ..... .....  Indented Text
 ..... ..... .....  `<pre>`
+..... .....  Funnels
 ..... .....  Task List Slides
 ..... .....  Slides With More Than One Content Block
 ..... .....  Adding Slide Notes
@@ -138,6 +139,12 @@ CSV Stop
 ..... ..... ..... .....  Fixed Pitch Height To Width Ratio - `FPRatio`
 ..... ..... ..... .....  Foreground Colour - `CodeForeground`
 ..... ..... ..... .....  Background Colour - `CodeBackground`
+..... ..... .....  Funnel Metadata
+..... ..... ..... .....  Funnel Fill Colours - `funnelColours`
+..... ..... ..... .....  Funnel Border Colour - `funnelBorderColour`
+..... ..... ..... .....  Funnel Title Colour - `funnelTitleColour`
+..... ..... ..... .....  Funnel Text Colour - `funnelTextColour`
+..... ..... ..... .....  Funnel Labels Space - `funnelLabelsPercent`
 ..... ..... .....  Footer Metadata
 ..... ..... ..... .....  Slide Numbers - `numbers`
 ..... ..... ..... .....  Specifying How Much Space To Reserve For Slide Numbers With `NumbersHeight`
@@ -191,6 +198,12 @@ CSV Stop
 ..... ..... ..... .....  `FPRatio`
 ..... ..... ..... .....  `CodeForeground`
 ..... ..... ..... .....  `CodeBackground`
+..... ..... .....  Funnel
+..... ..... ..... .....  `FunnelColours`
+..... ..... ..... .....  `FunnelBorderColour`
+..... ..... ..... .....  `FunnelTitleColour`
+..... ..... ..... .....  `FunnelTextColour`
+..... ..... ..... .....  `FunnelLabelsPercent`
 ..... ..... .....  `PageTitleSize`
 ..... ..... .....  `PageSubtitleSize`
 ..... ..... .....  `BaseTextSize`
