@@ -2,7 +2,7 @@
 funnel
 """
 
-myVersion = "0.0"
+myVersion = "0.1"
 
 __version__ = myVersion
 
@@ -46,24 +46,39 @@ class Funnel:
         funnelTitleColour,
         funnelTextColour,
         funnelLabelsPercent,
+        funnelLabelPosition,
     ):
         funnelLabelsProportion = funnelLabelsPercent / 100
         
-        # Define labels rectangle
-        funnelLabelsRectangle = Rectangle(
-            renderingRectangle.top,
-            renderingRectangle.left,
-            int(renderingRectangle.height * funnelLabelsProportion),
-            renderingRectangle.width,
-        )
+        # Define labels rectangle then funnel body rectangle
+        if funnelLabelPosition == "before":
+            funnelLabelsRectangle = Rectangle(
+                renderingRectangle.top,
+                renderingRectangle.left,
+                int(renderingRectangle.height * funnelLabelsProportion),
+                renderingRectangle.width,
+            )
 
-        # Define funnel body rectangle
-        funnelBodyRectangle = Rectangle(
-            renderingRectangle.top + int(renderingRectangle.height * funnelLabelsProportion),
-            renderingRectangle.left,
-            int(renderingRectangle.height * (1 - funnelLabelsProportion)),
-            renderingRectangle.width,
-        )
+            funnelBodyRectangle = Rectangle(
+                renderingRectangle.top + int(renderingRectangle.height * funnelLabelsProportion),
+                renderingRectangle.left,
+                int(renderingRectangle.height * (1 - funnelLabelsProportion)),
+                renderingRectangle.width,
+            )
+        else:
+            funnelLabelsRectangle = Rectangle(
+                renderingRectangle.top +renderingRectangle.height * (1 - funnelLabelsProportion),
+                renderingRectangle.left,
+                int(renderingRectangle.height * funnelLabelsProportion),
+                renderingRectangle.width,
+            )
+
+            funnelBodyRectangle = Rectangle(
+                renderingRectangle.top,
+                renderingRectangle.left,
+                int(renderingRectangle.height * (1 - funnelLabelsProportion)),
+                renderingRectangle.width,
+            )
 
         tipHeight = funnelBodyRectangle.height / 3
         

@@ -79,8 +79,8 @@ except:
     have_graphviz = False
 
 
-md2pptx_level = "4.0"
-md2pptx_date = "7 April, 2023"
+md2pptx_level = "4.0+"
+md2pptx_date = "9 April, 2023"
 
 namespaceURL = {
     "mc" : "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -2157,6 +2157,7 @@ def handleFunnel(slide, renderingRectangle, codeLines, codeType):
     funnelTitleColour = processingOptions.getCurrentOption("funnelTitleColour")
     funnelTextColour = processingOptions.getCurrentOption("funnelTextColour")
     funnelLabelsPercent = processingOptions.getCurrentOption("funnelLabelsPercent")
+    funnelLabelPosition = processingOptions.getCurrentOption("funnelLabelPosition")
 
     f = funnel.Funnel()
 
@@ -2170,6 +2171,7 @@ def handleFunnel(slide, renderingRectangle, codeLines, codeType):
         funnelTitleColour,
         funnelTextColour,
         funnelLabelsPercent,
+        funnelLabelPosition,
    )
 
 def createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber):
@@ -4892,6 +4894,7 @@ processingOptions.setOptionValuesArray(
         ["funnelTitleColour", ("None", "")],
         ["funnelTextColour", ("None", "")],
         ["funnelLabelsPercent", 10],
+        ["funnelLabelPosition", "before"],
     ]
 )
 
@@ -5352,7 +5355,13 @@ for line in metadata_lines:
     elif name == "funnellabelspercent":
         processingOptions.setOptionValues(name, float(value))
 
-
+    elif name == "funnellabelposition":
+        if value in ["before", "after"]:
+            processingOptions.setOptionValues(name, value)
+        else:
+            print(
+                f'funnelLabelPosition value \'{value}\' unsupported. "before" or "after" required.'
+            )
 
 slideTemplateFile = processingOptions.getCurrentOption("slideTemplateFile")
 if slideTemplateFile != "":
@@ -5939,6 +5948,19 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
                         "default",
                         "pop",
                         "prev",
+                    ]:
+                        processingOptions.dynamicallySetOption(
+                            metadataKey,
+                            metadataValue,
+                            "",
+                        )
+                    else:
+                        print(f"Invalid value for {metadataKey}: {metadataValue} in '{line}")
+
+                elif metadataKey == "funnellabelposition":
+                    if metadataValue.lower() in [
+                        "before",
+                        "after",
                     ]:
                         processingOptions.dynamicallySetOption(
                             metadataKey,

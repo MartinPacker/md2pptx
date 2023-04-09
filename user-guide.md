@@ -134,6 +134,7 @@ As you can see in the [change log](#change-log), md2pptx is frequently updated -
 			* [Funnel Title Colour - `funnelTitleColour`](#funnel-title-colour-funneltitlecolour)
 			* [Funnel Text Colour - `funnelTextColour`](#funnel-text-colour-funneltextcolour)
 			* [Funnel Labels Space - `funnelLabelsPercent`](#funnel-labels-space-funnellabelspercent)
+			* [Funnel Labels Position - `funnelLabelsPosition`](#funnel-labels-position-funnellabelsposition)
 		* [Footer Metadata](#footer-metadata)
 			* [Slide Numbers - `numbers`](#slide-numbers-numbers)
 			* [Specifying How Much Space To Reserve For Slide Numbers With `NumbersHeight`](#specifying-how-much-space-to-reserve-for-slide-numbers-with-numbersheight)
@@ -187,6 +188,7 @@ As you can see in the [change log](#change-log), md2pptx is frequently updated -
 			* [`FunnelTitleColour`](#funneltitlecolour)
 			* [`FunnelTextColour`](#funneltextcolour)
 			* [`FunnelLabelsPercent`](#funnellabelspercent)
+			* [`FunnelLabelsPosition`](#funnellabelsposition)
 		* [`PageTitleSize`](#pagetitlesize)
 		* [`PageSubtitleSize`](#pagesubtitlesize)
 		* [`BaseTextSize`](#basetextsize)
@@ -332,6 +334,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|4.0+|7&nbsp;April&nbsp;2023|Added [FunnelLabelsPosition](#funnel-labels-position-funnellabelsposition).|
 |4.0|7&nbsp;April&nbsp;2023|Added [Funnel](#funnels) support. [`CardColour`](#card-background-colour-cardcolour) can now be pluralised: `CardColors` or `CardColours`.|
 |3.7|26&nbsp;March&nbsp;2023|Added [`cardDividerColour`](#card-divider-colour-carddividercolour). Most colours now RGB or Theme Colour (documented in [Specifying Colours](#specifying-colours)).|
 |3.6|18&nbsp;March&nbsp;2023|Added [`cardTitleColour`](#card-title-colour-cardtitlecolour) &amp; `line` for [`cardshape`](#card-shape-cardshape). Allow multiple colours for [`cardColour`](#card-background-colour-cardcolour).|
@@ -2391,7 +2394,7 @@ You can do this dynamically (on a slide-by-slide basis) with [`funnelTitleColour
 ##### Funnel Text Colour - `funnelTextColour`
 <a id="funnel-text-colour-funneltextcolour"></a>
 
-You can specify which colour to use for the text in the body of each stage in a [funnel](#funnels) - using `FunnelTextColour` (or `FunnelTextColor`).For example:
+You can specify which colour to use for the text in the body of each stage in a [funnel](#funnels) - using `FunnelTextColour` (or `FunnelTextColor`). For example:
 
     FunnelTextColour: #FF0000
 
@@ -2413,6 +2416,19 @@ In this example 15% of the vertical space is set aside for labels. In testing th
 You can do this dynamically (on a slide-by-slide basis) with [`funnelLabelsPercent`](#funnellabelspercent-dynamic).
 
 **Note:** Multiple lines in a label are separated by `<br/>`.
+
+##### Funnel Labels Position - `funnelLabelsPosition`
+<a id="funnel-labels-position-funnellabelsposition"></a>
+
+You can specify whether the labels are before or after the stages in a [funnel](#funnels) - using `FunnelLabelsPosition`. For example:
+
+    funnelLabelsPosition: after
+
+will ensure funnel labels come after the funnel stages.
+
+For horizontal funnels `before` means "above" and `after` means "below".
+
+You can do this dynamically (on a slide-by-slide basis) with [`funnelLabelsPosition`](#funnellabelsposition-dynamic).
 
 #### Footer Metadata
 <a id="footer-metadata"></a>
@@ -3054,6 +3070,13 @@ You can override the presentation [FunnelTextColour](#funnel-text-colour-funnelt
 You can override the presentation [FunnelLabelsPercent](#funnel-labels-space-funnellabelspercent) metadata value:
 
     <!-- md2pptx: funnellabelspercent: 20 -->
+
+<a id="funnellabelspercent-position"></a>
+##### `FunnelLabelsPosition`
+
+You can override the presentation [FunnelLabelsPosition](#funnel-labels-position-funnellabelsposition) metadata value:
+
+    <!-- md2pptx: funnellabelsposition: after -->
 
 <a id="pagetitlesize-dynamic"></a>
 #### `PageTitleSize`

@@ -1242,6 +1242,7 @@ body .markdown-body
 <li><a href="#funnel-title-colour-funneltitlecolour">Funnel Title Colour - <code>funnelTitleColour</code></a></li>
 <li><a href="#funnel-text-colour-funneltextcolour">Funnel Text Colour - <code>funnelTextColour</code></a></li>
 <li><a href="#funnel-labels-space-funnellabelspercent">Funnel Labels Space - <code>funnelLabelsPercent</code></a></li>
+<li><a href="#funnel-labels-position-funnellabelsposition">Funnel Labels Position - <code>funnelLabelsPosition</code></a></li>
 </ul>
 </li>
 <li><a href="#footer-metadata">Footer Metadata</a><ul>
@@ -1315,6 +1316,7 @@ body .markdown-body
 <li><a href="#funneltitlecolour"><code>FunnelTitleColour</code></a></li>
 <li><a href="#funneltextcolour"><code>FunnelTextColour</code></a></li>
 <li><a href="#funnellabelspercent"><code>FunnelLabelsPercent</code></a></li>
+<li><a href="#funnellabelsposition"><code>FunnelLabelsPosition</code></a></li>
 </ul>
 </li>
 <li><a href="#pagetitlesize"><code>PageTitleSize</code></a></li>
@@ -1454,6 +1456,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">4.0+</td>
+<td align="right">7&nbsp;April&nbsp;2023</td>
+<td align="left">Added <a href="#funnel-labels-position-funnellabelsposition">FunnelLabelsPosition</a>.</td>
+</tr>
 <tr>
 <td align="left">4.0</td>
 <td align="right">7&nbsp;April&nbsp;2023</td>
@@ -3465,7 +3472,7 @@ For example</p>
 <p>You can do this dynamically (on a slide-by-slide basis) with <a href="#funneltitlecolour-dynamic"><code>funnelTitleColour</code></a>.</p>
 <h5 id="funnel-text-colour-funneltextcolour">Funnel Text Colour - <code>funnelTextColour</code><a class="headerlink" href="#funnel-text-colour-funneltextcolour" title="Permanent link"></a></h5>
 <p><a id="funnel-text-colour-funneltextcolour"></a></p>
-<p>You can specify which colour to use for the text in the body of each stage in a <a href="#funnels">funnel</a> - using <code>FunnelTextColour</code> (or <code>FunnelTextColor</code>).For example:</p>
+<p>You can specify which colour to use for the text in the body of each stage in a <a href="#funnels">funnel</a> - using <code>FunnelTextColour</code> (or <code>FunnelTextColor</code>). For example:</p>
 <pre><code>FunnelTextColour: #FF0000
 </code></pre>
 <p>which yields red text in the body of each stage.</p>
@@ -3479,6 +3486,14 @@ For example</p>
 <p>In this example 15% of the vertical space is set aside for labels. In testing this appeared to be enough for two-line labels and not too much for the labels that were single line.</p>
 <p>You can do this dynamically (on a slide-by-slide basis) with <a href="#funnellabelspercent-dynamic"><code>funnelLabelsPercent</code></a>.</p>
 <p><strong>Note:</strong> Multiple lines in a label are separated by <code>&lt;br/&gt;</code>.</p>
+<h5 id="funnel-labels-position-funnellabelsposition">Funnel Labels Position - <code>funnelLabelsPosition</code><a class="headerlink" href="#funnel-labels-position-funnellabelsposition" title="Permanent link"></a></h5>
+<p><a id="funnel-labels-position-funnellabelsposition"></a></p>
+<p>You can specify whether the labels are before or after the stages in a <a href="#funnels">funnel</a> - using <code>FunnelLabelsPosition</code>. For example:</p>
+<pre><code>funnelLabelsPosition: after
+</code></pre>
+<p>will ensure funnel labels come after the funnel stages.</p>
+<p>For horizontal funnels <code>before</code> means &ldquo;above&rdquo; and <code>after</code> means &ldquo;below&rdquo;.</p>
+<p>You can do this dynamically (on a slide-by-slide basis) with <a href="#funnellabelsposition-dynamic"><code>funnelLabelsPosition</code></a>.</p>
 <h4 id="footer-metadata">Footer Metadata<a class="headerlink" href="#footer-metadata" title="Permanent link"></a></h4>
 <p><a id="footer-metadata"></a></p>
 <p>You can specify a number of things about the bottom of each slide:</p>
@@ -3975,6 +3990,11 @@ The default value is <code>no</code>.</p>
 <h5 id="funnellabelspercent"><code>FunnelLabelsPercent</code><a class="headerlink" href="#funnellabelspercent" title="Permanent link"></a></h5>
 <p>You can override the presentation <a href="#funnel-labels-space-funnellabelspercent">FunnelLabelsPercent</a> metadata value:</p>
 <pre><code>&lt;!-- md2pptx: funnellabelspercent: 20 --&gt;
+</code></pre>
+<p><a id="funnellabelspercent-position"></a></p>
+<h5 id="funnellabelsposition"><code>FunnelLabelsPosition</code><a class="headerlink" href="#funnellabelsposition" title="Permanent link"></a></h5>
+<p>You can override the presentation <a href="#funnel-labels-position-funnellabelsposition">FunnelLabelsPosition</a> metadata value:</p>
+<pre><code>&lt;!-- md2pptx: funnellabelsposition: after --&gt;
 </code></pre>
 <p><a id="pagetitlesize-dynamic"></a></p>
 <h4 id="pagetitlesize"><code>PageTitleSize</code><a class="headerlink" href="#pagetitlesize" title="Permanent link"></a></h4>
