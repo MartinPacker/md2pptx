@@ -135,6 +135,7 @@ As you can see in the [change log](#change-log), md2pptx is frequently updated -
 			* [Funnel Text Colour - `funnelTextColour`](#funnel-text-colour-funneltextcolour)
 			* [Funnel Labels Space - `funnelLabelsPercent`](#funnel-labels-space-funnellabelspercent)
 			* [Funnel Labels Position - `funnelLabelsPosition`](#funnel-labels-position-funnellabelsposition)
+			* [Funnel Orientation - `funnelWidest`](#funnel-orientation-funnelwidest)
 		* [Footer Metadata](#footer-metadata)
 			* [Slide Numbers - `numbers`](#slide-numbers-numbers)
 			* [Specifying How Much Space To Reserve For Slide Numbers With `NumbersHeight`](#specifying-how-much-space-to-reserve-for-slide-numbers-with-numbersheight)
@@ -189,6 +190,7 @@ As you can see in the [change log](#change-log), md2pptx is frequently updated -
 			* [`FunnelTextColour`](#funneltextcolour)
 			* [`FunnelLabelsPercent`](#funnellabelspercent)
 			* [`FunnelLabelsPosition`](#funnellabelsposition)
+			* [`FunnelWidest`](#funnelwidest)
 		* [`PageTitleSize`](#pagetitlesize)
 		* [`PageSubtitleSize`](#pagesubtitlesize)
 		* [`BaseTextSize`](#basetextsize)
@@ -334,7 +336,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
-|4.0+|7&nbsp;April&nbsp;2023|Added [FunnelLabelsPosition](#funnel-labels-position-funnellabelsposition).|
+|4.0+|10&nbsp;April&nbsp;2023|Added [`funnelLabelsPosition`](#funnel-labels-position-funnellabelsposition) and [`funnelWidest`](#funnel-orientation-funnelwidest).|
 |4.0|7&nbsp;April&nbsp;2023|Added [Funnel](#funnels) support. [`CardColour`](#card-background-colour-cardcolour) can now be pluralised: `CardColors` or `CardColours`.|
 |3.7|26&nbsp;March&nbsp;2023|Added [`cardDividerColour`](#card-divider-colour-carddividercolour). Most colours now RGB or Theme Colour (documented in [Specifying Colours](#specifying-colours)).|
 |3.6|18&nbsp;March&nbsp;2023|Added [`cardTitleColour`](#card-title-colour-cardtitlecolour) &amp; `line` for [`cardshape`](#card-shape-cardshape). Allow multiple colours for [`cardColour`](#card-background-colour-cardcolour).|
@@ -2430,6 +2432,25 @@ For horizontal funnels `before` means "above" and `after` means "below".
 
 You can do this dynamically (on a slide-by-slide basis) with [`funnelLabelsPosition`](#funnellabelsposition-dynamic).
 
+##### Funnel Orientation - `funnelWidest`
+<a id="funnel-orientation-funnelwidest"></a>
+
+By default a funnel's stages get progressively narrower towards the right. You might, however, want to reverse this so that the funnel gets wider towards the right. You can do this by specifying `funnelWidest`. For example,
+
+    funnelWidest: right
+
+reverses the usual funnel direction and acts as a "fan out" of sorts - with the funnel becoming progressively wider towards the right.
+
+The supported values are:
+
+* `left` (which is the default)
+* `right`
+* `pipe` where the stages have constant height
+* `hpipe` - short for "horizontal pipe" - which is the same as `pipe`
+
+You can do this dynamically (on a slide-by-slide basis) with [`funnelWidest`](#funnelwidest-dynamic).
+
+
 #### Footer Metadata
 <a id="footer-metadata"></a>
 
@@ -3077,6 +3098,13 @@ You can override the presentation [FunnelLabelsPercent](#funnel-labels-space-fun
 You can override the presentation [FunnelLabelsPosition](#funnel-labels-position-funnellabelsposition) metadata value:
 
     <!-- md2pptx: funnellabelsposition: after -->
+
+<a id="funnelwidest-dynamic"></a>
+##### `FunnelWidest`
+
+You can override the presentation [FunnelWidest](#funnel-orientation-funnelwidest) metadata value:
+
+    <!-- md2pptx: funnelwidest: pipe -->
 
 <a id="pagetitlesize-dynamic"></a>
 #### `PageTitleSize`

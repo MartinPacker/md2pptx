@@ -3,9 +3,10 @@ symbols
 """
 import re
 
+
 # Resolve symbols and unescape any numeric character references
 def resolveSymbols(text):
-    #h = html.parser.HTMLParser()
+    # h = html.parser.HTMLParser()
 
     textSplit = re.split("(&\#x?[0-9a-f]{2,6};)", text, flags=re.IGNORECASE)
     text2 = ""

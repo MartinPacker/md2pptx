@@ -72,7 +72,7 @@ except:
 
 try:
     import graphviz
-    
+
     have_graphviz = True
 
 except:
@@ -80,14 +80,15 @@ except:
 
 
 md2pptx_level = "4.0+"
-md2pptx_date = "9 April, 2023"
+md2pptx_date = "10 April, 2023"
 
 namespaceURL = {
-    "mc" : "http://schemas.openxmlformats.org/markup-compatibility/2006",
-    "p" : "http://schemas.openxmlformats.org/presentationml/2006/main",
-    "p14" : "http://schemas.microsoft.com/office/powerpoint/2010/main",
-    "p15" : "http://schemas.microsoft.com/office/powerpoint/2012/main",
+    "mc": "http://schemas.openxmlformats.org/markup-compatibility/2006",
+    "p": "http://schemas.openxmlformats.org/presentationml/2006/main",
+    "p14": "http://schemas.microsoft.com/office/powerpoint/2010/main",
+    "p15": "http://schemas.microsoft.com/office/powerpoint/2012/main",
 }
+
 
 class SlideInfo:
     def __init__(
@@ -110,15 +111,13 @@ class SlideInfo:
         self.code = code
         self.sequence = sequence
 
+
 # Information about a single table. (A slide might have more than one - or none.)
 class TableInfo:
-    def __init__(
-        self,
-        tableRows,
-        tableCaption
-    ):
+    def __init__(self, tableRows, tableCaption):
         self.tableRows = []
         self.tableCaption = ""
+
 
 # Information about a video
 class AudioVideoInfo:
@@ -153,6 +152,7 @@ class AudioVideoInfo:
             self.poster = audioVideoElement.attrib["poster"]
         else:
             self.poster = None
+
 
 # Note: Options stored with lower case keys
 class ProcessingOptions:
@@ -233,95 +233,112 @@ class ProcessingOptions:
 
         self.dynamicallyChangedOptions[lowerName] = True
 
+
 # Find the extLst element - if it exists in presentation.xml
 def findExtLst(prs):
-  for child in prs._element.getchildren():
-    if child.tag.endswith("}extLst"):
-      return child
+    for child in prs._element.getchildren():
+        if child.tag.endswith("}extLst"):
+            return child
 
-  return None
+    return None
 
-def addSlide(presentation, slideLayout, slideInfo = None):
-  slide = presentation.slides.add_slide(slideLayout)
-  slide.slideInfo = slideInfo
-  
-  return slide
+
+def addSlide(presentation, slideLayout, slideInfo=None):
+    slide = presentation.slides.add_slide(slideLayout)
+    slide.slideInfo = slideInfo
+
+    return slide
+
 
 def createSectionsXML(prs):
-  sectionSlideLayout = processingOptions.getCurrentOption("SectionSlideLayout")
+    sectionSlideLayout = processingOptions.getCurrentOption("SectionSlideLayout")
 
-  xml = '  <p:ext xmlns:p="' + namespaceURL["p"] + '"\n'
+    xml = '  <p:ext xmlns:p="' + namespaceURL["p"] + '"\n'
 
-  # ext URI has to be {521415D9-36F7-43E2-AB2F-B90AF26B5E84} as it's a registered extension
-  xml += '    uri="{521415D9-36F7-43E2-AB2F-B90AF26B5E84}">\n'
+    # ext URI has to be {521415D9-36F7-43E2-AB2F-B90AF26B5E84} as it's a registered extension
+    xml += '    uri="{521415D9-36F7-43E2-AB2F-B90AF26B5E84}">\n'
 
-  xml += '    <p14:sectionLst xmlns:p14="' + namespaceURL["p14"] + '">\n'
+    xml += '    <p14:sectionLst xmlns:p14="' + namespaceURL["p14"] + '">\n'
 
-  sectionCount = 0
-  for slide in prs.slides:
-    slideID =str(slide.slide_id)
+    sectionCount = 0
+    for slide in prs.slides:
+        slideID = str(slide.slide_id)
 
-    for idx, slide_layout in enumerate(prs.slide_layouts):
-      if slide.slide_layout == slide_layout:
-        layoutNumber = idx
-        break;
+        for idx, slide_layout in enumerate(prs.slide_layouts):
+            if slide.slide_layout == slide_layout:
+                layoutNumber = idx
+                break
 
-    if layoutNumber == sectionSlideLayout:
-      # Have a section to contribute
-      sectionCount += 1
+        if layoutNumber == sectionSlideLayout:
+            # Have a section to contribute
+            sectionCount += 1
 
-      # Confect section name from first part of section slide title
-      title = findTitleShape(slide)
-      sectionName = title.text.split("\n")[0]
-      
-      # Clean up section name
-      sectionName = ''.join(letter for letter in sectionName if 
-      (
-      (letter.isalnum()) 
-      | (letter in "&-+") 
-      | (letter in "!/*") 
-      | (letter == " ")
-      ))
-      
-      sectionName = sectionName.replace("& ","&amp; ").replace("\r"," ").replace("\n"," ")
-      
-      # section URI's just need to be a GUID wrapped in braces
-      xml += '      <p14:section name="' + sectionName +'" id="{' + str(uuid.uuid4()).upper() +'}">\n'
-      
-      # Only the first slide in the section is added - as section will continue until the next section
-      # anyway
-      xml += '        <p14:sldIdLst>\n'
-      xml += '          <p14:sldId id="' + slideID + '" />\n'
-      xml += '        </p14:sldIdLst>\n'
-      xml += '      </p14:section>\n'
+            # Confect section name from first part of section slide title
+            title = findTitleShape(slide)
+            sectionName = title.text.split("\n")[0]
 
-  # Close out the section list
-  xml += '    </p14:sectionLst>\n'
-  
-  # Close out the sections extension
-  xml += '  </p:ext>\n'
+            # Clean up section name
+            sectionName = "".join(
+                letter
+                for letter in sectionName
+                if (
+                    (letter.isalnum())
+                    | (letter in "&-+")
+                    | (letter in "!/*")
+                    | (letter == " ")
+                )
+            )
 
-  parsed_xml = parse_xml(xml)
-  
-  return parsed_xml, sectionCount
+            sectionName = (
+                sectionName.replace("& ", "&amp; ")
+                .replace("\r", " ")
+                .replace("\n", " ")
+            )
+
+            # section URI's just need to be a GUID wrapped in braces
+            xml += (
+                '      <p14:section name="'
+                + sectionName
+                + '" id="{'
+                + str(uuid.uuid4()).upper()
+                + '}">\n'
+            )
+
+            # Only the first slide in the section is added - as section will continue until the next section
+            # anyway
+            xml += "        <p14:sldIdLst>\n"
+            xml += '          <p14:sldId id="' + slideID + '" />\n'
+            xml += "        </p14:sldIdLst>\n"
+            xml += "      </p14:section>\n"
+
+    # Close out the section list
+    xml += "    </p14:sectionLst>\n"
+
+    # Close out the sections extension
+    xml += "  </p:ext>\n"
+
+    parsed_xml = parse_xml(xml)
+
+    return parsed_xml, sectionCount
+
 
 def createExpandingSections(prs):
-  # Use the slides' layouts to create an XML fragment with sections in
-  xmlFragment, sectionCount = createSectionsXML(prs)
-  
-  if sectionCount > 0:
-    # Have sections to insert as an XML fragment
-    if (extLstElement := findExtLst(prs)) is not None:
-      # Need to remove the extension list element before adding a new one
-      prs._element.remove(extLstElement)
+    # Use the slides' layouts to create an XML fragment with sections in
+    xmlFragment, sectionCount = createSectionsXML(prs)
 
-    # Insert a new extension list element
-    extLst = OxmlElement("p:extLst")
-    prs._element.insert(-1, extLst)
+    if sectionCount > 0:
+        # Have sections to insert as an XML fragment
+        if (extLstElement := findExtLst(prs)) is not None:
+            # Need to remove the extension list element before adding a new one
+            prs._element.remove(extLstElement)
 
+        # Insert a new extension list element
+        extLst = OxmlElement("p:extLst")
+        prs._element.insert(-1, extLst)
 
-    # Insert the fragment in the extension list in presentation.xml
-    extLst.insert(0, xmlFragment)
+        # Insert the fragment in the extension list in presentation.xml
+        extLst.insert(0, xmlFragment)
+
 
 def deleteSlide(prs, slideNumber):
     rId = prs.slides._sldIdLst[slideNumber].rId
@@ -342,19 +359,24 @@ def startswithOneOf(haystack, needleList):
 def sortedNumericList(string):
     return sorted(list(map(int, set(string.split()))))
 
+
 def substituteFooterVariables(footerText, liveFooters):
     # Decide if the footer should be a live link to the section slide
-    wantLiveFooter = ((prs.lastSectionSlide is not None) & (footerText.find("<section") > -1) & (liveFooters == "yes"))
+    wantLiveFooter = (
+        (prs.lastSectionSlide is not None)
+        & (footerText.find("<section") > -1)
+        & (liveFooters == "yes")
+    )
 
     # Substitute any section title occurrences
     sectionTitleLines = prs.lastSectionTitle.split("<br/>")
 
     footerText = footerText.replace("<section>", sectionTitleLines[0])
     footerText = footerText.replace("<section1>", sectionTitleLines[0])
-    
+
     if len(sectionTitleLines) > 1:
         footerText = footerText.replace("<section2>", sectionTitleLines[1])
-    
+
     if len(sectionTitleLines) > 2:
         footerText = footerText.replace("<section3>", sectionTitleLines[2])
 
@@ -366,7 +388,7 @@ def substituteFooterVariables(footerText, liveFooters):
     if len(presTitleLines) > 1:
         footerText = footerText.replace("<presTitle2>", presTitleLines[1])
 
-    if len(presTitleLines) > 2: 
+    if len(presTitleLines) > 2:
         footerText = footerText.replace("<presTitle3>", presTitleLines[2])
 
     # Substitute any presentation subtitle occurrences
@@ -374,17 +396,18 @@ def substituteFooterVariables(footerText, liveFooters):
 
     footerText = footerText.replace("<presSubtitle>", presSubtitleLines[0])
     footerText = footerText.replace("<presSubtitle1>", presSubtitleLines[0])
-    
+
     if len(presSubtitleLines) > 1:
         footerText = footerText.replace("<presSubtitle2>", presSubtitleLines[1])
 
     if len(presSubtitleLines) > 2:
         footerText = footerText.replace("<presSubtitle3>", presSubtitleLines[2])
-    
+
     # Make newlines happen
-    footerText = footerText.replace("<br/>","\n")
-    
+    footerText = footerText.replace("<br/>", "\n")
+
     return footerText, wantLiveFooter
+
 
 def _applyCellBorderStyling(
     tcPr, linePosition, lineWidthMultiplier=1, lineCount=1, lineColour="000000"
@@ -1050,7 +1073,7 @@ def getContentRect(presentation, slide, topOfContent, margin):
 def formatTitle(presentation, slide, titleText, titleFontSize, subtitleFontSize):
     marginBase = processingOptions.getCurrentOption("marginBase")
     pageTitleAlign = processingOptions.getCurrentOption("pagetitlealign")
-    
+
     # Convert page title alignment text value to constant
     if pageTitleAlign == "left":
         titleAlignment = PP_ALIGN.LEFT
@@ -1076,17 +1099,15 @@ def formatTitle(presentation, slide, titleText, titleFontSize, subtitleFontSize)
     titleLineCount = len(titleLines := titleText.split("<br/>"))
 
     # This will hold the flattened title lines to be printed
-    flattenedTitleLines = [] 
+    flattenedTitleLines = []
 
     # Add the first line of the title text to the first paragraph
     firstTitleParagraph = title.text_frame.paragraphs[0]
-    flattenedTitleLines.append(
-        addFormattedText(firstTitleParagraph, titleLines[0])
-    )
+    flattenedTitleLines.append(addFormattedText(firstTitleParagraph, titleLines[0]))
 
     # Set anchor to top
     title.text_frame.vertical_anchor = MSO_ANCHOR.TOP
-    
+
     # Set this paragraph's font size using pageTitleSize
     firstTitleParagraph.font.size = Pt(titleFontSize)
 
@@ -1095,7 +1116,7 @@ def formatTitle(presentation, slide, titleText, titleFontSize, subtitleFontSize)
 
     # Set first title paragraph's alignment
     firstTitleParagraph.alignment = titleAlignment
-    
+
     if subtitleFontSize == "same":
         subtitleFontSize = titleFontSize
 
@@ -1103,15 +1124,13 @@ def formatTitle(presentation, slide, titleText, titleFontSize, subtitleFontSize)
     for lineNumber, titleLine in enumerate(titleLines[1:]):
         # Each title line requires a new paragraph
         newPara = title.text_frame.add_paragraph()
-        
+
         # Use this new paragraph, adding flattened title line to the list
-        flattenedTitleLines.append(
-            addFormattedText(newPara, titleLine)
-        )
-        
+        flattenedTitleLines.append(addFormattedText(newPara, titleLine))
+
         # No space before the paragraph
         newPara.space_before = Pt(0)
-        
+
         # Set this paragraph's font size using pageSubtitleSize
         newPara.font.size = Pt(subtitleFontSize)
 
@@ -1123,7 +1142,7 @@ def formatTitle(presentation, slide, titleText, titleFontSize, subtitleFontSize)
         title.height = Pt(titleFontSize) + Pt(subtitleFontSize) * (titleLineCount - 1)
 
     # Massage title line for printing a little
-    if(titleLineCount > 1):
+    if titleLineCount > 1:
         flattenedTitleText = flattenedTitleLines[0] + " ..."
     else:
         flattenedTitleText = flattenedTitleLines[0]
@@ -1465,7 +1484,7 @@ def parseText(text):
 
                 # Attempt to look up reference
                 foundReference = False
-                for (indref, indURL) in indirectAnchors:
+                for indref, indURL in indirectAnchors:
                     if indref == reference:
                         foundReference = True
                         break
@@ -1688,7 +1707,7 @@ def addFormattedText(p, text):
 
                 if boldBold == True:
                     font.bold = True
-                
+
                 if boldColour != ("None", ""):
                     setColour(font.color, boldColour)
 
@@ -1804,7 +1823,7 @@ def createProcessingSummarySlide(presentation, rawMetadata):
         slide,
         banner + "<br/>" + runDateTime,
         pageTitleSize,
-        pageSubtitleSize
+        pageSubtitleSize,
     )
 
     # Work out how many pairs of columns we need
@@ -2120,10 +2139,11 @@ def handleWhateverGraphicType(GraphicFilename):
 
     return GraphicFilename, printableGraphicFilename
 
+
 def handleGraphViz(slide, renderingRectangle, codeLines, codeType):
     # Condition GraphViz source
     s = graphviz.Source("\n".join(codeLines), format="png")
-    
+
     # Invent a temporary filename for the rendered graphic
     dotFile = "md2pptx-temporary-dotfile.png"
 
@@ -2135,7 +2155,10 @@ def handleGraphViz(slide, renderingRectangle, codeLines, codeType):
 
     # Adjust those dimensions with the usual scaling rules
     (dotPicWidth, dotPicHeight, scaledByHeight) = scalePicture(
-        renderingRectangle.width, renderingRectangle.height, dotGraphicWidth, dotGraphicHeight
+        renderingRectangle.width,
+        renderingRectangle.height,
+        dotGraphicWidth,
+        dotGraphicHeight,
     )
 
     # Add the picture to the current slide
@@ -2146,7 +2169,7 @@ def handleGraphViz(slide, renderingRectangle, codeLines, codeType):
         dotPicWidth,
         dotPicHeight,
     )
-    
+
     # Delete the temporary graphic file
     os.remove(dotFile)
 
@@ -2158,13 +2181,14 @@ def handleFunnel(slide, renderingRectangle, codeLines, codeType):
     funnelTextColour = processingOptions.getCurrentOption("funnelTextColour")
     funnelLabelsPercent = processingOptions.getCurrentOption("funnelLabelsPercent")
     funnelLabelPosition = processingOptions.getCurrentOption("funnelLabelPosition")
+    funnelWidest = processingOptions.getCurrentOption("funnelWidest")
 
     f = funnel.Funnel()
 
     f.makeFunnel(
-        slide, 
-        renderingRectangle, 
-        codeLines, 
+        slide,
+        renderingRectangle,
+        codeLines,
         funnelColours,
         codeType,
         funnelBorderColour,
@@ -2172,7 +2196,9 @@ def handleFunnel(slide, renderingRectangle, codeLines, codeType):
         funnelTextColour,
         funnelLabelsPercent,
         funnelLabelPosition,
-   )
+        funnelWidest,
+    )
+
 
 def createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber):
     monoFont = processingOptions.getCurrentOption("monoFont")
@@ -2194,26 +2220,28 @@ def createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber):
         else:
             # Some other type - such as GraphViz .dot
             codeType = codeLines[0][3:].strip().lower()
-            
+
             if codeType.startswith("dot"):
                 # GraphViz dot
                 if have_graphviz is False:
                     # Don't have GraphViz so warn and treat as basic backticks
-                    sys.stderr.write("GraphViz not installed. Rendering as backticks.\n")
-                    
+                    sys.stderr.write(
+                        "GraphViz not installed. Rendering as backticks.\n"
+                    )
+
                     codeType = "backticks"
                 else:
                     # Have GraphViz installed so use it ti add a picture
                     handleGraphViz(slide, renderingRectangle, codeLines[1:-1], codeType)
-                
+
                     return slide
-                
+
             elif codeType.startswith("funnel"):
                 # Built-in Funnel Diagram
                 handleFunnel(slide, renderingRectangle, codeLines[1:-1], codeType)
-                
+
                 return slide
-            
+
             else:
                 # Some other type with backticks
                 codeType = "backticks"
@@ -2416,17 +2444,13 @@ def createAbstractSlide(presentation, slideNumber, titleText, paragraphs):
     pageTitleSize = processingOptions.getCurrentOption("pageTitleSize")
     pageSubtitleSize = processingOptions.getCurrentOption("pageSubtitleSize")
 
-    slide =addSlide(presentation, presentation.slide_layouts[titleOnlyLayout], None)
+    slide = addSlide(presentation, presentation.slide_layouts[titleOnlyLayout], None)
 
     shapes = slide.shapes
 
     # Add title and constrain its size and placement
     slideTitleBottom, title, flattenedTitle = formatTitle(
-        presentation,
-        slide,
-        titleText,
-        pageTitleSize,
-        pageSubtitleSize
+        presentation, slide, titleText, pageTitleSize, pageSubtitleSize
     )
 
     reportSlideTitle(slideNumber, 3, "Abstract: " + flattenedTitle)
@@ -2493,7 +2517,7 @@ def createContentSlide(presentation, slideNumber, slideInfo):
     else:
         slideLayout = contentSlideLayout
         haveBulletsCards = True
-    
+
     slide = addSlide(presentation, presentation.slide_layouts[slideLayout], slideInfo)
 
     # Check for table / graphics content
@@ -2511,11 +2535,7 @@ def createContentSlide(presentation, slideNumber, slideInfo):
     titleText = slideInfo.titleText
 
     slideTitleBottom, title, flattenedTitle = formatTitle(
-        presentation,
-        slide,
-        titleText,
-        pageTitleSize,
-        pageSubtitleSize
+        presentation, slide, titleText, pageTitleSize, pageSubtitleSize
     )
 
     # Log slide's title
@@ -2780,7 +2800,6 @@ def createListBlock(slideInfo, slide, renderingRectangle):
             if cardShape == "line":
                 cardBackgroundShape.fill.background()
 
-            
             sendToBack(slide.shapes, cardBackgroundShape)
 
             # Card shape modeled on bulleted list
@@ -2830,10 +2849,12 @@ def createListBlock(slideInfo, slide, renderingRectangle):
         # Position card title
         cardTitleShape.top = cardTop[c]
         cardTitleShape.height = cardTitleHeight
-        
+
         # Colour the title - if cardTitleColour specified
         if cardTitleColour != ("None", ""):
-            setColour(cardTitleShape.text_frame.paragraphs[0].font.color, cardTitleColour)
+            setColour(
+                cardTitleShape.text_frame.paragraphs[0].font.color, cardTitleColour
+            )
 
         # Calculate positions and heights within card background of body
         if cardTitlePosition == "above":
@@ -2844,26 +2865,27 @@ def createListBlock(slideInfo, slide, renderingRectangle):
             cardBackgroundShape.top = cardTop[c]
             cardBodyHeight = cardHeight
             cardBackgroundShape.height = cardBodyHeight
-            
+
         if (c > 0) & (cardShape == "line"):
             if cardLayout == "horizontal":
                 dividingLine = createLine(
-                    cardBackgroundShape.left - int(Inches(horizontalCardGap / 2)) ,
+                    cardBackgroundShape.left - int(Inches(horizontalCardGap / 2)),
                     cardBackgroundShape.top + Inches(0.75),
-                    cardBackgroundShape.left - int(Inches(horizontalCardGap / 2)) ,
+                    cardBackgroundShape.left - int(Inches(horizontalCardGap / 2)),
                     cardBackgroundShape.top + cardBackgroundShape.height - Inches(0.75),
                     slide.shapes,
                 )
             else:
                 dividingLine = createLine(
                     cardBackgroundShape.left + Inches(0.75),
-                    cardBackgroundShape.top - int(Inches(verticalCardGap / 2)) ,
-
-                    cardBackgroundShape.left + cardBackgroundShape.width - int(Inches(0.75)) ,
-                    cardBackgroundShape.top - int(Inches(verticalCardGap / 2)) ,
+                    cardBackgroundShape.top - int(Inches(verticalCardGap / 2)),
+                    cardBackgroundShape.left
+                    + cardBackgroundShape.width
+                    - int(Inches(0.75)),
+                    cardBackgroundShape.top - int(Inches(verticalCardGap / 2)),
                     slide.shapes,
                 )
-            
+
             if cardDividerColour != ("None", ""):
                 setColour(dividingLine.line.color, cardDividerColour)
 
@@ -3192,7 +3214,11 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
         ####################################################################
 
         if (topLeftGraphicFilename != "") | (topLeftVideo is not None):
-            (topLeftPicWidth, topLeftPicHeight, usingHeightToScale,) = scalePicture(
+            (
+                topLeftPicWidth,
+                topLeftPicHeight,
+                usingHeightToScale,
+            ) = scalePicture(
                 maxPicWidth, maxPicHeight, topLeftMediaWidth, topLeftMediaHeight
             )
 
@@ -3790,15 +3816,15 @@ def createOval(
             shape.fill.fore_color.rgb = RGBColor.from_string(unhighlightedBackground)
 
 
-def createLine(x0, y0, x1, y1, shapes, colour = ("RGB","#BFBFBF"), width = 4.0):
+def createLine(x0, y0, x1, y1, shapes, colour=("RGB", "#BFBFBF"), width=4.0):
     # Create line
     line = shapes.add_shape(MSO_SHAPE.LINE_INVERSE, x0, y0, x1 - x0, y1 - y0)
 
     # Set shape's outline attributes
     setColour(line.line.color, colour)
-    
+
     line.line.width = Pt(width)
-    
+
     return line
 
 
@@ -3872,7 +3898,9 @@ def createTOCSlide(presentation, slideNumber, titleText, bullets, tocStyle):
         return slide
 
     else:
-        slide = addSlide(presentation, presentation.slide_layouts[titleOnlyLayout], None)
+        slide = addSlide(
+            presentation, presentation.slide_layouts[titleOnlyLayout], None
+        )
         title = findTitleShape(slide)
 
     SectionSlides[titleText] = slide
@@ -3883,11 +3911,7 @@ def createTOCSlide(presentation, slideNumber, titleText, bullets, tocStyle):
     if titleText == tocTitle:
         # Is TOC slide so add title
         slideTitleBottom, title, flattenedTitle = formatTitle(
-            presentation,
-            slide,
-            tocTitle,
-            pageTitleSize,
-            pageSubtitleSize
+            presentation, slide, tocTitle, pageTitleSize, pageSubtitleSize
         )
     else:
         # Is not TOC slide so delete title shape and adjust where title bottom
@@ -4040,6 +4064,7 @@ def createTOCSlide(presentation, slideNumber, titleText, bullets, tocStyle):
 
     return slide
 
+
 def createSlide(presentation, slideNumber, slideInfo):
     abstractTitle = processingOptions.getCurrentOption("abstractTitle")
     tocTitle = processingOptions.getCurrentOption("tocTitle")
@@ -4118,13 +4143,13 @@ def createSlide(presentation, slideNumber, slideInfo):
     footerFontSize = Pt(8.0)
     footerBoxTop = prs.slide_height - numbersHeight / 2 - footerFontSize
     footerBoxHeight = footerFontSize * 2
-    
+
     if slideInfo.blockType in ["title", "section"]:
         if sectionFooters == "yes":
             wantFooters = True
         else:
             wantFooters = False
-        
+
         if slideInfo.blockType == "section":
             prs.lastSectionTitle = slideInfo.titleText.strip()
             prs.lastSectionSlide = slide
@@ -4141,13 +4166,17 @@ def createSlide(presentation, slideNumber, slideInfo):
             leftFooterMargin = Inches(0.5)
             leftFooterBoxLeft = leftFooterMargin
             leftFooterBoxWidth = prs.slide_width / 3 - leftFooterMargin
-            leftFooter = slide.shapes.add_textbox(leftFooterBoxLeft, footerBoxTop, leftFooterBoxWidth, footerBoxHeight)
+            leftFooter = slide.shapes.add_textbox(
+                leftFooterBoxLeft, footerBoxTop, leftFooterBoxWidth, footerBoxHeight
+            )
 
-            leftFooter.text, wantHyperLink = substituteFooterVariables(leftFooterText, liveFooters)
+            leftFooter.text, wantHyperLink = substituteFooterVariables(
+                leftFooterText, liveFooters
+            )
 
             if wantHyperLink:
                 createShapeHyperlinkAndTooltip(leftFooter, prs.lastSectionSlide, "")
-            
+
             for fp in leftFooter.text_frame.paragraphs:
                 fp.alignment = PP_ALIGN.LEFT
                 fp.font.size = footerFontSize
@@ -4156,58 +4185,82 @@ def createSlide(presentation, slideNumber, slideInfo):
         if middleFooterText != "":
             middleFooterBoxLeft = prs.slide_width / 3
             middleFooterBoxWidth = prs.slide_width / 3
-            middleFooter = slide.shapes.add_textbox(middleFooterBoxLeft, footerBoxTop, middleFooterBoxWidth, footerBoxHeight)
+            middleFooter = slide.shapes.add_textbox(
+                middleFooterBoxLeft, footerBoxTop, middleFooterBoxWidth, footerBoxHeight
+            )
 
-            middleFooter.text, wantHyperLink = substituteFooterVariables(middleFooterText, liveFooters)
+            middleFooter.text, wantHyperLink = substituteFooterVariables(
+                middleFooterText, liveFooters
+            )
 
             if wantHyperLink:
                 createShapeHyperlinkAndTooltip(middleFooter, prs.lastSectionSlide, "")
-            
+
             for fp in middleFooter.text_frame.paragraphs:
                 fp.alignment = PP_ALIGN.CENTER
                 fp.font.size = footerFontSize
-    
+
         # Right pseudo-footer
         if rightFooterText != "":
             rightFooterMargin = Inches(0.25)
             rightFooterBoxLeft = prs.slide_width * 2 / 3
             rightFooterBoxWidth = prs.slide_width / 3 - rightFooterMargin
-            rightFooter = slide.shapes.add_textbox(rightFooterBoxLeft, footerBoxTop, rightFooterBoxWidth, footerBoxHeight)
+            rightFooter = slide.shapes.add_textbox(
+                rightFooterBoxLeft, footerBoxTop, rightFooterBoxWidth, footerBoxHeight
+            )
 
-            rightFooter.text, wantHyperLink = substituteFooterVariables(rightFooterText, liveFooters)
+            rightFooter.text, wantHyperLink = substituteFooterVariables(
+                rightFooterText, liveFooters
+            )
 
             if wantHyperLink:
                 createShapeHyperlinkAndTooltip(rightFooter, prs.lastSectionSlide, "")
-            
+
             for fp in rightFooter.text_frame.paragraphs:
                 fp.alignment = PP_ALIGN.RIGHT
                 fp.font.size = footerFontSize
-    
+
     slideNumber = slideNumber + 1
 
     sequence = []
-    
+
     addSlideTransition(slide, transition)
 
-    
     return [slideNumber, slide, sequence]
 
+
 # Add a transition effect - for transitioning INTO the slide.
-def addSlideTransition(slide,transitionType):
+def addSlideTransition(slide, transitionType):
     # Handle "no transition" case
     if (transitionType == "none") | (transitionType == ""):
         return
-        
-    if transitionType in ["fracture",]:
+
+    if transitionType in [
+        "fracture",
+    ]:
         choiceNS = "p15"
     else:
         choiceNS = "p14"
-    
+
     # Construct first boilerplate XML fragment
     xml = '      <mc:AlternateContent xmlns:mc="' + namespaceURL["mc"] + '">\n'
-    xml += '    <mc:Choice xmlns:' + choiceNS +'="' + namespaceURL[choiceNS] + '" Requires="' + choiceNS + '">\n'
-    xml += '<p:transition xmlns:p="' + namespaceURL["p"] + '" xmlns:p14="' + namespaceURL["p14"] + '" spd="slow" p14:dur="3400">\n'
-      
+    xml += (
+        "    <mc:Choice xmlns:"
+        + choiceNS
+        + '="'
+        + namespaceURL[choiceNS]
+        + '" Requires="'
+        + choiceNS
+        + '">\n'
+    )
+    xml += (
+        '<p:transition xmlns:p="'
+        + namespaceURL["p"]
+        + '" xmlns:p14="'
+        + namespaceURL["p14"]
+        + '" spd="slow" p14:dur="3400">\n'
+    )
+
     # Add in transition element
     if transitionType in [
         "wipe",
@@ -4217,49 +4270,55 @@ def addSlideTransition(slide,transitionType):
     elif transitionType in [
         "push",
     ]:
-        xml += "         <p:" + transitionType + " dir=\"u\"/>\n"
+        xml += "         <p:" + transitionType + ' dir="u"/>\n'
 
     elif transitionType in [
         "vortex",
     ]:
-        xml += "         <p14:" + transitionType + " dir=\"r\"/>\n"
+        xml += "         <p14:" + transitionType + ' dir="r"/>\n'
 
     elif transitionType in [
         "split",
     ]:
-        xml += "         <p:" + transitionType + " orient=\"vert\"/>\n"
+        xml += "         <p:" + transitionType + ' orient="vert"/>\n'
 
     elif transitionType in [
-       "fracture",
+        "fracture",
     ]:
-        xml += "                 <p15:prstTrans prst=\"fracture\" />\n"
-    
+        xml += '                 <p15:prstTrans prst="fracture" />\n'
+
     else:
         xml += "         <p14:" + transitionType + " />\n"
 
     # Construct last boilerplate XML fragment
 
-    xml += '''
+    xml += """
       </p:transition>
     </mc:Choice>
     <mc:Fallback>
-    '''
-    
+    """
+
     xml += '      <p:transition xmlns:p="' + namespaceURL["p"] + '" spd="slow">\n'
-    
+
     if transitionType in [
         "split",
     ]:
-        xml += '        <p:' + transitionType + ' orient=\"vert\" xmlns:p="' + namespaceURL["p"] + '"/>\n'
-    
+        xml += (
+            "        <p:"
+            + transitionType
+            + ' orient="vert" xmlns:p="'
+            + namespaceURL["p"]
+            + '"/>\n'
+        )
+
     else:
-        xml += '        <p:fade />\n'
-        
-    xml += '''
+        xml += "        <p:fade />\n"
+
+    xml += """
       </p:transition>
     </mc:Fallback>
   </mc:AlternateContent>
-   '''
+   """
 
     # Turn this into an XML fragment
     xmlFragment = parse_xml(xml)
@@ -4527,7 +4586,7 @@ if have_graphviz:
 else:
     print("graphviz: Not Installed")
 
-print (f"funnel: {funnel.__version__}")
+print(f"funnel: {funnel.__version__}")
 
 input_file = []
 
@@ -4706,7 +4765,7 @@ processingOptions.setOptionValuesArray(
     [
         ["pageTitleSize", 30],
         ["pageSubtitleSize", "same"],
-        ["pageTitleAlign","left"],
+        ["pageTitleAlign", "left"],
     ]
 )
 
@@ -4788,7 +4847,7 @@ processingOptions.setOptionValuesArray(
         ["sectionSubtitleSize", 28],
         ["presTitleSize", 40],
         ["presSubtitleSize", 28],
-        ["sectionsExpand", False]
+        ["sectionsExpand", False],
     ]
 )
 
@@ -4881,20 +4940,23 @@ processingOptions.setOptionValuesArray(
 # Funnel options
 processingOptions.setOptionValuesArray(
     [
-        ["funnelColours", [
+        [
+            "funnelColours",
+            [
                 ("Theme", MSO_THEME_COLOR.ACCENT_1),
                 ("Theme", MSO_THEME_COLOR.ACCENT_2),
                 ("Theme", MSO_THEME_COLOR.ACCENT_3),
                 ("Theme", MSO_THEME_COLOR.ACCENT_4),
                 ("Theme", MSO_THEME_COLOR.ACCENT_5),
                 ("Theme", MSO_THEME_COLOR.ACCENT_6),
-            ]
+            ],
         ],
         ["funnelBorderColour", ("None", "")],
         ["funnelTitleColour", ("None", "")],
         ["funnelTextColour", ("None", "")],
         ["funnelLabelsPercent", 10],
         ["funnelLabelPosition", "before"],
+        ["funnelWidest", "left"],
     ]
 )
 
@@ -4983,11 +5045,11 @@ for line in metadata_lines:
 
     elif name == "pagetitlealign":
         if value in ["left", "right", "center", "centre", "l", "r", "c"]:
-            if value[:1] == 'l':
+            if value[:1] == "l":
                 processingOptions.setOptionValues(name, "left")
-            elif value[:1] == 'r':
+            elif value[:1] == "r":
                 processingOptions.setOptionValues(name, "right")
-            elif value[:1] == 'c':
+            elif value[:1] == "c":
                 processingOptions.setOptionValues(name, "center")
         else:
             print(
@@ -5006,7 +5068,12 @@ for line in metadata_lines:
     elif name == "basetextdecrement":
         processingOptions.setOptionValues(name, float(value))
 
-    elif name in ["sectiontitlesize", "sectionsubtitlesize", "prestitlesize", "pressubtitlesize"]:
+    elif name in [
+        "sectiontitlesize",
+        "sectionsubtitlesize",
+        "prestitlesize",
+        "pressubtitlesize",
+    ]:
         processingOptions.setOptionValues(name, float(value))
 
     elif name == "deletefirstslide":
@@ -5080,7 +5147,13 @@ for line in metadata_lines:
     elif name == "abstracttitle":
         processingOptions.setOptionValues(name, value)
 
-    elif name in ["leftfootertext", "middlefootertext", "rightfootertext", "sectionfooters", "livefooters"]:
+    elif name in [
+        "leftfootertext",
+        "middlefootertext",
+        "rightfootertext",
+        "sectionfooters",
+        "livefooters",
+    ]:
         processingOptions.setOptionValues(name, value)
 
     elif name == "boldbold":
@@ -5103,13 +5176,17 @@ for line in metadata_lines:
         processingOptions.setOptionValues("cardColour", valueArray2)
 
     elif (name == "cardbordercolour") | (name == "cardbordercolor"):
-        processingOptions.setOptionValues("cardBorderColour", parseColour(value.strip()))
+        processingOptions.setOptionValues(
+            "cardBorderColour", parseColour(value.strip())
+        )
 
     elif (name == "cardtitlecolour") | (name == "cardtitlecolor"):
         processingOptions.setOptionValues("cardTitleColour", parseColour(value.strip()))
 
     elif (name == "carddividercolour") | (name == "carddividercolor"):
-        processingOptions.setOptionValues("cardDividerColour", parseColour(value.strip()))
+        processingOptions.setOptionValues(
+            "cardDividerColour", parseColour(value.strip())
+        )
 
     elif name == "cardborderwidth":
         processingOptions.setOptionValues(name, float(value))
@@ -5247,7 +5324,7 @@ for line in metadata_lines:
 
     elif name.startswith("style.bgcolor."):
         spanClass = name[14:]
-        if value.startswith('#'):
+        if value.startswith("#"):
             value2 = value
         else:
             value2 = "#" + value
@@ -5260,7 +5337,7 @@ for line in metadata_lines:
 
     elif name.startswith("style.fgcolor."):
         spanClass = name[14:]
-        if value.startswith('#'):
+        if value.startswith("#"):
             value2 = value
         else:
             value2 = "#" + value
@@ -5338,19 +5415,25 @@ for line in metadata_lines:
         else:
             print(f"Invalid value for {name} - {value}. Ignoring.")
 
-    elif (name == "funnelcolours") | (name == "funnelcolors"): 
+    elif (name == "funnelcolours") | (name == "funnelcolors"):
         valueArray2 = [parseColour(c.strip()) for c in value.split(",")]
 
         processingOptions.setOptionValues("funnelColours", valueArray2)
 
     elif (name == "funnelbordercolour") | (name == "funnelbordercolor"):
-        processingOptions.setOptionValues("funnelBorderColour", parseColour(value.strip()))
+        processingOptions.setOptionValues(
+            "funnelBorderColour", parseColour(value.strip())
+        )
 
     elif (name == "funneltitlecolour") | (name == "funneltitlecolor"):
-        processingOptions.setOptionValues("funnelTitleColour", parseColour(value.strip()))
+        processingOptions.setOptionValues(
+            "funnelTitleColour", parseColour(value.strip())
+        )
 
     elif (name == "funneltextcolour") | (name == "funneltextcolor"):
-        processingOptions.setOptionValues("funnelTextColour", parseColour(value.strip()))
+        processingOptions.setOptionValues(
+            "funnelTextColour", parseColour(value.strip())
+        )
 
     elif name == "funnellabelspercent":
         processingOptions.setOptionValues(name, float(value))
@@ -5361,6 +5444,14 @@ for line in metadata_lines:
         else:
             print(
                 f'funnelLabelPosition value \'{value}\' unsupported. "before" or "after" required.'
+            )
+
+    elif name == "funnelwidest":
+        if value in ["left", "right", "pipe", "hpipe"]:
+            processingOptions.setOptionValues(name, value)
+        else:
+            print(
+                f'funnelLabelPosition value \'{value}\' unsupported. "left", "right", "pipe", or "hpipe" required.'
             )
 
 slideTemplateFile = processingOptions.getCurrentOption("slideTemplateFile")
@@ -5397,10 +5488,10 @@ else:
         print("\nWriting processing summary slide with metadata on it.")
     else:
         print("\nNo slide to document metadata on. Continuing without it.")
-    
+
     # Prime template slides with slideInfo as None
     for slide in prs.slides:
-      slide.slideInfo = None
+        slide.slideInfo = None
 
 # Following might be used in slide footers
 prs.lastSectionTitle = ""
@@ -5535,7 +5626,7 @@ for line in linesAfterConcatenation:
     metadataLinenumber += 1
 
 lastTableLine = -1
-tableCaptions =[]
+tableCaptions = []
 
 # Pass 5: Main pass over the input file, now that footnote
 # references have been gathered
@@ -5668,49 +5759,41 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
             metadataValue = DMMatch.group(2).lower()
             if (metadataKey != "") & (metadataValue != ""):
                 # Valid metadata pair so parse key / value - and apply if valid
-                
+
                 if (metadataKey == "pagesubtitlesize") & (metadataValue == "same"):
                     # Cards' layout - horizontal or vertical
                     processingOptions.dynamicallySetOption(
                         metadataKey, metadataValue, ""
                     )
-                
+
                 # Floating point values where metadata key matches directly
                 elif metadataKey in [
                     # Font size for tables
                     "compacttables",
-                    
                     # Heading font size for tables
                     "tableheadingsize",
-                    
                     # Page Title Font size
                     "pagetitlesize",
-                    
                     # Page Subtitle Font size
                     "pagesubtitlesize",
-                    
                     # Cards' vertical percent of content area
                     "cardpercent",
-                    
                     # Base text size
                     "basetextsize",
-                    
                     # Base text decrement
                     "basetextdecrement",
-                    
                     # Horizontal card gap
                     "horizontalcardgap",
-                    
                     # Vertical card gap
                     "verticalcardgap",
-                    
                     # Funnel label percentage
                     "funnellabelspercent",
-
-                ] :
+                ]:
                     processingOptions.dynamicallySetOption(
                         # Use the metadata key directly
-                        metadataKey, metadataValue.lower(), "float"
+                        metadataKey,
+                        metadataValue.lower(),
+                        "float",
                     )
 
                 elif metadataKey == "cardlayout":
@@ -5801,26 +5884,38 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
                             f'CardShape value \'{metadataValue}\' unsupported. "squared", "rounded", or "line" required.'
                         )
 
-                elif metadataKey in ["cardcolour", "cardcolor", "cardcolours", "cardcolors"]:
-                    valueArray2 = [parseColour(c.strip()) for c in metadataValue.split(",")]
+                elif metadataKey in [
+                    "cardcolour",
+                    "cardcolor",
+                    "cardcolours",
+                    "cardcolors",
+                ]:
+                    valueArray2 = [
+                        parseColour(c.strip()) for c in metadataValue.split(",")
+                    ]
 
                     processingOptions.dynamicallySetOption(
                         "cardColour", valueArray2, ""
                     )
 
                 elif metadataKey in ["funnelcolours", "funnelcolors"]:
-                    valueArray2 = [parseColour(c.strip()) for c in metadataValue.split(",")]
+                    valueArray2 = [
+                        parseColour(c.strip()) for c in metadataValue.split(",")
+                    ]
 
                     processingOptions.dynamicallySetOption(
                         "funnelColours", valueArray2, ""
                     )
 
-                elif metadataKey in ["funneltitlecolour", "funnelbordercolour", "funneltextcolour"]:
+                elif metadataKey in [
+                    "funneltitlecolour",
+                    "funnelbordercolour",
+                    "funneltextcolour",
+                ]:
                     # Funnel single colour options
                     processingOptions.dynamicallySetOption(
                         metadataKey, metadataValue, ""
                     )
-
 
                 # Note: Actual value handling prevents using dynamicallySetOption
                 elif metadataKey == "contentsplit":
@@ -5955,7 +6050,9 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
                             "",
                         )
                     else:
-                        print(f"Invalid value for {metadataKey}: {metadataValue} in '{line}")
+                        print(
+                            f"Invalid value for {metadataKey}: {metadataValue} in '{line}"
+                        )
 
                 elif metadataKey == "funnellabelposition":
                     if metadataValue.lower() in [
@@ -5968,7 +6065,26 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
                             "",
                         )
                     else:
-                        print(f"Invalid value for {metadataKey}: {metadataValue} in '{line}")
+                        print(
+                            f"Invalid value for {metadataKey}: {metadataValue} in '{line}"
+                        )
+
+                elif metadataKey == "funnelwidest":
+                    if metadataValue.lower() in [
+                        "left",
+                        "right",
+                        "pipe",
+                        "hpipe",
+                    ]:
+                        processingOptions.dynamicallySetOption(
+                            metadataKey,
+                            metadataValue,
+                            "",
+                        )
+                    else:
+                        print(
+                            f"Invalid value for {metadataKey}: {metadataValue} in '{line}"
+                        )
 
                 else:
                     # Invalid dynamic metadata specification
@@ -6163,7 +6279,7 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
     elif line[:1] == "|":
         # Table or side-by-side
         lastTableLine = lineNumber
-        
+
         # As we're in a table we can't have a table caption yet
         tableCaption = ""
 
@@ -6192,13 +6308,15 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
         tableRows[-1].append(tableRow)
         inTitle = False
 
-    elif (line.startswith("[")) & line.endswith("]") & (lineNumber == lastTableLine + 1):
+    elif (
+        (line.startswith("[")) & line.endswith("]") & (lineNumber == lastTableLine + 1)
+    ):
         tableCaption = line[1:-1]
         tableCaptions.append(tableCaption)
     else:
         # Not in a table
         inTable = False
-        
+
         if len(tableCaptions) < len(tableRows):
             tableCaptions.append("")
 
@@ -6456,7 +6574,7 @@ except:
     pass
 
 if processingOptions.getCurrentOption("SectionsExpand"):
-  createExpandingSections(prs)
+    createExpandingSections(prs)
 
 prs.save(output_filename)
 
@@ -6469,10 +6587,10 @@ print(
 )
 
 # Run a script against every slide
-script = 'if slide.slideInfo is not None:\n  print(slide.slideInfo)'
-script = ''
+script = "if slide.slideInfo is not None:\n  print(slide.slideInfo)"
+script = ""
 for slide in prs.slides:
-  exec(script)
-    
+    exec(script)
+
 
 sys.exit()
