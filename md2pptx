@@ -80,7 +80,7 @@ except:
 
 
 md2pptx_level = "4.0+"
-md2pptx_date = "10 April, 2023"
+md2pptx_date = "13 April, 2023"
 
 namespaceURL = {
     "mc": "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -2622,6 +2622,7 @@ def createListBlock(slideInfo, slide, renderingRectangle):
     cardBorderWidth = processingOptions.getCurrentOption("cardborderwidth")
     cardBorderColour = processingOptions.getCurrentOption("cardbordercolour")
     cardTitleColour = processingOptions.getCurrentOption("cardtitlecolour")
+    cardTitleBackgrounds = processingOptions.getCurrentOption("cardtitlebackground")
     cardColours = processingOptions.getCurrentOption("cardcolour")
     cardDividerColour = processingOptions.getCurrentOption("carddividercolour")
     marginBase = processingOptions.getCurrentOption("marginBase")
@@ -2770,6 +2771,14 @@ def createListBlock(slideInfo, slide, renderingRectangle):
                 cardTitleShape.text_frame.paragraphs[0].alignment = PP_ALIGN.CENTER
             else:
                 cardTitleShape.text_frame.paragraphs[0].alignment = PP_ALIGN.RIGHT
+            # Fill in card's background - if necessary
+            if (cardTitleBackgrounds[0] != ("None", "")) & (cardTitlePosition != "inside"):
+                cardTitleBackground = cardTitleBackgrounds[c % len(cardTitleBackgrounds)]
+
+                fill = cardTitleShape.fill
+                fill.solid()
+
+                setColour(fill.fore_color, cardTitleBackground)
 
             # Create card background and make sure it's behind the card body (and maybe card title)
             if cardShape == "rounded":
@@ -4825,6 +4834,7 @@ processingOptions.setOptionValuesArray(
         ["cardBorderColour", ("None", "")],
         ["cardTitleColour", ("None", "")],
         ["cardColour", [("None", "")]],
+        ["cardTitleBackground", [("None", "")]],
         ["cardDividerColour", ("RGB", "#000000")],
     ]
 )
@@ -5174,6 +5184,11 @@ for line in metadata_lines:
         valueArray2 = [parseColour(c.strip()) for c in value.split(",")]
 
         processingOptions.setOptionValues("cardColour", valueArray2)
+
+    elif name in ["cardtitlebackground", "cardtitlebackgrounds"]:
+        valueArray2 = [parseColour(c.strip()) for c in value.split(",")]
+
+        processingOptions.setOptionValues("cardTitleBackground", valueArray2)
 
     elif (name == "cardbordercolour") | (name == "cardbordercolor"):
         processingOptions.setOptionValues(
@@ -5896,6 +5911,18 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
 
                     processingOptions.dynamicallySetOption(
                         "cardColour", valueArray2, ""
+                    )
+
+                elif metadataKey in [
+                    "cardtitlebackground",
+                    "cardtitlebackgrounds",
+                ]:
+                    valueArray2 = [
+                        parseColour(c.strip()) for c in metadataValue.split(",")
+                    ]
+
+                    processingOptions.dynamicallySetOption(
+                        "cardTitleBackground", valueArray2, ""
                     )
 
                 elif metadataKey in ["funnelcolours", "funnelcolors"]:
