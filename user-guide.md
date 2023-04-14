@@ -114,6 +114,7 @@ As you can see in the [change log](#change-log), md2pptx is frequently updated -
 			* [Card Border Width - `CardBorderWidth`](#card-border-width-cardborderwidth)
 			* [Card Title Size - `CardTitleSize`](#card-title-size-cardtitlesize)
 			* [Card Title Colour - `cardTitleColour`](#card-title-colour-cardtitlecolour)
+			* [Card Title Background Colours - `CardTitleBackground`](#card-title-background-colours-cardtitlebackground)
 			* [Card Divider Colour - `cardDividerColour`](#card-divider-colour-carddividercolour)
 			* [Card Shadow - `CardShadow`](#card-shadow-cardshadow)
 			* [Card Size - `CardPercent`](#card-size-cardpercent)
@@ -173,8 +174,10 @@ As you can see in the [change log](#change-log), md2pptx is frequently updated -
 		* [Cards](#cards)
 			* [`CardPercent`](#cardpercent)
 			* [`CardLayout`](#cardlayout)
+			* [`CardColour`](#cardcolour)
 			* [`CardTitleAlign`](#cardtitlealign)
 			* [`CardTitlePosition`](#cardtitleposition)
+			* [`CardTitleBackground`](#cardtitlebackground)
 			* [`CardShape`](#cardshape)
 			* [`CardHorizontalGap`](#cardhorizontalgap)
 			* [`CardVerticalGap`](#cardverticalgap)
@@ -336,7 +339,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
-|4.0+|10&nbsp;April&nbsp;2023|Added [`funnelLabelsPosition`](#funnel-labels-position-funnellabelsposition) and [`funnelWidest`](#funnel-orientation-funnelwidest).|
+|4.0+|14&nbsp;April&nbsp;2023|Added [`funnelLabelsPosition`](#funnel-labels-position-funnellabelsposition) and [`funnelWidest`](#funnel-orientation-funnelwidest). Added [`cardTitleBackground`](#card-title-background-colours-cardtitlebackground).|
 |4.0|7&nbsp;April&nbsp;2023|Added [Funnel](#funnels) support. [`CardColour`](#card-background-colour-cardcolour) can now be pluralised: `CardColors` or `CardColours`.|
 |3.7|26&nbsp;March&nbsp;2023|Added [`cardDividerColour`](#card-divider-colour-carddividercolour). Most colours now RGB or Theme Colour (documented in [Specifying Colours](#specifying-colours)).|
 |3.6|18&nbsp;March&nbsp;2023|Added [`cardTitleColour`](#card-title-colour-cardtitlecolour) &amp; `line` for [`cardshape`](#card-shape-cardshape). Allow multiple colours for [`cardColour`](#card-background-colour-cardcolour).|
@@ -861,11 +864,12 @@ The width of each card is calculated depending on the number of cards. In this e
 
 In the above example there has been a small amount of tweaking of the format, using metadata. You can control the exact format using many tweaks:
 
-* [Card Background Colour](#card-background-colour-cardcolour)
+* [Card Background Colours](#card-background-colour-cardcolour)
 * [Card Border Colour](#card-border-colour-cardbordercolour)
 * [Card Border Width](#card-border-width-cardborderwidth)
 * [Card Title Font Size](#card-title-size-cardtitlesize)
 * [Card Title Colour](#card-title-colour-cardtitlecolour)
+* [Card Title Background Colours](#card-title-background-colours-cardtitlebackground).
 * [Card Divider Colour](#card-divider-colour-carddividercolour)
 * [Card Shadow](#card-shadow-cardshadow)
 * [Card Size](#card-size-cardpercent)
@@ -2146,6 +2150,7 @@ If you specify more than one value each successive card will use the next colour
 1. ACCENT 1
 1. ACCENT 2
 
+You can override this value on a slide-by-slide basis with [Dynamic CardColour](#cardcolour-dynamic).
 
 ##### Card Border Colour - `CardBorderColour`
 <a id="card-border-colour-cardbordercolour"></a>
@@ -2184,6 +2189,25 @@ You can specify the colour of cards' titles with `cardTitleColour`. For example:
     CardTitleColour: DARK 1
 
 would set the cards' titles to the theme's "DARK 1" colour.
+
+##### Card Title Background Colours - `CardTitleBackground`
+<a id="card-title-background-colours-cardtitlebackground"></a>
+
+You can specify which colours to use for the background of each card's title in a [Card Slide](#card-slides) - using `cardTitleBackground` (or `CardTitleBackgrounds`). For example:
+
+    CardTitleBackground: BACKGROUND 2
+
+If you don't specify this the default text box background colour - from the template - will be used.
+
+You can specify a series of card title background colours, separated by commas. For example:
+
+    CardTitleBackground: ACCENT 4, ACCENT 5
+
+If you specify more than one value each successive card will use the next colour in rotation.
+
+If the card titles are inside the cards (parhaps because a [`CardTitlePosition`](#card-title-position-cardtitleposition) value of `inside` was specified)`cardTitleBackground` will be ignored.
+
+You can override this value on a slide-by-slide basis with [Dynamic CardTitleBackground](#cardtitlebackground-dynamic).
 
 ##### Card Divider Colour - `cardDividerColour`
 <a id="card-divider-colour-carddividercolour"></a>
@@ -2985,6 +3009,15 @@ Either `vertical` or `horizontal` can be specified.
 
     <!-- md2pptx: cardlayout: vertical -->
 
+<a id="cardcolour-dynamic"></a>
+##### `CardColour`
+
+You can override the presentation [CardColour](#card-background-colour-cardcolour) metadata value:
+
+For example:
+
+    <!-- md2pptx: cardcolour: ACCENT 2, ACCENT 4 -->
+
 <a id="cardtitlealign-dynamic"></a>
 ##### `CardTitleAlign`
 
@@ -2998,6 +3031,15 @@ You can override the presentation [CardTitleAlign](#card-title-alignment-cardtit
 You can override the presentation [CardTitlePosition](#card-title-position-cardtitleposition) metadata value - perhaps to make an individual card slide's titles inside the cards when most are above:
 
     <!-- md2pptx: cardtitleposition: insde -->
+
+<a id="cardtitlebackground-dynamic"></a>
+##### `CardTitleBackground`
+
+You can override the presentation [CardTitleBackground](#card-title-background-colours-cardtitlebackground) metadata value:
+
+For example:
+
+    <!-- md2pptx: cardtitlebackground: ACCENT 3 -->
 
 <a id="cardshape-dynamic"></a>
 ##### `CardShape`

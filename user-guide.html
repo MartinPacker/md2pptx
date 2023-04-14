@@ -1218,6 +1218,7 @@ body .markdown-body
 <li><a href="#card-border-width-cardborderwidth">Card Border Width - <code>CardBorderWidth</code></a></li>
 <li><a href="#card-title-size-cardtitlesize">Card Title Size - <code>CardTitleSize</code></a></li>
 <li><a href="#card-title-colour-cardtitlecolour">Card Title Colour - <code>cardTitleColour</code></a></li>
+<li><a href="#card-title-background-colours-cardtitlebackground">Card Title Background Colours - <code>CardTitleBackground</code></a></li>
 <li><a href="#card-divider-colour-carddividercolour">Card Divider Colour - <code>cardDividerColour</code></a></li>
 <li><a href="#card-shadow-cardshadow">Card Shadow - <code>CardShadow</code></a></li>
 <li><a href="#card-size-cardpercent">Card Size - <code>CardPercent</code></a></li>
@@ -1297,8 +1298,10 @@ body .markdown-body
 <li><a href="#cards">Cards</a><ul>
 <li><a href="#cardpercent"><code>CardPercent</code></a></li>
 <li><a href="#cardlayout"><code>CardLayout</code></a></li>
+<li><a href="#cardcolour"><code>CardColour</code></a></li>
 <li><a href="#cardtitlealign"><code>CardTitleAlign</code></a></li>
 <li><a href="#cardtitleposition"><code>CardTitlePosition</code></a></li>
+<li><a href="#cardtitlebackground"><code>CardTitleBackground</code></a></li>
 <li><a href="#cardshape"><code>CardShape</code></a></li>
 <li><a href="#cardhorizontalgap"><code>CardHorizontalGap</code></a></li>
 <li><a href="#cardverticalgap"><code>CardVerticalGap</code></a></li>
@@ -1460,8 +1463,8 @@ THE SOFTWARE.
 <tbody>
 <tr>
 <td align="left">4.0+</td>
-<td align="right">10&nbsp;April&nbsp;2023</td>
-<td align="left">Added <a href="#funnel-labels-position-funnellabelsposition"><code>funnelLabelsPosition</code></a> and <a href="#funnel-orientation-funnelwidest"><code>funnelWidest</code></a>.</td>
+<td align="right">14&nbsp;April&nbsp;2023</td>
+<td align="left">Added <a href="#funnel-labels-position-funnellabelsposition"><code>funnelLabelsPosition</code></a> and <a href="#funnel-orientation-funnelwidest"><code>funnelWidest</code></a>. Added <a href="#card-title-background-colours-cardtitlebackground"><code>cardTitleBackground</code></a>.</td>
 </tr>
 <tr>
 <td align="left">4.0</td>
@@ -2212,11 +2215,12 @@ sectionTitleSize: 30
 <p>The width of each card is calculated depending on the number of cards. In this example the horizontal space is divided equally between the 4 cards.</p>
 <p>In the above example there has been a small amount of tweaking of the format, using metadata. You can control the exact format using many tweaks:</p>
 <ul>
-<li><a href="#card-background-colour-cardcolour">Card Background Colour</a></li>
+<li><a href="#card-background-colour-cardcolour">Card Background Colours</a></li>
 <li><a href="#card-border-colour-cardbordercolour">Card Border Colour</a></li>
 <li><a href="#card-border-width-cardborderwidth">Card Border Width</a></li>
 <li><a href="#card-title-size-cardtitlesize">Card Title Font Size</a></li>
 <li><a href="#card-title-colour-cardtitlecolour">Card Title Colour</a></li>
+<li><a href="#card-title-background-colours-cardtitlebackground">Card Title Background Colours</a>.</li>
 <li><a href="#card-divider-colour-carddividercolour">Card Divider Colour</a></li>
 <li><a href="#card-shadow-cardshadow">Card Shadow</a></li>
 <li><a href="#card-size-cardpercent">Card Size</a></li>
@@ -3313,6 +3317,7 @@ For example</p>
 <li>ACCENT 1</li>
 <li>ACCENT 2</li>
 </ol>
+<p>You can override this value on a slide-by-slide basis with <a href="#cardcolour-dynamic">Dynamic CardColour</a>.</p>
 <h5 id="card-border-colour-cardbordercolour">Card Border Colour - <code>CardBorderColour</code><a class="headerlink" href="#card-border-colour-cardbordercolour" title="Permanent link"></a></h5>
 <p><a id="card-border-colour-cardbordercolour"></a></p>
 <p>You can specify which of the theme colours to use for the border of each card in a <a href="#card-slides">Card Slide</a> - using <code>CardBorderColour</code> (or <code>CardBorderColor</code>).For example:</p>
@@ -3338,6 +3343,18 @@ For example</p>
 <pre><code>CardTitleColour: DARK 1
 </code></pre>
 <p>would set the cards&rsquo; titles to the theme&rsquo;s &ldquo;DARK 1&rdquo; colour.</p>
+<h5 id="card-title-background-colours-cardtitlebackground">Card Title Background Colours - <code>CardTitleBackground</code><a class="headerlink" href="#card-title-background-colours-cardtitlebackground" title="Permanent link"></a></h5>
+<p><a id="card-title-background-colours-cardtitlebackground"></a></p>
+<p>You can specify which colours to use for the background of each card&rsquo;s title in a <a href="#card-slides">Card Slide</a> - using <code>cardTitleBackground</code> (or <code>CardTitleBackgrounds</code>). For example:</p>
+<pre><code>CardTitleBackground: BACKGROUND 2
+</code></pre>
+<p>If you don&rsquo;t specify this the default text box background colour - from the template - will be used.</p>
+<p>You can specify a series of card title background colours, separated by commas. For example:</p>
+<pre><code>CardTitleBackground: ACCENT 4, ACCENT 5
+</code></pre>
+<p>If you specify more than one value each successive card will use the next colour in rotation.</p>
+<p>If the card titles are inside the cards (parhaps because a <a href="#card-title-position-cardtitleposition"><code>CardTitlePosition</code></a> value of <code>inside</code> was specified)<code>cardTitleBackground</code> will be ignored.</p>
+<p>You can override this value on a slide-by-slide basis with <a href="#cardtitlebackground-dynamic">Dynamic CardTitleBackground</a>.</p>
 <h5 id="card-divider-colour-carddividercolour">Card Divider Colour - <code>cardDividerColour</code><a class="headerlink" href="#card-divider-colour-carddividercolour" title="Permanent link"></a></h5>
 <p><a id="card-divider-colour-carddividercolour"></a></p>
 <p>You can specify the colour of lines between cards - if the <code>line</code> style is chosen. For example:</p>
@@ -3932,6 +3949,12 @@ The default value is <code>no</code>.</p>
 <p>Either <code>vertical</code> or <code>horizontal</code> can be specified.</p>
 <pre><code>&lt;!-- md2pptx: cardlayout: vertical --&gt;
 </code></pre>
+<p><a id="cardcolour-dynamic"></a></p>
+<h5 id="cardcolour"><code>CardColour</code><a class="headerlink" href="#cardcolour" title="Permanent link"></a></h5>
+<p>You can override the presentation <a href="#card-background-colour-cardcolour">CardColour</a> metadata value:</p>
+<p>For example:</p>
+<pre><code>&lt;!-- md2pptx: cardcolour: ACCENT 2, ACCENT 4 --&gt;
+</code></pre>
 <p><a id="cardtitlealign-dynamic"></a></p>
 <h5 id="cardtitlealign"><code>CardTitleAlign</code><a class="headerlink" href="#cardtitlealign" title="Permanent link"></a></h5>
 <p>You can override the presentation <a href="#card-title-alignment-cardtitlealign">CardTitleAlign</a> metadata value - perhaps to make an individual card slide&rsquo;s titles left-aligned when most are centred:</p>
@@ -3941,6 +3964,12 @@ The default value is <code>no</code>.</p>
 <h5 id="cardtitleposition"><code>CardTitlePosition</code><a class="headerlink" href="#cardtitleposition" title="Permanent link"></a></h5>
 <p>You can override the presentation <a href="#card-title-position-cardtitleposition">CardTitlePosition</a> metadata value - perhaps to make an individual card slide&rsquo;s titles inside the cards when most are above:</p>
 <pre><code>&lt;!-- md2pptx: cardtitleposition: insde --&gt;
+</code></pre>
+<p><a id="cardtitlebackground-dynamic"></a></p>
+<h5 id="cardtitlebackground"><code>CardTitleBackground</code><a class="headerlink" href="#cardtitlebackground" title="Permanent link"></a></h5>
+<p>You can override the presentation <a href="#card-title-background-colours-cardtitlebackground">CardTitleBackground</a> metadata value:</p>
+<p>For example:</p>
+<pre><code>&lt;!-- md2pptx: cardtitlebackground: ACCENT 3 --&gt;
 </code></pre>
 <p><a id="cardshape-dynamic"></a></p>
 <h5 id="cardshape"><code>CardShape</code><a class="headerlink" href="#cardshape" title="Permanent link"></a></h5>
