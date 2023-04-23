@@ -11,17 +11,26 @@ or
 
   `md2pptx output.pptx < input.markdown`
 
-Before you can use this you need to:
+### Installation
+
+Installation is straightforward:
+
+1. Install python-pptx
+2. Clone md2pptx into a new directory
+
+The md2pptx repo includes all the essentials, such as funnel.py. You don't install these with eg pip. There are some optional packages, outlined in the User Guide.
+
+You can install python-pptx with
 
   `pip3 install python-pptx`
-
-as this code relies on that Python 3 library.
 
 (On a Raspberry Pi you might want to use `pip3` (or `python3 -m pip`) to install for Python 3.)
 
 You will probably need to issue the following command from the directory where you install it:
 
   `chmod +x md2pptx`
+
+### Starting To Use md2pptx
 
 I would also suggest you start with a presentation that references Martin Template.pptx in the metadata (before the first blank line). \
 Here is a very simple deck that does exactly that.
