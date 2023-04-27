@@ -339,7 +339,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
-|4.0+|14&nbsp;April&nbsp;2023|Added [`funnelLabelsPosition`](#funnel-labels-position-funnellabelsposition) and [`funnelWidest`](#funnel-orientation-funnelwidest). Added [`cardTitleBackground`](#card-title-background-colours-cardtitlebackground).|
+|4.0+|27&nbsp;April&nbsp;2023|Added [`funnelLabelsPosition`](#funnel-labels-position-funnellabelsposition) and [`funnelWidest`](#funnel-orientation-funnelwidest). Added [`cardTitleBackground`](#card-title-background-colours-cardtitlebackground). Added quotation mark related [HTML entity references](#html-entity-references).|
 |4.0|7&nbsp;April&nbsp;2023|Added [Funnel](#funnels) support. [`CardColour`](#card-background-colour-cardcolour) can now be pluralised: `CardColors` or `CardColours`.|
 |3.7|26&nbsp;March&nbsp;2023|Added [`cardDividerColour`](#card-divider-colour-carddividercolour). Most colours now RGB or Theme Colour (documented in [Specifying Colours](#specifying-colours)).|
 |3.6|18&nbsp;March&nbsp;2023|Added [`cardTitleColour`](#card-title-colour-cardtitlecolour) &amp; `line` for [`cardshape`](#card-shape-cardshape). Allow multiple colours for [`cardColour`](#card-background-colour-cardcolour).|
@@ -1432,16 +1432,15 @@ Notice the `color` specification is in Hexadecimal RGB (Red Green Blue) format. 
 
 md2pptx supports a few [HTML entity references](https://en.wikipedia.org/wiki/List_of_XML_and_HTML_character_entity_references)&colon;
 
-
-|Entity Reference|Character|Entity Reference|Character|Entity Reference|Character|
-|:-|-:|:-|:-|:-|:-|
-|`&lt;`|&lt;|`&larr;`|&larr;|`&auml;`|&auml;|
-|`&gt;`|&gt;|`&rarr;`|&rarr;|`&Auml;`|&Auml;|
-|`&ge;`|&ge;|`&uarr;`|&uarr;|`&uuml;`|&uuml;|
-|`&le;`|&le;|`&darr;`|&darr;|`&Uuml;`|&Uuml;|
-|`&asymp;`|&asymp;|`&harr;`|&harr;|`&ouml;`|&ouml;|
-|`&Delta;`|&Delta;|`&varr;`|&varr;|`&Ouml;`|&Ouml;|
-|`&delta;`|&delta;|`&nearr;`|&nearr;|`&szlig;`|&szlig;|
+|Entity Reference|Character|Entity Reference|Character|Entity Reference|Character|Entity Reference|Character|
+|:-|:-:|:-|:-:|:-|:-:|:-|:-:|
+|`&lt;`|&lt;|`&larr;`|&larr;|`&auml;`|&auml;|`grave;`|&grave;|
+|`&gt;`|&gt;|`&rarr;`|&rarr;|`&Auml;`|&Auml;|`&apos;`|&apos;|
+|`&ge;`|&ge;|`&uarr;`|&uarr;|`&uuml;`|&uuml;|`&lsquo;`|&lsquo;|
+|`&le;`|&le;|`&darr;`|&darr;|`&Uuml;`|&Uuml;|`&rsquo;`|&rsquo;|
+|`&asymp;`|&asymp;|`&harr;`|&harr;|`&ouml;`|&ouml;|`&quot;`|&quot;|
+|`&Delta;`|&Delta;|`&varr;`|&varr;|`&Ouml;`|&Ouml;|`&ldquo;`|&ldquo;|
+|`&delta;`|&delta;|`&nearr;`|&nearr;|`&szlig;`|&szlig;|`&rdquo;`|&rdquo;|
 |`&sim;`|&sim;|`&nwarr;`|&nwarr;|`&euro;`|&euro;|
 |`&lowast;`|&lowast;|`&searr;`|&searr;|`&hellip;`|&hellip;|
 |`&semi;`|&semi;|`&swarr;`|&swarr;|`&percnt;`|&percnt;|
@@ -1465,13 +1464,11 @@ md2pptx supports a few [HTML numeric character references](https://en.wikipedia.
 ###  Escaped Characters
 <a id="escaped-characters"></a>
 
-md2pptx supports a few escaped characters. Of most interest are the two square bracket characters:
+md2pptx supports a few escaped characters:
 
 * `\[`
 * `\]`
-
-You can also escape the underscore character:
-
+* <code>\\`</code>
 * `\_`
 
 ### CriticMarkup
@@ -2465,12 +2462,17 @@ By default a funnel's stages get progressively narrower towards the right. You m
 
 reverses the usual funnel direction and acts as a "fan out" of sorts - with the funnel becoming progressively wider towards the right.
 
+You can also have the funnel vertical instead of horizontal, or have constant width (or height) stages.
+
 The supported values are:
 
 * `left` (which is the default)
 * `right`
+* `top`
+* `bottom`
 * `pipe` where the stages have constant height
 * `hpipe` - short for "horizontal pipe" - which is the same as `pipe`
+* `vpipe` - short for "vertical pipe" - where the stages have constant width
 
 You can do this dynamically (on a slide-by-slide basis) with [`funnelWidest`](#funnelwidest-dynamic).
 

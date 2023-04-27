@@ -80,7 +80,7 @@ except:
 
 
 md2pptx_level = "4.0+"
-md2pptx_date = "14 April, 2023"
+md2pptx_date = "26 April, 2023"
 
 namespaceURL = {
     "mc": "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -1520,6 +1520,9 @@ def parseText(text):
             else:
                 fragment = fragment + c
 
+        elif ord(c) == 235:
+            fragment = fragment + "`"
+
         elif ord(c) == 236:
             fragment = fragment + "<"
 
@@ -2772,8 +2775,12 @@ def createListBlock(slideInfo, slide, renderingRectangle):
             else:
                 cardTitleShape.text_frame.paragraphs[0].alignment = PP_ALIGN.RIGHT
             # Fill in card's background - if necessary
-            if (cardTitleBackgrounds[0] != ("None", "")) & (cardTitlePosition != "inside"):
-                cardTitleBackground = cardTitleBackgrounds[c % len(cardTitleBackgrounds)]
+            if (cardTitleBackgrounds[0] != ("None", "")) & (
+                cardTitlePosition != "inside"
+            ):
+                cardTitleBackground = cardTitleBackgrounds[
+                    c % len(cardTitleBackgrounds)
+                ]
 
                 fill = cardTitleShape.fill
                 fill.solid()
@@ -5462,7 +5469,7 @@ for line in metadata_lines:
             )
 
     elif name == "funnelwidest":
-        if value in ["left", "right", "pipe", "hpipe"]:
+        if value in ["left", "right", "pipe", "hpipe", "vpipe", "top", "bottom"]:
             processingOptions.setOptionValues(name, value)
         else:
             print(
@@ -6102,6 +6109,9 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
                         "right",
                         "pipe",
                         "hpipe",
+                        "vpipe",
+                        "top",
+                        "bottom",
                     ]:
                         processingOptions.dynamicallySetOption(
                             metadataKey,

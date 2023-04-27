@@ -5,8 +5,8 @@ mdpre Markdown Preprocessor v0.6.5 (17 February, 2023)
 Def mdpre_date = 17 February, 2023
 Def mdpre_level = 0.6.5
 Def userid = martinpacker
-Def time = 17&colon;30
-Def date = 14 April&comma; 2023
+Def time = 20&colon;24
+Def date = 27 April&comma; 2023
 Def TOC = Table Of Contents
 Def md = Markdown
 Def pp = Powerpoint
@@ -72,6 +72,7 @@ CSV Stop
 ..... ..... .....   Using HTML `<span>` Elements with `class`
 ..... ..... .....   Using HTML `<span>` Elements with `style`
 ..... .....  HTML Entity References
+Column Alignment - spec 'l c l c l c l c'
 CSV Start
 CSV Stop
 ..... .....  Numeric Character References
