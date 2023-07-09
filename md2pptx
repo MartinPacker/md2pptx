@@ -79,8 +79,8 @@ except:
     have_graphviz = False
 
 
-md2pptx_level = "4.1"
-md2pptx_date = "28 April, 2023"
+md2pptx_level = "4.1+"
+md2pptx_date = "9 July, 2023"
 
 namespaceURL = {
     "mc": "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -1779,6 +1779,13 @@ def addFormattedText(p, text):
 
 def addFooter(presentation, slideNumber, slide):
     numbersHeight = processingOptions.getCurrentOption("numbersHeight")
+    
+    numbersFontSizeSpec = processingOptions.getCurrentOption("numbersFontSize")
+    if numbersFontSizeSpec == "":
+        numbersFontSize = Pt(12)
+    else:
+        numbersFontSize = Pt(numbersFontSizeSpec)
+    
     shapes = slide.shapes
     footer = shapes.add_textbox(
         Inches(0.1),
@@ -1791,7 +1798,7 @@ def addFooter(presentation, slideNumber, slide):
     run = p.add_run()
     run.text = str(slideNumber)
     font = run.font
-    font.size = Pt(12)
+    font.size = numbersFontSize
 
 
 # Called "Simple" because more complex shapes might not work
@@ -2515,9 +2522,11 @@ def createContentSlide(presentation, slideNumber, slideInfo):
 
     # Create the slide and check for bullets and/or cards
     if (slideInfo.bullets == []) & (slideInfo.cards == []):
+        # No bullets or cards so "title only"
         slideLayout = titleOnlyLayout
         haveBulletsCards = False
     else:
+        # Either bullets or cards or both so not "title only"
         slideLayout = contentSlideLayout
         haveBulletsCards = True
 
@@ -2628,6 +2637,8 @@ def createListBlock(slideInfo, slide, renderingRectangle):
     cardTitleBackgrounds = processingOptions.getCurrentOption("cardtitlebackground")
     cardColours = processingOptions.getCurrentOption("cardcolour")
     cardDividerColour = processingOptions.getCurrentOption("carddividercolour")
+    cardGraphicHeight = processingOptions.getCurrentOption("cardgraphicheight")
+    cardGraphicPosition = processingOptions.getCurrentOption("cardgraphicposition")
     marginBase = processingOptions.getCurrentOption("marginBase")
     pageTitleSize = processingOptions.getCurrentOption("pageTitleSize")
     pageSubtitleSize = processingOptions.getCurrentOption("pageSubtitleSize")
@@ -2645,13 +2656,14 @@ def createListBlock(slideInfo, slide, renderingRectangle):
     # Set bulleted text height - depending on whether there's a card
     # Remainder is card area height - if there are cards
     if slideInfo.cards == []:
-        # Bullets shape takes the whole content area
+        # There are no cards so the bullets shape takes the whole content area
         bulletsShape.height = renderingRectangle.height
 
         # There are no cards so the card area is zero height
         cardAreaHeight = 0
         cardCount = 0
     else:
+        # There are cards
         if bulletCount > 0:
             # Bullets shape vertically shortened
             bulletsShape.height = int(
@@ -2667,8 +2679,11 @@ def createListBlock(slideInfo, slide, renderingRectangle):
             cardAreaHeight = renderingRectangle.height
 
         cardBackgroundShapes = []
-        cardBodyShapes = []
         cardTitleShapes = []
+        cardGraphicShapes = []
+        cardGraphicDimensions = []
+        cardBodyShapes = []
+
         cardLeft = []
         cardTop = []
         cardBodyTop = []
@@ -2677,7 +2692,7 @@ def createListBlock(slideInfo, slide, renderingRectangle):
 
         cardCount = len(slideInfo.cards)
 
-        # card width applies to card title, card background, card body
+        # card width applies to card title, card graphic, card background, card body
         if cardLayout == "horizontal":
             # Divide horizontal card space up
             cardWidth = int(
@@ -2690,14 +2705,16 @@ def createListBlock(slideInfo, slide, renderingRectangle):
 
         # Calculate title top and height - horizontal layout
         if cardTitleSize > 0:
-            # Specified by user
+            # Specified by user. "72" because in points
             cardTitleHeightRaw = Inches(cardTitleSize / 72)
         else:
-            # Shrunk to 2/3 of page title height
+            # Shrunk to 2/3 of page title height.  "72" because in points
             cardTitleHeightRaw = Inches(int(10000 * pageTitleSize * 2 / 3 / 72) / 10000)
 
         # Adjust title height to be slightly larger than the text
         cardTitleHeight = cardTitleHeightRaw + Inches(0.1)
+
+        cardGraphicHeightRaw = int(Inches(cardGraphicHeight))
 
         if bulletCount > 0:
             # Bullets so cards and their titles occupy less than whole height
@@ -2734,13 +2751,16 @@ def createListBlock(slideInfo, slide, renderingRectangle):
             if cardTitlePosition == "above":
                 # Card title above card background
                 cardBackgroundTop.append(cardTop[c] + cardTitleHeight)
-                cardBodyTop.append(cardBackgroundTop[c])
+                S.append(cardBackgroundTop[c])
             else:
                 # card title inside card background
                 cardBackgroundTop.append(cardTop[c])
 
                 # Leave room above the card body for the card title
-                cardBodyTop.append(cardBackgroundTop[c] + cardTitleHeight)
+                if cards[c][0] == "&nbsp;":
+                    cardBodyTop.append(cardBackgroundTop[c])
+                else:
+                    cardBodyTop.append(cardBackgroundTop[c] + cardTitleHeight)
 
             # Calculate a card's horizontal position
             if cardLayout == "horizontal":
@@ -2754,6 +2774,24 @@ def createListBlock(slideInfo, slide, renderingRectangle):
             cardTitleShape = addClonedShape(slide, slideTitleShape)
 
             cardTitleShapes.append(cardTitleShape)
+
+            cardGraphicFilename = cards[c][1]
+            if cardGraphicFilename != "":
+                cardGraphicDimensions.append(getGraphicDimensions(
+                     cardGraphicFilename
+                 ))
+
+                # Create card graphic shape - to be resized later
+                cardGraphicShape = slide.shapes.add_picture(
+                    cardGraphicFilename,
+                    Inches(0),
+                    Inches(0),
+                )
+            else:
+                cardGraphicShape = None
+                cardGraphicDimensions.append(None)
+
+            cardGraphicShapes.append(cardGraphicShape)
 
             # Clear text from cloned title and add in the title text
             cardTitleShape.text_frame.paragraphs[0].text = ""
@@ -2851,6 +2889,13 @@ def createListBlock(slideInfo, slide, renderingRectangle):
         cardBackgroundShape = cardBackgroundShapes[c]
         cardTitleShape = cardTitleShapes[c]
         cardBodyShape = cardBodyShapes[c]
+        cardGraphicShape = cardGraphicShapes[c]
+
+        # Get dimensions of any graphic
+        if cardGraphicShape is not None:
+            cardGraphicNativeWidth, cardGraphicNativeHeight = cardGraphicDimensions[c]
+        else:
+            cardGraphicNativeWidth, cardGraphicNativeHeight = (0, 0)
 
         # Set the card shapes' width
         cardBackgroundShape.width = cardWidth
@@ -2908,11 +2953,45 @@ def createListBlock(slideInfo, slide, renderingRectangle):
             dividingLine.line.width = Pt(2.0)
 
         # Position card
-        cardBodyShape.top = cardBodyTop[c]
-        cardBodyShape.height = cardBodyHeight
+        if cardGraphicShape == None:
+            # No graphic on this card
+            cardBodyShape.top = cardBodyTop[c]
+            cardBodyShape.height = cardBodyHeight
+        else:
+            # Make room for graphic
+            if cardGraphicPosition == "before":
+                # Leave room above card body shape for graphic
+                cardBodyShape.top = cardBodyTop[c] + cardGraphicHeightRaw
+            else:
+                # Leave room below card body shape for graphic
+                cardBodyShape.top = cardBodyTop[c]
+            
+            cardBodyShape.height = cardBodyHeight - cardGraphicHeightRaw
+            
+            # Scale graphic
+            (cardPicWidth, cardPicHeight, scaledByHeight) = scalePicture(
+                cardTitleShape.width,
+                cardGraphicHeightRaw,
+                cardGraphicNativeWidth,
+                cardGraphicNativeHeight,
+            )
+            if cards[c][0] == "&nbsp;":
+                if cardGraphicPosition == "before":
+                    cardGraphicShape.top = cardTitleShape.top + int((cardGraphicHeightRaw - cardPicHeight) / 2)
+                else:
+                    cardGraphicShape.top = cardBodyHeight + int((cardGraphicHeightRaw - cardPicHeight) / 2)
+            else:
+                if cardGraphicPosition == "before":
+                    cardGraphicShape.top = cardTitleShape.top + cardTitleShape.height + int((cardGraphicHeightRaw - cardPicHeight) / 2)
+                else:
+                    cardGraphicShape.top = cardBodyHeight + cardTitleShape.height + int((cardGraphicHeightRaw - cardPicHeight) / 2)
+
+            cardGraphicShape.left = cardTitleShape.left +int((cardTitleShape.width - cardPicWidth) / 2)
+            cardGraphicShape.height = int(cardPicHeight)
+            cardGraphicShape.width = int(cardPicWidth)
 
         if len(cards[c]) > 1:
-            renderText(cardBodyShape, slideInfo.cards[c][1])
+            renderText(cardBodyShape, slideInfo.cards[c][2])
 
         lf = cardBackgroundShape.line
 
@@ -4090,6 +4169,7 @@ def createSlide(presentation, slideNumber, slideInfo):
     sectionSubtitleSize = processingOptions.getCurrentOption("sectionSubtitleSize")
     presSubtitleSize = processingOptions.getCurrentOption("presSubtitleSize")
     leftFooterText = processingOptions.getCurrentOption("leftFooterText")
+    footerFontSizeSpec = processingOptions.getCurrentOption("footerFontSize")
     middleFooterText = processingOptions.getCurrentOption("middleFooterText")
     rightFooterText = processingOptions.getCurrentOption("rightFooterText")
     sectionFooters = processingOptions.getCurrentOption("sectionFooters")
@@ -4156,7 +4236,11 @@ def createSlide(presentation, slideNumber, slideInfo):
             notes_text,
         )
 
-    footerFontSize = Pt(8.0)
+    if footerFontSizeSpec == "":
+        footerFontSize = Pt(8.0)
+    else:
+        footerFontSize = Pt(footerFontSizeSpec)
+    
     footerBoxTop = prs.slide_height - numbersHeight / 2 - footerFontSize
     footerBoxHeight = footerFontSize * 2
 
@@ -4843,6 +4927,8 @@ processingOptions.setOptionValuesArray(
         ["cardColour", [("None", "")]],
         ["cardTitleBackground", [("None", "")]],
         ["cardDividerColour", ("RGB", "#000000")],
+        ["cardGraphicHeight", 0.75],
+        ["cardGraphicPosition", "before"],
     ]
 )
 
@@ -4926,6 +5012,7 @@ processingOptions.setOptionValuesArray(
         ["rightFooterText", ""],
         ["sectionFooters", "no"],
         ["liveFooters", "no"],
+        ["footerFontSize", ""],
     ]
 )
 
@@ -4944,6 +5031,7 @@ processingOptions.setOptionValuesArray(
         ["numbersHeight", numbersHeight],
         ["numbersContentMargin", numbersHeight],
         ["numbersHeadingsMargin", numbersHeight],
+        ["numbersFontSize", ""],
     ]
 )
 
@@ -5056,6 +5144,9 @@ for line in metadata_lines:
             # (Can code any other value, including 'no' or omit this metadata type)
             want_numbers_headings = False
             want_numbers_content = False
+
+    elif name == "numbersfontsize":
+        processingOptions.setOptionValues(name, float(value))
 
     elif name == "pagetitlesize":
         processingOptions.setOptionValues(name, float(value))
@@ -5173,6 +5264,9 @@ for line in metadata_lines:
     ]:
         processingOptions.setOptionValues(name, value)
 
+    elif name == "footerfontsize":
+        processingOptions.setOptionValues(name, float(value))
+
     elif name == "boldbold":
         if value.lower() == "no":
             processingOptions.setOptionValues("boldBold", False)
@@ -5220,7 +5314,7 @@ for line in metadata_lines:
         if value.lower() == "yes":
             processingOptions.setOptionValues(name, True)
 
-    elif name == "cardpercent":
+    elif name in ["cardpercent", "cardgraphicheight"]:
         processingOptions.setOptionValues(name, float(value))
 
     elif name == "cardlayout":
@@ -5240,11 +5334,19 @@ for line in metadata_lines:
             )
 
     elif name == "cardtitleposition":
-        if value in ["above", "inside"]:
+        if value in ["above", "inside", "before", "after"]:
             processingOptions.setOptionValues(name, value)
         else:
             print(
-                f'CardTitlePosition value \'{value}\' unsupported. "inside" or "above" required.'
+                f'CardTitlePosition value \'{value}\' unsupported. "inside", "above", "before", or "after" required.'
+            )
+
+    elif name == "cardgraphicposition":
+        if value in ["before", "after"]:
+            processingOptions.setOptionValues(name, value)
+        else:
+            print(
+                f'CardGraphicPosition value \'{value}\' unsupported. "before",or "after" required.'
             )
 
     elif name == "cardtitlealign":
@@ -5800,6 +5902,8 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
                     "pagesubtitlesize",
                     # Cards' vertical percent of content area
                     "cardpercent",
+                    # Card graphic's vertical space
+                    "cardgraphicheight",
                     # Base text size
                     "basetextsize",
                     # Base text decrement
@@ -5891,6 +5995,12 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
 
                 elif metadataKey == "cardtitleposition":
                     # Card title position - above or inside
+                    processingOptions.dynamicallySetOption(
+                        metadataKey, metadataValue, ""
+                    )
+
+                elif metadataKey == "cardgraphicposition":
+                    # Card graphic position - before or after
                     processingOptions.dynamicallySetOption(
                         metadataKey, metadataValue, ""
                     )
@@ -6139,10 +6249,18 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
             # Get card title text and any href
             cardName, href = parseTitleText(line[cardLevel:])
 
-            # Create information about a card_title
+            # No bullets for the card yet
             cardBullets = []
-            cards.append([cardName])
+            
+            # No graphic for the card yet
+            cardGraphic = ""
+
+            # Create information about a card_title
+            cards.append([cardName, cardGraphic, cardBullets])
+            
+            # Might have octothorpes but isn't a title
             inTitle = False
+
 
         else:
             # One of Content, Section, or Title slide
@@ -6208,21 +6326,26 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
     elif match := bulletRegex.match(line):
         # Bulleted list
         bulletLine = match.group(3).lstrip()
+
         bulletLevel = calculateIndentationLevel(
             match.start(2), processingOptions.getCurrentOption("indentSpaces")
         )
+        
         bulletType = "bulleted"
+        
         if inCard:
+            # Bullet is on a card
             cardBullets.append([bulletLevel, bulletLine, bulletType])
-            cardsLength = len(cards)
-            if len(cards[cardsLength - 1]) == 1:
-                cards[cardsLength - 1].append(cardBullets)
-            else:
-                cards[cardsLength - 1][1] = cardBullets
+
+            # Update bullet list for the card
+            cards[-1][2] = cardBullets
         else:
+            # Bullet is not on a card        
             bullets.append([bulletLevel, bulletLine, bulletType])
+
         if inList is False:
             sequence.append("list")
+
         inList = True
         inTable = False
         inTitle = False
@@ -6230,21 +6353,26 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
     elif match := numberRegex.match(line):
         # Numbered list
         bulletLine = match.group(3).lstrip()
+
         bulletLevel = calculateIndentationLevel(
             match.start(2), processingOptions.getCurrentOption("indentSpaces")
         )
+
         bulletType = "numbered"
+
         if inCard:
+            # Bullet is on a card
             cardBullets.append([bulletLevel, bulletLine, bulletType])
-            cardsLength = len(cards)
-            if len(cards[cardsLength - 1]) == 1:
-                cards[cardsLength - 1].append(cardBullets)
-            else:
-                cards[cardsLength - 1][1] = cardBullets
+
+            # Update bullet list for the card
+            cards[-1][2] = cardBullets
         else:
+            # Bullet is not on a card        
             bullets.append([bulletLevel, bulletLine, bulletType])
+
         if inList is False:
             sequence.append("list")
+
         inList = True
         inTable = False
         inTitle = False
@@ -6252,66 +6380,81 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
     # Following marshals media into one or two table cells and adds the new row
     # to either a new or existing table. It also says we're in a table
     elif startswithOneOf(line, ["<video ", "<audio ", "[![", "!["]):
-        # There is at least one media item in the line - so set up table
-        if inTable is False:
-            # Switch to being in a table
-            blockType = "table"
-            sequence.append("table")
-            inTable = True
-            inList = False
-            inCard = False
+        if inCard:
+            # Graphic in a card
+            if startswithOneOf(line, ["<video ", "<audio ", "[!["]):
+                # Might implement these later on
+                print("video, audio and clickable graphic not supported")
+            else:
+                # graphicCount
+                for m in re.finditer(graphicRegex, line):
+                    # A non-clickable graphic
+                    cardGraphic = m.group(0)[4 : -1]
+                    
+                    # Add graphic to latest card 
+                    cards[-1][1] = cardGraphic
+        else:
+            # There is at least one media item in the line and not in a card
+            # - so set up table
+            if inTable is False:
+                # Switch to being in a table
+                blockType = "table"
+                sequence.append("table")
+                inTable = True
+                inList = False
+                inCard = False
 
-            # Create a new empty table
-            # tableRows = []
+                # Create a new empty table
+                # tableRows = []
 
-        # Start the creation of a new row
-        tableRow = []
+            # Start the creation of a new row
+            tableRow = []
 
-        # Collect the media items
-        mediaItems = []
-        for m in re.finditer(videoRegex, line):
-            # A video
-            mediaItem = [m.start(0), m.end(0), m.group(0)]
-            mediaItems.append(mediaItem)
-
-        for m in re.finditer(audioRegex, line):
-            # An audio file
-            mediaItem = [m.start(0), m.end(0), m.group(0)]
-            mediaItems.append(mediaItem)
-
-        for m in re.finditer(clickableGraphicRegex, line):
-            # A clickable graphic
-            mediaItem = [m.start(0), m.end(0), m.group(0)]
-            mediaItems.append(mediaItem)
-
-        for m in re.finditer(graphicRegex, line):
-            # A non-clickable graphic
-            start = m.start(0)
-            end = m.end(0)
-            mediaItem = [start, end, m.group(0)]
-
-            rematch = False
-            for existingMediaItem in mediaItems:
-                if (start >= existingMediaItem[0]) & (end <= existingMediaItem[1]):
-                    # This graphic already found as part of a clickable graphic link
-                    rematch = True
-                    break
-
-            if rematch is False:
-                # This graphic not already found as part of a clickable graphic link
+            # Collect the media items
+            mediaItems = []
+            for m in re.finditer(videoRegex, line):
+                # A video
+                mediaItem = [m.start(0), m.end(0), m.group(0)]
                 mediaItems.append(mediaItem)
 
-        # compose table row - based on start offset
-        tableRow = []
-        for mediaItem in sorted(mediaItems):
-            tableRow.append(mediaItem[2])
+            for m in re.finditer(audioRegex, line):
+                # An audio file
+                mediaItem = [m.start(0), m.end(0), m.group(0)]
+                mediaItems.append(mediaItem)
 
-        # Add table row to saved table rows
-        if len(tableRows) == 0:
-            tableRows.append([])
-        tableRows[-1].append(tableRow)
+            for m in re.finditer(clickableGraphicRegex, line):
+                # A clickable graphic
+                mediaItem = [m.start(0), m.end(0), m.group(0)]
+                mediaItems.append(mediaItem)
 
-        inTitle = False
+            for m in re.finditer(graphicRegex, line):
+                # A non-clickable graphic
+                start = m.start(0)
+                end = m.end(0)
+                mediaItem = [start, end, m.group(0)]
+
+                rematch = False
+                for existingMediaItem in mediaItems:
+                    if (start >= existingMediaItem[0]) & (end <= existingMediaItem[1]):
+                        # This graphic already found as part of a clickable graphic link
+                        rematch = True
+                        break
+
+                if rematch is False:
+                    # This graphic not already found as part of a clickable graphic link
+                    mediaItems.append(mediaItem)
+
+            # compose table row - based on start offset
+            tableRow = []
+            for mediaItem in sorted(mediaItems):
+                tableRow.append(mediaItem[2])
+
+            # Add table row to saved table rows
+            if len(tableRows) == 0:
+                tableRows.append([])
+            tableRows[-1].append(tableRow)
+
+            inTitle = False
 
     elif line[:1] == "|":
         # Table or side-by-side
