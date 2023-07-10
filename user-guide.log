@@ -5,8 +5,8 @@ mdpre Markdown Preprocessor v0.6.5 (17 February, 2023)
 Def mdpre_date = 17 February, 2023
 Def mdpre_level = 0.6.5
 Def userid = martinpacker
-Def time = 10&colon;19
-Def date = 28 April&comma; 2023
+Def time = 20&colon;05
+Def date = 10 July&comma; 2023
 Def TOC = Table Of Contents
 Def md = Markdown
 Def pp = Powerpoint
@@ -149,11 +149,13 @@ CSV Stop
 ..... ..... ..... .....  Funnel Labels Space - `funnelLabelsPercent`
 ..... ..... ..... .....  Funnel Labels Position - `funnelLabelsPosition`
 ..... ..... ..... .....  Funnel Orientation - `funnelWidest`
-..... ..... .....  Footer Metadata
+..... ..... .....  Footer And Slide Number Metadata
 ..... ..... ..... .....  Slide Numbers - `numbers`
+..... ..... ..... .....  Specifying Slide Number Font Size With `numbersFontSize`
 ..... ..... ..... .....  Specifying How Much Space To Reserve For Slide Numbers With `NumbersHeight`
 ..... ..... ..... .....  Specifying Footer Text
 ..... ..... ..... ..... .....  Footer Flexibility
+..... ..... ..... .....  Specifying Footer Font Size With `footerFontSize`
 ..... ..... .....  Slide Heading Levels - `TopHeadingLevel`
 Column Alignment - spec 'r l'
 CSV Start
