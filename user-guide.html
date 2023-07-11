@@ -1464,9 +1464,14 @@ THE SOFTWARE.
 </thead>
 <tbody>
 <tr>
+<td align="left">4.1.2</td>
+<td align="right">11&nbsp;July&nbsp;2023</td>
+<td align="left">Fixed two bugs: Using <code>&lt;sub&gt;</code> &amp; <code>&lt;sup&gt;</code> causes a crash. Also <a href="#card-slides">Card Slides</a> cause a crash.</td>
+</tr>
+<tr>
 <td align="left">4.1.1</td>
 <td align="right">10&nbsp;July&nbsp;2023</td>
-<td align="left">Added Added <a href="#specifying-slide-number-font-size-with-numbersfontsize"><code>numbersFontSize</code></a> and <a href="#specifying-footer-font-size-with-footerfontsize"><code>footerFontSize</code></a>.</td>
+<td align="left">Added <a href="#specifying-slide-number-font-size-with-numbersfontsize"><code>numbersFontSize</code></a> and <a href="#specifying-footer-font-size-with-footerfontsize"><code>footerFontSize</code></a>.</td>
 </tr>
 <tr>
 <td align="left">4.1</td>
@@ -1776,7 +1781,7 @@ THE SOFTWARE.
 <tr>
 <td align="left">1.6</td>
 <td align="right">22&nbsp;December&nbsp;2020</td>
-<td align="left">Added Card Slide support. Metadata keys are now case-insensitive.</td>
+<td align="left">Added <a href="#card-slides">Card Slide</a> support. Metadata keys are now case-insensitive.</td>
 </tr>
 <tr>
 <td align="left">1.5</td>
@@ -2630,6 +2635,7 @@ End Sub
 </tr>
 </tbody>
 </table>
+<p><strong>Note:</strong> Superscript works by raising the text baseline. Subscript works by lowering it. This is how Powerpoint itself does it.</p>
 <p><a id="using-html-%3Cspan%3E-elements-to-specify-text-colours-and-underlining"></a></p>
 <h3 id="using-html-span-elements-to-specify-text-colours-and-underlining">Using HTML <code>&lt;span&gt;</code> Elements To Specify Text Colours And Underlining<a class="headerlink" href="#using-html-span-elements-to-specify-text-colours-and-underlining" title="Permanent link"></a></h3>
 <p>You can set the background or foreground colour of a piece of text. To do this use the <code>&lt;span&gt;</code> HTML element:</p>

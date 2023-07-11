@@ -79,7 +79,7 @@ except:
     have_graphviz = False
 
 
-md2pptx_level = "4.1.1+"
+md2pptx_level = "4.1.2"
 md2pptx_date = "11 July, 2023"
 
 namespaceURL = {
@@ -791,6 +791,10 @@ def addClonedShape(slide, shape1):
 
 # Following functions are workarounds for python-pptx not having these functions for the font object
 def set_subscript(font):
+    if font.size is None:
+        font._element.set("baseline", "-50000")
+        return
+    
     if font.size < Pt(24):
         font._element.set("baseline", "-50000")
     else:
@@ -798,6 +802,10 @@ def set_subscript(font):
 
 
 def set_superscript(font):
+    if font.size is None:
+        font._element.set("baseline", "60000")
+        return
+    
     if font.size < Pt(24):
         font._element.set("baseline", "60000")
     else:
@@ -1665,6 +1673,7 @@ def addFormattedText(p, text):
             subfragment = subfragment.replace("&#x23;", "#")
 
             run = p.add_run()
+
             if fragType not in ["Link", "fnref", "Gloss"]:
                 run.text = subfragment
             elif fragType == "Gloss":
