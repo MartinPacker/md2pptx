@@ -54,3 +54,12 @@ Here are some slide notes. Note you leave an empty line between the content - in
 You can do multiple paragraphs and even use symbols.
 ```
 
+### Documentation
+
+As md2pptx has lots of function the documentation is a good place to discover it.
+
+See `docs/user-guide.html` or `docs/user-guide.md`.
+
+### Issues &amp; Suggestions
+
+This repo's Issues are regularly monitored. Use them for bug reports, suggestions, and questions.
