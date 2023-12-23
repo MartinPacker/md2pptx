@@ -2792,7 +2792,7 @@ To create a "Chevron Style" &TOC; slide and Section slides code:
 If you create a "Chevron Style" &TOC; slide, it will look something like this:
 
 <div style="border: 1px solid black">
-<img src="https://raw.githubusercontent.com/MartinPacker/md2pptx/master/chevronTOC.png" />
+<img src="chevronTOC.png" />
 </div>
 
 If you specify `tocStyle: chevron` the Section slides will be rendered something like this:

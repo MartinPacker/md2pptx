@@ -500,8 +500,11 @@ body .markdown-body
   padding-bottom: 0.2em;
   margin: 0;
   font-size: 85%;
-  background-color: rgba(0,0,0,0.04);
   border-radius: 3px;
+}
+
+.markdown-body code:not(.highlight):not(.codehilite), .markdown-body samp {
+  background-color: rgba(0,0,0,0.04);
 }
 
 .markdown-body code:before,
@@ -532,8 +535,16 @@ body .markdown-body
   overflow: auto;
   font-size: 85%;
   line-height: 1.45;
-  background-color: #f7f7f7;
+}
+
+.markdown-body .codehilite,
+.markdown-body .highlight,
+.markdown-body pre {
   border-radius: 3px;
+}
+
+.markdown-body :not(.highlight) > pre {
+  background-color: #f7f7f7;
 }
 
 .markdown-body .codehilite pre,
@@ -1003,7 +1014,7 @@ body .markdown-body
   }
 }
 </style><style>/*GitHub*/
-.highlight {background-color:#fff;color:#333333;}
+.highlight {background-color:#f7f7f7;color:#333333;}
 .highlight .hll {background-color:#ffffcc;}
 .highlight .c{color:#999988;font-style:italic}
 .highlight .err{color:#a61717;background-color:#e3d2d2}
@@ -1931,10 +1942,10 @@ sectionTitleSize: 30
 </code></pre>
 <p>You can try it if you like. Just cut it and paste it into a file. Call it something like Example.markdown.</p>
 <p>It will render something like this:</p>
-<p><img alt="" src="/Users/martinpacker/md2pptx/Simple1.png" />
-<img alt="" src="/Users/martinpacker/md2pptx/Simple2.png" />
-<img alt="" src="/Users/martinpacker/md2pptx/Simple3.png" />
-<img alt="" src="/Users/martinpacker/md2pptx/Simple4.png" /></p>
+<p><img alt="" src="/Users/martinpacker/md2pptx/docs/Simple1.png" />
+<img alt="" src="/Users/martinpacker/md2pptx/docs/Simple2.png" />
+<img alt="" src="/Users/martinpacker/md2pptx/docs/Simple3.png" />
+<img alt="" src="/Users/martinpacker/md2pptx/docs/Simple4.png" /></p>
 <p>The first slide is special, and an almost inevitable feature of using the python-pptx library. You will probably want to remove it before publishing.</p>
 <p>If there is at least one slide in the presentation template md2pptx uses the first one to create a processing summary. The processing summary slide shows processing options, the time and date the presentation was created by md2pptx, and metadata.</p>
 <p>Metadata is specified in the first three lines of this sample. In general metadata is the set of lines before the first blank line. It consists of key/value pairs, with the key separated from the value by a colon.</p>
@@ -2213,7 +2224,7 @@ sectionTitleSize: 30
 <p><a id="card-slides"></a></p>
 <p>A card slide contains side-by-side panels - or cards. Each card has a title and, below that, the contents are defined using the same syntax as in <a href="#bullet-slides">Bullet Slides</a>. In fact this slide type is derivative of the Bullet Slide type.</p>
 <p>A card slide can look something like this:</p>
-<p><img alt="" src="/Users/martinpacker/md2pptx/CardSlide.png" /></p>
+<p><img alt="" src="/Users/martinpacker/md2pptx/docs/CardSlide.png" /></p>
 <p>The key features of this slide are:</p>
 <ul>
 <li>A title, coded with Markdown Heading Level 3 syntax (<code>###</code>).</li>
@@ -2244,7 +2255,7 @@ sectionTitleSize: 30
 <li><a href="#card-vertical-gap-cardverticalgap">Card Vertical Gap</a></li>
 </ul>
 <p>One example of using a different style is this:</p>
-<p><img alt="" src="/Users/martinpacker/md2pptx/cardslide-lines.png" /></p>
+<p><img alt="" src="/Users/martinpacker/md2pptx/docs/cardslide-lines.png" /></p>
 <p>Here the card background is invisible but the cards are separated by lines. You achieve this by coding:</p>
 <pre><code>CardShape: line
 </code></pre>
@@ -2310,7 +2321,7 @@ node [shape=plaintext]
 </code></pre>
 <p>This will be rendered as a graphic and inserted in the current slide. The graphic will be scaled as appropriate.</p>
 <p>This is how the above code is rendered</p>
-<p><img alt="" src="/Users/martinpacker/md2pptx/graphviz-rendered.png" /></p>
+<p><img alt="" src="/Users/martinpacker/md2pptx/docs/graphviz-rendered.png" /></p>
 <h4 id="indented-text">Indented Text<a class="headerlink" href="#indented-text" title="Permanent link"></a></h4>
 <p>Each line of the code fragment - to be displayed in a monospace font - is indented with 4 spaces:</p>
 <pre><code>### This Is A Code Slide
@@ -2335,7 +2346,7 @@ for(i = 0; i &lt; 10; i++){
 <h3 id="funnels">Funnels<a class="headerlink" href="#funnels" title="Permanent link"></a></h3>
 <p><a id="funnels"></a></p>
 <p>Funnels depict a funnel, with the wide part to the left. Each successive stage in the funnel narrows the funnel. In a sense this is like a pipeline, with stages. Here each stage but the last narrows the pipe. md2pptx can create such slides from CSV data. A typical result looks like this:</p>
-<p><img alt="" src="/Users/martinpacker/md2pptx/funnel-slide.png" /></p>
+<p><img alt="" src="/Users/martinpacker/md2pptx/docs/funnel-slide.png" /></p>
 <p>In this example the funnel is rendered below some bullets. You can render funnels on the same slide as other items, which can be of any type.</p>
 <p>The code to create this slide is:</p>
 <pre><code>### This Is A Funnel Slide
@@ -3162,7 +3173,7 @@ For everything else use <code>marginBase</code>.</p>
 <p>You can specify a different template file to create the presentation from than the one supplied with python-pptx. The one supplied with md2pptx is a very good one to work from:</p>
 <pre><code>template: Martin Template.pptx
 </code></pre>
-<p>If you want to create your own template you probably want to take Martin Template.pptx and modify it. See <a href="/Users/martinpacker/md2pptx/modifying-the-slide-template">Modifying The Slide Template</a> for more information on how to do so.</p>
+<p>If you want to create your own template you probably want to take Martin Template.pptx and modify it. See <a href="/Users/martinpacker/md2pptx/docs/modifying-the-slide-template">Modifying The Slide Template</a> for more information on how to do so.</p>
 <p>(For compatibility purposes, you can continue to use <code>master</code> instead of <code>template</code>. It&rsquo;s probably better practice, though, to use <code>template</code>.)</p>
 <p>Templates are searched for in the following sequence:</p>
 <ol>
@@ -3779,7 +3790,7 @@ This slide can be <a href="#chevron-style-table-of-contents">&ldquo;Chevron Styl
 </code></pre>
 <p>If you create a &ldquo;Chevron Style&rdquo; Table Of Contents slide, it will look something like this:</p>
 <div style="border: 1px solid black">
-<img src="https://raw.githubusercontent.com/MartinPacker/md2pptx/master/chevronTOC.png" />
+<img src="/Users/martinpacker/md2pptx/docs/chevronTOC.png" />
 </div>
 
 <p>If you specify <code>tocStyle: chevron</code> the Section slides will be rendered something like this:</p>
