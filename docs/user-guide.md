@@ -2647,6 +2647,12 @@ You can override this on a slide-by-slide basis with [Dynamic ContentSplitDirect
 
 The default value is `vertical`.
 
+Here is an example where the content split direction is vertical
+
+<div style="border: 1px solid black">
+<img src="vertical-split-1-1.png" />
+</div>
+
 <a id="split-proportions-contentsplit"></a>
 ##### Split Proportions - `ContentSplit`
 
@@ -2659,6 +2665,12 @@ will make the first block a quarter the height (or width) of the second. Specify
 You can override this on a slide-by-slide basis with [Dynamic ContentSplit](#dynamic-contentsplit).
 
 The default value is such as to make each block have equal space.
+
+Here is an example where the content split direction is horizontal and the 2 areas are int the ratio of 2 to 1.
+
+<div style="border: 1px solid black">
+<img src="horizontal-split-2-1.png" />
+</div>
 
 #### Graphics Metadata
 
