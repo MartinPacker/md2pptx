@@ -79,16 +79,24 @@ except:
     have_graphviz = False
 
 
-md2pptx_level = "4.2"
+md2pptx_level = "4.2+"
 md2pptx_date = "27 December, 2023"
 
 namespaceURL = {
-    "mc": "http://schemas.openxmlformats.org/markup-compatibility/2006",
-    "p": "http://schemas.openxmlformats.org/presentationml/2006/main",
+    "mc":  "http://schemas.openxmlformats.org/markup-compatibility/2006",
+    "p":   "http://schemas.openxmlformats.org/presentationml/2006/main",
     "p14": "http://schemas.microsoft.com/office/powerpoint/2010/main",
     "p15": "http://schemas.microsoft.com/office/powerpoint/2012/main",
+    "a":   "http://schemas.openxmlformats.org/drawingml/2006/main",
+    "r":   "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
 }
 
+def namespacesFragment(prefixes):
+    xml = ""
+    for prefix in prefixes:
+        xml += 'xmlns:' + prefix + '="' + namespaceURL[prefix] +'" '
+
+    return xml
 
 class SlideInfo:
     def __init__(
@@ -267,12 +275,12 @@ def addSlide(presentation, slideLayout, slideInfo=None):
 def createSectionsXML(prs):
     sectionSlideLayout = processingOptions.getCurrentOption("SectionSlideLayout")
 
-    xml = '  <p:ext xmlns:p="' + namespaceURL["p"] + '"\n'
+    xml = '  <p:ext ' + namespacesFragment(["p"])  
 
     # ext URI has to be {521415D9-36F7-43E2-AB2F-B90AF26B5E84} as it's a registered extension
     xml += '    uri="{521415D9-36F7-43E2-AB2F-B90AF26B5E84}">\n'
 
-    xml += '    <p14:sectionLst xmlns:p14="' + namespaceURL["p14"] + '">\n'
+    xml += '    <p14:sectionLst ' + namespacesFragment(["p14"]) + '>\n'
 
     sectionCount = 0
     for slide in prs.slides:
@@ -4371,7 +4379,7 @@ def addSlideTransition(slide, transitionType):
         choiceNS = "p14"
 
     # Construct first boilerplate XML fragment
-    xml = '      <mc:AlternateContent xmlns:mc="' + namespaceURL["mc"] + '">\n'
+    xml = '      <mc:AlternateContent ' + namespacesFragment(["mc"]) + '>\n'
     xml += (
         "    <mc:Choice xmlns:"
         + choiceNS
@@ -4382,11 +4390,7 @@ def addSlideTransition(slide, transitionType):
         + '">\n'
     )
     xml += (
-        '<p:transition xmlns:p="'
-        + namespaceURL["p"]
-        + '" xmlns:p14="'
-        + namespaceURL["p14"]
-        + '" spd="slow" p14:dur="3400">\n'
+        '<p:transition ' + namespacesFragment(["p", "p14"]) + 'spd="slow" p14:dur="3400">\n'
     )
 
     # Add in transition element
@@ -4426,7 +4430,7 @@ def addSlideTransition(slide, transitionType):
     <mc:Fallback>
     """
 
-    xml += '      <p:transition xmlns:p="' + namespaceURL["p"] + '" spd="slow">\n'
+    xml += '      <p:transition ' + namespacesFragment(["p"]) + ' spd="slow">\n'
 
     if transitionType in [
         "split",
@@ -4434,9 +4438,7 @@ def addSlideTransition(slide, transitionType):
         xml += (
             "        <p:"
             + transitionType
-            + ' orient="vert" xmlns:p="'
-            + namespaceURL["p"]
-            + '"/>\n'
+            + ' orient="vert" ' + namespacesFragment(["p"]) + '/>\n'
         )
 
     else:
