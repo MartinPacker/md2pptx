@@ -101,6 +101,7 @@ As you can see in the [change log](#change-log), md2pptx is frequently updated -
 		* [Specifying How Many Spaces Represent An Indentation Level With `IndentSpaces`](#specifying-how-many-spaces-represent-an-indentation-level-with-indentspaces)
 		* [Specifying Where Temporary Files Are Stored With `tempDir`](#specifying-where-temporary-files-are-stored-with-tempdir)
 		* [Deleting The First (Processing Summary) Slide - with `DeleteFirstSlide`](#deleting-the-first-(processing-summary)-slide-with-deletefirstslide)
+		* [Specifying Slide Background Images With `backgroundImage`](#specifying-slide-background-images-with-backgroundimage)
 		* [Table Metadata](#table-metadata)
 			* [Shrinking Tables With `compactTables`](#shrinking-tables-with-compacttables)
 			* [Adjusting Table Heading Font Size With `tableHeadingSize`](#adjusting-table-heading-font-size-with-tableheadingsize)
@@ -207,6 +208,7 @@ As you can see in the [change log](#change-log), md2pptx is frequently updated -
 		* [`NumbersHeight`](#numbersheight)
 		* [`TableMargin`](#tablemargin)
 		* [`Transition`](#transition)
+		* [`BackgroundImage`](#backgroundimage)
 * [Modifying The Slide Template](#modifying-the-slide-template)
 	* [Basics](#basics)
 	* [Slide Template Sequence](#slide-template-sequence)
@@ -341,6 +343,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|4.2|27&nbsp;December&nbsp;2023|Added background image support using [`backgroundImage`](#specifying-slide-background-images-with-backgroundimage).|
 |4.1.2|11&nbsp;July&nbsp;2023|Fixed two bugs: Using `<sub>` &amp; `<sup>` causes a crash. Also [Card Slides](#card-slides) cause a crash.|
 |4.1.1|10&nbsp;July&nbsp;2023|Added [`numbersFontSize`](#specifying-slide-number-font-size-with-numbersfontsize) and [`footerFontSize`](#specifying-footer-font-size-with-footerfontsize).|
 |4.1|28&nbsp;April&nbsp;2023|Added [`funnelLabelsPosition`](#funnel-labels-position-funnellabelsposition) and [`funnelWidest`](#funnel-orientation-funnelwidest). Added [`cardTitleBackground`](#card-title-background-colours-cardtitlebackground). Added quotation mark related [HTML entity references](#html-entity-references).|
@@ -2029,6 +2032,20 @@ The default is `no`.
 
 **Note:** If you don't have a Processing Summary slide - perhaps because the slide master you used doesn't have a slide - the first slide would still be removed if you specified `removeFirstSlide: yes`. This is probably not what you want to have happen.
 
+
+#### Specifying Slide Background Images With `backgroundImage`
+<a id="specifying-slide-background-images-with-backgroundimage"></a>
+
+You can specify a background image for slides with `backgroundImage`. For example:
+
+    backgroundImage: myFavouriteBackground.png
+
+The default is no background image (other than from the slide master), represented by an empty string.
+
+You can override this value with [Dynamic Metadata](#backgroundimage-dynamic).
+
+**Note:** python-pptx doesn't know how to truly manipulate a slide background *image*. Accordingly, md2pptx places the graphic you specify behind all the other objects it creates on the slide (but in front of any real background). It covers the slide area entirely, scaling the graphic to fit. It's a good idea to make your background image be the same size, or have the same aspect ratio, as the slide.
+
 #### Table Metadata
 
 ##### Shrinking Tables With `compactTables`
@@ -2044,7 +2061,6 @@ For example, to remove the margins and reduce the font size to 16pt code
     compactTables: 16
 
 You can override this value with [Dynamic Metadata](#compacttables-dynamic).
-
 
 <a id="adjusting-table-heading-font-size-with-tableheadingsize"></a>
 ##### Adjusting Table Heading Font Size With `tableHeadingSize`
@@ -3275,6 +3291,13 @@ You can override the presentation [Transition](#slide-transitions-transition) sp
     <!-- md2pptx: transition: reveal -->
 
 It's important to note that doing this will affect the transition **into** this slide. Likewise all subsequent slides - until overridden again or reverted.
+
+<a id="backgroundimage-dynamic"></a>
+#### `BackgroundImage`
+
+You can override the presentation [BackgroundImage](#specifying-slide-background-images-with-backgroundimage) specification on a slide-by-slide basis:
+
+    <!-- md2pptx: backgroundImage: myNewBackground.png -->
 
 
 ## Modifying The Slide Template

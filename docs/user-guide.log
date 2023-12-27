@@ -5,8 +5,8 @@ mdpre Markdown Preprocessor v0.6.7 (17 December, 2023)
 Def mdpre_date = 17 December, 2023
 Def mdpre_level = 0.6.7
 Def userid = martinpacker
-Def time = 15&colon;53
-Def date = 24 December&comma; 2023
+Def time = 16&colon;20
+Def date = 27 December&comma; 2023
 Def TOC = Table Of Contents
 Def md = Markdown
 Def pp = Powerpoint
@@ -113,6 +113,7 @@ CSV Stop
 ..... ..... .....  Specifying How Many Spaces Represent An Indentation Level With `IndentSpaces`
 ..... ..... .....   Specifying Where Temporary Files Are Stored With `tempDir`
 ..... ..... .....  Deleting The First (Processing Summary) Slide - with `DeleteFirstSlide`
+..... ..... .....  Specifying Slide Background Images With `backgroundImage`
 ..... ..... .....  Table Metadata
 ..... ..... ..... .....  Shrinking Tables With `compactTables`
 ..... ..... ..... .....  Adjusting Table Heading Font Size With `tableHeadingSize`
@@ -225,6 +226,7 @@ CSV Stop
 ..... ..... .....   `NumbersHeight`
 ..... ..... .....  `TableMargin`
 ..... ..... .....  `Transition`
+..... ..... .....  `BackgroundImage`
 .....  Modifying The Slide Template
 ..... .....  Basics
 ..... .....  Slide Template Sequence

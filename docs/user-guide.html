@@ -1214,6 +1214,7 @@ body .markdown-body
 <li><a href="#specifying-how-many-spaces-represent-an-indentation-level-with-indentspaces">Specifying How Many Spaces Represent An Indentation Level With <code>IndentSpaces</code></a></li>
 <li><a href="#specifying-where-temporary-files-are-stored-with-tempdir">Specifying Where Temporary Files Are Stored With <code>tempDir</code></a></li>
 <li><a href="#deleting-the-first-(processing-summary)-slide-with-deletefirstslide">Deleting The First (Processing Summary) Slide - with <code>DeleteFirstSlide</code></a></li>
+<li><a href="#specifying-slide-background-images-with-backgroundimage">Specifying Slide Background Images With <code>backgroundImage</code></a></li>
 <li><a href="#table-metadata">Table Metadata</a><ul>
 <li><a href="#shrinking-tables-with-compacttables">Shrinking Tables With <code>compactTables</code></a></li>
 <li><a href="#adjusting-table-heading-font-size-with-tableheadingsize">Adjusting Table Heading Font Size With <code>tableHeadingSize</code></a></li>
@@ -1348,6 +1349,7 @@ body .markdown-body
 <li><a href="#numbersheight"><code>NumbersHeight</code></a></li>
 <li><a href="#tablemargin"><code>TableMargin</code></a></li>
 <li><a href="#transition"><code>Transition</code></a></li>
+<li><a href="#backgroundimage"><code>BackgroundImage</code></a></li>
 </ul>
 </li>
 </ul>
@@ -1474,6 +1476,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">4.2</td>
+<td align="right">27&nbsp;December&nbsp;2023</td>
+<td align="left">Added background image support using <a href="#specifying-slide-background-images-with-backgroundimage"><code>backgroundImage</code></a>.</td>
+</tr>
 <tr>
 <td align="left">4.1.2</td>
 <td align="right">11&nbsp;July&nbsp;2023</td>
@@ -3289,6 +3296,14 @@ As you can see from this example directory names are expanded.</p>
 </code></pre>
 <p>The default is <code>no</code>.</p>
 <p><strong>Note:</strong> If you don&rsquo;t have a Processing Summary slide - perhaps because the slide master you used doesn&rsquo;t have a slide - the first slide would still be removed if you specified <code>removeFirstSlide: yes</code>. This is probably not what you want to have happen.</p>
+<h4 id="specifying-slide-background-images-with-backgroundimage">Specifying Slide Background Images With <code>backgroundImage</code><a class="headerlink" href="#specifying-slide-background-images-with-backgroundimage" title="Permanent link"></a></h4>
+<p><a id="specifying-slide-background-images-with-backgroundimage"></a></p>
+<p>You can specify a background image for slides with <code>backgroundImage</code>. For example:</p>
+<pre><code>backgroundImage: myFavouriteBackground.png
+</code></pre>
+<p>The default is no background image (other than from the slide master), represented by an empty string.</p>
+<p>You can override this value with <a href="#backgroundimage-dynamic">Dynamic Metadata</a>.</p>
+<p><strong>Note:</strong> python-pptx doesn&rsquo;t know how to truly manipulate a slide background <em>image</em>. Accordingly, md2pptx places the graphic you specify behind all the other objects it creates on the slide (but in front of any real background). It covers the slide area entirely, scaling the graphic to fit. It&rsquo;s a good idea to make your background image be the same size, or have the same aspect ratio, as the slide.</p>
 <h4 id="table-metadata">Table Metadata<a class="headerlink" href="#table-metadata" title="Permanent link"></a></h4>
 <h5 id="shrinking-tables-with-compacttables">Shrinking Tables With <code>compactTables</code><a class="headerlink" href="#shrinking-tables-with-compacttables" title="Permanent link"></a></h5>
 <p><a id="shrinking-tables-with-compacttables"></a></p>
@@ -4190,6 +4205,11 @@ The default value is <code>no</code>.</p>
 <pre><code>&lt;!-- md2pptx: transition: reveal --&gt;
 </code></pre>
 <p>It&rsquo;s important to note that doing this will affect the transition <strong>into</strong> this slide. Likewise all subsequent slides - until overridden again or reverted.</p>
+<p><a id="backgroundimage-dynamic"></a></p>
+<h4 id="backgroundimage"><code>BackgroundImage</code><a class="headerlink" href="#backgroundimage" title="Permanent link"></a></h4>
+<p>You can override the presentation <a href="#specifying-slide-background-images-with-backgroundimage">BackgroundImage</a> specification on a slide-by-slide basis:</p>
+<pre><code>&lt;!-- md2pptx: backgroundImage: myNewBackground.png --&gt;
+</code></pre>
 <h2 id="modifying-the-slide-template">Modifying The Slide Template<a class="headerlink" href="#modifying-the-slide-template" title="Permanent link"></a></h2>
 <p><a id="modifying-the-slide-template"></a></p>
 <p>The included template presentation - Martin Template.pptx - is what the author tested with and gives good results. However, you probably want to develop your own template from it.</p>

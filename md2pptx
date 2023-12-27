@@ -79,8 +79,8 @@ except:
     have_graphviz = False
 
 
-md2pptx_level = "4.1.2"
-md2pptx_date = "11 July, 2023"
+md2pptx_level = "4.2"
+md2pptx_date = "27 December, 2023"
 
 namespaceURL = {
     "mc": "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -233,6 +233,16 @@ class ProcessingOptions:
 
         self.dynamicallyChangedOptions[lowerName] = True
 
+# Add a picture stretched to cover the slide and move it to the back of the z order
+def add_background(presentation, slide, picture):
+    # Add the picture, covering the entire slide
+    pic = slide.shapes.add_picture(picture,0,0,presentation.slide_width,presentation.slide_height)
+
+    # Move the picture to the back of the z order
+    slide.shapes[0]._element.addprevious(pic._element)
+
+    # return the picture shape
+    return pic
 
 # Find the extLst element - if it exists in presentation.xml
 def findExtLst(prs):
@@ -246,7 +256,11 @@ def findExtLst(prs):
 def addSlide(presentation, slideLayout, slideInfo=None):
     slide = presentation.slides.add_slide(slideLayout)
     slide.slideInfo = slideInfo
+    
+    backgroundImage = processingOptions.getCurrentOption("backgroundImage")
 
+    if backgroundImage != "":
+        background = add_background(presentation, slide, backgroundImage)
     return slide
 
 
@@ -1051,7 +1065,12 @@ def findTitleShape(slide):
 
 def findBodyShape(slide):
     if len(slide.shapes) > 1:
-        return slide.shapes[1]
+        if processingOptions.getCurrentOption("backgroundImage") == "":
+            # No background in effect
+            return slide.shapes[1]
+        else:
+            # Background in effect
+            return slide.shapes[2]
     elif slide.shapes.title == None:
         return slide.shapes[0]
     else:
@@ -4878,9 +4897,15 @@ processingOptions.setOptionValuesArray(
     ]
 )
 
-processingOptions.setOptionValues("baseTextSize", 18)
+processingOptions.setOptionValues("backgroundImage", "")
 
-processingOptions.setOptionValues("baseTextDecrement", 2)
+# Text size defaults
+processingOptions.setOptionValuesArray(
+    [
+        ["baseTextSize", 18],
+        ["baseTextDecrement", 2],
+    ]
+)
 
 # Code defaults
 processingOptions.setOptionValuesArray(
@@ -5184,6 +5209,11 @@ for line in metadata_lines:
 
     elif name == "basetextdecrement":
         processingOptions.setOptionValues(name, float(value))
+
+    elif name == "backgroundimage":
+        processingOptions.setOptionValues(name, value)
+
+
 
     elif name in [
         "sectiontitlesize",
@@ -6069,6 +6099,13 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
                     processingOptions.dynamicallySetOption(
                         metadataKey, metadataValue, ""
                     )
+
+                elif metadataKey == "backgroundimage":
+                    # Slide background image
+                    processingOptions.dynamicallySetOption(
+                        metadataKey, metadataValue, ""
+                    )
+
 
                 # Note: Actual value handling prevents using dynamicallySetOption
                 elif metadataKey == "contentsplit":
