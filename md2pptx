@@ -268,7 +268,7 @@ def add_background(presentation, slide, picture):
     xml = ""
     xml += '    <p:bg ' + namespacesFragment(["a","p","r"]) + '>\n'
     xml += '       <p:bgPr>\n'
-    xml += '         <a:blipFill xmlns:a="' + namespaceURL["a"] + '" dpi=\"0\" rotWithShape=\"1\">\n'
+    xml += '         <a:blipFill xmlns:a="' + namespaceURL["a"] + '" dpi="0" rotWithShape="1">\n'
     xml += '           <a:blip r:embed="' + rId +'">\n'
     xml += '             <a:lum />\n'
     xml += '               </a:blip>\n'
