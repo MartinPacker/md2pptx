@@ -1477,6 +1477,11 @@ THE SOFTWARE.
 </thead>
 <tbody>
 <tr>
+<td align="left">4.2.1</td>
+<td align="right">28&nbsp;December&nbsp;2023</td>
+<td align="left">Made <a href="#specifying-slide-background-images-with-backgroundimage"><code>backgroundImage</code></a> create <strong>real</strong> slide backgrounds.</td>
+</tr>
+<tr>
 <td align="left">4.2</td>
 <td align="right">27&nbsp;December&nbsp;2023</td>
 <td align="left">Added background image support using <a href="#specifying-slide-background-images-with-backgroundimage"><code>backgroundImage</code></a>.</td>
@@ -1979,10 +1984,10 @@ sectionTitleSize: 30
 </code></pre>
 <p>You can code multiple lines, as with <a href="#presentation-title-slides">Presentation Title slides</a>.</p>
 <p><strong>Notes:</strong></p>
-<ul>
+<ol>
 <li>You can adjust the Markdown heading level for this type of slide with <a href="#slide-heading-levels-topheadinglevel"><code>TopHeadingLevel</code></a></li>
 <li>You can make the section slides be the start of expandable and contractable sections with <a href="#make-expandable-sections-sectionsexpand"><code>sectionsExpand</code></a>.</li>
-</ul>
+</ol>
 <h3 id="bullet-slides">Bullet Slides<a class="headerlink" href="#bullet-slides" title="Permanent link"></a></h3>
 <p><a id="bullet-slides"></a></p>
 <p>Bullet slides use Markdown bulleted lists, which can be nested. This example shows two levels of nesting.</p>
@@ -3303,7 +3308,11 @@ As you can see from this example directory names are expanded.</p>
 </code></pre>
 <p>The default is no background image (other than from the slide master), represented by an empty string.</p>
 <p>You can override this value with <a href="#backgroundimage-dynamic">Dynamic Metadata</a>.</p>
-<p><strong>Note:</strong> python-pptx doesn&rsquo;t know how to truly manipulate a slide background <em>image</em>. Accordingly, md2pptx places the graphic you specify behind all the other objects it creates on the slide (but in front of any real background). It covers the slide area entirely, scaling the graphic to fit. It&rsquo;s a good idea to make your background image be the same size, or have the same aspect ratio, as the slide.</p>
+<p><strong>Notes:</strong></p>
+<ol>
+<li>python-pptx doesn&rsquo;t know how to manipulate a slide background <em>image</em>. md2pptx generates additional XML to insert the background image.</li>
+<li>A background covers the slide area entirely, with the image scaled to fit. It&rsquo;s a good idea to make your background image be the same size, or have the same aspect ratio, as the slide.</li>
+</ol>
 <h4 id="table-metadata">Table Metadata<a class="headerlink" href="#table-metadata" title="Permanent link"></a></h4>
 <h5 id="shrinking-tables-with-compacttables">Shrinking Tables With <code>compactTables</code><a class="headerlink" href="#shrinking-tables-with-compacttables" title="Permanent link"></a></h5>
 <p><a id="shrinking-tables-with-compacttables"></a></p>
@@ -3801,13 +3810,13 @@ This slide can be <a href="#chevron-style-table-of-contents">&ldquo;Chevron Styl
 </code></pre>
 <p>You will recognise each entry as an internal link. Perhaps the easiest way to create such a piece of Markdown is with <a href="https://github.com/MartinPacker/mdpre">mdpre</a> with its <code>=toc</code> capability. It will automate gathering the links and Section slide titles.</p>
 <p>When processing this slide md2pptx will recognise it as a Table Of Contents slide because of the slide title &ldquo;Topics&rdquo;. It will build a list of headings from the bullets. With Chevron and Circle styles, when md2pptx sees a Section slide whose title matches one of the titles in the Table Of Contents slide&rsquo;s bullets it creates a similar slide to the Table Of Contents slide, but with this section highlighted.</p>
-<p><strong>NOTES:</strong></p>
-<ul>
+<p><strong>Notes:</strong></p>
+<ol>
 <li>Ensure only one slide has the same title as the Table Of Contents slide. Otherwise md2pptx will attempt to render the other slides as if they were a Table Of Contents slide.</li>
 <li>Ensure the Section slides&rsquo; titles are unique. Otherwise more than one chevron will be highlighted on the relevant section slide.</li>
 <li>The style of the Table Of Contents and Section slides is controlled with <a href="#table-of-contents-style-tocstyle"><code>tocStyle</code></a>.</li>
 <li>You don&rsquo;t have to use &ldquo;Topics&rdquo; as the title of the Table Of Contents slide. You can control this with <a href="#table-of-contents-title-toctitle"><code>tocTitle</code></a>.</li>
-</ul>
+</ol>
 <h5 id="chevron-style-table-of-contents">&ldquo;Chevron Style&rdquo; Table Of Contents<a class="headerlink" href="#chevron-style-table-of-contents" title="Permanent link"></a></h5>
 <p><a id="chevron-style-table-of-contents"></a></p>
 <p>To create a &ldquo;Chevron Style&rdquo; Table Of Contents slide and Section slides code:</p>
@@ -3946,7 +3955,7 @@ The default value is <code>no</code>.</p>
 </code></pre>
 <p>The default is <code>no</code>.</p>
 <p><strong>Notes:</strong></p>
-<ul>
+<ol>
 <li>The section name is derived from the section slide&rsquo;s title. The following characters are passed through to the section name:<ul>
 <li>Alphanumerics</li>
 <li><code>&amp;-+!/</code></li>
@@ -3955,7 +3964,7 @@ The default value is <code>no</code>.</p>
 </ul>
 </li>
 <li>In testing only PowerPoint has demonstrated the ability to display collapsible sections. Neither LibreOffice nor Keynote showed any understanding of collapsible sections, though both otherwise loaded the test presentation fine.</li>
-</ul>
+</ol>
 <p><a id="slide-transitions-transition"></a></p>
 <h4 id="slide-transitions-transition">Slide Transitions - <code>Transition</code><a class="headerlink" href="#slide-transitions-transition" title="Permanent link"></a></h4>
 <p>With md2pptx you can create transitions between slides.</p>

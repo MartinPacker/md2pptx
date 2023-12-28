@@ -343,6 +343,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|4.2.1|28&nbsp;December&nbsp;2023|Made [`backgroundImage`](#specifying-slide-background-images-with-backgroundimage) create **real** slide backgrounds.|
 |4.2|27&nbsp;December&nbsp;2023|Added background image support using [`backgroundImage`](#specifying-slide-background-images-with-backgroundimage).|
 |4.1.2|11&nbsp;July&nbsp;2023|Fixed two bugs: Using `<sub>` &amp; `<sup>` causes a crash. Also [Card Slides](#card-slides) cause a crash.|
 |4.1.1|10&nbsp;July&nbsp;2023|Added [`numbersFontSize`](#specifying-slide-number-font-size-with-numbersfontsize) and [`footerFontSize`](#specifying-footer-font-size-with-footerfontsize).|
@@ -505,8 +506,8 @@ You can code multiple lines, as with [Presentation Title slides](#presentation-t
 
 **Notes:**
 
-* You can adjust the Markdown heading level for this type of slide with [`TopHeadingLevel`](#slide-heading-levels-topheadinglevel)
-* You can make the section slides be the start of expandable and contractable sections with [`sectionsExpand`](#make-expandable-sections-sectionsexpand).
+1. You can adjust the Markdown heading level for this type of slide with [`TopHeadingLevel`](#slide-heading-levels-topheadinglevel)
+2. You can make the section slides be the start of expandable and contractable sections with [`sectionsExpand`](#make-expandable-sections-sectionsexpand).
 
 ### Bullet Slides
 <a id="bullet-slides"></a>
@@ -2044,7 +2045,10 @@ The default is no background image (other than from the slide master), represent
 
 You can override this value with [Dynamic Metadata](#backgroundimage-dynamic).
 
-**Note:** python-pptx doesn't know how to truly manipulate a slide background *image*. Accordingly, md2pptx places the graphic you specify behind all the other objects it creates on the slide (but in front of any real background). It covers the slide area entirely, scaling the graphic to fit. It's a good idea to make your background image be the same size, or have the same aspect ratio, as the slide.
+**Notes:**
+
+1. python-pptx doesn't know how to manipulate a slide background *image*. md2pptx generates additional XML to insert the background image.
+2. A background covers the slide area entirely, with the image scaled to fit. It's a good idea to make your background image be the same size, or have the same aspect ratio, as the slide.
 
 #### Table Metadata
 
@@ -2720,12 +2724,12 @@ You will recognise each entry as an internal link. Perhaps the easiest way to cr
 
 When processing this slide md2pptx will recognise it as a Table Of Contents slide because of the slide title "Topics". It will build a list of headings from the bullets. With Chevron and Circle styles, when md2pptx sees a Section slide whose title matches one of the titles in the Table Of Contents slide's bullets it creates a similar slide to the Table Of Contents slide, but with this section highlighted.
 
-**NOTES:**
+**Notes:**
 
-* Ensure only one slide has the same title as the Table Of Contents slide. Otherwise md2pptx will attempt to render the other slides as if they were a Table Of Contents slide.
-* Ensure the Section slides' titles are unique. Otherwise more than one chevron will be highlighted on the relevant section slide.
-* The style of the Table Of Contents and Section slides is controlled with [`tocStyle`](#table-of-contents-style-tocstyle).
-* You don't have to use "Topics" as the title of the Table Of Contents slide. You can control this with [`tocTitle`](#table-of-contents-title-toctitle).
+1. Ensure only one slide has the same title as the Table Of Contents slide. Otherwise md2pptx will attempt to render the other slides as if they were a Table Of Contents slide.
+2. Ensure the Section slides' titles are unique. Otherwise more than one chevron will be highlighted on the relevant section slide.
+3. The style of the Table Of Contents and Section slides is controlled with [`tocStyle`](#table-of-contents-style-tocstyle).
+4. You don't have to use "Topics" as the title of the Table Of Contents slide. You can control this with [`tocTitle`](#table-of-contents-title-toctitle).
 
 ##### "Chevron Style" Table Of Contents
 <a id="chevron-style-table-of-contents"></a>
@@ -2931,12 +2935,12 @@ The default is `no`.
 
 **Notes:**
 
-* The section name is derived from the section slide's title. The following characters are passed through to the section name:
+1. The section name is derived from the section slide's title. The following characters are passed through to the section name:
     * Alphanumerics
     * `&-+!/`
     * Spaces
     * Asterisks (coded as `&lowast;`)
-* In testing only PowerPoint has demonstrated the ability to display collapsible sections. Neither LibreOffice nor Keynote showed any understanding of collapsible sections, though both otherwise loaded the test presentation fine.
+2. In testing only PowerPoint has demonstrated the ability to display collapsible sections. Neither LibreOffice nor Keynote showed any understanding of collapsible sections, though both otherwise loaded the test presentation fine.
 
 <a id="slide-transitions-transition"></a>
 #### Slide Transitions - `Transition`

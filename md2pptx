@@ -79,7 +79,7 @@ except:
     have_graphviz = False
 
 
-md2pptx_level = "4.2+"
+md2pptx_level = "4.2.1"
 md2pptx_date = "28 December, 2023"
 
 namespaceURL = {
