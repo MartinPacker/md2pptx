@@ -80,7 +80,7 @@ except:
 
 
 md2pptx_level = "4.2+"
-md2pptx_date = "27 December, 2023"
+md2pptx_date = "28 December, 2023"
 
 namespaceURL = {
     "mc":  "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -268,7 +268,7 @@ def addSlide(presentation, slideLayout, slideInfo=None):
     backgroundImage = processingOptions.getCurrentOption("backgroundImage")
 
     if backgroundImage != "":
-        background = add_background(presentation, slide, backgroundImage)
+        add_background(presentation, slide, backgroundImage)
     return slide
 
 
