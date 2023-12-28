@@ -79,7 +79,7 @@ except:
     have_graphviz = False
 
 
-md2pptx_level = "4.2.1"
+md2pptx_level = "4.2.1+"
 md2pptx_date = "28 December, 2023"
 
 namespaceURL = {
@@ -243,8 +243,7 @@ class ProcessingOptions:
 
 # Get a picture's rId
 def get_picture_rId(picture):
-    blip = picture._element.xpath("./p:blipFill/a:blip")[0]
-    rId = blip.attrib.values()[0]
+    rId = picture._element.xpath("./p:blipFill/a:blip/@r:embed")[0]
     return rId
 
 # Adds a picture as a background
