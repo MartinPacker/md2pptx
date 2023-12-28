@@ -249,9 +249,6 @@ def add_background(presentation, slide, picture):
     # Move the picture to the back of the z order
     slide.shapes[0]._element.addprevious(pic._element)
 
-    # return the picture shape
-    return pic
-
 # Find the extLst element - if it exists in presentation.xml
 def findExtLst(prs):
     for child in prs._element.getchildren():
