@@ -241,13 +241,54 @@ class ProcessingOptions:
 
         self.dynamicallyChangedOptions[lowerName] = True
 
-# Add a picture stretched to cover the slide and move it to the back of the z order
-def add_background(presentation, slide, picture):
-    # Add the picture, covering the entire slide
-    pic = slide.shapes.add_picture(picture,0,0,presentation.slide_width,presentation.slide_height)
+# Get a picture's rId
+def get_picture_rId(picture):
+    blip = picture._element.xpath("./p:blipFill/a:blip")[0]
+    rId = blip.attrib.values()[0]
+    return rId
 
-    # Move the picture to the back of the z order
-    slide.shapes[0]._element.addprevious(pic._element)
+# Adds a picture as a background
+def add_background(presentation, slide, picture):
+    # Add the picture with zero dimensions
+    picture = slide.shapes.add_picture(picture,0,0,0,00)
+
+    # Get the RId for this tiny picture = as we'll need that to set the background
+    rId = get_picture_rId(picture)
+
+    # find the cSld element to attach the XML to
+    cSld =slide._element.xpath("./p:cSld")[0]
+
+    # Remove any pre-existing bg element 
+    bg =slide._element.xpath("./p:bg")
+    if bg != []:
+        cSld.remove(bg)
+
+
+    # Confect the XML
+    xml = ""
+    xml += '    <p:bg ' + namespacesFragment(["a","p","r"]) + '>\n'
+    xml += '       <p:bgPr>\n'
+    xml += '         <a:blipFill xmlns:a="' + namespaceURL["a"] + '" dpi=\"0\" rotWithShape=\"1\">\n'
+    xml += '           <a:blip r:embed="' + rId +'">\n'
+    xml += '             <a:lum />\n'
+    xml += '               </a:blip>\n'
+    xml += '           <a:srcRect />\n'
+    xml += '           <a:stretch>\n'
+    xml += '             <a:fillRect t="0" b="0" />\n'
+    xml += '          </a:stretch>\n'
+    xml += '        </a:blipFill>\n'
+    xml += '        <a:effectLst/>\n'
+    xml += '      </p:bgPr>\n'
+    xml += '    </p:bg>\n'
+
+    # Parse this XML
+    parsed_xml = parse_xml(xml)
+
+    # Insert the parsed XML fragment as a child of the cSld element
+    cSld.insert(0, parsed_xml)
+
+    # Delete the original picture
+    deleteSimpleShape(picture)
 
 # Find the extLst element - if it exists in presentation.xml
 def findExtLst(prs):
@@ -1070,12 +1111,7 @@ def findTitleShape(slide):
 
 def findBodyShape(slide):
     if len(slide.shapes) > 1:
-        if processingOptions.getCurrentOption("backgroundImage") == "":
-            # No background in effect
-            return slide.shapes[1]
-        else:
-            # Background in effect
-            return slide.shapes[2]
+        return slide.shapes[1]
     elif slide.shapes.title == None:
         return slide.shapes[0]
     else:
