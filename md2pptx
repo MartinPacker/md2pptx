@@ -80,7 +80,7 @@ except:
 
 
 md2pptx_level = "4.2.1+"
-md2pptx_date = "28 December, 2023"
+md2pptx_date = "31 December, 2023"
 
 namespaceURL = {
     "mc":  "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -2638,7 +2638,7 @@ def createContentSlide(presentation, slideNumber, slideInfo):
 
     ####################################################################
     # Get the dimensions of the rectangles we'll place the graphics in #
-    # and their top left corner coordinates
+    # and their top left corner coordinates                            #
     ####################################################################
     allContentSplit = 0
     contentSplit = processingOptions.getCurrentOption("contentSplit")
@@ -2758,7 +2758,13 @@ def createListBlock(slideInfo, slide, renderingRectangle):
         cardBackgroundTop = []
         cardTitleTop = []
 
+        cardWithPrintableTitle = False
+        
         cardCount = len(slideInfo.cards)
+
+        ###########################################################
+        # Work out card dimensions - based on the various layouts #
+        ###########################################################
 
         # card width applies to card title, card graphic, card background, card body
         if cardLayout == "horizontal":
@@ -2796,7 +2802,8 @@ def createListBlock(slideInfo, slide, renderingRectangle):
             # Card takes up all the card area, vertically
             cardHeight = cardAreaHeight
         else:
-            # Card height is just a proportion of the card area height
+            # Card layout is horizontol so card height is just a proportion
+            # of the card area height
 
             if cardTitlePosition == "above":
                 paddingFactor = Inches(verticalCardGap - 0.05)
@@ -2808,34 +2815,46 @@ def createListBlock(slideInfo, slide, renderingRectangle):
         # Store slide title shape for cloning
         slideTitleShape = findTitleShape(slide)
 
+        ###########################################################
+        # Work out card positions - based on the various layouts  #
+        ###########################################################
         for c in range(cardCount):
-            # Calculate a card's vertical position
+            # Calculate each card's vertical position
             if cardLayout == "horizontal":
+                # Card top is at top of card area
                 cardTop.append(cardAreaTop)
             else:
+                # vertical so card tops are progressively further down the card
+                # area
                 cardTop.append(int((cardHeight + paddingFactor) * c + cardAreaTop))
 
-            # Card top and height
+            # Calculate each card's background and body top
             if cardTitlePosition == "above":
-                # Card title above card background
+                # Card title above card background - so background top is below
+                # card top
                 cardBackgroundTop.append(cardTop[c] + cardTitleHeight)
                 cardBodyTop.append(cardBackgroundTop[c])
             else:
-                # card title inside card background
+                # card title inside card background - so background top is card top
                 cardBackgroundTop.append(cardTop[c])
 
-                # Leave room above the card body for the card title
+                # Leave room above the card body for the card title - if it's not
+                # &nbsp;
                 if cards[c][0] == "&nbsp;":
                     cardBodyTop.append(cardBackgroundTop[c])
                 else:
                     cardBodyTop.append(cardBackgroundTop[c] + cardTitleHeight)
 
-            # Calculate a card's horizontal position
+                    cardWithPrintableTitle = True
+
+            # Calculate each card's horizontal position
             if cardLayout == "horizontal":
+                # Card lefts are progressively across the card area
                 cardLeft.append(
                     marginBase + c * (cardWidth + Inches(horizontalCardGap))
                 )
             else:
+                # Vertical so card lefts are at the left of the card area
                 cardLeft.append(marginBase)
 
             # Card title modeled on slide title - but smaller
@@ -2845,6 +2864,7 @@ def createListBlock(slideInfo, slide, renderingRectangle):
 
             cardGraphicFilename = cards[c][1]
             if cardGraphicFilename != "":
+                # This card has a graphic so save its name
                 cardGraphicDimensions.append(getGraphicDimensions(
                      cardGraphicFilename
                  ))
@@ -2859,6 +2879,8 @@ def createListBlock(slideInfo, slide, renderingRectangle):
                 cardGraphicShape = None
                 cardGraphicDimensions.append(None)
 
+            # Add the card graphic's shape to the list - or None if this card
+            # doesn't have a graphic
             cardGraphicShapes.append(cardGraphicShape)
 
             # Clear text from cloned title and add in the title text
@@ -2867,8 +2889,10 @@ def createListBlock(slideInfo, slide, renderingRectangle):
 
             # Set card title font size
             if cardTitleSize > 0:
+                # Explicitly set title size
                 cardTitleShape.text_frame.paragraphs[0].font.size = Pt(cardTitleSize)
             else:
+                # Not explicitly set - so default to 2/3 slide title size
                 cardTitleShape.text_frame.paragraphs[0].font.size = Pt(
                     pageTitleSize * 2 / 3
                 )
@@ -2880,10 +2904,12 @@ def createListBlock(slideInfo, slide, renderingRectangle):
                 cardTitleShape.text_frame.paragraphs[0].alignment = PP_ALIGN.CENTER
             else:
                 cardTitleShape.text_frame.paragraphs[0].alignment = PP_ALIGN.RIGHT
+
             # Fill in card's background - if necessary
             if (cardTitleBackgrounds[0] != ("None", "")) & (
                 cardTitlePosition != "inside"
             ):
+                # Card title background picked round-robin from array
                 cardTitleBackground = cardTitleBackgrounds[
                     c % len(cardTitleBackgrounds)
                 ]
@@ -2893,7 +2919,8 @@ def createListBlock(slideInfo, slide, renderingRectangle):
 
                 setColour(fill.fore_color, cardTitleBackground)
 
-            # Create card background and make sure it's behind the card body (and maybe card title)
+            # Create card background and make sure it's behind the card body
+            # (and maybe card title)
             if cardShape == "rounded":
                 # Rounded Rectangle for card
                 cardBackgroundShape = slide.shapes.add_shape(
@@ -2920,12 +2947,15 @@ def createListBlock(slideInfo, slide, renderingRectangle):
             cardBackgroundShapes.append(cardBackgroundShape)
 
             if cardShape == "line":
+                # Ensure no fill for card background
                 cardBackgroundShape.fill.background()
 
+            # Ensure card background is at the back
             sendToBack(slide.shapes, cardBackgroundShape)
 
             # Card shape modeled on bulleted list
             if (bulletCount > 0) | (c > 0):
+                # Copy the bullets shape for not-first card body shape
                 cardBodyShape = addClonedShape(slide, bulletsShape)
             else:
                 # Co-opt bullets shape as first card shape
@@ -2938,6 +2968,7 @@ def createListBlock(slideInfo, slide, renderingRectangle):
 
             # Fill in card's background - if necessary
             if (cardColours[0] != ("None", "")) & (cardShape != "line"):
+                # Card background volour picked round-robin from array
                 cardColour = cardColours[c % len(cardColours)]
 
                 fill = cardBackgroundShape.fill
@@ -2945,15 +2976,19 @@ def createListBlock(slideInfo, slide, renderingRectangle):
 
                 setColour(fill.fore_color, cardColour)
 
-    # Adjust bullets shape height - and calculate verticals for any cards
+    #######################################################################
+    # Adjust bullets shape height - and calculate verticals for any cards #
+    #######################################################################
 
+    # Set bottom of bullets shape
     bulletsShape.bottom = bulletsShape.top + bulletsShape.height
 
     # Fill in the main bullets shape
     renderText(bulletsShape, slideInfo.bullets)
 
+    # Second go on each card
     for c in range(cardCount):
-        # Get the shapes for this card
+        # Get the shapes for this card - including any graphic
         cardBackgroundShape = cardBackgroundShapes[c]
         cardTitleShape = cardTitleShapes[c]
         cardBodyShape = cardBodyShapes[c]
@@ -2965,12 +3000,12 @@ def createListBlock(slideInfo, slide, renderingRectangle):
         else:
             cardGraphicNativeWidth, cardGraphicNativeHeight = (0, 0)
 
-        # Set the card shapes' width
+        # Set the card shapes' width - except for any graphic
         cardBackgroundShape.width = cardWidth
         cardBodyShape.width = cardWidth
         cardTitleShape.width = cardWidth
 
-        # Set the card shapes' left side
+        # Set the card shapes' left side - except for any graphic
         cardBackgroundShape.left = cardLeft[c]
         cardTitleShape.left = cardLeft[c]
         cardBodyShape.left = cardLeft[c]
@@ -2995,8 +3030,10 @@ def createListBlock(slideInfo, slide, renderingRectangle):
             cardBodyHeight = cardHeight
             cardBackgroundShape.height = cardBodyHeight
 
+        # Create any dividing line
         if (c > 0) & (cardShape == "line"):
             if cardLayout == "horizontal":
+                # Dividing line is to the left of the card
                 dividingLine = createLine(
                     cardBackgroundShape.left - int(Inches(horizontalCardGap / 2)),
                     cardBackgroundShape.top + Inches(0.75),
@@ -3005,6 +3042,7 @@ def createListBlock(slideInfo, slide, renderingRectangle):
                     slide.shapes,
                 )
             else:
+                # Dividing line is above the card
                 dividingLine = createLine(
                     cardBackgroundShape.left + Inches(0.75),
                     cardBackgroundShape.top - int(Inches(verticalCardGap / 2)),
@@ -3015,9 +3053,11 @@ def createListBlock(slideInfo, slide, renderingRectangle):
                     slide.shapes,
                 )
 
+            # Perhaps set the line colour
             if cardDividerColour != ("None", ""):
                 setColour(dividingLine.line.color, cardDividerColour)
 
+            # Set the line width to a fixed 2pts
             dividingLine.line.width = Pt(2.0)
 
         # Position card
@@ -3054,25 +3094,36 @@ def createListBlock(slideInfo, slide, renderingRectangle):
                 else:
                     cardGraphicShape.top = cardBodyHeight + cardTitleShape.height + int((cardGraphicHeightRaw - cardPicHeight) / 2)
 
-            cardGraphicShape.left = cardTitleShape.left +int((cardTitleShape.width - cardPicWidth) / 2)
+            # Centre card graphic shape
+            cardGraphicShape.left = cardTitleShape.left + \
+                int((cardTitleShape.width - cardPicWidth) / 2)
+
+            # Set dimensions of card graphic shape
             cardGraphicShape.height = int(cardPicHeight)
             cardGraphicShape.width = int(cardPicWidth)
 
+        # Render any card body text
         if len(cards[c]) > 1:
             renderText(cardBodyShape, slideInfo.cards[c][2])
 
+        # Handle card background border line
         lf = cardBackgroundShape.line
 
         if (cardBorderColour != ("None", "")) & (cardShape != "line"):
+            # Set border line colour
             setColour(lf.color, cardBorderColour)
 
         if cardShape == "line":
+            # Lines between cards means cards have no border
             lf.fill.background()
         elif cardBorderWidth > 0:
+            # Non-zero border line width
             lf.width = Pt(cardBorderWidth)
         elif cardBorderWidth == 0:
+            # Zero border line width
             lf.fill.background()
 
+        # Create any card shadow
         if cardShadow:
             createShadow(cardBackgroundShape)
 
