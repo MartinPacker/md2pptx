@@ -80,7 +80,7 @@ except:
 
 
 md2pptx_level = "4.2.1+"
-md2pptx_date = "31 December, 2023"
+md2pptx_date = "2 January, 2024"
 
 namespaceURL = {
     "mc":  "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -2705,8 +2705,9 @@ def createListBlock(slideInfo, slide, renderingRectangle):
     cardTitleBackgrounds = processingOptions.getCurrentOption("cardtitlebackground")
     cardColours = processingOptions.getCurrentOption("cardcolour")
     cardDividerColour = processingOptions.getCurrentOption("carddividercolour")
-    cardGraphicHeight = processingOptions.getCurrentOption("cardgraphicheight")
+    cardGraphicSize = processingOptions.getCurrentOption("cardgraphicsize")
     cardGraphicPosition = processingOptions.getCurrentOption("cardgraphicposition")
+    cardGraphicPadding = int(Inches(processingOptions.getCurrentOption("cardgraphicpadding")))
     marginBase = processingOptions.getCurrentOption("marginBase")
     pageTitleSize = processingOptions.getCurrentOption("pageTitleSize")
     pageSubtitleSize = processingOptions.getCurrentOption("pageSubtitleSize")
@@ -2758,10 +2759,8 @@ def createListBlock(slideInfo, slide, renderingRectangle):
         cardBackgroundTop = []
         cardTitleTop = []
 
-        cardWithPrintableTitle = False
-        
         cardCount = len(slideInfo.cards)
-
+        
         ###########################################################
         # Work out card dimensions - based on the various layouts #
         ###########################################################
@@ -2788,7 +2787,7 @@ def createListBlock(slideInfo, slide, renderingRectangle):
         # Adjust title height to be slightly larger than the text
         cardTitleHeight = cardTitleHeightRaw + Inches(0.1)
 
-        cardGraphicHeightRaw = int(Inches(cardGraphicHeight))
+        cardGraphicSizeRaw = int(Inches(cardGraphicSize))
 
         if bulletCount > 0:
             # Bullets so cards and their titles occupy less than whole height
@@ -2815,6 +2814,21 @@ def createListBlock(slideInfo, slide, renderingRectangle):
         # Store slide title shape for cloning
         slideTitleShape = findTitleShape(slide)
 
+        ###############################################################
+        # Work out whether any card has a printable title. If not set #
+        # cardTitleHeight to 0                                        #
+        ###############################################################
+        cardWithPrintableTitle = False
+        
+        for c in range(cardCount):
+            # Check if there are any titles for any of the cards
+            if cards[c][0] != "&nbsp;":
+                cardWithPrintableTitle = True
+
+        if not cardWithPrintableTitle:
+            # Zero card title height
+            cardTitleHeight = 0
+
         ###########################################################
         # Work out card positions - based on the various layouts  #
         ###########################################################
@@ -2830,22 +2844,17 @@ def createListBlock(slideInfo, slide, renderingRectangle):
 
             # Calculate each card's background and body top
             if cardTitlePosition == "above":
-                # Card title above card background - so background top is below
-                # card top
+                # Card title (if any) above card background - so background top is
+                # below card top
                 cardBackgroundTop.append(cardTop[c] + cardTitleHeight)
                 cardBodyTop.append(cardBackgroundTop[c])
             else:
-                # card title inside card background - so background top is card top
+                # card title (if any) inside card background - so background top is
+                # card top
                 cardBackgroundTop.append(cardTop[c])
 
-                # Leave room above the card body for the card title - if it's not
-                # &nbsp;
-                if cards[c][0] == "&nbsp;":
-                    cardBodyTop.append(cardBackgroundTop[c])
-                else:
-                    cardBodyTop.append(cardBackgroundTop[c] + cardTitleHeight)
-
-                    cardWithPrintableTitle = True
+                # Leave room above the card body for the card title (if any)
+                cardBodyTop.append(cardBackgroundTop[c] + cardTitleHeight)
 
             # Calculate each card's horizontal position
             if cardLayout == "horizontal":
@@ -3000,15 +3009,23 @@ def createListBlock(slideInfo, slide, renderingRectangle):
         else:
             cardGraphicNativeWidth, cardGraphicNativeHeight = (0, 0)
 
-        # Set the card shapes' width - except for any graphic
+        # Set the card shapes' width
         cardBackgroundShape.width = cardWidth
-        cardBodyShape.width = cardWidth
+        if cardLayout == "horizontal":
+            cardBodyShape.width = cardWidth
+        else:
+            cardBodyShape.width = cardWidth - cardGraphicSizeRaw
+
         cardTitleShape.width = cardWidth
 
-        # Set the card shapes' left side - except for any graphic
+        # Set the card shapes' left side
         cardBackgroundShape.left = cardLeft[c]
         cardTitleShape.left = cardLeft[c]
-        cardBodyShape.left = cardLeft[c]
+        if (cardLayout == "horizontal") | (cardGraphicPosition == "after"):
+            cardBodyShape.left = cardLeft[c]
+        else:
+            cardBodyShape.left = cardLeft[c] + cardGraphicSizeRaw + \
+                2 * cardGraphicPadding
 
         # Position card title
         cardTitleShape.top = cardTop[c]
@@ -3022,13 +3039,15 @@ def createListBlock(slideInfo, slide, renderingRectangle):
 
         # Calculate positions and heights within card background of body
         if cardTitlePosition == "above":
+            # Any card titles would be above the rest of the card
             cardBackgroundShape.top = cardTop[c] + cardTitleHeight
             cardBodyHeight = cardHeight - cardTitleHeight
             cardBackgroundShape.height = cardBodyHeight
         else:
+            # Any card titles would be within the rest of the card
             cardBackgroundShape.top = cardTop[c]
-            cardBodyHeight = cardHeight
-            cardBackgroundShape.height = cardBodyHeight
+            cardBodyHeight = cardHeight - cardTitleHeight
+            cardBackgroundShape.height = cardHeight
 
         # Create any dividing line
         if (c > 0) & (cardShape == "line"):
@@ -3060,43 +3079,87 @@ def createListBlock(slideInfo, slide, renderingRectangle):
             # Set the line width to a fixed 2pts
             dividingLine.line.width = Pt(2.0)
 
-        # Position card
+        # Position card body shape
         if cardGraphicShape == None:
             # No graphic on this card
             cardBodyShape.top = cardBodyTop[c]
             cardBodyShape.height = cardBodyHeight
+            cardBodyShape.left = cardLeft[c]
+            cardBodyShape.width = cardWidth
         else:
             # Make room for graphic
             if cardGraphicPosition == "before":
-                # Leave room above card body shape for graphic
-                cardBodyShape.top = cardBodyTop[c] + cardGraphicHeightRaw
+                # Graphic before
+                if cardLayout == "horizontal":
+                    # Leave room above card body shape for graphic
+                    cardBodyShape.top = cardBodyTop[c] + cardGraphicSizeRaw + \
+                        2 * cardGraphicPadding
+                else:
+                    # Don't leave room above card for graphic
+                    cardBodyShape.top = cardBodyTop[c]
+                    cardBodyShape.width = cardWidth - 2 * cardGraphicPadding - \
+                        cardGraphicSizeRaw
+
             else:
+                # graphic after
                 # Leave room below card body shape for graphic
                 cardBodyShape.top = cardBodyTop[c]
-            
-            cardBodyShape.height = cardBodyHeight - cardGraphicHeightRaw
-            
+                
+                if cardLayout == "vertical":
+                    cardBodyShape.width = cardWidth - 2 * cardGraphicPadding - \
+                        cardGraphicSizeRaw
+
+            if cardLayout == "horizontal":
+                # Calculate card body shape height, leaving room for any graphic
+                cardBodyShape.height = cardBodyHeight - cardGraphicSizeRaw - \
+                    2 * cardGraphicPadding
+            else:
+                cardBodyShape.height = cardBodyHeight
+
             # Scale graphic
-            (cardPicWidth, cardPicHeight, scaledByHeight) = scalePicture(
-                cardTitleShape.width,
-                cardGraphicHeightRaw,
-                cardGraphicNativeWidth,
-                cardGraphicNativeHeight,
-            )
-            if cards[c][0] == "&nbsp;":
-                if cardGraphicPosition == "before":
-                    cardGraphicShape.top = cardTitleShape.top + int((cardGraphicHeightRaw - cardPicHeight) / 2)
+            if cardLayout == "horizontal":
+                (cardPicWidth, cardPicHeight, scaledByHeight) = scalePicture(
+                    cardGraphicSizeRaw,
+                    cardGraphicSizeRaw,
+                    cardGraphicNativeWidth,
+                    cardGraphicNativeHeight,
+                )
+            else:
+                (cardPicWidth, cardPicHeight, scaledByHeight) = scalePicture(
+                    cardGraphicSizeRaw,
+                    cardGraphicSizeRaw,
+                    cardGraphicNativeWidth,
+                    cardGraphicNativeHeight,
+                )
+
+            # Vertically position graphic shape
+            if cardGraphicPosition == "before":
+                # Graphic before card text
+                if cardLayout == "horizontal":
+                    cardGraphicShape.top = cardTitleShape.top + cardGraphicPadding + \
+                        cardTitleShape.height + int((cardGraphicSizeRaw - cardPicHeight) / 2)
                 else:
-                    cardGraphicShape.top = cardBodyHeight + int((cardGraphicHeightRaw - cardPicHeight) / 2)
+                    cardGraphicShape.top = cardBodyShape.top + \
+                        int((cardBodyHeight - cardGraphicSizeRaw) / 2)
+            else:
+                # Graphic after card text
+                if cardLayout == "horizontal":
+                    cardGraphicShape.top = cardBodyShape.height + cardBodyShape.top + \
+                        cardGraphicPadding
+                else:
+                    cardGraphicShape.top = cardBodyShape.top + \
+                        int((cardBodyHeight - cardGraphicSizeRaw) / 2)
+
+            # Horizontally position card graphic shape
+            if cardLayout == "horizontal":
+                cardGraphicShape.left = cardTitleShape.left + \
+                    int((cardTitleShape.width - cardPicWidth) / 2)
             else:
                 if cardGraphicPosition == "before":
-                    cardGraphicShape.top = cardTitleShape.top + cardTitleShape.height + int((cardGraphicHeightRaw - cardPicHeight) / 2)
+                    cardGraphicShape.left = cardLeft[c] + cardGraphicPadding
                 else:
-                    cardGraphicShape.top = cardBodyHeight + cardTitleShape.height + int((cardGraphicHeightRaw - cardPicHeight) / 2)
-
-            # Centre card graphic shape
-            cardGraphicShape.left = cardTitleShape.left + \
-                int((cardTitleShape.width - cardPicWidth) / 2)
+                    cardGraphicShape.left = cardLeft[c] + cardBodyShape.width + \
+                        cardGraphicPadding
 
             # Set dimensions of card graphic shape
             cardGraphicShape.height = int(cardPicHeight)
@@ -5046,8 +5109,9 @@ processingOptions.setOptionValuesArray(
         ["cardColour", [("None", "")]],
         ["cardTitleBackground", [("None", "")]],
         ["cardDividerColour", ("RGB", "#000000")],
-        ["cardGraphicHeight", 0.75],
+        ["cardGraphicSize", 0],
         ["cardGraphicPosition", "before"],
+        ["cardGraphicPadding", 0.1],
     ]
 )
 
@@ -5438,7 +5502,7 @@ for line in metadata_lines:
         if value.lower() == "yes":
             processingOptions.setOptionValues(name, True)
 
-    elif name in ["cardpercent", "cardgraphicheight"]:
+    elif name in ["cardpercent", "cardgraphicsize", "cardgraphicpadding"]:
         processingOptions.setOptionValues(name, float(value))
 
     elif name == "cardlayout":
@@ -6026,8 +6090,8 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
                     "pagesubtitlesize",
                     # Cards' vertical percent of content area
                     "cardpercent",
-                    # Card graphic's vertical space
-                    "cardgraphicheight",
+                    # Card graphic's vertical or horizontal space
+                    "cardgraphicsize",
                     # Base text size
                     "basetextsize",
                     # Base text decrement
