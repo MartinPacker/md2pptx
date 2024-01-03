@@ -1122,7 +1122,11 @@ body .markdown-body
 <li><a href="#multicolumn-table-cells">Multi-Column Table Cells</a></li>
 </ul>
 </li>
-<li><a href="#card-slides">Card Slides</a></li>
+<li><a href="#card-slides">Card Slides</a><ul>
+<li><a href="#card-titles">Card Titles</a></li>
+<li><a href="#card-graphics">Card Graphics</a></li>
+</ul>
+</li>
 <li><a href="#code-slides">Code Slides</a><ul>
 <li><a href="#&lt;code&gt;"><code>&lt;code&gt;</code></a></li>
 <li><a href="#triple-backticks-()">Triple Backticks (```)</a><ul>
@@ -1240,6 +1244,9 @@ body .markdown-body
 <li><a href="#card-shape-cardshape">Card Shape - <code>CardShape</code></a></li>
 <li><a href="#card-horizontal-gap-cardhorizontalgap">Card Horizontal Gap - <code>CardHorizontalGap</code></a></li>
 <li><a href="#card-vertical-gap-cardverticalgap">Card Vertical Gap - <code>CardVerticalGap</code></a></li>
+<li><a href="#card-graphic-position-cardgraphicposition">Card Graphic Position - <code>CardGraphicPosition</code></a></li>
+<li><a href="#card-graphic-size-cardgraphicsize">Card Graphic Size - <code>CardGraphicSize</code></a></li>
+<li><a href="#card-graphic-padding-cardgraphicpadding">Card Graphic Padding - <code>CardGraphicPadding</code></a></li>
 </ul>
 </li>
 <li><a href="#code-metadata">Code Metadata</a><ul>
@@ -1476,6 +1483,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">4.3</td>
+<td align="right">3&nbsp;January&nbsp;2024</td>
+<td align="left">Added card graphics support and <a href="#card-graphic-positioning-cardgraphicposition"><code>CardGraphicPosition</code></a>&comma; <a href="#card-graphic-size-cardgraphicsize"><code>CardGraphicSize</code></a>&comma; and <a href="#card-graphic-padding-cardgraphicpadding"><code>CardGraphicPadding</code></a>.</td>
+</tr>
 <tr>
 <td align="left">4.2.1</td>
 <td align="right">28&nbsp;December&nbsp;2023</td>
@@ -2234,8 +2246,14 @@ sectionTitleSize: 30
 </ol>
 <h3 id="card-slides">Card Slides<a class="headerlink" href="#card-slides" title="Permanent link"></a></h3>
 <p><a id="card-slides"></a></p>
-<p>A card slide contains side-by-side panels - or cards. Each card has a title and, below that, the contents are defined using the same syntax as in <a href="#bullet-slides">Bullet Slides</a>. In fact this slide type is derivative of the Bullet Slide type.</p>
-<p>A card slide can look something like this:</p>
+<p>A card slide contains multiple panels - or cards. They come in two flavours:</p>
+<ul>
+<li>Horizontal - where the cards are next to each other</li>
+<li>Vertical - where the cards are one above the other</li>
+</ul>
+<p>For the rest of this section the assumption is that cards are horizontally arranged. (Vertically-arranged cards are very similar.)</p>
+<p>Each card has a title and, below that, the contents are defined using the same syntax as in <a href="#bullet-slides">Bullet Slides</a>. In fact this slide type is derivative of the Bullet Slide type.</p>
+<p>A horizontally-arranged card slide can look something like this:</p>
 <p><img alt="" src="/Users/martinpacker/md2pptx/docs/CardSlide.png" /></p>
 <p>The key features of this slide are:</p>
 <ul>
@@ -2265,6 +2283,9 @@ sectionTitleSize: 30
 <li><a href="#card-shape-cardshape">Card Shape</a></li>
 <li><a href="#card-horizontal-gap-cardhorizontalgap">Card Horizontal Gap</a></li>
 <li><a href="#card-vertical-gap-cardverticalgap">Card Vertical Gap</a></li>
+<li><a href="#card-graphic-positioning-cardgraphicposition">Card Graphic Position</a></li>
+<li><a href="#card-graphic-size-cardgraphicsize">Card Graphic Size</a></li>
+<li><a href="#card-graphic-padding-cardgraphicpadding">Card Graphic Padding</a></li>
 </ul>
 <p>One example of using a different style is this:</p>
 <p><img alt="" src="/Users/martinpacker/md2pptx/docs/cardslide-lines.png" /></p>
@@ -2272,6 +2293,28 @@ sectionTitleSize: 30
 <pre><code>CardShape: line
 </code></pre>
 <p>(See <a href="#card-shape-cardshape">Card Shape</a> for more information.)</p>
+<h4 id="card-titles">Card Titles<a class="headerlink" href="#card-titles" title="Permanent link"></a></h4>
+<p>In the above examples the card titles are above the cards. You can specify that the card titles are inside the cards, at the top. To do this code:</p>
+<pre><code>CardTitlePosition: inside
+</code></pre>
+<p>(See <a href="#card-title-position-cardtitleposition">Card Title Position</a> for more information.)</p>
+<p>You can suppress a title by coding its text value to <code>&amp;nbsp;</code>. If you do this for all the titles on a card slide the space reserved for card titles will be zero. If there are some titles not treated this way the <code>&amp;nbsp;</code>-titled cards will have a gap where the title would have been.</p>
+<h4 id="card-graphics">Card Graphics<a class="headerlink" href="#card-graphics" title="Permanent link"></a></h4>
+<p>You can add graphics to a card. They can be placed in reserved areas before or after the card bulleted list contents.</p>
+<p>Place any graphic declaration between the card&rsquo;s title and the card&rsquo;s contents. For example:</p>
+<pre><code>#### Card One
+
+![](block.png)
+
+* Some content for Card One
+  * And some more content
+</code></pre>
+<p>As you can see, the image reference is just a standard Markdown one.</p>
+<p><strong>Notes:</strong></p>
+<ol>
+<li>You must code a non-zero value for <code>CardGraphicSize</code> for graphics to be shown. The default is 0.</li>
+<li>If a card doesn&rsquo;t have a graphic the bulleted list contents can fill the whole of the card (except for any title inside the card).</li>
+</ol>
 <h3 id="code-slides">Code Slides<a class="headerlink" href="#code-slides" title="Permanent link"></a></h3>
 <p><a id="code-slides"></a></p>
 <p>You can create a slide where the body is in a monospace font, without bullets, in a number of different ways:</p>
@@ -3506,6 +3549,32 @@ For example</p>
 </code></pre>
 <p>The default is 0.1 inches.</p>
 <p>You can override this on a slide-by-slide basis with <a href="#dynamic-cardverticalgap">Dynamic Vertical Gap</a>.</p>
+<p><a id="card-graphic-positioning-cardgraphicposition"></a></p>
+<h5 id="card-graphic-position-cardgraphicposition">Card Graphic Position - <code>CardGraphicPosition</code><a class="headerlink" href="#card-graphic-position-cardgraphicposition" title="Permanent link"></a></h5>
+<p>You can specify whether any graphic appears before or after the bulleted list contents of the card:</p>
+<pre><code>cardGraphicPosition: after
+</code></pre>
+<p>causes the graphic to appear after the bulleted list.</p>
+<p><code>before</code> (which is the default) causes the graphic to appear before the bulleted list.</p>
+<p><strong>Notes:</strong></p>
+<ol>
+<li>The values <code>before</code> and <code>after</code> are used because they work in both horizontal and vertical layouts.</li>
+<li>If <code>before</code> is specified, in horizontal layout, the graphics appear below any titles.</li>
+<li>You can cause graphics to replace text titles by specifying <code>&amp;nbsp;</code> for all the titles - and specifying graphics instead.</li>
+</ol>
+<p><a id="card-graphic-size-cardgraphicsize"></a></p>
+<h5 id="card-graphic-size-cardgraphicsize">Card Graphic Size - <code>CardGraphicSize</code><a class="headerlink" href="#card-graphic-size-cardgraphicsize" title="Permanent link"></a></h5>
+<p>If you want graphics to appear in cards you must specify a non-zero value of <code>CardGraphicSize</code>. For example:</p>
+<pre><code>cardGraphicSize: 0.75
+</code></pre>
+<p>would cause the graphics to be scaled to fit into a 0.75 inch square.</p>
+<p>The default is <code>0</code>, that is no graphics.</p>
+<p><a id="card-graphic-padding-cardgraphicpadding"></a></p>
+<h5 id="card-graphic-padding-cardgraphicpadding">Card Graphic Padding - <code>CardGraphicPadding</code><a class="headerlink" href="#card-graphic-padding-cardgraphicpadding" title="Permanent link"></a></h5>
+<p>You can specify space around the graphic on a card. For example:</p>
+<pre><code>cardGraphicPadding: 0.5
+</code></pre>
+<p>will leave a space of 0.5 inches around the graphic. The default is <code>0.1</code>, leaving a 0.1 inch pad around the graphics.</p>
 <p><a id="code-metadata"></></p>
 <h4 id="code-metadata">Code Metadata<a class="headerlink" href="#code-metadata" title="Permanent link"></a></h4>
 <p>You can adjust how code slides display their content.</p>

@@ -5,8 +5,8 @@ mdpre Markdown Preprocessor v0.6.7 (17 December, 2023)
 Def mdpre_date = 17 December, 2023
 Def mdpre_level = 0.6.7
 Def userid = martinpacker
-Def time = 11&colon;55
-Def date = 28 December&comma; 2023
+Def time = 19&colon;43
+Def date = 3 January&comma; 2024
 Def TOC = Table Of Contents
 Def md = Markdown
 Def pp = Powerpoint
@@ -43,6 +43,8 @@ CSV Stop
 ..... ..... .....  Special Case: One Graphic Above Another
 ..... ..... .....  Multi-Column Table Cells
 ..... .....  Card Slides
+..... ..... .....  Card Titles
+..... ..... .....  Card Graphics
 ..... .....  Code Slides
 ..... ..... .....  `<code>`
 ..... ..... .....  Triple Backticks (```)
@@ -137,6 +139,9 @@ CSV Stop
 ..... ..... ..... .....  Card Shape - `CardShape`
 ..... ..... ..... .....  Card Horizontal Gap - `CardHorizontalGap`
 ..... ..... ..... .....  Card Vertical Gap - `CardVerticalGap`
+..... ..... ..... .....  Card Graphic Position - `CardGraphicPosition`
+..... ..... ..... .....  Card Graphic Size - `CardGraphicSize`
+..... ..... ..... .....  Card Graphic Padding - `CardGraphicPadding`
 ..... ..... .....  Code Metadata
 ..... ..... ..... .....  Code Column Count - `CodeColumns`
 ..... ..... ..... .....  Fixed Pitch Height To Width Ratio - `FPRatio`

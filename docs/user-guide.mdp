@@ -154,6 +154,7 @@ To quote from the python-pptx license statement:
 =colalign l r l
 =csv
 Level,Date,What
+4.3,3&nbsp;January&nbsp;2024,Added card graphics support and [`CardGraphicPosition`](#card-graphic-positioning-cardgraphicposition)&comma; [`CardGraphicSize`](#card-graphic-size-cardgraphicsize)&comma; and [`CardGraphicPadding`](#card-graphic-padding-cardgraphicpadding).
 4.2.1,28&nbsp;December&nbsp;2023,Made [`backgroundImage`](#specifying-slide-background-images-with-backgroundimage) create **real** slide backgrounds.
 4.2,27&nbsp;December&nbsp;2023,Added background image support using [`backgroundImage`](#specifying-slide-background-images-with-backgroundimage).
 4.1.2,11&nbsp;July&nbsp;2023,Fixed two bugs: Using `<sub>` &amp; `<sup>` causes a crash. Also [Card Slides](#card-slides) cause a crash.
@@ -731,11 +732,19 @@ In this example
 ### Card Slides
 <a id="card-slides"></a>
 
-A card slide contains side-by-side panels - or cards. \
+A card slide contains multiple panels - or cards. \
+They come in two flavours:
+
+* Horizontal - where the cards are next to each other
+* Vertical - where the cards are one above the other
+
+For the rest of this section the assumption is that cards are horizontally arranged. \
+(Vertically-arranged cards are very similar.)
+
 Each card has a title and, below that, the contents are defined using the same syntax as in [Bullet Slides](#bullet-slides). \
 In fact this slide type is derivative of the Bullet Slide type.
 
-A card slide can look something like this:
+A horizontally-arranged card slide can look something like this:
 
 ![](CardSlide.png)
 
@@ -768,6 +777,9 @@ You can control the exact format using many tweaks:
 * [Card Shape](#card-shape-cardshape)
 * [Card Horizontal Gap](#card-horizontal-gap-cardhorizontalgap)
 * [Card Vertical Gap](#card-vertical-gap-cardverticalgap)
+* [Card Graphic Position](#card-graphic-positioning-cardgraphicposition)
+* [Card Graphic Size](#card-graphic-size-cardgraphicsize)
+* [Card Graphic Padding](#card-graphic-padding-cardgraphicpadding)
 
 One example of using a different style is this:
 
@@ -779,6 +791,45 @@ You achieve this by coding:
     CardShape: line
 
 (See [Card Shape](#card-shape-cardshape) for more information.)
+
+
+#### Card Titles
+
+In the above examples the card titles are above the cards. \
+You can specify that the card titles are inside the cards, at the top. \
+To do this code:
+
+    CardTitlePosition: inside
+
+(See [Card Title Position](#card-title-position-cardtitleposition) for more information.)
+
+You can suppress a title by coding its text value to `&nbsp;`. \
+If you do this for all the titles on a card slide the space reserved for card titles will be zero. \
+If there are some titles not treated this way the `&nbsp;`-titled cards will have a gap where the title would have been.
+
+#### Card Graphics
+
+You can add graphics to a card. \
+They can be placed in reserved areas before or after the card bulleted list contents.
+
+Place any graphic declaration between the card's title and the card's contents. \
+For example:
+
+    #### Card One
+    
+    ![](block.png)
+    
+    * Some content for Card One
+      * And some more content
+
+As you can see, the image reference is just a standard Markdown one.
+
+**Notes:** 
+
+1. You must code a non-zero value for `CardGraphicSize` for graphics to be shown. \
+The default is 0.
+2. If a card doesn't have a graphic the bulleted list contents can fill the whole of the card (except for any title inside the card).
+
 
 ### Code Slides
 <a id="code-slides"></a>
@@ -2378,6 +2429,48 @@ For example:
 The default is 0.1 inches.
 
 You can override this on a slide-by-slide basis with [Dynamic Vertical Gap](#dynamic-cardverticalgap).
+
+
+<a id="card-graphic-positioning-cardgraphicposition"></a>
+##### Card Graphic Position - `CardGraphicPosition`
+
+You can specify whether any graphic appears before or after the bulleted list contents of the card:
+
+    cardGraphicPosition: after
+
+causes the graphic to appear after the bulleted list.
+
+`before` (which is the default) causes the graphic to appear before the bulleted list.
+
+**Notes:**
+
+1. The values `before` and `after` are used because they work in both horizontal and vertical layouts.
+1. If `before` is specified, in horizontal layout, the graphics appear below any titles.
+1. You can cause graphics to replace text titles by specifying `&nbsp;` for all the titles - \
+and specifying graphics instead.
+
+<a id="card-graphic-size-cardgraphicsize"></a>
+##### Card Graphic Size - `CardGraphicSize`
+
+If you want graphics to appear in cards you must specify a non-zero value of `CardGraphicSize`. \
+For example:
+
+    cardGraphicSize: 0.75
+
+would cause the graphics to be scaled to fit into a 0.75 inch square.
+
+The default is `0`, that is no graphics.
+
+<a id="card-graphic-padding-cardgraphicpadding"></a>
+##### Card Graphic Padding - `CardGraphicPadding`
+
+You can specify space around the graphic on a card. \
+For example:
+
+    cardGraphicPadding: 0.5
+
+will leave a space of 0.5 inches around the graphic. The default is `0.1`, \
+leaving a 0.1 inch pad around the graphics.
 
 <a id="code-metadata"></>
 #### Code Metadata
