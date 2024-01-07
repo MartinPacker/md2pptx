@@ -39,6 +39,7 @@ import socket
 from pptx.oxml import parse_xml
 import uuid
 import funnel
+from card import Card
 from rectangle import Rectangle
 from colour import *
 from symbols import resolveSymbols
@@ -79,8 +80,8 @@ except:
     have_graphviz = False
 
 
-md2pptx_level = "4.3"
-md2pptx_date = "3 January, 2024"
+md2pptx_level = "4.3+"
+md2pptx_date = "7 January, 2024"
 
 namespaceURL = {
     "mc":  "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -2822,7 +2823,7 @@ def createListBlock(slideInfo, slide, renderingRectangle):
         
         for c in range(cardCount):
             # Check if there are any titles for any of the cards
-            if cards[c][0] != "&nbsp;":
+            if cards[c].title != "&nbsp;":
                 cardWithPrintableTitle = True
 
         if not cardWithPrintableTitle:
@@ -2871,7 +2872,7 @@ def createListBlock(slideInfo, slide, renderingRectangle):
 
             cardTitleShapes.append(cardTitleShape)
 
-            cardGraphicFilename = cards[c][1]
+            cardGraphicFilename = cards[c].graphic
             if cardGraphicFilename != "":
                 # This card has a graphic so save its name
                 cardGraphicDimensions.append(getGraphicDimensions(
@@ -2894,7 +2895,7 @@ def createListBlock(slideInfo, slide, renderingRectangle):
 
             # Clear text from cloned title and add in the title text
             cardTitleShape.text_frame.paragraphs[0].text = ""
-            addFormattedText(cardTitleShape.text_frame.paragraphs[0], cards[c][0])
+            addFormattedText(cardTitleShape.text_frame.paragraphs[0], cards[c].title)
 
             # Set card title font size
             if cardTitleSize > 0:
@@ -3166,8 +3167,8 @@ def createListBlock(slideInfo, slide, renderingRectangle):
             cardGraphicShape.width = int(cardPicWidth)
 
         # Render any card body text
-        if len(cards[c]) > 1:
-            renderText(cardBodyShape, slideInfo.cards[c][2])
+        if (cards[c].bullets) != "":
+            renderText(cardBodyShape, slideInfo.cards[c].bullets)
 
         # Handle card background border line
         lf = cardBackgroundShape.line
@@ -6451,7 +6452,11 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
             cardGraphic = ""
 
             # Create information about a card_title
-            cards.append([cardName, cardGraphic, cardBullets])
+            card = Card()
+            card.title = cardName
+            card.bullets = cardBullets
+            card.graphic = cardGraphic
+            cards.append(card)
             
             # Might have octothorpes but isn't a title
             inTitle = False
@@ -6533,7 +6538,7 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
             cardBullets.append([bulletLevel, bulletLine, bulletType])
 
             # Update bullet list for the card
-            cards[-1][2] = cardBullets
+            cards[-1].bullets = cardBullets
         else:
             # Bullet is not on a card        
             bullets.append([bulletLevel, bulletLine, bulletType])
@@ -6560,7 +6565,7 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
             cardBullets.append([bulletLevel, bulletLine, bulletType])
 
             # Update bullet list for the card
-            cards[-1][2] = cardBullets
+            cards[-1].bullets = cardBullets
         else:
             # Bullet is not on a card        
             bullets.append([bulletLevel, bulletLine, bulletType])
@@ -6587,7 +6592,7 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
                     cardGraphic = m.group(0)[4 : -1]
                     
                     # Add graphic to latest card 
-                    cards[-1][1] = cardGraphic
+                    cards[-1].graphic = cardGraphic
         else:
             # There is at least one media item in the line and not in a card
             # - so set up table
