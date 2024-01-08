@@ -81,7 +81,7 @@ except:
 
 
 md2pptx_level = "4.3+"
-md2pptx_date = "7 January, 2024"
+md2pptx_date = "8 January, 2024"
 
 namespaceURL = {
     "mc":  "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -2748,11 +2748,7 @@ def createListBlock(slideInfo, slide, renderingRectangle):
 
             cardAreaHeight = renderingRectangle.height
 
-        cardBackgroundShapes = []
-        cardTitleShapes = []
-        cardGraphicShapes = []
         cardGraphicDimensions = []
-        cardBodyShapes = []
 
         cardLeft = []
         cardTop = []
@@ -2821,9 +2817,9 @@ def createListBlock(slideInfo, slide, renderingRectangle):
         ###############################################################
         cardWithPrintableTitle = False
         
-        for c in range(cardCount):
+        for c, card in enumerate(slideInfo.cards):
             # Check if there are any titles for any of the cards
-            if cards[c].title != "&nbsp;":
+            if card.title != "&nbsp;":
                 cardWithPrintableTitle = True
 
         if not cardWithPrintableTitle:
@@ -2833,7 +2829,7 @@ def createListBlock(slideInfo, slide, renderingRectangle):
         ###########################################################
         # Work out card positions - based on the various layouts  #
         ###########################################################
-        for c in range(cardCount):
+        for c, card in enumerate(slideInfo.cards):
             # Calculate each card's vertical position
             if cardLayout == "horizontal":
                 # Card top is at top of card area
@@ -2870,9 +2866,9 @@ def createListBlock(slideInfo, slide, renderingRectangle):
             # Card title modeled on slide title - but smaller
             cardTitleShape = addClonedShape(slide, slideTitleShape)
 
-            cardTitleShapes.append(cardTitleShape)
+            card.titleShape = cardTitleShape
 
-            cardGraphicFilename = cards[c].graphic
+            cardGraphicFilename = card.graphic
             if cardGraphicFilename != "":
                 # This card has a graphic so save its name
                 cardGraphicDimensions.append(getGraphicDimensions(
@@ -2891,7 +2887,7 @@ def createListBlock(slideInfo, slide, renderingRectangle):
 
             # Add the card graphic's shape to the list - or None if this card
             # doesn't have a graphic
-            cardGraphicShapes.append(cardGraphicShape)
+            card.graphicShape = cardGraphicShape
 
             # Clear text from cloned title and add in the title text
             cardTitleShape.text_frame.paragraphs[0].text = ""
@@ -2954,7 +2950,7 @@ def createListBlock(slideInfo, slide, renderingRectangle):
                     MSO_SHAPE.RECTANGLE, Inches(0), Inches(0), Inches(0), Inches(0)
                 )
 
-            cardBackgroundShapes.append(cardBackgroundShape)
+            card.backgroundShape = cardBackgroundShape
 
             if cardShape == "line":
                 # Ensure no fill for card background
@@ -2970,7 +2966,8 @@ def createListBlock(slideInfo, slide, renderingRectangle):
             else:
                 # Co-opt bullets shape as first card shape
                 cardBodyShape = bulletsShape
-            cardBodyShapes.append(cardBodyShape)
+
+            card.bodyShape = cardBodyShape
 
             # Make card's body transparent
             fill = cardBodyShape.fill
@@ -2997,12 +2994,12 @@ def createListBlock(slideInfo, slide, renderingRectangle):
     renderText(bulletsShape, slideInfo.bullets)
 
     # Second go on each card
-    for c in range(cardCount):
+    for c, card in enumerate(slideInfo.cards):
         # Get the shapes for this card - including any graphic
-        cardBackgroundShape = cardBackgroundShapes[c]
-        cardTitleShape = cardTitleShapes[c]
-        cardBodyShape = cardBodyShapes[c]
-        cardGraphicShape = cardGraphicShapes[c]
+        cardBackgroundShape = card.backgroundShape
+        cardTitleShape = card.titleShape
+        cardBodyShape = card.bodyShape
+        cardGraphicShape = card.graphicShape
 
         # Get dimensions of any graphic
         if cardGraphicShape is not None:
@@ -3167,7 +3164,7 @@ def createListBlock(slideInfo, slide, renderingRectangle):
             cardGraphicShape.width = int(cardPicWidth)
 
         # Render any card body text
-        if (cards[c].bullets) != "":
+        if card.bullets != "":
             renderText(cardBodyShape, slideInfo.cards[c].bullets)
 
         # Handle card background border line

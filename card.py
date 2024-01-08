@@ -11,6 +11,10 @@ class Card:
         self,
     ):
         self.title = ""
+        self.titleShape = None
         self.bullets = ""
         self.graphic = ""
+        self.graphicShape = None
+        self.backgroundShape = None
+        self.bodyShape = None
 
