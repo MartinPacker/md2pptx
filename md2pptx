@@ -80,7 +80,7 @@ except:
     have_graphviz = False
 
 
-md2pptx_level = "4.3+"
+md2pptx_level = "4.3.1"
 md2pptx_date = "13 January, 2024"
 
 namespaceURL = {
@@ -2870,7 +2870,7 @@ def createListBlock(slideInfo, slide, renderingRectangle):
                     Inches(0),
                 )
             
-                reportGraphicFilenames(cardGraphicFilename)
+                reportGraphicFilenames(card.printableFilename)
                 
                 if (card.mediaURL is not None) | (card.graphicTitle is not None):
                     mediaURL = card.mediaURL
@@ -6578,7 +6578,12 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
                 if clickableGraphicMatch := clickableGraphicRegex.match(line):
                     # Line contains a clickable graphic
                     cards[-1].graphicTitle = clickableGraphicMatch.group(1)
-                    cards[-1].graphic = clickableGraphicMatch.group(2)
+                    
+                    (
+                        cards[-1].graphic,
+                        cards[-1].printableFilename,
+                    ) = handleWhateverGraphicType(clickableGraphicMatch.group(2))
+                    
                     cards[-1].mediaURL = clickableGraphicMatch.group(3)
                 else:
                     # Might implement these later on
@@ -6587,8 +6592,13 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
             else:
                 # Cell contains a non-clickable graphic
                 graphicMatch = graphicRegex.match(line)
+                
                 cards[-1].graphicTitle = graphicMatch.group(1)
-                cards[-1].graphic = graphicMatch.group(2)
+                
+                (
+                    cards[-1].graphic,
+                    cards[-1].printableFilename,
+                ) = handleWhateverGraphicType(graphicMatch.group(2))
         else:
             # There is at least one media item in the line and not in a card
             # - so set up table

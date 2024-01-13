@@ -19,6 +19,7 @@ class Card:
         self.graphicShape = None
         self.graphicDimensions = None
         self.graphicTitle = None
+        self.printableFilename = None
         
         self.mediaURL = None
         
