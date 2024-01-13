@@ -154,6 +154,7 @@ To quote from the python-pptx license statement:
 =colalign l r l
 =csv
 Level,Date,What
+4.3.1,13&nbsp;January&nbsp;2024,Card graphics are now clickable and can have tooltips. They can also use `data:` URL's.
 4.3,3&nbsp;January&nbsp;2024,Added card graphics support and [`CardGraphicPosition`](#card-graphic-positioning-cardgraphicposition)&comma; [`CardGraphicSize`](#card-graphic-size-cardgraphicsize)&comma; and [`CardGraphicPadding`](#card-graphic-padding-cardgraphicpadding).
 4.2.1,28&nbsp;December&nbsp;2023,Made [`backgroundImage`](#specifying-slide-background-images-with-backgroundimage) create **real** slide backgrounds.
 4.2,27&nbsp;December&nbsp;2023,Added background image support using [`backgroundImage`](#specifying-slide-background-images-with-backgroundimage).
@@ -829,6 +830,8 @@ As you can see, the image reference is just a standard Markdown one.
 1. You must code a non-zero value for `CardGraphicSize` for graphics to be shown. \
 The default is 0.
 2. If a card doesn't have a graphic the bulleted list contents can fill the whole of the card (except for any title inside the card).
+3. Card graphics can have tooltips and can be clickable. \
+See [Graphics Slides](#graphics-slides) for how to code this.
 
 
 ### Code Slides
