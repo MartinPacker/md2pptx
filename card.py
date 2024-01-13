@@ -2,7 +2,7 @@
 card
 """
 
-myVersion = "0.0"
+myVersion = "0.1"
 
 __version__ = myVersion
 
@@ -18,6 +18,9 @@ class Card:
         self.graphic = ""
         self.graphicShape = None
         self.graphicDimensions = None
+        self.graphicTitle = None
+        
+        self.mediaURL = None
         
         self.backgroundShape = None
         self.backgroundTop = None

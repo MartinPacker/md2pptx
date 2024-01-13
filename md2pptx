@@ -81,7 +81,7 @@ except:
 
 
 md2pptx_level = "4.3+"
-md2pptx_date = "9 January, 2024"
+md2pptx_date = "13 January, 2024"
 
 namespaceURL = {
     "mc":  "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -981,6 +981,7 @@ def createPictureHyperlinkOrTooltip(picture, target, tooltipText=""):
             # URL is indeed a macro reference, so treat it as such
             picture.click_action.hyperlink._hlink.set("action", target)
     else:
+        # Target is a slide
         picture.click_action.target_slide = target
 
     if tooltipText != "":
@@ -2858,8 +2859,7 @@ def createListBlock(slideInfo, slide, renderingRectangle):
 
             card.titleShape = cardTitleShape
 
-            cardGraphicFilename = card.graphic
-            if cardGraphicFilename != "":
+            if (cardGraphicFilename := card.graphic) != "":
                 # This card has a graphic so save its name
                 card.graphicDimensions = getGraphicDimensions(cardGraphicFilename)
 
@@ -2869,6 +2869,21 @@ def createListBlock(slideInfo, slide, renderingRectangle):
                     Inches(0),
                     Inches(0),
                 )
+            
+                reportGraphicFilenames(cardGraphicFilename)
+                
+                if (card.mediaURL is not None) | (card.graphicTitle is not None):
+                    mediaURL = card.mediaURL
+                     
+                    if card.graphicTitle == None:
+                        graphicTitle = ""
+                    else:
+                        graphicTitle = card.graphicTitle
+
+                    pictureInfos.append(
+                        (cardGraphicShape, mediaURL, graphicTitle)
+                    )
+
             else:
                 cardGraphicShape = None
                 card.graphicDimensions = None
@@ -3517,7 +3532,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
             )
 
             if topLeftGraphicHref == "":
-                topLeftGraphicHref = "#XYZZY-None"
+                topLeftGraphicHref = None
 
             pictureInfos.append(
                 (topLeftPicture, topLeftGraphicHref, topLeftGraphicTitle)
@@ -3592,7 +3607,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                 )
 
                 if topRightGraphicHref == "":
-                    topRightGraphicHref = "#XYZZY-None"
+                    topRightGraphicHref = None
 
                 pictureInfos.append(
                     (topRightPicture, topRightGraphicHref, topRightGraphicTitle)
@@ -3682,7 +3697,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                 )
 
                 if bottomLeftGraphicHref == "":
-                    bottomLeftGraphicHref = "#XYZZY-None"
+                    bottomLeftGraphicHref = None
 
                 pictureInfos.append(
                     (bottomLeftPicture, bottomLeftGraphicHref, bottomLeftGraphicTitle)
@@ -3769,7 +3784,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                         )
 
                         if bottomRightGraphicHref == "":
-                            bottomRightGraphicHref = "#XYZZY-None"
+                            bottomRightGraphicHref = None
 
                         pictureInfos.append(
                             (
@@ -6560,16 +6575,20 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
         if inCard:
             # Graphic in a card
             if startswithOneOf(line, ["<video ", "<audio ", "[!["]):
-                # Might implement these later on
-                print("video, audio and clickable graphic not supported")
+                if clickableGraphicMatch := clickableGraphicRegex.match(line):
+                    # Line contains a clickable graphic
+                    cards[-1].graphicTitle = clickableGraphicMatch.group(1)
+                    cards[-1].graphic = clickableGraphicMatch.group(2)
+                    cards[-1].mediaURL = clickableGraphicMatch.group(3)
+                else:
+                    # Might implement these later on
+                    print("video and audio not supported")
+
             else:
-                # graphicCount
-                for m in re.finditer(graphicRegex, line):
-                    # A non-clickable graphic
-                    cardGraphic = m.group(0)[4 : -1]
-                    
-                    # Add graphic to latest card 
-                    cards[-1].graphic = cardGraphic
+                # Cell contains a non-clickable graphic
+                graphicMatch = graphicRegex.match(line)
+                cards[-1].graphicTitle = graphicMatch.group(1)
+                cards[-1].graphic = graphicMatch.group(2)
         else:
             # There is at least one media item in the line and not in a card
             # - so set up table
@@ -6902,12 +6921,9 @@ for href in href_runs.keys():
 # There's a corresponding entry in picture_tooltips
 
 # fix up any clickable picture links
-picture_count = len(pictureInfos)
-for p in range(picture_count):
-    picture, href, tooltip = pictureInfos[p]
-
+for (picture, href, tooltip) in pictureInfos:
     # Pick up link target - if any
-    if href == "#XYZZY-None":
+    if href == None:
         target = None
     else:
         if href[1:] in slideHrefs.keys():
