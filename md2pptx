@@ -80,8 +80,8 @@ except:
     have_graphviz = False
 
 
-md2pptx_level = "4.3.1"
-md2pptx_date = "13 January, 2024"
+md2pptx_level = "4.3.1+"
+md2pptx_date = "14 January, 2024"
 
 namespaceURL = {
     "mc":  "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -732,7 +732,7 @@ def parseMedia(cellString, graphicCount):
         audioVideoInfo = AudioVideoInfo(cellString)
         _, printableGraphicFilename = handleWhateverGraphicType(audioVideoInfo.source)
 
-    if audioRegexMatch := audioRegex.match(cellString):
+    elif audioRegexMatch := audioRegex.match(cellString):
         # Cell contains an audio
         audioVideoInfo = AudioVideoInfo(cellString)
         _, printableGraphicFilename = handleWhateverGraphicType(audioVideoInfo.source)
@@ -3288,6 +3288,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
         isGraphicsGrid = False
 
     if isGraphicsGrid == True:
+
         ####################################################################
         # Print the media filenames                                        #
         ####################################################################
@@ -3313,7 +3314,6 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
         ####################################################################
         # Get the media dimensions                                         #
         ####################################################################
-
         if topLeftGraphicFilename != "":
             topLeftMediaWidth, topLeftMediaHeight = getGraphicDimensions(
                 topLeftGraphicFilename
