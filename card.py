@@ -21,6 +21,10 @@ class Card:
         self.graphicTitle = None
         self.printableFilename = None
         
+        self.videoInfo = None
+        self.videoDimensions = None
+        self.videoShape = None
+        
         self.mediaURL = None
         
         self.backgroundShape = None

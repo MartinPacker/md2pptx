@@ -154,8 +154,9 @@ To quote from the python-pptx license statement:
 =colalign l r l
 =csv
 Level,Date,What
+4.3.2,17&nbsp;January&nbsp;2024,Cards can now have a video where a graphic might be.
 4.3.1,13&nbsp;January&nbsp;2024,Card graphics are now clickable and can have tooltips. They can also use `data:` URL's.
-4.3,3&nbsp;January&nbsp;2024,Added card graphics support and [`CardGraphicPosition`](#card-graphic-positioning-cardgraphicposition)&comma; [`CardGraphicSize`](#card-graphic-size-cardgraphicsize)&comma; and [`CardGraphicPadding`](#card-graphic-padding-cardgraphicpadding).
+4.3,3&nbsp;January&nbsp;2024,Added [card graphics](#card-graphics-&-video) support and [`CardGraphicPosition`](#card-graphic-positioning-cardgraphicposition)&comma; [`CardGraphicSize`](#card-graphic-size-cardgraphicsize)&comma; and [`CardGraphicPadding`](#card-graphic-padding-cardgraphicpadding).
 4.2.1,28&nbsp;December&nbsp;2023,Made [`backgroundImage`](#specifying-slide-background-images-with-backgroundimage) create **real** slide backgrounds.
 4.2,27&nbsp;December&nbsp;2023,Added background image support using [`backgroundImage`](#specifying-slide-background-images-with-backgroundimage).
 4.1.2,11&nbsp;July&nbsp;2023,Fixed two bugs: Using `<sub>` &amp; `<sup>` causes a crash. Also [Card Slides](#card-slides) cause a crash.
@@ -808,12 +809,13 @@ You can suppress a title by coding its text value to `&nbsp;`. \
 If you do this for all the titles on a card slide the space reserved for card titles will be zero. \
 If there are some titles not treated this way the `&nbsp;`-titled cards will have a gap where the title would have been.
 
-#### Card Graphics
+<a id="card-graphics-&-video"></a>
+#### Card Graphics & Video
 
-You can add graphics to a card. \
+You can add a graphic or a video to a card. \
 They can be placed in reserved areas before or after the card bulleted list contents.
 
-Place any graphic declaration between the card's title and the card's contents. \
+Place any graphic or video declaration between the card's title and the card's contents. \
 For example:
 
     #### Card One
@@ -823,19 +825,21 @@ For example:
     * Some content for Card One
       * And some more content
 
-As you can see, the image reference is just a standard Markdown one.
+As you can see, the image reference is just a standard Markdown one. \
+A video reference might be of the form:
+
+    <video height=300 width=400 src="waterdrop.mp4"></video>
 
 **Notes:** 
 
-1. You must code a non-zero value for `CardGraphicSize` for graphics to be shown. \
+1. You must code a non-zero value for [`CardGraphicSize`](#card-graphic-size-cardgraphicsize) for graphics or videos to be shown. \
 The default is 0.
-2. If a card doesn't have a graphic the bulleted list contents can fill the whole of the card (except for any title inside the card).
+2. If a card doesn't have a graphic or a video the bulleted list contents can fill the whole of the card (except for any title inside the card).
 3. Card graphics can have tooltips and can be clickable. \
 See [Graphics Slides](#graphics-slides) for how to code this.
 
-
-### Code Slides
 <a id="code-slides"></a>
+### Code Slides
 
 You can create a slide where the body is in a monospace font, without bullets, in a number of different ways:
 
@@ -2455,25 +2459,25 @@ and specifying graphics instead.
 <a id="card-graphic-size-cardgraphicsize"></a>
 ##### Card Graphic Size - `CardGraphicSize`
 
-If you want graphics to appear in cards you must specify a non-zero value of `CardGraphicSize`. \
+If you want graphics or videos to appear in cards you must specify a non-zero value of `CardGraphicSize`. \
 For example:
 
     cardGraphicSize: 0.75
 
-would cause the graphics to be scaled to fit into a 0.75 inch square.
+would cause the graphics and videos to be scaled to fit into a 0.75 inch square.
 
 The default is `0`, that is no graphics.
 
 <a id="card-graphic-padding-cardgraphicpadding"></a>
 ##### Card Graphic Padding - `CardGraphicPadding`
 
-You can specify space around the graphic on a card. \
+You can specify space around the graphic or video on a card. \
 For example:
 
     cardGraphicPadding: 0.5
 
-will leave a space of 0.5 inches around the graphic. The default is `0.1`, \
-leaving a 0.1 inch pad around the graphics.
+will leave a space of 0.5 inches around the graphics and videos. The default is `0.1`, \
+leaving a 0.1 inch pad around them.
 
 <a id="code-metadata"></>
 #### Code Metadata

@@ -1124,7 +1124,7 @@ body .markdown-body
 </li>
 <li><a href="#card-slides">Card Slides</a><ul>
 <li><a href="#card-titles">Card Titles</a></li>
-<li><a href="#card-graphics">Card Graphics</a></li>
+<li><a href="#card-graphics-&amp;-video">Card Graphics &amp; Video</a></li>
 </ul>
 </li>
 <li><a href="#code-slides">Code Slides</a><ul>
@@ -1484,6 +1484,11 @@ THE SOFTWARE.
 </thead>
 <tbody>
 <tr>
+<td align="left">4.3.2</td>
+<td align="right">17&nbsp;January&nbsp;2024</td>
+<td align="left">Cards can now have a video where a graphic might be.</td>
+</tr>
+<tr>
 <td align="left">4.3.1</td>
 <td align="right">13&nbsp;January&nbsp;2024</td>
 <td align="left">Card graphics are now clickable and can have tooltips. They can also use <code>data:</code> URL&rsquo;s.</td>
@@ -1491,7 +1496,7 @@ THE SOFTWARE.
 <tr>
 <td align="left">4.3</td>
 <td align="right">3&nbsp;January&nbsp;2024</td>
-<td align="left">Added card graphics support and <a href="#card-graphic-positioning-cardgraphicposition"><code>CardGraphicPosition</code></a>&comma; <a href="#card-graphic-size-cardgraphicsize"><code>CardGraphicSize</code></a>&comma; and <a href="#card-graphic-padding-cardgraphicpadding"><code>CardGraphicPadding</code></a>.</td>
+<td align="left">Added <a href="#card-graphics-&amp;-video">card graphics</a> support and <a href="#card-graphic-positioning-cardgraphicposition"><code>CardGraphicPosition</code></a>&comma; <a href="#card-graphic-size-cardgraphicsize"><code>CardGraphicSize</code></a>&comma; and <a href="#card-graphic-padding-cardgraphicpadding"><code>CardGraphicPadding</code></a>.</td>
 </tr>
 <tr>
 <td align="left">4.2.1</td>
@@ -2304,9 +2309,10 @@ sectionTitleSize: 30
 </code></pre>
 <p>(See <a href="#card-title-position-cardtitleposition">Card Title Position</a> for more information.)</p>
 <p>You can suppress a title by coding its text value to <code>&amp;nbsp;</code>. If you do this for all the titles on a card slide the space reserved for card titles will be zero. If there are some titles not treated this way the <code>&amp;nbsp;</code>-titled cards will have a gap where the title would have been.</p>
-<h4 id="card-graphics">Card Graphics<a class="headerlink" href="#card-graphics" title="Permanent link"></a></h4>
-<p>You can add graphics to a card. They can be placed in reserved areas before or after the card bulleted list contents.</p>
-<p>Place any graphic declaration between the card&rsquo;s title and the card&rsquo;s contents. For example:</p>
+<p><a id="card-graphics-&-video"></a></p>
+<h4 id="card-graphics-video">Card Graphics &amp; Video<a class="headerlink" href="#card-graphics-video" title="Permanent link"></a></h4>
+<p>You can add a graphic or a video to a card. They can be placed in reserved areas before or after the card bulleted list contents.</p>
+<p>Place any graphic or video declaration between the card&rsquo;s title and the card&rsquo;s contents. For example:</p>
 <pre><code>#### Card One
 
 ![](block.png)
@@ -2314,15 +2320,17 @@ sectionTitleSize: 30
 * Some content for Card One
   * And some more content
 </code></pre>
-<p>As you can see, the image reference is just a standard Markdown one.</p>
+<p>As you can see, the image reference is just a standard Markdown one. A video reference might be of the form:</p>
+<pre><code>&lt;video height=300 width=400 src="waterdrop.mp4"&gt;&lt;/video&gt;
+</code></pre>
 <p><strong>Notes:</strong></p>
 <ol>
-<li>You must code a non-zero value for <code>CardGraphicSize</code> for graphics to be shown. The default is 0.</li>
-<li>If a card doesn&rsquo;t have a graphic the bulleted list contents can fill the whole of the card (except for any title inside the card).</li>
+<li>You must code a non-zero value for <a href="#card-graphic-size-cardgraphicsize"><code>CardGraphicSize</code></a> for graphics or videos to be shown. The default is 0.</li>
+<li>If a card doesn&rsquo;t have a graphic or a video the bulleted list contents can fill the whole of the card (except for any title inside the card).</li>
 <li>Card graphics can have tooltips and can be clickable. See <a href="#graphics-slides">Graphics Slides</a> for how to code this.</li>
 </ol>
-<h3 id="code-slides">Code Slides<a class="headerlink" href="#code-slides" title="Permanent link"></a></h3>
 <p><a id="code-slides"></a></p>
+<h3 id="code-slides">Code Slides<a class="headerlink" href="#code-slides" title="Permanent link"></a></h3>
 <p>You can create a slide where the body is in a monospace font, without bullets, in a number of different ways:</p>
 <ul>
 <li>Where what you type appears exactly as you typed it - using <code>&lt;code&gt;</code>, triple backticks, or by indentation.</li>
@@ -3570,17 +3578,17 @@ For example</p>
 </ol>
 <p><a id="card-graphic-size-cardgraphicsize"></a></p>
 <h5 id="card-graphic-size-cardgraphicsize">Card Graphic Size - <code>CardGraphicSize</code><a class="headerlink" href="#card-graphic-size-cardgraphicsize" title="Permanent link"></a></h5>
-<p>If you want graphics to appear in cards you must specify a non-zero value of <code>CardGraphicSize</code>. For example:</p>
+<p>If you want graphics or videos to appear in cards you must specify a non-zero value of <code>CardGraphicSize</code>. For example:</p>
 <pre><code>cardGraphicSize: 0.75
 </code></pre>
-<p>would cause the graphics to be scaled to fit into a 0.75 inch square.</p>
+<p>would cause the graphics and videos to be scaled to fit into a 0.75 inch square.</p>
 <p>The default is <code>0</code>, that is no graphics.</p>
 <p><a id="card-graphic-padding-cardgraphicpadding"></a></p>
 <h5 id="card-graphic-padding-cardgraphicpadding">Card Graphic Padding - <code>CardGraphicPadding</code><a class="headerlink" href="#card-graphic-padding-cardgraphicpadding" title="Permanent link"></a></h5>
-<p>You can specify space around the graphic on a card. For example:</p>
+<p>You can specify space around the graphic or video on a card. For example:</p>
 <pre><code>cardGraphicPadding: 0.5
 </code></pre>
-<p>will leave a space of 0.5 inches around the graphic. The default is <code>0.1</code>, leaving a 0.1 inch pad around the graphics.</p>
+<p>will leave a space of 0.5 inches around the graphics and videos. The default is <code>0.1</code>, leaving a 0.1 inch pad around them.</p>
 <p><a id="code-metadata"></></p>
 <h4 id="code-metadata">Code Metadata<a class="headerlink" href="#code-metadata" title="Permanent link"></a></h4>
 <p>You can adjust how code slides display their content.</p>

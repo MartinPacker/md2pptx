@@ -5,8 +5,8 @@ mdpre Markdown Preprocessor v0.6.7 (17 December, 2023)
 Def mdpre_date = 17 December, 2023
 Def mdpre_level = 0.6.7
 Def userid = martinpacker
-Def time = 16&colon;31
-Def date = 13 January&comma; 2024
+Def time = 20&colon;24
+Def date = 17 January&comma; 2024
 Def TOC = Table Of Contents
 Def md = Markdown
 Def pp = Powerpoint
@@ -44,7 +44,7 @@ CSV Stop
 ..... ..... .....  Multi-Column Table Cells
 ..... .....  Card Slides
 ..... ..... .....  Card Titles
-..... ..... .....  Card Graphics
+..... ..... .....  Card Graphics & Video
 ..... .....  Code Slides
 ..... ..... .....  `<code>`
 ..... ..... .....  Triple Backticks (```)

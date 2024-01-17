@@ -80,8 +80,8 @@ except:
     have_graphviz = False
 
 
-md2pptx_level = "4.3.1+"
-md2pptx_date = "14 January, 2024"
+md2pptx_level = "4.3.2"
+md2pptx_date = "17 January, 2024"
 
 namespaceURL = {
     "mc":  "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -1046,7 +1046,7 @@ def getGraphicDimensions(fname):
         return -1, -1
 
 
-def getVideoDimensionsPlus(audioVideoInfo):
+def getVideoInfo(audioVideoInfo):
     if audioVideoInfo.source.find("://") > -1:
         # Video would be sourced from the web
         try:
@@ -2708,7 +2708,7 @@ def createListBlock(slideInfo, slide, renderingRectangle):
     cardColours = processingOptions.getCurrentOption("cardcolour")
     cardDividerColour = processingOptions.getCurrentOption("carddividercolour")
     cardGraphicSize = processingOptions.getCurrentOption("cardgraphicsize")
-    cardGraphicPosition = processingOptions.getCurrentOption("cardgraphicposition")
+    cardGraphicPosition = processingOptions.getCurrentOption("cardGraphicPosition")
     cardGraphicPadding = int(Inches(processingOptions.getCurrentOption("cardgraphicpadding")))
     marginBase = processingOptions.getCurrentOption("marginBase")
     pageTitleSize = processingOptions.getCurrentOption("pageTitleSize")
@@ -2860,11 +2860,11 @@ def createListBlock(slideInfo, slide, renderingRectangle):
             card.titleShape = cardTitleShape
 
             if (cardGraphicFilename := card.graphic) != "":
-                # This card has a graphic so save its name
+                # This card has a graphic so get its name
                 card.graphicDimensions = getGraphicDimensions(cardGraphicFilename)
 
                 # Create card graphic shape - to be resized later
-                cardGraphicShape = slide.shapes.add_picture(
+                card.graphicShape = slide.shapes.add_picture(
                     cardGraphicFilename,
                     Inches(0),
                     Inches(0),
@@ -2881,16 +2881,29 @@ def createListBlock(slideInfo, slide, renderingRectangle):
                         graphicTitle = card.graphicTitle
 
                     pictureInfos.append(
-                        (cardGraphicShape, mediaURL, graphicTitle)
+                        (card.graphicShape, mediaURL, graphicTitle)
                     )
 
-            else:
-                cardGraphicShape = None
-                card.graphicDimensions = None
+            elif (cardVideoInfo := card.videoInfo) is not None:
+                # This card has a video so get its dimensions etc
+                card.videoDimensions = getVideoInfo(cardVideoInfo)
 
-            # Add the card graphic's shape to the list - or None if this card
-            # doesn't have a graphic
-            card.graphicShape = cardGraphicShape
+                # Create card video shape - to be resized later
+                card.videoShape = slide.shapes.add_movie(
+                    card.videoInfo.source,
+                    Inches(0),
+                    Inches(0),
+                    Inches(0),
+                    Inches(0),
+                    None
+                )
+            
+                reportGraphicFilenames(card.printableFilename)
+                
+            else:
+                # Some of this is probably not needed
+                card.graphicDimensions = None
+                card.videoDimensions = None
 
             # Clear text from cloned title and add in the title text
             cardTitleShape.text_frame.paragraphs[0].text = ""
@@ -3003,12 +3016,17 @@ def createListBlock(slideInfo, slide, renderingRectangle):
         cardTitleShape = card.titleShape
         cardBodyShape = card.bodyShape
         cardGraphicShape = card.graphicShape
+        cardVideoShape = card.videoShape
 
         # Get dimensions of any graphic
-        if cardGraphicShape is not None:
-            cardGraphicNativeWidth, cardGraphicNativeHeight = card.graphicDimensions
+        if cardGraphicShape is not None :
+            cardMediaNativeWidth, cardMediaNativeHeight = card.graphicDimensions
+
+        elif cardVideoShape is not None:
+            cardMediaNativeWidth, cardMediaNativeHeight, _, _ = card.videoDimensions
+
         else:
-            cardGraphicNativeWidth, cardGraphicNativeHeight = (0, 0)
+            cardMediaNativeWidth, cardMediaNativeHeight = (0, 0)
 
         # Set the card shapes' width
         cardBackgroundShape.width = cardWidth
@@ -3081,14 +3099,14 @@ def createListBlock(slideInfo, slide, renderingRectangle):
             dividingLine.line.width = Pt(2.0)
 
         # Position card body shape
-        if cardGraphicShape == None:
+        if (cardGraphicShape == None) & (cardVideoShape == None):
             # No graphic on this card
             cardBodyShape.top = card.bodyTop
             cardBodyShape.height = cardBodyHeight
             cardBodyShape.left = card.left
             cardBodyShape.width = cardWidth
         else:
-            # Make room for graphic
+            # Make room for graphic or video
             if cardGraphicPosition == "before":
                 # Graphic before
                 if cardLayout == "horizontal":
@@ -3117,46 +3135,51 @@ def createListBlock(slideInfo, slide, renderingRectangle):
             else:
                 cardBodyShape.height = cardBodyHeight
 
-            # Scale graphic
-            (cardPicWidth, cardPicHeight, scaledByHeight) = scalePicture(
+            # Scale graphic or video
+            (cardMediaWidth, cardMediaHeight, scaledByHeight) = scalePicture(
                 cardGraphicSizeRaw,
                 cardGraphicSizeRaw,
-                cardGraphicNativeWidth,
-                cardGraphicNativeHeight,
+                cardMediaNativeWidth,
+                cardMediaNativeHeight,
             )
+            
+            if cardGraphicShape is not None:
+                cardMediaShape = cardGraphicShape
+            else:
+                cardMediaShape = cardVideoShape
 
             # Vertically position graphic shape
             if cardGraphicPosition == "before":
                 # Graphic before card text
                 if cardLayout == "horizontal":
-                    cardGraphicShape.top = cardTitleShape.top + cardGraphicPadding + \
-                        cardTitleShape.height + int((cardGraphicSizeRaw - cardPicHeight) / 2)
+                    cardMediaShape.top = cardTitleShape.top + cardGraphicPadding + \
+                        cardTitleShape.height + int((cardGraphicSizeRaw - cardMediaHeight) / 2)
                 else:
-                    cardGraphicShape.top = cardBodyShape.top + \
-                        int((cardBodyHeight - cardGraphicSizeRaw) / 2)
+                    cardMediaShape.top = cardBodyShape.top + \
+                        int((cardBodyHeight - cardMediaHeight) / 2)
             else:
                 # Graphic after card text
                 if cardLayout == "horizontal":
-                    cardGraphicShape.top = cardBodyShape.height + cardBodyShape.top + \
+                    cardMediaShape.top = cardBodyShape.height + cardBodyShape.top + \
                         cardGraphicPadding
                 else:
-                    cardGraphicShape.top = cardBodyShape.top + \
+                    cardMediaShape.top = cardBodyShape.top + \
                         int((cardBodyHeight - cardGraphicSizeRaw) / 2)
 
             # Horizontally position card graphic shape
             if cardLayout == "horizontal":
-                cardGraphicShape.left = cardTitleShape.left + \
-                    int((cardTitleShape.width - cardPicWidth) / 2)
+                cardMediaShape.left = cardTitleShape.left + \
+                    int((cardTitleShape.width - cardMediaWidth) / 2)
             else:
                 if cardGraphicPosition == "before":
-                    cardGraphicShape.left = card.left + cardGraphicPadding
+                    cardMediaShape.left = card.left + cardGraphicPadding
                 else:
-                    cardGraphicShape.left = card.left + cardBodyShape.width + \
+                    cardMediaShape.left = card.left + cardBodyShape.width + \
                         cardGraphicPadding
 
             # Set dimensions of card graphic shape
-            cardGraphicShape.width = int(cardPicWidth)
-            cardGraphicShape.height = int(cardPicHeight)
+            cardMediaShape.width = int(cardMediaWidth)
+            cardMediaShape.height = int(cardMediaHeight)
 
         # Render any card body text
         if card.bullets != "":
@@ -3335,7 +3358,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                 topLeftMediaHeight,
                 topLeftVideoType,
                 topLeftVideoData,
-            ) = getVideoDimensionsPlus(topLeftVideo)
+            ) = getVideoInfo(topLeftVideo)
 
             if topLeftMediaWidth == -1:
                 if gridRows == 2:
@@ -3374,7 +3397,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                     topRightMediaHeight,
                     topRightVideoType,
                     topRightVideoData,
-                ) = getVideoDimensionsPlus(topRightVideo)
+                ) = getVideoInfo(topRightVideo)
 
                 if topRightMediaWidth == -1:
                     if gridRows == 2:
@@ -3409,7 +3432,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                     bottomLeftMediaHeight,
                     bottomLeftVideoType,
                     bottomLeftVideoData,
-                ) = getVideoDimensionsPlus(bottomLeftVideo)
+                ) = getVideoInfo(bottomLeftVideo)
 
                 if bottomLeftMediaWidth == -1:
                     if gridRows == 2:
@@ -3447,7 +3470,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                         bottomRightMediaHeight,
                         bottomRightVideoType,
                         bottomRightVideoData,
-                    ) = getVideoDimensionsPlus(bottomRightVideo)
+                    ) = getVideoInfo(bottomRightVideo)
 
                     if bottomRightMediaWidth == -1:
                         if gridRows == 2:
@@ -3540,7 +3563,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
         elif topLeftVideo is not None:
             if topLeftVideoType == "Local":
                 # Can use local file directly
-                topLeftVideo = slide.shapes.add_movie(
+                topLeftVideoShape = slide.shapes.add_movie(
                     topLeftVideo.source,
                     topLeftPicX,
                     topLeftPicY,
@@ -3616,7 +3639,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
             elif topRightVideo is not None:
                 if topRightVideoType == "Local":
                     # Can use local file directly
-                    topRightVideo = slide.shapes.add_movie(
+                    topRightVideoShape = slide.shapes.add_movie(
                         topRightVideo.source,
                         topRightPicX,
                         topRightPicY,
@@ -3706,7 +3729,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
             elif bottomLeftVideo is not None:
                 if bottomLeftVideoType == "Local":
                     # Can use local file directly
-                    bottomLeftVideo = slide.shapes.add_movie(
+                    bottomLeftVideoShape = slide.shapes.add_movie(
                         bottomLeftVideo.source,
                         bottomLeftPicX,
                         bottomLeftPicY,
@@ -3796,7 +3819,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                 elif bottomRightVideo is not None:
                     if bottomRightVideoType == "Local":
                         # Can use local file directly
-                        bottomRightVideo = slide.shapes.add_movie(
+                        bottomRightVideoShape = slide.shapes.add_movie(
                             bottomRightVideo.source,
                             bottomRightPicX,
                             bottomRightPicY,
@@ -5522,12 +5545,12 @@ for line in metadata_lines:
                 f'CardTitlePosition value \'{value}\' unsupported. "inside", "above", "before", or "after" required.'
             )
 
-    elif name == "cardgraphicposition":
+    elif name == "cardGraphicPosition":
         if value in ["before", "after"]:
             processingOptions.setOptionValues(name, value)
         else:
             print(
-                f'CardGraphicPosition value \'{value}\' unsupported. "before",or "after" required.'
+                f'cardGraphicPosition value \'{value}\' unsupported. "before",or "after" required.'
             )
 
     elif name == "cardtitlealign":
@@ -6180,7 +6203,7 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
                         metadataKey, metadataValue, ""
                     )
 
-                elif metadataKey == "cardgraphicposition":
+                elif metadataKey == "cardGraphicPosition":
                     # Card graphic position - before or after
                     processingOptions.dynamicallySetOption(
                         metadataKey, metadataValue, ""
@@ -6585,9 +6608,21 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
                     ) = handleWhateverGraphicType(clickableGraphicMatch.group(2))
                     
                     cards[-1].mediaURL = clickableGraphicMatch.group(3)
+
+                elif videoRegexMatch := videoRegex.match(line):
+                    (
+                        _ ,
+                        _ ,
+                        cards[-1].printableFilename,
+                        _ ,
+                        _ ,
+                        cards[-1].videoInfo,
+                        _ ,
+                    ) = parseMedia(videoRegexMatch.group(0), 0)
+
                 else:
-                    # Might implement these later on
-                    print("video and audio not supported")
+                    # Might implement this later on
+                    print("Audio not supported")
 
             else:
                 # Cell contains a non-clickable graphic
