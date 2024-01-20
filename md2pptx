@@ -19,7 +19,7 @@ from pptx import __version__ as pptx_version
 from pptx.util import Inches, Pt
 from pptx.dml.color import RGBColor, MSO_THEME_COLOR
 from pptx.enum.text import MSO_AUTO_SIZE, PP_ALIGN
-from pptx.enum.shapes import PP_PLACEHOLDER
+from pptx.enum.shapes import PP_PLACEHOLDER, PP_MEDIA_TYPE
 from pptx.enum.shapes import MSO_SHAPE, MSO_CONNECTOR
 from pptx.enum.text import MSO_ANCHOR
 from pptx.enum.action import PP_ACTION
@@ -80,8 +80,8 @@ except:
     have_graphviz = False
 
 
-md2pptx_level = "4.3.2"
-md2pptx_date = "17 January, 2024"
+md2pptx_level = "4.3.3"
+md2pptx_date = "20 January, 2024"
 
 namespaceURL = {
     "mc":  "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -2859,13 +2859,13 @@ def createListBlock(slideInfo, slide, renderingRectangle):
 
             card.titleShape = cardTitleShape
 
-            if (cardGraphicFilename := card.graphic) != "":
+            if card.graphic != "":
                 # This card has a graphic so get its name
-                card.graphicDimensions = getGraphicDimensions(cardGraphicFilename)
+                card.graphicDimensions = getGraphicDimensions(card.graphic)
 
                 # Create card graphic shape - to be resized later
                 card.graphicShape = slide.shapes.add_picture(
-                    cardGraphicFilename,
+                    card.graphic,
                     Inches(0),
                     Inches(0),
                 )
@@ -2875,27 +2875,24 @@ def createListBlock(slideInfo, slide, renderingRectangle):
                 if (card.mediaURL is not None) | (card.graphicTitle is not None):
                     mediaURL = card.mediaURL
                      
-                    if card.graphicTitle == None:
-                        graphicTitle = ""
-                    else:
-                        graphicTitle = card.graphicTitle
+                    graphicTitle = "" if card.graphicTitle == None else card.graphicTitle
 
                     pictureInfos.append(
                         (card.graphicShape, mediaURL, graphicTitle)
                     )
 
-            elif (cardVideoInfo := card.videoInfo) is not None:
+            elif card.mediaInfo is not None:
                 # This card has a video so get its dimensions etc
-                card.videoDimensions = getVideoInfo(cardVideoInfo)
+                card.mediaDimensions = getVideoInfo(card.mediaInfo)
 
                 # Create card video shape - to be resized later
-                card.videoShape = slide.shapes.add_movie(
-                    card.videoInfo.source,
+                card.mediaShape = slide.shapes.add_movie(
+                    card.mediaInfo.source,
                     Inches(0),
                     Inches(0),
                     Inches(0),
                     Inches(0),
-                    None
+                    card.mediaInfo.poster
                 )
             
                 reportGraphicFilenames(card.printableFilename)
@@ -2903,7 +2900,7 @@ def createListBlock(slideInfo, slide, renderingRectangle):
             else:
                 # Some of this is probably not needed
                 card.graphicDimensions = None
-                card.videoDimensions = None
+                card.mediaDimensions = None
 
             # Clear text from cloned title and add in the title text
             cardTitleShape.text_frame.paragraphs[0].text = ""
@@ -3016,14 +3013,14 @@ def createListBlock(slideInfo, slide, renderingRectangle):
         cardTitleShape = card.titleShape
         cardBodyShape = card.bodyShape
         cardGraphicShape = card.graphicShape
-        cardVideoShape = card.videoShape
+        cardMediaShape = card.mediaShape
 
         # Get dimensions of any graphic
         if cardGraphicShape is not None :
             cardMediaNativeWidth, cardMediaNativeHeight = card.graphicDimensions
 
-        elif cardVideoShape is not None:
-            cardMediaNativeWidth, cardMediaNativeHeight, _, _ = card.videoDimensions
+        elif cardMediaShape is not None:
+            cardMediaNativeWidth, cardMediaNativeHeight, _, _ = card.mediaDimensions
 
         else:
             cardMediaNativeWidth, cardMediaNativeHeight = (0, 0)
@@ -3099,14 +3096,14 @@ def createListBlock(slideInfo, slide, renderingRectangle):
             dividingLine.line.width = Pt(2.0)
 
         # Position card body shape
-        if (cardGraphicShape == None) & (cardVideoShape == None):
+        if (cardGraphicShape == None) & (cardMediaShape == None):
             # No graphic on this card
             cardBodyShape.top = card.bodyTop
             cardBodyShape.height = cardBodyHeight
             cardBodyShape.left = card.left
             cardBodyShape.width = cardWidth
         else:
-            # Make room for graphic or video
+            # Make room for graphic, audio, or video
             if cardGraphicPosition == "before":
                 # Graphic before
                 if cardLayout == "horizontal":
@@ -3135,7 +3132,7 @@ def createListBlock(slideInfo, slide, renderingRectangle):
             else:
                 cardBodyShape.height = cardBodyHeight
 
-            # Scale graphic or video
+            # Scale graphic, audio, or video
             (cardMediaWidth, cardMediaHeight, scaledByHeight) = scalePicture(
                 cardGraphicSizeRaw,
                 cardGraphicSizeRaw,
@@ -3146,7 +3143,7 @@ def createListBlock(slideInfo, slide, renderingRectangle):
             if cardGraphicShape is not None:
                 cardMediaShape = cardGraphicShape
             else:
-                cardMediaShape = cardVideoShape
+                cardMediaShape = cardMediaShape
 
             # Vertically position graphic shape
             if cardGraphicPosition == "before":
@@ -6616,13 +6613,21 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
                         cards[-1].printableFilename,
                         _ ,
                         _ ,
-                        cards[-1].videoInfo,
+                        cards[-1].mediaInfo,
                         _ ,
                     ) = parseMedia(videoRegexMatch.group(0), 0)
 
                 else:
-                    # Might implement this later on
-                    print("Audio not supported")
+                    audioRegexMatch = audioRegex.match(line)
+                    (
+                        _ ,
+                        _ ,
+                        cards[-1].printableFilename,
+                        _ ,
+                        _ ,
+                        cards[-1].mediaInfo,
+                        _ ,
+                    ) = parseMedia(audioRegexMatch.group(0), 0)
 
             else:
                 # Cell contains a non-clickable graphic

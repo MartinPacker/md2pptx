@@ -37,7 +37,7 @@ As you can see in the [change log](#change-log), md2pptx is frequently updated -
 		* [Multi-Column Table Cells](#multicolumn-table-cells)
 	* [Card Slides](#card-slides)
 		* [Card Titles](#card-titles)
-		* [Card Graphics & Video](#card-graphics-&-video)
+		* [Card Graphics, Video, &amp; Audio](#card-graphics-video-&amp;-audio)
 	* [Code Slides](#code-slides)
 		* [`<code>`](#<code>)
 		* [Triple Backticks (```)](#triple-backticks-())
@@ -348,9 +348,10 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
-|4.3.2|17&nbsp;January&nbsp;2024|Cards can now have a video where a graphic might be.|
+|4.3.3|20&nbsp;January&nbsp;2024|Cards can now have audio where a graphic might be. Also media can have a "poster" image for when the media isn't playing. See [Card Graphics&comma; Video&comma; &amp; Audio](#card-graphics-video-audio).|
+|4.3.2|17&nbsp;January&nbsp;2024|Cards can now have a video where a graphic might be. See [Card Graphics&comma; Video&comma; &amp; Audio](#card-graphics-video-audio).|
 |4.3.1|13&nbsp;January&nbsp;2024|Card graphics are now clickable and can have tooltips. They can also use `data:` URL's.|
-|4.3|3&nbsp;January&nbsp;2024|Added [card graphics](#card-graphics-&-video) support and [`CardGraphicPosition`](#card-graphic-positioning-cardgraphicposition)&comma; [`CardGraphicSize`](#card-graphic-size-cardgraphicsize)&comma; and [`CardGraphicPadding`](#card-graphic-padding-cardgraphicpadding).|
+|4.3|3&nbsp;January&nbsp;2024|Added [card graphics](#card-graphics-video-audio) support and [`CardGraphicPosition`](#card-graphic-positioning-cardgraphicposition)&comma; [`CardGraphicSize`](#card-graphic-size-cardgraphicsize)&comma; and [`CardGraphicPadding`](#card-graphic-padding-cardgraphicpadding).|
 |4.2.1|28&nbsp;December&nbsp;2023|Made [`backgroundImage`](#specifying-slide-background-images-with-backgroundimage) create **real** slide backgrounds.|
 |4.2|27&nbsp;December&nbsp;2023|Added background image support using [`backgroundImage`](#specifying-slide-background-images-with-backgroundimage).|
 |4.1.2|11&nbsp;July&nbsp;2023|Fixed two bugs: Using `<sub>` &amp; `<sup>` causes a crash. Also [Card Slides](#card-slides) cause a crash.|
@@ -670,6 +671,8 @@ You can optionally have md2pptx export the temporary PNG files. See [Exporting C
 
 Videos and audio files are supported in a similar way to [graphics slides](#graphics-slides).  However, there is no Markdown support for embedding videos or audio files. Fortunately, Markdown processors support HTML.
 
+You should be aware that, though you can legitimately embed a video or audio, Powerpoint might not be able to play it on all platforms.
+
 ##### Video Slides
 <a id="video-slides"></a>
 
@@ -927,12 +930,12 @@ In the above examples the card titles are above the cards. You can specify that 
 
 You can suppress a title by coding its text value to `&nbsp;`. If you do this for all the titles on a card slide the space reserved for card titles will be zero. If there are some titles not treated this way the `&nbsp;`-titled cards will have a gap where the title would have been.
 
-<a id="card-graphics-&-video"></a>
-#### Card Graphics & Video
+<a id="#card-graphics-video-audio"></a>
+#### Card Graphics, Video, &amp; Audio
 
-You can add a graphic or a video to a card. They can be placed in reserved areas before or after the card bulleted list contents.
+You can add a single graphic, video, or audio file to each card. They can be placed in reserved areas before or after the card bulleted list contents.
 
-Place any graphic or video declaration between the card's title and the card's contents. For example:
+Place any graphic, video, or audio declaration between the card's title and the card's contents. For example:
 
     #### Card One
 
@@ -945,11 +948,18 @@ As you can see, the image reference is just a standard Markdown one. A video ref
 
     <video height=300 width=400 src="waterdrop.mp4"></video>
 
+An audio reference might be of the form:
+
+    <audio src="audiotest.mp3" poster="Battery W2M.png"></audio>
+
+In this case the `poster` attribute is coded. This enables a graphic to be shown when the audio player isn't activated. You can also code the `poster` attribute for a video.
+
 **Notes:**
 
 1. You must code a non-zero value for [`CardGraphicSize`](#card-graphic-size-cardgraphicsize) for graphics or videos to be shown. The default is 0.
 2. If a card doesn't have a graphic or a video the bulleted list contents can fill the whole of the card (except for any title inside the card).
-3. Card graphics can have tooltips and can be clickable. See [Graphics Slides](#graphics-slides) for how to code this.
+3. Card graphics can have tooltips and can be clickable. See [Graphics Slides](#graphics-slides) for how to code this. (audio and video can't.)
+4. Media (audio or video) might not be playable on a specific platform, even though it has been legitimately embedded in a presentation.
 
 <a id="code-slides"></a>
 ### Code Slides

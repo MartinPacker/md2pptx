@@ -19,12 +19,14 @@ class Card:
         self.graphicShape = None
         self.graphicDimensions = None
         self.graphicTitle = None
+
         self.printableFilename = None
         
-        self.videoInfo = None
-        self.videoDimensions = None
-        self.videoShape = None
-        
+        # Both audio and video
+        self.mediaInfo = None
+        self.mediaDimensions = None
+        self.mediaShape = None
+                
         self.mediaURL = None
         
         self.backgroundShape = None
