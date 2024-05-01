@@ -25,7 +25,7 @@ from pptx.enum.text import MSO_ANCHOR
 from pptx.enum.action import PP_ACTION
 from pptx.enum.dml import MSO_PATTERN
 
-import imghdr, struct
+import struct
 import datetime
 import html.parser
 from pptx.oxml.xmlchemy import OxmlElement
