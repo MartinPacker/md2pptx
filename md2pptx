@@ -1014,14 +1014,14 @@ def getGraphicDimensions(fname):
             if len(head) != 24:
                 return -1, -1
             fname2 = fname.lower()
-            if fname2.endswith("png"):
+            if fname2.endswith(".png"):
                 check = struct.unpack(">i", head[4:8])[0]
                 if check != 0x0D0A1A0A:
                     return -1, -1
                 width, height = struct.unpack(">ii", head[16:24])
-            elif fname2.endswith("gif"):
+            elif fname2.endswith(".gif"):
                 width, height = struct.unpack("<HH", head[6:10])
-            elif fname.endswidth(("jpeg", "jpg")):
+            elif fname.endswidth((".jpeg", ".jpg")):
                 try:
                     fhandle.seek(0)  # Read 0xff next
                     size = 2
