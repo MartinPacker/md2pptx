@@ -154,6 +154,7 @@ To quote from the python-pptx license statement:
 =colalign l r l
 =csv
 Level,Date,What
+4.4,6&nbsp;May&nbsp;2024,Support for Python 3.12 and 3.13 (tested with alphas 5 &amp; 6). `imghdr` package is no longer used to guess graphics file types.
 4.3.3,20&nbsp;January&nbsp;2024,Cards can now have audio where a graphic might be. Also media can have a "poster" image for when the media isn't playing. See [Card Graphics&comma; Video&comma; &amp; Audio](#card-graphics-video-audio).
 4.3.2,17&nbsp;January&nbsp;2024,Cards can now have a video where a graphic might be. See [Card Graphics&comma; Video&comma; &amp; Audio](#card-graphics-video-audio).
 4.3.1,13&nbsp;January&nbsp;2024,Card graphics are now clickable and can have tooltips. They can also use `data:` URL's.
@@ -509,6 +510,8 @@ The file name is the same as the SVG or EPS file's name, except the extension is
     * JPEG - `image/jpeg` or `image/jpg` (though the latter is unofficial)
     * SVG - `image/svg+xml` or `image/svg` (though the latter is unofficial)
     * EPS - `application/postscript`
+
+3. For graphics from files on disk the file extension is used to guess the type.
 
 #### Video And Audio Slides
 <a id="video-and-audio-slides"></a>

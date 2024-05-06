@@ -231,7 +231,7 @@ There are advantages in creating presentations using a flat file format. Some of
 
 * You can use any text editor on any platform to create the file.
 * Other tools can generate the file.
-
+	
 	For example, the author uses iThoughtsX on Mac, with its counterpart (iThoughts) on iOS, to generate presentations from outlines.
 
 * Text editing tools are far quicker and more flexible that the Powerpoint presentation editor.
@@ -306,7 +306,7 @@ Here is a sample invocation:
 
 	md2pptx powerpoint-filename < markdown-filename
 
-An alternative is to have the Markdown be in-stream. md2pptx reads from stdin. You can, of course, use stdin in a pipeline. Indeed the developer uses this to pipe from another program.
+An alternative is to have the Markdown be in-stream. md2pptx reads from stdin. You can, of course, use stdin in a pipeline. Indeed the developer uses this to pipe from another program. 
 Alternatively, you can specify both an input file and an output file:
 
 	md2pptx markdown-filename powerpoint-filename
@@ -348,6 +348,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|4.4|6&nbsp;May&nbsp;2024|Support for Python 3.12 and 3.13 (tested with alphas 5 &amp; 6). `imghdr` package is no longer used to guess graphics file types.|
 |4.3.3|20&nbsp;January&nbsp;2024|Cards can now have audio where a graphic might be. Also media can have a "poster" image for when the media isn't playing. See [Card Graphics&comma; Video&comma; &amp; Audio](#card-graphics-video-audio).|
 |4.3.2|17&nbsp;January&nbsp;2024|Cards can now have a video where a graphic might be. See [Card Graphics&comma; Video&comma; &amp; Audio](#card-graphics-video-audio).|
 |4.3.1|13&nbsp;January&nbsp;2024|Card graphics are now clickable and can have tooltips. They can also use `data:` URL's.|
@@ -388,7 +389,7 @@ To quote from the python-pptx license statement:
 |2.4.2|18&nbsp;October&nbsp;2021|Added [`hideMetadata: style`](#hidemetadata) - to suppress `style.` items in the Processing Summary slide. Also flag overridden values in same.|
 |2.4.1|2&nbsp;October&nbsp;2021|Fixed bug where code appeared in a slide's Notes slide|
 |2.4|19&nbsp;September&nbsp;2021|Some simple style information added to span support. fgcolor &amp; bgcolor hex RGB  metadata values are checked for validity.|
-|2.3.4|7&nbsp;September&nbsp;2021|Added [`SectionArrows`](#section-navigation-buttons-sectionarrows) which enables navigation buttons between Section slides. [`SectionArrowsColour`](#section-navigation-buttons-colour-sectionarrowscolour) sets the buttons' background colour.|
+|2.3.4|7&nbsp;September&nbsp;2021|Added [`SectionArrows`](#section-navigation-buttons-sectionarrows) which enables navigation buttons between Section slides. [`SectionArrowsColour`](#section-navigation-buttons-colour-sectionarrowscolour) sets the buttons' background colour. |
 |2.3.3|27&nbsp;August&nbsp;2021|Added [`TOCStyle: plain`](#plain-style-table-of-contents) Table Of Contents layout. Also can enable internal links in TOC and Section slides. Fixed `addTableLines` bug.|
 |2.3.2|23&nbsp;August&nbsp;2021|Added [`TOCStyle: circle`](#circle-style-table-of-contents) Table Of Contents layout. Also metadata to control Table Of Contents layout.|
 |2.3.1|21&nbsp;August&nbsp;2021|Forgot to mention [`prev` / `pop`](#dynamic-metadata) in documentation for 2.3.|
@@ -452,7 +453,7 @@ Let's start with a simple example. Consider the following text.
 	template: Martin Template.pptx
 	pageTitleSize: 24
 	sectionTitleSize: 30
-
+	
 	# This Is the Presentation Title Page
 
 	## This Is A Section
@@ -621,7 +622,7 @@ Here the image reference is embedded in the clickable link:
 To create a hyperlink to a slide with heading reference code something like this as the title of that slide:
 
     ### My Slide’s Title [sonic-highways]
-
+    
 See [Hyperlinks](#hyperlinks) for more on creating hyperlinks.
 
 ##### Graphics File References
@@ -656,7 +657,7 @@ Encapsulated Postscript (EPS) format is only supported if you have installed the
 
 You can optionally have md2pptx export the temporary PNG files. See [Exporting Converted SVG And PNG Files - `exportGraphics`](#exporting-converted-svg-and-png-files-exportGraphics). The file name is the same as the SVG or EPS file's name, except the extension is PNG.
 
-**Notes:**
+**Notes:** 
 
 1. You can specify which directory temporary files, such as temporary graphics, are stored in - using [`tempDir`](#specifying-where-temporary-files-are-stored-with-tempdir).
 2. For graphics - whether image or vector - retrieved from the Internet md2pptx will attempt to acquire the MIME type (`Content-Type` HTTP header) to determine what type the graphic is:
@@ -665,6 +666,8 @@ You can optionally have md2pptx export the temporary PNG files. See [Exporting C
     * JPEG - `image/jpeg` or `image/jpg` (though the latter is unofficial)
     * SVG - `image/svg+xml` or `image/svg` (though the latter is unofficial)
     * EPS - `application/postscript`
+
+3. For graphics from files on disk the file extension is used to guess the type.
 
 #### Video And Audio Slides
 <a id="video-and-audio-slides"></a>
@@ -795,7 +798,7 @@ If you code something like this the three graphics will be placed appropriately:
 
 	|![](top-left-graphic.png)|![](top-right-graphic.png)|
 	|![](bottom-graphic.png)|
-
+	
 Here the layout will be a "T".
 
 A table won't be created in this case.
@@ -808,7 +811,7 @@ There are some variants on the above scheme. For example, if you code:
 
 	|![](top-graphic.png)|
 	|![](bottom-left-graphic.png)|![](bottom-right-graphic.png)|
-
+	
 Here the layout will be an inverted "T".
 
 You can also force left alignment or right alignment of the sole graphic in a row. For example:
@@ -938,23 +941,23 @@ You can add a single graphic, video, or audio file to each card. They can be pla
 Place any graphic, video, or audio declaration between the card's title and the card's contents. For example:
 
     #### Card One
-
+    
     ![](block.png)
-
+    
     * Some content for Card One
       * And some more content
 
 As you can see, the image reference is just a standard Markdown one. A video reference might be of the form:
 
     <video height=300 width=400 src="waterdrop.mp4"></video>
-
+    
 An audio reference might be of the form:
 
     <audio src="audiotest.mp3" poster="Battery W2M.png"></audio>
 
 In this case the `poster` attribute is coded. This enables a graphic to be shown when the audio player isn't activated. You can also code the `poster` attribute for a video.
 
-**Notes:**
+**Notes:** 
 
 1. You must code a non-zero value for [`CardGraphicSize`](#card-graphic-size-cardgraphicsize) for graphics or videos to be shown. The default is 0.
 2. If a card doesn't have a graphic or a video the bulleted list contents can fill the whole of the card (except for any title inside the card).
@@ -983,7 +986,7 @@ You can include [HTML entity references](#html-entity-references) and [numeric c
 The HTML `<code>` element is supported. Surround the block of text by `<code>` and `</code`:
 
 	### This Is A Code Slide
-
+	
     <code>
     for(i = 0; i < 10; i++){
         alert(i)
@@ -997,7 +1000,7 @@ The HTML `<code>` element is supported. Surround the block of text by `<code>` a
 Triple backticks are supported. Surround the block of text by them:
 
 	### This Is A Code Slide
-
+	
     ```
     for(i = 0; i < 10; i++){
         alert(i)
@@ -1022,7 +1025,7 @@ If both the graphviz package and the GraphViz application are installed you can 
 	digraph G{
 	edge [dir=forward]
 	node [shape=plaintext]
-
+	
 	0 [label="0 (None)"]
 	0 -> 5 [label="root" color = blue]
 	1 [label="1 (Hello)"]
@@ -1060,7 +1063,7 @@ Each line of the code fragment - to be displayed in a monospace font - is indent
 The HTML `<pre>` element is supported. Surround the block of text by `<pre>` and `</pre`:
 
 	### This Is A Code Slide
-
+	
     <pre>
     for(i = 0; i < 10; i++){
         alert(i)
@@ -1085,7 +1088,7 @@ The code to create this slide is:
     ### This Is A Funnel Slide
     <!-- md2pptx: contentSplit: 1 3 -->
     <!-- md2pptx: funnelColours: ACCENT 3, ACCENT 4, ACCENT 5 , ACCENT 6 -->
-
+    
     * Here is some text above the funnel diagram
       * The funnel parts are described by two-column CSV rows
         * Columns after the first two are ignored
@@ -1151,10 +1154,10 @@ Beginning with md2pptx 2.0, this restriction has been gradually relieved.
 You can code, for example, two blocks. Write them as you would for regular Markdown. Here is an example:
 
     ### Here Is A title
-
+    
     * Here is a bullet
       * Here is a sub-bullet
-
+    
     ![](my-graphic.png)
 
 The order in which, in this example, the bulleted list and the graphics blocks appear matters:
@@ -1187,7 +1190,7 @@ You can add notes to slides. In Powerpoint these appear below the main slide (an
 
 To add a slide note leave a blank line after the slide's contents. Then add paragraphs of text. Plain text paragraphs are separated by blank lines, as is standard in Markdown.
 
-You can use entity references, such as `&percnt;`.
+You can use entity references, such as `&percnt;`. 
 You can also use some other kinds of markup, such as hyperlinks and `<abbr>` elements.
 
 Using hyperlinks when viewing slide notes in the Powerpoint application is cumbersome - as there is no equivalent for slide notes of Slide Show Mode. To follow a hyperlink in slide notes:
@@ -1251,8 +1254,8 @@ To code a hyperlink to an **external** URL in a slide code something like:
 
 	[IBM Website](https://www.ibm.com)
 
-It will be rendered with the text "IBM Website" displayed: [IBM Website](http://www.ibm.com).
-This above works for **external** references.
+It will be rendered with the text "IBM Website" displayed: [IBM Website](http://www.ibm.com). 
+This above works for **external** references. 
 To create an internal slide reference you need to do two things:
 
 1. Tag the heading of the target slide with a heading reference (href).
@@ -1278,7 +1281,7 @@ You might prefer the indirect form to the (inline) reference form for a couple o
 Multimarkdown and md2pptx support the following way of identifying a heading reference (href):
 
     ### z15 Processor Architecture [z15-arch]
-
+    
     * 12 Cores Per PU Chip
         * Most of which are enabled
     * 4 PU Chips per drawer
@@ -1290,7 +1293,7 @@ An alternative method of specifying a target is like this:
 
     ### z15 Processor Architecture
     <a id="z15-arch"></a>
-
+    
     * 12 Cores Per PU Chip
         * Most of which are enabled
     * 4 PU Chips per drawer
@@ -1304,7 +1307,7 @@ This method is provided because it is the only reliable within-a-document hyperl
 You can refer to the slide in a hyperlink using the href. Here's an example:
 
     ### Attributes Of A High Performance System
-
+    
     * For how a high performance system is built see [here](#z15-arch)
 
 * The bullet links to the slide with href `z15-arch`.
@@ -1320,7 +1323,7 @@ If the source presentation contains macros you can invoke them using a special P
 You can use this form of URL in a text run:
 
     [Run The Macro](ppaction://macro?name=myMacro)
-
+    
 And you can use this form [from a graphic](#clickable-pictures):
 
     [![](button-picture1.png))](ppaction://macro?name=myMacro)
@@ -1409,7 +1412,7 @@ To specify *italics* surround the text with single asterisks - `*italics*`.
 
 If you actually want an asterisk code either `\*` or the asterisk surrounded by spaces. (An asterisk at the end of a line need only have a preceding space.) Alternatively you can code an HTML entity reference - `&lowast;`.
 
-If you actually want an octothorpe/hash/pound symbol (rendered "\#") code `\#`.
+If you actually want an octothorpe/hash/pound symbol (rendered "\#") code `\#`. 
 
 You can use bold and italics syntax to change the colour of highlighted text. See [here](#specifying-bold-and-italic-text-colour-with-boldcolour-and-italiccolour) for more.
 
@@ -1433,7 +1436,7 @@ Some other HTML-originated text effects work - as Markdown allows you to embed H
 
 You can set the background or foreground colour of a piece of text. To do this use the `<span>` HTML element:
 
-* You can use `<span class= "..." >` - which is probably more compact but less direct.
+* You can use `<span class= "..." >` - which is probably more compact but less direct. 
 * You can use `<span style= "..." >` - which is more direct but less compact.
 
 <a id="using-html-%3Cspan%3E-elements-with-class"></a>
@@ -1473,7 +1476,7 @@ If you want to be able to process the text using a normal Markdown processor you
 	    background-color: #FFFF00;
 	    font-weight: bold;
 	    font-style: italic;
-
+	    
 	}
 	</style>
 
@@ -2973,7 +2976,7 @@ You can adjust the font size for the Table Of Contents entries with `TOCFontSize
 
     tocFontSize: 10
 
-leads to the font size being 10 points.
+leads to the font size being 10 points. 
 
 For Chevron the default is 14pt. For Circle the default is 12pt.
 
@@ -2999,7 +3002,7 @@ Coding
 
     sectionArrows: yes
 
-enables this feature.
+enables this feature. 
 The default value is `no`.
 
 You can specify the background colour for the buttons with [`SectionArrowsColour`](#section-navigation-buttons-sectionarrowscolour).
@@ -3131,7 +3134,7 @@ Here is an example of adding vertical liness to the right of column 2:
 You can override the presentation [Added Table Line Attributes](#specifying-what-the-added-table-lines-look-like-with-addtablelinecolour-addtablelinecount-and-addtablelinewidth) on a table-by-table basis. Here are some examples:
 
     <!-- md2pptx: addtablelinecolour: 00FF00 -->
-
+    
 turns the added lines green.
 
     <!-- md2pptx: addtablelinewidth: 4 -->
@@ -3141,7 +3144,7 @@ makes the added lines 4 times wider than normal.
     <!-- md2pptx: addtablelinecount: 2 -->
 
 makes the added lines each appear as a pair of lines.
-
+    
 <a id="spancells-dynamic"></a>
 ##### `SpanCells`
 

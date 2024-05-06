@@ -11,6 +11,16 @@ or
 
   `md2pptx output.pptx < input.markdown`
 
+
+### Supported Python Releases
+
+As was previously mentioned, Python 3 is required.
+
+Specifically python-pptx
+
+* requires 3.8 or later - to use the "Walrus Operator"
+* has been tested with 3.12 and alphas of 3.13 - with some changes made to handle issues
+
 ### Installation
 
 Installation is straightforward:

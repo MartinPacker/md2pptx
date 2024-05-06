@@ -1442,7 +1442,7 @@ Of\ Names\ And\ Numbers.md: Of\ Names\ And\ Numbers.mdp
 <p>Here is a sample invocation:</p>
 <pre><code>md2pptx powerpoint-filename &lt; markdown-filename
 </code></pre>
-<p>An alternative is to have the Markdown be in-stream. md2pptx reads from stdin. You can, of course, use stdin in a pipeline. Indeed the developer uses this to pipe from another program.
+<p>An alternative is to have the Markdown be in-stream. md2pptx reads from stdin. You can, of course, use stdin in a pipeline. Indeed the developer uses this to pipe from another program. 
 Alternatively, you can specify both an input file and an output file:</p>
 <pre><code>md2pptx markdown-filename powerpoint-filename
 </code></pre>
@@ -1483,6 +1483,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">4.4</td>
+<td align="right">6&nbsp;May&nbsp;2024</td>
+<td align="left">Support for Python 3.12 and 3.13 (tested with alphas 5 &amp; 6). <code>imghdr</code> package is no longer used to guess graphics file types.</td>
+</tr>
 <tr>
 <td align="left">4.3.3</td>
 <td align="right">20&nbsp;January&nbsp;2024</td>
@@ -2113,7 +2118,7 @@ sectionTitleSize: 30
 <p>If CairoSVG is not installed and md2pptx encounters an SVG graphic reference it will write a message reminding you of the need for CairoSVG. md2pptx will then immediately terminate.</p>
 <p>Encapsulated Postscript (EPS) format is only supported if you have installed the <a href="https://python-pillow.org/">Pillow Python package</a> and <a href="https://www.ghostscript.com/">Ghostscript</a> - as PowerPoint doesn&rsquo;t support it (and nor does python-pptx). EPS files - whether from the web or a local file - are converted to a temporary PNG file first, before copying into the PowerPoint slide deck. Pillow requires Python to be at least at the 3.7 level.</p>
 <p>You can optionally have md2pptx export the temporary PNG files. See <a href="#exporting-converted-svg-and-png-files-exportGraphics">Exporting Converted SVG And PNG Files - <code>exportGraphics</code></a>. The file name is the same as the SVG or EPS file&rsquo;s name, except the extension is PNG.</p>
-<p><strong>Notes:</strong></p>
+<p><strong>Notes:</strong> </p>
 <ol>
 <li>You can specify which directory temporary files, such as temporary graphics, are stored in - using <a href="#specifying-where-temporary-files-are-stored-with-tempdir"><code>tempDir</code></a>.</li>
 <li>
@@ -2124,6 +2129,9 @@ sectionTitleSize: 30
 <li>SVG - <code>image/svg+xml</code> or <code>image/svg</code> (though the latter is unofficial)</li>
 <li>EPS - <code>application/postscript</code></li>
 </ul>
+</li>
+<li>
+<p>For graphics from files on disk the file extension is used to guess the type.</p>
 </li>
 </ol>
 <h4 id="video-and-audio-slides">Video And Audio Slides<a class="headerlink" href="#video-and-audio-slides" title="Permanent link"></a></h4>
@@ -2333,7 +2341,7 @@ sectionTitleSize: 30
 <pre><code>&lt;audio src="audiotest.mp3" poster="Battery W2M.png"&gt;&lt;/audio&gt;
 </code></pre>
 <p>In this case the <code>poster</code> attribute is coded. This enables a graphic to be shown when the audio player isn&rsquo;t activated. You can also code the <code>poster</code> attribute for a video.</p>
-<p><strong>Notes:</strong></p>
+<p><strong>Notes:</strong> </p>
 <ol>
 <li>You must code a non-zero value for <a href="#card-graphic-size-cardgraphicsize"><code>CardGraphicSize</code></a> for graphics or videos to be shown. The default is 0.</li>
 <li>If a card doesn&rsquo;t have a graphic or a video the bulleted list contents can fill the whole of the card (except for any title inside the card).</li>
@@ -2514,7 +2522,7 @@ for(i = 0; i &lt; 10; i++){
 <p><a id="adding-slide-notes"></a></p>
 <p>You can add notes to slides. In Powerpoint these appear below the main slide (and aren&rsquo;t shown when projecting a slide presentation).</p>
 <p>To add a slide note leave a blank line after the slide&rsquo;s contents. Then add paragraphs of text. Plain text paragraphs are separated by blank lines, as is standard in Markdown.</p>
-<p>You can use entity references, such as <code>&amp;percnt;</code>.
+<p>You can use entity references, such as <code>&amp;percnt;</code>. 
 You can also use some other kinds of markup, such as hyperlinks and <code>&lt;abbr&gt;</code> elements.</p>
 <p>Using hyperlinks when viewing slide notes in the Powerpoint application is cumbersome - as there is no equivalent for slide notes of Slide Show Mode. To follow a hyperlink in slide notes:</p>
 <ol>
@@ -2564,8 +2572,8 @@ You can also use some other kinds of markup, such as hyperlinks and <code>&lt;ab
 <p>To code a hyperlink to an <strong>external</strong> URL in a slide code something like:</p>
 <pre><code>[IBM Website](https://www.ibm.com)
 </code></pre>
-<p>It will be rendered with the text &ldquo;IBM Website&rdquo; displayed: <a href="http://www.ibm.com">IBM Website</a>.
-This above works for <strong>external</strong> references.
+<p>It will be rendered with the text &ldquo;IBM Website&rdquo; displayed: <a href="http://www.ibm.com">IBM Website</a>. 
+This above works for <strong>external</strong> references. 
 To create an internal slide reference you need to do two things:</p>
 <ol>
 <li>Tag the heading of the target slide with a heading reference (href).</li>
@@ -2685,7 +2693,7 @@ End Sub
 <p>To specify <strong>bold</strong> surround the text with pairs of asterisks - <code>**bold**</code>.</p>
 <p>To specify <em>italics</em> surround the text with single asterisks - <code>*italics*</code>.</p>
 <p>If you actually want an asterisk code either <code>\*</code> or the asterisk surrounded by spaces. (An asterisk at the end of a line need only have a preceding space.) Alternatively you can code an HTML entity reference - <code>&amp;lowast;</code>.</p>
-<p>If you actually want an octothorpe/hash/pound symbol (rendered &ldquo;#&ldquo;) code <code>\#</code>.</p>
+<p>If you actually want an octothorpe/hash/pound symbol (rendered &ldquo;#&ldquo;) code <code>\#</code>. </p>
 <p>You can use bold and italics syntax to change the colour of highlighted text. See <a href="#specifying-bold-and-italic-text-colour-with-boldcolour-and-italiccolour">here</a> for more.</p>
 <p>To specify a <code>monospace font</code> use the back tick character - <code>`</code> - at the start and end of the text run.</p>
 <p>To force a line break code <code>&lt;br/&gt;</code>. This, being HTML, is legitimate in Markdown and will be treated as a line break. I don&rsquo;t want one here so I won&rsquo;t code one here.</p>
@@ -2731,7 +2739,7 @@ End Sub
 <h3 id="using-html-span-elements-to-specify-text-colours-and-underlining">Using HTML <code>&lt;span&gt;</code> Elements To Specify Text Colours And Underlining<a class="headerlink" href="#using-html-span-elements-to-specify-text-colours-and-underlining" title="Permanent link"></a></h3>
 <p>You can set the background or foreground colour of a piece of text. To do this use the <code>&lt;span&gt;</code> HTML element:</p>
 <ul>
-<li>You can use <code>&lt;span class= "..." &gt;</code> - which is probably more compact but less direct.</li>
+<li>You can use <code>&lt;span class= "..." &gt;</code> - which is probably more compact but less direct. </li>
 <li>You can use <code>&lt;span style= "..." &gt;</code> - which is more direct but less compact.</li>
 </ul>
 <p><a id="using-html-%3Cspan%3E-elements-with-class"></a></p>
@@ -4008,7 +4016,7 @@ This slide can be <a href="#chevron-style-table-of-contents">&ldquo;Chevron Styl
 <p>You can adjust the font size for the Table Of Contents entries with <code>TOCFontSize</code>. Coding</p>
 <pre><code>tocFontSize: 10
 </code></pre>
-<p>leads to the font size being 10 points.</p>
+<p>leads to the font size being 10 points. </p>
 <p>For Chevron the default is 14pt. For Circle the default is 12pt.</p>
 <h5 id="section-navigation-buttons-sectionarrows">Section Navigation Buttons - <code>SectionArrows</code><a class="headerlink" href="#section-navigation-buttons-sectionarrows" title="Permanent link"></a></h5>
 <p><a id="section-navigation-buttons-sectionarrows"></a></p>
@@ -4027,7 +4035,7 @@ This slide can be <a href="#chevron-style-table-of-contents">&ldquo;Chevron Styl
 <p>Coding</p>
 <pre><code>sectionArrows: yes
 </code></pre>
-<p>enables this feature.
+<p>enables this feature. 
 The default value is <code>no</code>.</p>
 <p>You can specify the background colour for the buttons with <a href="#section-navigation-buttons-sectionarrowscolour"><code>SectionArrowsColour</code></a>.</p>
 <p><a id="section-navigation-buttons-colour-sectionarrowscolour"></a></p>

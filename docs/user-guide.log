@@ -1,12 +1,12 @@
 
-mdpre Markdown Preprocessor v0.6.7 (17 December, 2023)
-======================================================
+mdpre Markdown Preprocessor v0.6.8 (8 March, 2024)
+==================================================
 - opened <stdout> for writing
-Def mdpre_date = 17 December, 2023
-Def mdpre_level = 0.6.7
+Def mdpre_date = 8 March, 2024
+Def mdpre_level = 0.6.8
 Def userid = martinpacker
-Def time = 16&colon;52
-Def date = 20 January&comma; 2024
+Def time = 17&colon;11
+Def date = 6 May&comma; 2024
 Def TOC = Table Of Contents
 Def md = Markdown
 Def pp = Powerpoint
@@ -74,7 +74,7 @@ CSV Stop
 ..... ..... .....   Using HTML `<span>` Elements with `class`
 ..... ..... .....   Using HTML `<span>` Elements with `style`
 ..... .....  HTML Entity References
-Column Alignment - spec 'l c l c l c l c'
+Column Alignment - spec 'l c l c l c l c '
 CSV Start
 CSV Stop
 ..... .....  Numeric Character References
@@ -245,7 +245,7 @@ CSV Stop
 ..... ..... .....   Blank Slide - `BlankLayout`
 ..... ..... .....  Content Slide - `ContentSlideLayout`
 .....  Deviations From Standard Markdown
-------------------------------------------------------
+--------------------------------------------------
 - Processing completed.
-------------------------------------------------------
+--------------------------------------------------
 
