@@ -11,6 +11,7 @@ Reads from stdin
 import re
 import sys
 import os
+import csv
 import time
 import collections
 import collections.abc
@@ -80,8 +81,8 @@ except:
     have_graphviz = False
 
 
-md2pptx_level = "4.4"
-md2pptx_date = "6 May, 2024"
+md2pptx_level = "4.4+"
+md2pptx_date = "12 May, 2024"
 
 namespaceURL = {
     "mc":  "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -2280,6 +2281,20 @@ def handleFunnel(slide, renderingRectangle, codeLines, codeType):
         funnelWidest,
     )
 
+# Helper function for run-python
+def readCSV(filename):
+    my_csv = []
+    with open(filename, 'r') as csvfile:
+        chart_reader = csv.reader(csvfile, quoting = csv.QUOTE_NONNUMERIC)
+        for row in chart_reader:
+            my_csv.append(row)
+
+    return my_csv
+
+# Handler function for immediately executing python in a code block
+def handleRunPython(slide, renderingRectangle, codeLines, codeType):
+    concatenatedCodeLines = "\n".join(codeLines)
+    exec(concatenatedCodeLines)
 
 def createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber):
     monoFont = processingOptions.getCurrentOption("monoFont")
@@ -2320,6 +2335,12 @@ def createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber):
             elif codeType.startswith("funnel"):
                 # Built-in Funnel Diagram
                 handleFunnel(slide, renderingRectangle, codeLines[1:-1], codeType)
+
+                return slide
+
+            elif codeType == "run-python":
+                # Built-in Funnel Diagram
+                handleRunPython(slide, renderingRectangle, codeLines[1:-1], codeType)
 
                 return slide
 
@@ -6446,7 +6467,7 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
                     # Invalid dynamic metadata specification
                     print(f"Invalid dynamic metadata key: '{metadataKey}' in '{line}'")
 
-    elif line.startswith("#"):
+    elif (line.startswith("#")) & (inCode == False):
         if line[:cardLevel] == "#" * cardLevel:
             # Card on an existing slide
             inCard = True
