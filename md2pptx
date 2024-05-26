@@ -40,6 +40,7 @@ import socket
 from pptx.oxml import parse_xml
 import uuid
 import funnel
+import runPython
 from card import Card
 from rectangle import Rectangle
 from colour import *
@@ -82,7 +83,7 @@ except:
 
 
 md2pptx_level = "4.4+"
-md2pptx_date = "12 May, 2024"
+md2pptx_date = "26 May, 2024"
 
 namespaceURL = {
     "mc":  "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -2281,20 +2282,11 @@ def handleFunnel(slide, renderingRectangle, codeLines, codeType):
         funnelWidest,
     )
 
-# Helper function for run-python
-def readCSV(filename):
-    my_csv = []
-    with open(filename, 'r') as csvfile:
-        chart_reader = csv.reader(csvfile, quoting = csv.QUOTE_NONNUMERIC)
-        for row in chart_reader:
-            my_csv.append(row)
-
-    return my_csv
-
 # Handler function for immediately executing python in a code block
 def handleRunPython(slide, renderingRectangle, codeLines, codeType):
-    concatenatedCodeLines = "\n".join(codeLines)
-    exec(concatenatedCodeLines)
+    r = runPython.RunPython()
+
+    r.run(slide, renderingRectangle, codeLines, codeType)
 
 def createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber):
     monoFont = processingOptions.getCurrentOption("monoFont")
