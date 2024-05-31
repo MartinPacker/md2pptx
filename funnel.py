@@ -2,9 +2,8 @@
 funnel
 """
 
-myVersion = "0.1"
+version = "0.1"
 
-__version__ = myVersion
 
 import csv
 import io

@@ -24,19 +24,12 @@ chart_data.categories = chart_csv[0][1:]
 for rowNumber, row in enumerate(chart_csv[1:]):
   chart_data.add_series(row[0],row[1:])
 
-chart = slide.shapes.add_chart(
-    XL_CHART_TYPE.COLUMN_CLUSTERED,
-    renderingRectangle.left,
-    renderingRectangle.top,
-    renderingRectangle.width, 
-    renderingRectangle.height,
-    chart_data
-).chart
+chart = RunPython.makeChart(slide,
+  XL_CHART_TYPE.COLUMN_CLUSTERED,
+  renderingRectangle,
+  chart_data,
+  "Hello World",
+  XL_LEGEND_POSITION.RIGHT)
 
-chart.has_legend = True
-chart.legend.position = XL_LEGEND_POSITION.BOTTOM
-chart.legend.include_in_layout = False
 
-chart.has_title = True
-chart.chart_title.text_frame.text = "Hello World"
 ```

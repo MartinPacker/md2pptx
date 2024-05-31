@@ -83,7 +83,7 @@ except:
 
 
 md2pptx_level = "4.4+"
-md2pptx_date = "26 May, 2024"
+md2pptx_date = "31 May, 2024"
 
 namespaceURL = {
     "mc":  "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -4870,26 +4870,29 @@ for i in range(len(banner)):
 print("\n" + banner + "\n" + bannerUnderline)
 print("\nOpen source project: https://github.com/MartinPacker/md2pptx")
 
-print("\nPython: " + platform.python_version())
+print("\nExternal Dependencies:")
+print("\n  Python: " + platform.python_version())
 
-print("python-pptx: " + pptx_version)
+print("  python-pptx: " + pptx_version)
 
 if have_pillow:
-    print("Pillow: " + PIL.__version__)
+    print("  Pillow: " + PIL.__version__)
 else:
-    print("Pillow: Not Installed")
+    print("  Pillow: Not Installed")
 
 if have_cairosvg:
-    print("CairoSVG: " + cairosvg.__version__)
+    print("  CairoSVG: " + cairosvg.__version__)
 else:
-    print("CairoSVG: Not Installed")
+    print("  CairoSVG: Not Installed")
 
 if have_graphviz:
-    print("graphviz: " + graphviz.__version__)
+    print("  graphviz: " + graphviz.__version__)
 else:
-    print("graphviz: Not Installed")
+    print("  graphviz: Not Installed")
 
-print(f"funnel: {funnel.__version__}")
+print("\nInternal Dependencies:")
+print(f"\n  funnel: {funnel.version}")
+print(f"  runPython: {runPython.version}")
 
 input_file = []
 
@@ -5025,7 +5028,7 @@ for line in input_file:
         continue
 
     elif line.startswith("```"):
-        inCode = ~inCode
+        inCode = not inCode
         # afterMetadataAndHTML.append(line)
 
     elif line.lstrip()[:1] == "#":
