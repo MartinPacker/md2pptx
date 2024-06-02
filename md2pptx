@@ -83,7 +83,7 @@ except:
 
 
 md2pptx_level = "4.4+"
-md2pptx_date = "31 May, 2024"
+md2pptx_date = "2 June, 2024"
 
 namespaceURL = {
     "mc":  "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -625,7 +625,7 @@ def applyTableLineStyling(
 
 def handleSpanClass(run, className):
     if className in bgcolors:
-        run = set_highlight(run, bgcolors[className])
+        run = setHighlight(run, bgcolors[className])
 
     if className in fgcolors:
         font = run.font
@@ -665,7 +665,7 @@ def handleSpanStyle(run, styleText):
         elif styleElementName == "background-color":
             check, RGBstring = parseRGB(styleElementValue)
             if check:
-                set_highlight(run, RGBstring)
+                setHighlight(run, RGBstring)
             else:
                 print(f"Invalid {styleElementName} RGB value {styleElementValue}")
 
@@ -874,11 +874,11 @@ def set_superscript(font):
         font._element.set("baseline", "30000")
 
 
-def set_strikethrough(font):
+def setStrikethrough(font):
     font._element.set("strike", "sngStrike")
 
 
-def set_highlight(run, color):
+def setHighlight(run, color):
     # get run properties
     rPr = run._r.get_or_add_rPr()
 
@@ -1815,7 +1815,7 @@ def addFormattedText(p, text):
                 font.underline = True
             elif fragType == "Del":
                 font = run.font
-                set_strikethrough(font)
+                setStrikethrough(font)
             elif fragType == "Sub":
                 font = run.font
                 set_subscript(font)
