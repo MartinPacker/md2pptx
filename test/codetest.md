@@ -10,8 +10,6 @@ contentsplitdirn: h
   * Here is a sub-bullet
 
 ``` run-python
-from pptx.enum.chart import XL_CHART_TYPE
-from pptx.enum.chart import XL_LEGEND_POSITION
 
 # Read chart data from CSV file
 chart_csv = RunPython.readCSV("chartdata.csv")
@@ -24,7 +22,7 @@ chart1 = RunPython.makeChart(slide,
   renderingRectangle,
   chart_data,
   "Hello World",
-  XL_LEGEND_POSITION.RIGHT)
+  XL_LEGEND_POSITION.BOTTOM)
 
 
 ```

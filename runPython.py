@@ -8,6 +8,8 @@ import csv
 from pptx.chart.data import CategoryChartData
 from pptx.oxml.xmlchemy import OxmlElement, serialize_for_reading
 from pptx.dml.color import RGBColor
+from pptx.enum.chart import XL_CHART_TYPE
+from pptx.enum.chart import XL_LEGEND_POSITION
 
 class RunPython:
     def __init__(
