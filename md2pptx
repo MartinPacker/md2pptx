@@ -82,8 +82,8 @@ except:
     have_graphviz = False
 
 
-md2pptx_level = "4.4+"
-md2pptx_date = "9 June, 2024"
+md2pptx_level = "4.5"
+md2pptx_date = "16 June, 2024"
 
 namespaceURL = {
     "mc":  "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -632,6 +632,7 @@ def handleSpanClass(run, className):
         font.color.rgb = RGBColor.from_string(fgcolors[className])
 
     if className in emphases:
+        font = run.font
         if " bold " in " " + emphases[className] + " ":
             font.bold = True
         else:
@@ -644,6 +645,10 @@ def handleSpanClass(run, className):
             font.underline = True
         else:
             font.underline = False
+
+    if className in fontsizes:
+        font = run.font
+        font.size = Pt(float(fontsizes[className]))
 
 
 def handleSpanStyle(run, styleText):
@@ -680,6 +685,9 @@ def handleSpanStyle(run, styleText):
         elif styleElementName == "font-style":
             if styleElementValue == "italic":
                 run.font.italic = True
+
+        elif styleElementName == "font-size":
+            run.font.size = Pt(float(styleElementValue[:-2]))
 
 
 def reportSlideTitle(slideNumber, indent, titleText):
@@ -1294,11 +1302,12 @@ def parseText(text):
     # Replace any ~~} with char 247
     text2 = text2.replace("~~}", chr(247))
 
-    # Replace any {== with char 248
-    text2 = text2.replace("{==", chr(248))
+    # Replace any {== with char 234 (248 is taken by a
+    # Danish character)
+    text2 = text2.replace("{==", chr(234))
 
     # Replace any ==} with char 248
-    text2 = text2.replace("==}", chr(248))
+    text2 = text2.replace("==}", chr(234))
 
     # Replace any {>> with char 249
     text2 = text2.replace("{>>", chr(249))
@@ -1406,7 +1415,7 @@ def parseText(text):
                 fragment = ""
                 state = "N"
 
-        elif ord(c) == 248:
+        elif ord(c) == 234:
             # Entering or leaving CriticMarkup highlight
             if state == "N":
                 # Going to CriticMarkup highlight
@@ -1630,6 +1639,7 @@ def parseText(text):
                     (className in bgcolors)
                     | (className in fgcolors)
                     | (className in emphases)
+                    | (className in fontsizes)
                 ):
                     textArray.append(["SpanClass", [className, spanText]])
 
@@ -5293,6 +5303,9 @@ fgcolors = {}
 # Emphases class correspondence
 emphases = {}
 
+# Font size class correspondence
+fontsizes = {} 
+
 ######################################################################################
 #                                                                                    #
 #  Prime for footnotes                                                               #
@@ -5693,6 +5706,13 @@ for line in metadata_lines:
     elif name.startswith("style.emphasis."):
         spanClass = name[15:]
         emphases[spanClass] = value
+
+    elif name.startswith("style.fontsize."):
+        spanClass = name[15:]
+        
+        # Assumed "px" on the end
+        value2 = value[:-2]
+        fontsizes[spanClass] = value2
 
     elif name in ["codeforeground", "codebackground"]:
         processingOptions.setOptionValues(name, value)

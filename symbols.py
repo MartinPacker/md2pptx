@@ -76,6 +76,8 @@ def resolveSymbols(text):
         ("&apos;", "'"),
         ("&lsquo;", u"\u2018"),
         ("&rsquo;", u"\u2019"),
+        ("&Oslash;",u"\u00D8"),
+        ("&oslash;",u"\u00F8"),
     ]
     
     for term, replacement in replacementRules:

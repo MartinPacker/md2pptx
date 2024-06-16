@@ -5,8 +5,8 @@ mdpre Markdown Preprocessor v0.6.8 (8 March, 2024)
 Def mdpre_date = 8 March, 2024
 Def mdpre_level = 0.6.8
 Def userid = martinpacker
-Def time = 17&colon;11
-Def date = 6 May&comma; 2024
+Def time = 16&colon;10
+Def date = 16 June&comma; 2024
 Def TOC = Table Of Contents
 Def md = Markdown
 Def pp = Powerpoint
@@ -70,7 +70,7 @@ CSV Stop
 .....  Special Text Formatting
 CSV Start
 CSV Stop
-..... .....  Using HTML `<span>` Elements To Specify Text Colours And Underlining
+..... .....  Using HTML `<span>` Elements To Specify Text Effects
 ..... ..... .....   Using HTML `<span>` Elements with `class`
 ..... ..... .....   Using HTML `<span>` Elements with `style`
 ..... .....  HTML Entity References
@@ -105,6 +105,7 @@ CSV Stop
 ..... ..... .....  Associating A Class Name with A Background Colour With `style.bgcolor`
 ..... ..... .....  Associating A Class Name with A Foreground Colour With `style.fgcolor`
 ..... ..... .....  Associating A Class Name With Text Emphasis With `style.emphasis`
+..... ..... .....  Associating A Class Name With Font Size with `style.fontsize`
 ..... ..... .....  Template Presentation - `template`
 ..... ..... .....  Specifying An Abstract Slide With `abstractTitle`
 ..... ..... .....  Specifying Text Size With `baseTextSize` And `baseTextDecrement`

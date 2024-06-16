@@ -61,7 +61,7 @@ As you can see in the [change log](#change-log), md2pptx is frequently updated -
 		* [Sample Macro To Remove The First Slide And Save As A .pptx File](#sample-macro-to-remove-the-first-slide-and-save-as-a-pptx-file)
 * [HTML Comments](#html-comments)
 * [Special Text Formatting](#special-text-formatting)
-	* [Using HTML `<span>` Elements To Specify Text Colours And Underlining](#using-html-<span>-elements-to-specify-text-colours-and-underlining)
+	* [Using HTML `<span>` Elements To Specify Text Effects](#using-html-<span>-elements-to-specify-text-effects)
 		* [Using HTML `<span>` Elements with `class`](#using-html-<span>-elements-with-class)
 		* [Using HTML `<span>` Elements with `style`](#using-html-<span>-elements-with-style)
 	* [HTML Entity References](#html-entity-references)
@@ -93,6 +93,7 @@ As you can see in the [change log](#change-log), md2pptx is frequently updated -
 		* [Associating A Class Name with A Background Colour With `style.bgcolor`](#associating-a-class-name-with-a-background-colour-with-stylebgcolor)
 		* [Associating A Class Name with A Foreground Colour With `style.fgcolor`](#associating-a-class-name-with-a-foreground-colour-with-stylefgcolor)
 		* [Associating A Class Name With Text Emphasis With `style.emphasis`](#associating-a-class-name-with-text-emphasis-with-styleemphasis)
+		* [Associating A Class Name With Font Size with `style.fontsize`](#associating-a-class-name-with-font-size-with-stylefontsize)
 		* [Template Presentation - `template`](#template-presentation-template)
 		* [Specifying An Abstract Slide With `abstractTitle`](#specifying-an-abstract-slide-with-abstracttitle)
 		* [Specifying Text Size With `baseTextSize` And `baseTextDecrement`](#specifying-text-size-with-basetextsize-and-basetextdecrement)
@@ -348,6 +349,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|4.5|16&nbsp;June&nbsp;2024|Support for `fontsize` in [styling](#using-html-span-elements-to-specify-text-effects).|
 |4.4|6&nbsp;May&nbsp;2024|Support for Python 3.12 and 3.13 (tested with alphas 5 &amp; 6). `imghdr` package is no longer used to guess graphics file types.|
 |4.3.3|20&nbsp;January&nbsp;2024|Cards can now have audio where a graphic might be. Also media can have a "poster" image for when the media isn't playing. See [Card Graphics&comma; Video&comma; &amp; Audio](#card-graphics-video-audio).|
 |4.3.2|17&nbsp;January&nbsp;2024|Cards can now have a video where a graphic might be. See [Card Graphics&comma; Video&comma; &amp; Audio](#card-graphics-video-audio).|
@@ -1432,9 +1434,16 @@ Some other HTML-originated text effects work - as Markdown allows you to embed H
 **Note:** Superscript works by raising the text baseline. Subscript works by lowering it. This is how Powerpoint itself does it.
 
 <a id="using-html-%3Cspan%3E-elements-to-specify-text-colours-and-underlining"></a>
-### Using HTML `<span>` Elements To Specify Text Colours And Underlining
+### Using HTML `<span>` Elements To Specify Text Effects
 
-You can set the background or foreground colour of a piece of text. To do this use the `<span>` HTML element:
+You can set a number of attributes for a piece of text&colon;
+
+* Foreground colour
+* Background colour
+* Font effects such as bold
+* Font size
+
+To do this use the `<span>` HTML element:
 
 * You can use `<span class= "..." >` - which is probably more compact but less direct. 
 * You can use `<span style= "..." >` - which is more direct but less compact.
@@ -1451,6 +1460,7 @@ In this example the `span` element specifies a `class` attribute. The class name
 * `style.bgcolor.` - described in <a href="#associating-a-class-name-with-a-background-colour-with-stylebgcolor">Associating A Class Name With A Background Colour With <code>style.bgcolor</code></a>.
 * `style.fgcolor` - described in <a href="#associating-a-class-name-with-a-foreground-colour-with-stylefgcolor">Associating A Class Name With A Foreground Colour With <code>style.fgcolor</code></a>.
 * `style.emphasis` - described in <a href="#associating-a-class-name-with-text-emphasis-with-styleemphasis">Associating A Class Name With Text Emphasis With <code>style.emphasis</code></a>.
+* `style.fontsize` - described in <a href="#associating-a-class-name-with-font-size-with-style-fontsize">Associating A Class Name With Font Size With <code>style.fontsize</code></a>. 
 
 If you coded metadata
 
@@ -1476,7 +1486,7 @@ If you want to be able to process the text using a normal Markdown processor you
 	    background-color: #FFFF00;
 	    font-weight: bold;
 	    font-style: italic;
-	    
+	    font-size: 24px;
 	}
 	</style>
 
@@ -1496,10 +1506,11 @@ You can specify a limited number of types of styling:
 * Underlining with `text-decoration: underline`
 * Bold with `font-weight: bold`
 * Italic with `font-style: italic`
+* Font size with `font-size`
 
 Here is an example:
 
-    Here's <span style="font-weight: bold;font-style: italic;color: #0000FF;">blue bold italic</span> text.
+    Here's <span style="font-weight: bold;font-style: italic;color: #0000FF;font-size: 16.5px;">blue bold italic</span> text.
 
 Notice the `color` specification is in Hexadecimal RGB (Red Green Blue) format. CSS colour names are not supported.
 
@@ -1517,8 +1528,8 @@ md2pptx supports a few [HTML entity references](https://en.wikipedia.org/wiki/Li
 |`&asymp;`|&asymp;|`&harr;`|&harr;|`&ouml;`|&ouml;|`&quot;`|&quot;|
 |`&Delta;`|&Delta;|`&varr;`|&varr;|`&Ouml;`|&Ouml;|`&ldquo;`|&ldquo;|
 |`&delta;`|&delta;|`&nearr;`|&nearr;|`&szlig;`|&szlig;|`&rdquo;`|&rdquo;|
-|`&sim;`|&sim;|`&nwarr;`|&nwarr;|`&euro;`|&euro;|
-|`&lowast;`|&lowast;|`&searr;`|&searr;|`&hellip;`|&hellip;|
+|`&sim;`|&sim;|`&nwarr;`|&nwarr;|`&euro;`|&euro;|`&Oslash;`|&Oslash;|
+|`&lowast;`|&lowast;|`&searr;`|&searr;|`&hellip;`|&hellip;|`&oslash;`|&oslash;|
 |`&semi;`|&semi;|`&swarr;`|&swarr;|`&percnt;`|&percnt;|
 |`&colon;`|&colon;|`&lsqb;`|&lsqb;|`&divide;`|&divide;|
 |`&amp;`|&amp;|`&rsqb;`|&rsqb;|`&forall;`|&forall;|
@@ -1876,7 +1887,7 @@ The default is `yes`.
 #### Associating A Class Name with A Background Colour With `style.bgcolor`
 <a id="associating-a-class-name-with-a-background-color-with-style-bgcolor"></a>
 
-You can use HTML `<span>` elements to set the background colour, as described in <a href="#using-html-ltstylegt-elements-to-specify-text-colours-and-underlining">Using HTML &lt;style&gt; Elements To Specify Text Colours And Underlining</a>.
+You can use HTML `<span>` elements to set the background colour, as described in <a href="#using-html-span-elements-to-specify-text-effects">Using HTML &lt;style&gt; Elements To Specify Text Effects</a>.
 
 Here is an example:
 
@@ -1893,7 +1904,7 @@ which is in fact yellow.
 #### Associating A Class Name with A Foreground Colour With `style.fgcolor`
 <a id="associating-a-class-name-with-a-foreground-color-with-style-fgcolor"></a>
 
-You can use HTML `<span>` elements to set the foreground colour, as described in <a href="#using-html-ltstylegt-elements-to-specify-text-colours-and-underlining">Using HTML &lt;style&gt; Elements To Specify Text Colours And Underlining</a>.
+You can use HTML `<span>` elements to set the foreground colour, as described in <a href="#using-html-span-elements-to-specify-text-effects">Using HTML &lt;style&gt; Elements To Specify Text Effects</a>.
 
 Here is an example:
 
@@ -1910,7 +1921,7 @@ which is in fact red.
 #### Associating A Class Name With Text Emphasis With `style.emphasis`
 <a id="associating-a-class-name-with-text-emphasis-with-style-emphasis"></a>
 
-You can use HTML `<span>` elements to bold text, make it italic, or underline it - as described in <a href="#using-html-ltstylegt-elements-to-specify-text-colours-and-underlining">Using HTML &lt;style&gt; Elements To Specify Text Colours And Underlining</a>.
+You can use HTML `<span>` elements to bold text, make it italic, or underline it - as described in <a href="#using-html-span-elements-to-specify-text-effects">Using HTML &lt;style&gt; Elements To Specify Text Effects</a>.
 
 Here is an example:
 
@@ -1921,6 +1932,19 @@ In this example the class "important" is associated with bolding the text and un
 You can also use `italic`.
 
 As the example shows, separate the emphasis attributes with a space.
+
+#### Associating A Class Name With Font Size with `style.fontsize`
+<a id="associating-a-class-name-with-font-size-with-style-fontsize"></a>
+
+You can use HTML `<span>` elements to specify the font size for a piece of text - as described in <a href="#using-html-span-elements-to-specify-text-effects">Using HTML &lt;style&gt; Elements To Specify Text Effects</a>.
+
+Here is an example:
+
+    style.fontsize.christopher: 40px
+
+In this example the class "christopher" is associated with setting the text's font size to 40 pixels.
+
+**Note:** You must specify font size in pixels, with "px" directly after the numeric part - which can be integer or floating point.
 
 #### Template Presentation - `template`
 <a id="template-presentation-template"></a>

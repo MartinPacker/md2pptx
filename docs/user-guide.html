@@ -1164,7 +1164,7 @@ body .markdown-body
 </li>
 <li><a href="#html-comments">HTML Comments</a></li>
 <li><a href="#special-text-formatting">Special Text Formatting</a><ul>
-<li><a href="#using-html-&lt;span&gt;-elements-to-specify-text-colours-and-underlining">Using HTML <code>&lt;span&gt;</code> Elements To Specify Text Colours And Underlining</a><ul>
+<li><a href="#using-html-&lt;span&gt;-elements-to-specify-text-effects">Using HTML <code>&lt;span&gt;</code> Elements To Specify Text Effects</a><ul>
 <li><a href="#using-html-&lt;span&gt;-elements-with-class">Using HTML <code>&lt;span&gt;</code> Elements with <code>class</code></a></li>
 <li><a href="#using-html-&lt;span&gt;-elements-with-style">Using HTML <code>&lt;span&gt;</code> Elements with <code>style</code></a></li>
 </ul>
@@ -1208,6 +1208,7 @@ body .markdown-body
 <li><a href="#associating-a-class-name-with-a-background-colour-with-stylebgcolor">Associating A Class Name with A Background Colour With <code>style.bgcolor</code></a></li>
 <li><a href="#associating-a-class-name-with-a-foreground-colour-with-stylefgcolor">Associating A Class Name with A Foreground Colour With <code>style.fgcolor</code></a></li>
 <li><a href="#associating-a-class-name-with-text-emphasis-with-styleemphasis">Associating A Class Name With Text Emphasis With <code>style.emphasis</code></a></li>
+<li><a href="#associating-a-class-name-with-font-size-with-stylefontsize">Associating A Class Name With Font Size with <code>style.fontsize</code></a></li>
 <li><a href="#template-presentation-template">Template Presentation - <code>template</code></a></li>
 <li><a href="#specifying-an-abstract-slide-with-abstracttitle">Specifying An Abstract Slide With <code>abstractTitle</code></a></li>
 <li><a href="#specifying-text-size-with-basetextsize-and-basetextdecrement">Specifying Text Size With <code>baseTextSize</code> And <code>baseTextDecrement</code></a></li>
@@ -1483,6 +1484,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">4.5</td>
+<td align="right">16&nbsp;June&nbsp;2024</td>
+<td align="left">Support for <code>fontsize</code> in <a href="#using-html-span-elements-to-specify-text-effects">styling</a>.</td>
+</tr>
 <tr>
 <td align="left">4.4</td>
 <td align="right">6&nbsp;May&nbsp;2024</td>
@@ -2736,8 +2742,15 @@ End Sub
 </table>
 <p><strong>Note:</strong> Superscript works by raising the text baseline. Subscript works by lowering it. This is how Powerpoint itself does it.</p>
 <p><a id="using-html-%3Cspan%3E-elements-to-specify-text-colours-and-underlining"></a></p>
-<h3 id="using-html-span-elements-to-specify-text-colours-and-underlining">Using HTML <code>&lt;span&gt;</code> Elements To Specify Text Colours And Underlining<a class="headerlink" href="#using-html-span-elements-to-specify-text-colours-and-underlining" title="Permanent link"></a></h3>
-<p>You can set the background or foreground colour of a piece of text. To do this use the <code>&lt;span&gt;</code> HTML element:</p>
+<h3 id="using-html-span-elements-to-specify-text-effects">Using HTML <code>&lt;span&gt;</code> Elements To Specify Text Effects<a class="headerlink" href="#using-html-span-elements-to-specify-text-effects" title="Permanent link"></a></h3>
+<p>You can set a number of attributes for a piece of text&colon;</p>
+<ul>
+<li>Foreground colour</li>
+<li>Background colour</li>
+<li>Font effects such as bold</li>
+<li>Font size</li>
+</ul>
+<p>To do this use the <code>&lt;span&gt;</code> HTML element:</p>
 <ul>
 <li>You can use <code>&lt;span class= "..." &gt;</code> - which is probably more compact but less direct. </li>
 <li>You can use <code>&lt;span style= "..." &gt;</code> - which is more direct but less compact.</li>
@@ -2752,6 +2765,7 @@ End Sub
 <li><code>style.bgcolor.</code> - described in <a href="#associating-a-class-name-with-a-background-colour-with-stylebgcolor">Associating A Class Name With A Background Colour With <code>style.bgcolor</code></a>.</li>
 <li><code>style.fgcolor</code> - described in <a href="#associating-a-class-name-with-a-foreground-colour-with-stylefgcolor">Associating A Class Name With A Foreground Colour With <code>style.fgcolor</code></a>.</li>
 <li><code>style.emphasis</code> - described in <a href="#associating-a-class-name-with-text-emphasis-with-styleemphasis">Associating A Class Name With Text Emphasis With <code>style.emphasis</code></a>.</li>
+<li><code>style.fontsize</code> - described in <a href="#associating-a-class-name-with-font-size-with-style-fontsize">Associating A Class Name With Font Size With <code>style.fontsize</code></a>. </li>
 </ul>
 <p>If you coded metadata</p>
 <pre><code>style.fgcolor.yellow: FFFF00
@@ -2772,7 +2786,7 @@ End Sub
     background-color: #FFFF00;
     font-weight: bold;
     font-style: italic;
-
+    font-size: 24px;
 }
 &lt;/style&gt;
 </code></pre>
@@ -2789,9 +2803,10 @@ End Sub
 <li>Underlining with <code>text-decoration: underline</code></li>
 <li>Bold with <code>font-weight: bold</code></li>
 <li>Italic with <code>font-style: italic</code></li>
+<li>Font size with <code>font-size</code></li>
 </ul>
 <p>Here is an example:</p>
-<pre><code>Here's &lt;span style="font-weight: bold;font-style: italic;color: #0000FF;"&gt;blue bold italic&lt;/span&gt; text.
+<pre><code>Here's &lt;span style="font-weight: bold;font-style: italic;color: #0000FF;font-size: 16.5px;"&gt;blue bold italic&lt;/span&gt; text.
 </code></pre>
 <p>Notice the <code>color</code> specification is in Hexadecimal RGB (Red Green Blue) format. CSS colour names are not supported.</p>
 <h3 id="html-entity-references">HTML Entity References<a class="headerlink" href="#html-entity-references" title="Permanent link"></a></h3>
@@ -2888,8 +2903,8 @@ End Sub
 <td align="center">&nwarr;</td>
 <td align="left"><code>&amp;euro;</code></td>
 <td align="center">&euro;</td>
-<td align="left"></td>
-<td align="center"></td>
+<td align="left"><code>&amp;Oslash;</code></td>
+<td align="center">&Oslash;</td>
 </tr>
 <tr>
 <td align="left"><code>&amp;lowast;</code></td>
@@ -2898,8 +2913,8 @@ End Sub
 <td align="center">&searr;</td>
 <td align="left"><code>&amp;hellip;</code></td>
 <td align="center">&hellip;</td>
-<td align="left"></td>
-<td align="center"></td>
+<td align="left"><code>&amp;oslash;</code></td>
+<td align="center">&oslash;</td>
 </tr>
 <tr>
 <td align="left"><code>&amp;semi;</code></td>
@@ -3223,7 +3238,7 @@ For everything else use <code>marginBase</code>.</p>
 <p>The default is <code>yes</code>.</p>
 <h4 id="associating-a-class-name-with-a-background-colour-with-stylebgcolor">Associating A Class Name with A Background Colour With <code>style.bgcolor</code><a class="headerlink" href="#associating-a-class-name-with-a-background-colour-with-stylebgcolor" title="Permanent link"></a></h4>
 <p><a id="associating-a-class-name-with-a-background-color-with-style-bgcolor"></a></p>
-<p>You can use HTML <code>&lt;span&gt;</code> elements to set the background colour, as described in <a href="#using-html-ltstylegt-elements-to-specify-text-colours-and-underlining">Using HTML &lt;style&gt; Elements To Specify Text Colours And Underlining</a>.</p>
+<p>You can use HTML <code>&lt;span&gt;</code> elements to set the background colour, as described in <a href="#using-html-span-elements-to-specify-text-effects">Using HTML &lt;style&gt; Elements To Specify Text Effects</a>.</p>
 <p>Here is an example:</p>
 <pre><code>style.bgcolor.yellow: FFFF00
 </code></pre>
@@ -3236,7 +3251,7 @@ For everything else use <code>marginBase</code>.</p>
 <p>which is in fact yellow.</p>
 <h4 id="associating-a-class-name-with-a-foreground-colour-with-stylefgcolor">Associating A Class Name with A Foreground Colour With <code>style.fgcolor</code><a class="headerlink" href="#associating-a-class-name-with-a-foreground-colour-with-stylefgcolor" title="Permanent link"></a></h4>
 <p><a id="associating-a-class-name-with-a-foreground-color-with-style-fgcolor"></a></p>
-<p>You can use HTML <code>&lt;span&gt;</code> elements to set the foreground colour, as described in <a href="#using-html-ltstylegt-elements-to-specify-text-colours-and-underlining">Using HTML &lt;style&gt; Elements To Specify Text Colours And Underlining</a>.</p>
+<p>You can use HTML <code>&lt;span&gt;</code> elements to set the foreground colour, as described in <a href="#using-html-span-elements-to-specify-text-effects">Using HTML &lt;style&gt; Elements To Specify Text Effects</a>.</p>
 <p>Here is an example:</p>
 <pre><code>style.fgcolor.red: FF0000
 </code></pre>
@@ -3249,13 +3264,21 @@ For everything else use <code>marginBase</code>.</p>
 <p>which is in fact red.</p>
 <h4 id="associating-a-class-name-with-text-emphasis-with-styleemphasis">Associating A Class Name With Text Emphasis With <code>style.emphasis</code><a class="headerlink" href="#associating-a-class-name-with-text-emphasis-with-styleemphasis" title="Permanent link"></a></h4>
 <p><a id="associating-a-class-name-with-text-emphasis-with-style-emphasis"></a></p>
-<p>You can use HTML <code>&lt;span&gt;</code> elements to bold text, make it italic, or underline it - as described in <a href="#using-html-ltstylegt-elements-to-specify-text-colours-and-underlining">Using HTML &lt;style&gt; Elements To Specify Text Colours And Underlining</a>.</p>
+<p>You can use HTML <code>&lt;span&gt;</code> elements to bold text, make it italic, or underline it - as described in <a href="#using-html-span-elements-to-specify-text-effects">Using HTML &lt;style&gt; Elements To Specify Text Effects</a>.</p>
 <p>Here is an example:</p>
 <pre><code>style.emphasis.important: bold underline
 </code></pre>
 <p>In this example the class &ldquo;important&rdquo; is associated with bolding the text and underlining it.</p>
 <p>You can also use <code>italic</code>.</p>
 <p>As the example shows, separate the emphasis attributes with a space.</p>
+<h4 id="associating-a-class-name-with-font-size-with-stylefontsize">Associating A Class Name With Font Size with <code>style.fontsize</code><a class="headerlink" href="#associating-a-class-name-with-font-size-with-stylefontsize" title="Permanent link"></a></h4>
+<p><a id="associating-a-class-name-with-font-size-with-style-fontsize"></a></p>
+<p>You can use HTML <code>&lt;span&gt;</code> elements to specify the font size for a piece of text - as described in <a href="#using-html-span-elements-to-specify-text-effects">Using HTML &lt;style&gt; Elements To Specify Text Effects</a>.</p>
+<p>Here is an example:</p>
+<pre><code>style.fontsize.christopher: 40px
+</code></pre>
+<p>In this example the class &ldquo;christopher&rdquo; is associated with setting the text&rsquo;s font size to 40 pixels.</p>
+<p><strong>Note:</strong> You must specify font size in pixels, with &ldquo;px&rdquo; directly after the numeric part - which can be integer or floating point.</p>
 <h4 id="template-presentation-template">Template Presentation - <code>template</code><a class="headerlink" href="#template-presentation-template" title="Permanent link"></a></h4>
 <p><a id="template-presentation-template"></a></p>
 <p>You can specify a different template file to create the presentation from than the one supplied with python-pptx. The one supplied with md2pptx is a very good one to work from:</p>
