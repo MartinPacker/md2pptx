@@ -1210,6 +1210,7 @@ body .markdown-body
 <li><a href="#associating-a-class-name-with-text-emphasis-with-styleemphasis">Associating A Class Name With Text Emphasis With <code>style.emphasis</code></a></li>
 <li><a href="#associating-a-class-name-with-font-size-with-stylefontsize">Associating A Class Name With Font Size with <code>style.fontsize</code></a></li>
 <li><a href="#template-presentation-template">Template Presentation - <code>template</code></a></li>
+<li><a href="#hiding-slides-hidden">Hiding Slides - <code>hidden</code></a></li>
 <li><a href="#specifying-an-abstract-slide-with-abstracttitle">Specifying An Abstract Slide With <code>abstractTitle</code></a></li>
 <li><a href="#specifying-text-size-with-basetextsize-and-basetextdecrement">Specifying Text Size With <code>baseTextSize</code> And <code>baseTextDecrement</code></a></li>
 <li><a href="#specifying-bold-and-italic-text-colour-with-boldcolour-and-italiccolour">Specifying Bold And Italic Text Colour With <code>BoldColour</code> And <code>ItalicColour</code></a></li>
@@ -1308,6 +1309,7 @@ body .markdown-body
 </ul>
 </li>
 <li><a href="#dynamic-metadata">Dynamic Metadata</a><ul>
+<li><a href="#hidden"><code>hidden</code></a></li>
 <li><a href="#tables">Tables</a><ul>
 <li><a href="#compacttables"><code>CompactTables</code></a></li>
 <li><a href="#tableheadingsize"><code>TableHeadingSize</code></a></li>
@@ -1484,6 +1486,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">4.6</td>
+<td align="right">30&nbsp;June&nbsp;2024</td>
+<td align="left">Use Unicode noncharacters instead of high 8-bit characters for markers. Added <code>hidden</code><a href="#hiding-slides-hidden">metadata</a> and <a href="#hidden-dynamic">dynamic metadata</a> item.</td>
+</tr>
 <tr>
 <td align="left">4.5</td>
 <td align="right">16&nbsp;June&nbsp;2024</td>
@@ -2364,7 +2371,11 @@ sectionTitleSize: 30
 <p>When we say &ldquo;code&rdquo;, what you&rsquo;re displaying could be something like a terminal screen shot, of course. What&rsquo;s important is that it will be rendered in a fixed-pitch font.</p>
 <p>In each case, the heading for the slide is generally introduced with heading level 3 - <code>###</code>. However you can start a slide without a heading. See <a href="#slides-without-titles">Slides Without Titles</a> for how to do this.</p>
 <p>You can include <a href="#html-entity-references">HTML entity references</a> and <a href="#numeric-character-references">numeric character references</a>. For example you might code <code>&amp;#x2776;</code> to place &#x2776; next to a line of code. You could then code the same thing in a table below the code fragment, where each row explains a line of code.</p>
-<p><strong>Note:</strong> You can more precisely control how code slides are laid out and their colours with <a href="#code-metadata">Code Metadata</a>.</p>
+<p><strong>Notes:</strong></p>
+<ol>
+<li>Do not code numeric references in the range FFD0 to FFEF. These are - in Unicode terms - noncharacters. md2pptx uses them internally when parsing text.</li>
+<li>You can more precisely control how code slides are laid out and their colours with <a href="#code-metadata">Code Metadata</a>.</li>
+</ol>
 <h4 id="code"><code>&lt;code&gt;</code><a class="headerlink" href="#code" title="Permanent link"></a></h4>
 <p>The HTML <code>&lt;code&gt;</code> element is supported. Surround the block of text by <code>&lt;code&gt;</code> and <code>&lt;/code</code>:</p>
 <pre><code>### This Is A Code Slide
@@ -3291,6 +3302,18 @@ For everything else use <code>marginBase</code>.</p>
 <li>Using the name as given. For example <code>hipodz.pptx</code> will search the current directory.</li>
 <li>In the md2pptx installation directory.</li>
 </ol>
+<h4 id="hiding-slides-hidden">Hiding Slides - <code>hidden</code><a class="headerlink" href="#hiding-slides-hidden" title="Permanent link"></a></h4>
+<p><a id="hiding-slides-hidden"></a></p>
+<p>You can mark slides to be hidden in a slideshow.
+This presentation-level metadata item is designed to be overridden at the individual slide level.</p>
+<p>To set the initial value for all slides to be hidden code</p>
+<pre><code>hidden : yes
+</code></pre>
+<p>To set the initial value for all slides to be shown code</p>
+<pre><code>hidden : no
+</code></pre>
+<p>See <a href="#hidden-dynamic"><code>hidden</code></a> for how to override this default at an individual slide level.</p>
+<p>The default value for <code>hidden</code> is <code>no</code>.</p>
 <h4 id="specifying-an-abstract-slide-with-abstracttitle">Specifying An Abstract Slide With <code>abstractTitle</code><a class="headerlink" href="#specifying-an-abstract-slide-with-abstracttitle" title="Permanent link"></a></h4>
 <p><a id="specifying-an-abstract-slide-with-abstracttitle"></a></p>
 <p>You can arrange for a single-level bulleted list slide to be formatted specially - as an abstract.</p>
@@ -4126,6 +4149,16 @@ The default value is <code>no</code>.</p>
 </ul>
 <p>If you dynamically change a metadata value the new value will remain in effect for the remainder of the presentation, unless changed again.</p>
 <p><strong>Note:</strong> After tweaking a slide you might well want to revert to your presentation&rsquo;s overall value (or even the md2pptx default). Instead of this you might use <code>prev</code> or<code>pop</code>, though these are destructive.</p>
+<p><a id="hidden-dynamic"></a></p>
+<h4 id="hidden"><code>hidden</code><a class="headerlink" href="#hidden" title="Permanent link"></a></h4>
+<p>You can override <a href="#hiding-slides-hidden">the system value of <code>hidden</code></a>.</p>
+<p>For example, you might want to hide just the fifth slide:</p>
+<ul>
+<li>Code, or allow to default, <code>hidden</code> to <code>no</code> in the metadata at the top of the presentation.</li>
+<li>Code <code>&lt;!-- md2pptx: hidden: yes --&gt;</code> below the title of the fifth slide.</li>
+<li>Code <code>&lt;!-- md2pptx: hidden: no --&gt;</code> below the title of the sixth slide.</li>
+</ul>
+<p>Each coding of this dynamic metadata item applies until any subsequent coding of it.</p>
 <h4 id="tables">Tables<a class="headerlink" href="#tables" title="Permanent link"></a></h4>
 <p><a id="compacttables-dynamic"></a></p>
 <h5 id="compacttables"><code>CompactTables</code><a class="headerlink" href="#compacttables" title="Permanent link"></a></h5>

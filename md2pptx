@@ -82,8 +82,8 @@ except:
     have_graphviz = False
 
 
-md2pptx_level = "4.5"
-md2pptx_date = "16 June, 2024"
+md2pptx_level = "4.6"
+md2pptx_date = "30 June, 2024"
 
 namespaceURL = {
     "mc":  "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -1270,86 +1270,86 @@ def parseText(text):
     if text2[-2:] == " *":
         text2 = text2[:-2] + " &lowast;"
 
-    # Replace any footnote reference starts with char 238
-    text2 = text2.replace("[^", chr(238))
+    # Replace any footnote reference starts with char "\uFDD0"
+    text2 = text2.replace("[^", u"\uFDD0")
 
-    # Replace any span style starts with char 239
-    text2 = re.sub(spanStyleRegex, chr(239), text2)
+    # Replace any span style starts with char "\uFDD1"
+    text2 = re.sub(spanStyleRegex, u"\uFDD1", text2)
 
-    # Replace any span class starts with char 240
-    text2 = re.sub(spanClassRegex, chr(240), text2)
+    # Replace any span class starts with char "\uFDD2"
+    text2 = re.sub(spanClassRegex, u"\uFDD2", text2)
 
-    # Replace any span ends with char 241
-    text2 = text2.replace("</span>", chr(241))
+    # Replace any span ends with char "\uFDD3"
+    text2 = text2.replace("</span>", u"\uFDD3")
 
-    # Replace any abbreviation starts with char 242
-    text2 = text2.replace("<abbr title=", chr(242))
+    # Replace any abbreviation starts with char "\uFDD4"
+    text2 = text2.replace("<abbr title=", u"\uFDD4")
 
-    # Replace any abbreviation ends with char 243
-    text2 = text2.replace("</abbr>", chr(243))
+    # Replace any abbreviation ends with char "\uFDD5"
+    text2 = text2.replace("</abbr>", u"\uFDD5")
 
-    # Replace any \[ with char 244
-    text2 = text2.replace("\\[", chr(244))
+    # Replace any \[ with char "\uFDD6"
+    text2 = text2.replace("\\[", u"\uFDD6")
 
-    # Replace any \] with char 245
-    text2 = text2.replace("\\]", chr(245))
+    # Replace any \] with char "\uFDD7"
+    text2 = text2.replace("\\]", u"\uFDD7")
 
-    # 246 is link separator special character. See below
+    # "\uFDD8" is link separator special character. See below
 
-    # Replace any {~~ with char 247
-    text2 = text2.replace("{~~", chr(247))
+    # Replace any {~~ with char "\uFDD8"
+    text2 = text2.replace("{~~", u"\uFDD8")
 
-    # Replace any ~~} with char 247
-    text2 = text2.replace("~~}", chr(247))
+    # Replace any ~~} with char "\uFDD8"
+    text2 = text2.replace("~~}", u"\uFDD8")
 
-    # Replace any {== with char 234 (248 is taken by a
+    # Replace any {== with char "\uFDD9"
     # Danish character)
-    text2 = text2.replace("{==", chr(234))
+    text2 = text2.replace("{==", u"\uFDD9")
 
-    # Replace any ==} with char 248
-    text2 = text2.replace("==}", chr(234))
+    # Replace any ==} with char "\uFDD9"
+    text2 = text2.replace("==}", u"\uFDD9")
 
-    # Replace any {>> with char 249
-    text2 = text2.replace("{>>", chr(249))
+    # Replace any {>> with char "\uFDDA"
+    text2 = text2.replace("{>>", u"\uFDDA")
 
-    # Replace any <<} with char 249
-    text2 = text2.replace("<<}", chr(249))
+    # Replace any <<} with char "\uFDDA"
+    text2 = text2.replace("<<}", u"\uFDDA")
 
-    # Replace any {-- with char 250
-    text2 = text2.replace("{--", chr(250))
+    # Replace any {-- with char "\uFDDB"
+    text2 = text2.replace("{--", u"\uFDDB")
 
-    # Replace any --} with char 250
-    text2 = text2.replace("--}", chr(250))
+    # Replace any --} with char "\uFDDB
+    text2 = text2.replace("--}", u"\uFDDB")
 
-    # Replace any {++ with char 251
-    text2 = text2.replace("{++", chr(251))
+    # Replace any {++ with char "\uFDDC"
+    text2 = text2.replace("{++", u"\uFDDC")
 
-    # Replace any ++} with char 251
-    text2 = text2.replace("++}", chr(251))
+    # Replace any ++} with char "\uFDDC"
+    text2 = text2.replace("++}", u"\uFDDC")
 
-    # Replace any <ins> with char 252
-    text2 = text2.replace("<ins>", chr(252))
+    # Replace any <ins> with char "\uFDDD"
+    text2 = text2.replace("<ins>", u"\uFDDD")
 
-    # Replace any </ins> with char 252
-    text2 = text2.replace("</ins>", chr(252))
+    # Replace any </ins> with char "\uFDDD"
+    text2 = text2.replace("</ins>", u"\uFDDD")
 
-    # Replace any <del> with char 253
-    text2 = text2.replace("<del>", chr(253))
+    # Replace any <del> with char "\uFDDE"
+    text2 = text2.replace("<del>", u"\uFDDE")
 
-    # Replace any </del> with char 253
-    text2 = text2.replace("</del>", chr(253))
+    # Replace any </del> with char "\uFDDE"
+    text2 = text2.replace("</del>", u"\uFDDE")
 
-    # Replace any <sub> with char 254
-    text2 = text2.replace("<sub>", chr(254))
+    # Replace any <sub> with char "\uFDDF"
+    text2 = text2.replace("<sub>", u"\uFDDF")
 
-    # Replace any </sub> with char 254
-    text2 = text2.replace("</sub>", chr(254))
+    # Replace any </sub> with char "\uFDDF"
+    text2 = text2.replace("</sub>", u"\uFDDF")
 
-    # Replace any <sup> with char 255
-    text2 = text2.replace("<sup>", chr(255))
+    # Replace any <sup> with char "\uFDE0"
+    text2 = text2.replace("<sup>", u"\uFDE0")
 
-    # Replace any </sup> with char 255
-    text2 = text2.replace("</sup>", chr(255))
+    # Replace any </sup> with char "\uFDE0"
+    text2 = text2.replace("</sup>", u"\uFDE0")
 
     # Handle escaped underscore
     text2 = text2.replace("\\_", "_")
@@ -1401,7 +1401,7 @@ def parseText(text):
                 fragment = ""
                 state = "N"
 
-        elif ord(c) == 247:
+        elif c == u"\uFDD8":
             # Entering or leaving CriticMarkup replacement
             if state == "N":
                 # Going to CriticMarkup replacement
@@ -1415,7 +1415,7 @@ def parseText(text):
                 fragment = ""
                 state = "N"
 
-        elif ord(c) == 234:
+        elif c == u"\uFDD9":
             # Entering or leaving CriticMarkup highlight
             if state == "N":
                 # Going to CriticMarkup highlight
@@ -1429,7 +1429,7 @@ def parseText(text):
                 fragment = ""
                 state = "N"
 
-        elif ord(c) == 249:
+        elif c == u"\uFDDA":
             # Entering or leaving CriticMarkup comment
             if state == "N":
                 # Going to CriticMarkup comment
@@ -1443,7 +1443,7 @@ def parseText(text):
                 fragment = ""
                 state = "N"
 
-        elif ord(c) == 250:
+        elif c == u"\uFDDB":
             # Entering or leaving CriticMarkup deletion
             if state == "N":
                 # Going to CriticMarkup deletion
@@ -1457,7 +1457,7 @@ def parseText(text):
                 fragment = ""
                 state = "N"
 
-        elif ord(c) == 251:
+        elif c == u"\uFDDC":
             # Entering or leaving CriticMarkup addition
             if state == "N":
                 # Going to CriticMarkup addition
@@ -1471,7 +1471,7 @@ def parseText(text):
                 fragment = ""
                 state = "N"
 
-        elif ord(c) == 252:
+        elif c == u"\uFDDD":
             # Entering or leaving underline
             if state == "N":
                 # Going to underline
@@ -1485,7 +1485,7 @@ def parseText(text):
                 fragment = ""
                 state = "N"
 
-        elif ord(c) == 253:
+        elif c == u"\uFDDE":
             # Entering or leaving strikethrough
             if state == "N":
                 # Going to strikethrough
@@ -1498,7 +1498,7 @@ def parseText(text):
                 textArray.append([state, fragment])
                 fragment = ""
                 state = "N"
-        elif ord(c) == 254:
+        elif c == u"\uFDDF":
             # Entering or leaving subscript
             if state == "N":
                 # Going to subscript
@@ -1512,7 +1512,7 @@ def parseText(text):
                 fragment = ""
                 state = "N"
 
-        elif ord(c) == 255:
+        elif c == u"\uFDE0":
             # Entering or leaving superscript
             if state == "N":
                 # Going to superscript
@@ -1551,7 +1551,7 @@ def parseText(text):
                 state = "LinkText2"
 
                 # Remove [ and add a separator to allow for link URL
-                fragment = fragment[1:] + chr(246)
+                fragment = fragment[1:] + u"\uFDD8"
 
             elif state == "fnref":
                 # This terminates a footnote reference
@@ -1572,7 +1572,7 @@ def parseText(text):
 
                 if foundReference:
                     # Append fragment with resolved reference
-                    textArray.append(["Link", indLinkText + chr(246) + indURL])
+                    textArray.append(["Link", indLinkText + u"\uFDD8" + indURL])
                 else:
                     print(f"Reference {reference} not resolved.\n")
                     textArray.append(["N", indLinkText])
@@ -1607,19 +1607,13 @@ def parseText(text):
         elif ord(c) == 236:
             fragment = fragment + "<"
 
-        elif ord(c) == 244:
+        elif c == u"\uFDD6":
             fragment = fragment + "["
 
-        elif ord(c) == 245:
+        elif c == u"\uFDD7":
             fragment = fragment + "]"
 
-        elif ord(c) == 242:
-            if fragment != "":
-                textArray.append([state, fragment])
-                fragment = ""
-            dictEntry = ""
-
-        elif ord(c) == 243:
+        elif c == u"\uFDD5":
             dictEntry = fragment.split(">")
             dictAbbrev = dictEntry[1]
             dictFull = dictEntry[0].strip().strip("'").strip('"')
@@ -1627,7 +1621,13 @@ def parseText(text):
             textArray.append(["Gloss", dictAbbrev, dictAbbrev, dictFull])
             fragment = ""
 
-        elif ord(c) == 241:
+        elif c == u"\uFDD4":
+            if fragment != "":
+                textArray.append([state, fragment])
+                fragment = ""
+            dictEntry = ""
+
+        elif c == u"\uFDD3":
             # End of span
             if spanState == "Class":
                 # Span with class
@@ -1662,7 +1662,7 @@ def parseText(text):
 
             spanState = "None"
 
-        elif ord(c) == 240:
+        elif c == u"\uFDD2":
             # In span element where we hit the class name
             if fragment != "":
                 textArray.append([state, fragment])
@@ -1670,14 +1670,14 @@ def parseText(text):
                 fragment = ""
             spanState = "Class"
 
-        elif ord(c) == 239:
+        elif c == u"\uFDD1":
             # In span element where we hit the style text
             if fragment != "":
                 textArray.append([state, fragment])
 
                 fragment = ""
                 spanState = "Style"
-        elif ord(c) == 238:
+        elif c == u"\uFDD0":
             if fragment != "":
                 textArray.append([state, fragment])
 
@@ -1833,7 +1833,7 @@ def addFormattedText(p, text):
                 font = run.font
                 set_superscript(font)
             elif fragType == "Link":
-                linkArray = subfragment.split(chr(246))
+                linkArray = subfragment.split(u"\uFDD8")
                 linkText = linkArray[0]
                 linkURL = linkArray[1]
                 run.text = linkText
@@ -4394,6 +4394,7 @@ def createSlide(presentation, slideNumber, slideInfo):
     sectionFooters = processingOptions.getCurrentOption("sectionFooters")
     liveFooters = processingOptions.getCurrentOption("liveFooters")
     transition = processingOptions.getCurrentOption("transition")
+    hidden = processingOptions.getCurrentOption("hidden")
 
     if slideInfo.blockType in ["content", "code", "table"]:
         if (tocStyle != "") & (tocTitle == slideInfo.titleText):
@@ -4544,6 +4545,11 @@ def createSlide(presentation, slideNumber, slideInfo):
     sequence = []
 
     addSlideTransition(slide, transition)
+    
+    if hidden:
+        slide._element.set('show', '0')
+    else:
+        slide._element.set('show', '1')
 
     return [slideNumber, slide, sequence]
 
@@ -5070,6 +5076,7 @@ want_numbers_content = False
 
 processingOptions.setOptionValues("slideTemplateFile", "")
 processingOptions.setOptionValues("tempDir", None)
+processingOptions.setOptionValues("hidden","no")
 
 ######################################################################################
 #                                                                                    #
@@ -5416,6 +5423,12 @@ for line in metadata_lines:
         processingOptions.setOptionValues(name, float(value))
 
     elif name == "deletefirstslide":
+        if value.lower() == "yes":
+            processingOptions.setOptionValues(name, True)
+        else:
+            processingOptions.setOptionValues(name, False)
+
+    elif name == "hidden":
         if value.lower() == "yes":
             processingOptions.setOptionValues(name, True)
         else:
@@ -6162,6 +6175,16 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
 
                 elif metadataKey == "cardlayout":
                     # Cards' layout - horizontal or vertical
+                    processingOptions.dynamicallySetOption(
+                        metadataKey, metadataValue, ""
+                    )
+                elif metadataKey == "hidden":
+                    # Slides hidden in slideshow
+                    if metadataValue == "yes":
+                        metadataValue = True
+                    elif metadataValue == "no":
+                        metadataValue = False
+
                     processingOptions.dynamicallySetOption(
                         metadataKey, metadataValue, ""
                     )

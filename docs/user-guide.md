@@ -95,6 +95,7 @@ As you can see in the [change log](#change-log), md2pptx is frequently updated -
 		* [Associating A Class Name With Text Emphasis With `style.emphasis`](#associating-a-class-name-with-text-emphasis-with-styleemphasis)
 		* [Associating A Class Name With Font Size with `style.fontsize`](#associating-a-class-name-with-font-size-with-stylefontsize)
 		* [Template Presentation - `template`](#template-presentation-template)
+		* [Hiding Slides - `hidden`](#hiding-slides-hidden)
 		* [Specifying An Abstract Slide With `abstractTitle`](#specifying-an-abstract-slide-with-abstracttitle)
 		* [Specifying Text Size With `baseTextSize` And `baseTextDecrement`](#specifying-text-size-with-basetextsize-and-basetextdecrement)
 		* [Specifying Bold And Italic Text Colour With `BoldColour` And `ItalicColour`](#specifying-bold-and-italic-text-colour-with-boldcolour-and-italiccolour)
@@ -173,6 +174,7 @@ As you can see in the [change log](#change-log), md2pptx is frequently updated -
 			* [Make Expandable Sections - `SectionsExpand`](#make-expandable-sections-sectionsexpand)
 		* [Slide Transitions - `Transition`](#slide-transitions-transition)
 	* [Dynamic Metadata](#dynamic-metadata)
+		* [`hidden`](#hidden)
 		* [Tables](#tables)
 			* [`CompactTables`](#compacttables)
 			* [`TableHeadingSize`](#tableheadingsize)
@@ -349,6 +351,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|4.6|30&nbsp;June&nbsp;2024|Use Unicode noncharacters instead of high 8-bit characters for markers. Added `hidden`[metadata](#hiding-slides-hidden) and [dynamic metadata](#hidden-dynamic) item.|
 |4.5|16&nbsp;June&nbsp;2024|Support for `fontsize` in [styling](#using-html-span-elements-to-specify-text-effects).|
 |4.4|6&nbsp;May&nbsp;2024|Support for Python 3.12 and 3.13 (tested with alphas 5 &amp; 6). `imghdr` package is no longer used to guess graphics file types.|
 |4.3.3|20&nbsp;January&nbsp;2024|Cards can now have audio where a graphic might be. Also media can have a "poster" image for when the media isn't playing. See [Card Graphics&comma; Video&comma; &amp; Audio](#card-graphics-video-audio).|
@@ -981,7 +984,10 @@ In each case, the heading for the slide is generally introduced with heading lev
 You can include [HTML entity references](#html-entity-references) and [numeric character references](#numeric-character-references). For example you might code `&#x2776;` to place &#x2776; next to a line of code. You could then code the same thing in a table below the code fragment, where each row explains a line of code.
 
 
-**Note:** You can more precisely control how code slides are laid out and their colours with [Code Metadata](#code-metadata).
+**Notes:**
+
+1. Do not code numeric references in the range FFD0 to FFEF. These are - in Unicode terms - noncharacters. md2pptx uses them internally when parsing text.
+1. You can more precisely control how code slides are laid out and their colours with [Code Metadata](#code-metadata).
 
 #### `<code>`
 
@@ -1961,6 +1967,24 @@ Templates are searched for in the following sequence:
 
 1. Using the name as given. For example `hipodz.pptx` will search the current directory.
 2. In the md2pptx installation directory.
+
+#### Hiding Slides - `hidden`
+<a id="hiding-slides-hidden"></a>
+
+You can mark slides to be hidden in a slideshow.
+This presentation-level metadata item is designed to be overridden at the individual slide level.
+
+To set the initial value for all slides to be hidden code
+
+    hidden : yes
+
+To set the initial value for all slides to be shown code
+
+    hidden : no
+
+See [`hidden`](#hidden-dynamic) for how to override this default at an individual slide level.
+
+The default value for `hidden` is `no`.
 
 #### Specifying An Abstract Slide With `abstractTitle`
 <a id="specifying-an-abstract-slide-with-abstracttitle"></a>
@@ -3115,6 +3139,19 @@ Here are the values you can specify for the metadata:
 If you dynamically change a metadata value the new value will remain in effect for the remainder of the presentation, unless changed again.
 
 **Note:** After tweaking a slide you might well want to revert to your presentation's overall value (or even the md2pptx default). Instead of this you might use `prev` or`pop`, though these are destructive.
+
+<a id="hidden-dynamic"></a>
+#### `hidden`
+
+You can override [the system value of `hidden`](#hiding-slides-hidden).
+
+For example, you might want to hide just the fifth slide:
+
+* Code, or allow to default, `hidden` to `no` in the metadata at the top of the presentation.
+* Code `<!-- md2pptx: hidden: yes -->` below the title of the fifth slide.
+* Code `<!-- md2pptx: hidden: no -->` below the title of the sixth slide.
+
+Each coding of this dynamic metadata item applies until any subsequent coding of it.
 
 #### Tables
 
