@@ -154,6 +154,7 @@ To quote from the python-pptx license statement:
 =colalign l r l
 =csv
 Level,Date,What
+4.6.1,1&nbsp;July&nbsp;2024,Fixed breakage in `hidden`.
 4.6,30&nbsp;June&nbsp;2024,Use Unicode noncharacters instead of high 8-bit characters for markers. Added `hidden`[metadata](#hiding-slides-hidden) and [dynamic metadata](#hidden-dynamic) item.
 4.5,16&nbsp;June&nbsp;2024,Support for `fontsize` in [styling](#using-html-span-elements-to-specify-text-effects).
 4.4,6&nbsp;May&nbsp;2024,Support for Python 3.12 and 3.13 (tested with alphas 5 &amp; 6). `imghdr` package is no longer used to guess graphics file types.
