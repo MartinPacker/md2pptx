@@ -1,13 +1,19 @@
 template: Martin Template.pptx
 contentsplit: 1 2
 contentsplitdirn: h
+style.fontsize.christopher: 45px
+style.fgcolor.christopher: FF0000
+hidden: yes
+
+<style>
+.christopher{
+  font-size: 45px
+}
+</style>
 
 # Code Test
 
-### Here Is  A Graph
-
-* Here is a bullet
-  * Here is a sub-bullet
+### Here Is A Slide With A Graph
 
 ``` run-python
 
@@ -21,15 +27,11 @@ chart1 = RunPython.makeChart(slide,
   XL_CHART_TYPE.COLUMN_CLUSTERED,
   renderingRectangle,
   chart_data,
-  "Hello World",
-  XL_LEGEND_POSITION.BOTTOM)
-
-
+  "My Important Chart",
+  XL_LEGEND_POSITION.BOTTOM)        
 ```
 
-### Here Is  A Table
-<!-- md2pptx: contentsplit: 2 1 -->
-<!-- md2pptx: contentsplitdirn: v -->
+## Here Is  A Table
 
 ``` run-python
 
@@ -45,8 +47,4 @@ RunPython.applyCellFillRGB(table1, 2, 3, 255, 255, 0)
 # Set list of cells to green
 greenList = [(0, 0), (2,1), (3,2)]
 RunPython.applyCellListFillRGB(table1, greenList, 0, 255, 0)
-
-
 ```
-
-* Here's a bullet below the table
