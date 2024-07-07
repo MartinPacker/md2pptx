@@ -44,7 +44,7 @@ This is one of the key aims of md2pptx.
 
 One final advantage of the md2pptx approach is you can generate presentations without using PowerPoint itself. \
 Indeed you can create presentations on machines where PowerPoint won't even run. \
-All you need is to be able to run Python 3 and install python-pptx.
+All you need is to be able to run Python 3 and install [python-pptx](http://python-pptx.readthedocs.io/en/latest/).
 
 ### A Real World Use Case
 
@@ -154,6 +154,7 @@ To quote from the python-pptx license statement:
 =colalign l r l
 =csv
 Level,Date,What
+5.0,7&nbsp;July&nbsp;2024,Added [`run-python`](#running-inline-python) support.
 4.6.1,1&nbsp;July&nbsp;2024,Fixed breakage in `hidden`.
 4.6,30&nbsp;June&nbsp;2024,Use Unicode noncharacters instead of high 8-bit characters for markers. Added `hidden`[metadata](#hiding-slides-hidden) and [dynamic metadata](#hidden-dynamic) item.
 4.5,16&nbsp;June&nbsp;2024,Support for `fontsize` in [styling](#using-html-span-elements-to-specify-text-effects).
@@ -3702,3 +3703,263 @@ See [Task List Slides](#task-list-slides) for details of md2pptx's Taskpaper sup
 * Using **outbound** hyperlinks in a heading is not standard Markdown - whether within the document or to the web.
 * [GraphViz .dot files](#graphviz) aren't rendered by most Markdown processors.
 * [Funnels](#funnels) aren't rendered by any other Markdown processor.
+* [run-python functionality](#running-inline-python) isn't supported by any other Markdown processor.
+
+## Running Inline Python
+<a id="running-inline-python"></a>
+
+md2pptx is a python program that uses the [python-pptx](http://python-pptx.readthedocs.io/en/latest/) library. \
+There are many python-pptx capabilities that md2pptx doesn't use - because they can't be expressed directly in Markdown or HTML.
+
+One good example is [graphing](#graphing-example). \
+Another is [highlighting cells in a table](#table-manipulation-example).
+
+Running inline python, perhaps with [helper routines](#python-helper-routines), enables these.
+
+The deal remains the same: \
+A flat text file you author turning into a PowerPoint presentation.
+
+**Note:** It is probably not a good idea to create additional slides in your python code - unless they are in a separate presentation. \
+If you do md2pptx might very well get confused.
+
+### An Important Caution
+
+The support described in [Running Inline Python](#running-inline-python) allows you to run **arbitary python code**. \
+It would be unwise to embed python code of unknown provenance.
+Use only code you directly write (or, of known provenance, embedded with [mdpre](https://github.com/MartinPacker/mdpre)'s `=include` capability).
+
+In general, though, this function is worth exploring - if it enables you turn flat files into presentations that you otherwise couldn't make that way.
+
+### Coding Inline Python
+
+To code python inline start with this line:
+
+    ``` run-python
+
+then code your python logic.
+
+Finish with the line:
+
+    ```
+This is like an ordinary code block but with the addition of `run-python` on the opening line.
+
+You could code your python in a separate file and embed it with [mdpre's](https://github.com/MartinPacker/mdpre)'s `=include` capability. \
+That would be especially useful if you embed the same code in multiple slides or presentations.
+
+<a id="variables-you-can-rely-on"></a>
+### Variables You Can Rely On
+
+While there is no absolute guarantee that variables won't get refactored the following variables are unlikely to be renamed.
+
+* `slide` - the current slide you can manipulate. See [Slides](https://python-pptx.readthedocs.io/en/latest/api/slides.html) for the python-pptx documentation.
+* `renderingRectangle` - the dimensions and position of an area you can render into.
+
+<a id="python-helper-routines"></a>
+### Python Helper Routines
+
+md2pptx provides a number of helper routines - to simplify common things such as chart creation and table manipulation.
+
+**Note:** Most of the helper routines can be intermixed with standard python-pptx coding.
+
+#### General Helper Routines
+
+<a id="runpythonreadcsv"></a>
+##### RunPython.readCSV
+
+This function reads a CSV file into variables.
+
+###### Input
+
+* file name.
+
+###### Output
+
+* A list of rows, each row containing a list of cell values.
+
+The flavour of CSV reader is:
+
+    chart_reader = csv.reader(csvfile, quoting = csv.QUOTE_NONNUMERIC)
+
+#### Chart-Related Helper Routines
+
+<a id="runpythonmakechartdata"></a>
+##### RunPython.makeChartData
+
+This function makes a [CategoryChartData](https://python-pptx.readthedocs.io/en/latest/api/chart-data.html?highlight=categorychartdata) object, potentially for use with [`RunPython.makeChart`](#runpythonmakechart).
+
+###### Input
+
+* The chart data in the form created by [`RunPython.readCSV`](#runpythonreadcsv).
+* `True` for series being columns, `False` otherwise. `True` is the default.
+
+###### Output
+
+* A [CategoryChartData](https://python-pptx.readthedocs.io/en/latest/api/chart-data.html?highlight=categorychartdata) object.
+
+<a id="runpythonmakechart"></a>
+##### RunPython.makeChart
+
+This function takes a [CategoryChartData](https://python-pptx.readthedocs.io/en/latest/api/chart-data.html?highlight=categorychartdata) object, possibly made by [`RunPython.makeChartData`](#runpythonmakechartdata), and creates a
+[Chart](https://python-pptx.readthedocs.io/en/latest/api/chart.html) shape from it.
+This shape is added to the slide identified by the variable `slide`.
+
+###### Input
+
+* The `slide` to add the chart to. Generally this is the `slide` object provided by md2pptx when your python code gets control.
+* The chart type. This is one of the values documented in [XL_CHART_TYPE](https://python-pptx.readthedocs.io/en/latest/api/enum/XlChartType.html).
+* The rectangle to render the new chart in. Most likely this is the `renderingRectangle` object provided by md2pptx when your python code gets control.
+* The chart data in [CategoryChartData](https://python-pptx.readthedocs.io/en/latest/api/chart-data.html?highlight=categorychartdata) format. Most likely this was created by [`RunPython.makeChartData`](#runpythonmakechartdata).
+* The title of the chart. This string defaults to `None` - which prevents a title being created.
+* The legend position for the chart. This is one of the values documented in [XL_LEGEND_POSITION](https://python-pptx.readthedocs.io/en/latest/api/enum/XlLegendPosition.html). This defaults to `None` which prevents a legend being created.
+
+###### Output
+
+* A [`Chart`](https://python-pptx.readthedocs.io/en/latest/api/chart.html) object - which you can further manipulate.
+
+#### Table-Related Helper Routines
+
+<a id="runpythonmaketable"></a>
+##### RunPython.makeTable
+
+This function creates a table from input data and makes a [`Table`](https://python-pptx.readthedocs.io/en/latest/api/table.html) shape from it.
+This shape is added to the slide identified by the variable `slide`.
+
+###### Input
+
+* The `slide` to add the table to. Generally this is the `slide` object provided by md2pptx when your python code gets control.
+* The rectangle to render the new table in. Most likely this is the `renderingRectangle` object provided by md2pptx when your python code gets control.
+* The table data in the form created by [`RunPython.readCSV`](#runpythonreadcsv).
+
+###### Output
+
+* A [`Table`](https://python-pptx.readthedocs.io/en/latest/api/table.html) object - which you can further manipulate.
+
+<a id=runpythonapplycellfillrgb"></a>
+##### RunPython.applyCellFillRGB
+
+This function sets the background colour of a cell in an existing [`Table`](https://python-pptx.readthedocs.io/en/latest/api/table.html) object.
+
+###### Input
+
+* The [`Table`](https://python-pptx.readthedocs.io/en/latest/api/table.html) object.
+* The row number. Zero-indexed and not bounds checked.
+* The column number. Zero-indexed and not bounds checked.
+* The red value - between 0 and 255.
+* The green value - between 0 and 255.
+* The blue value - between 0 and 255.
+
+###### Output
+
+* Nothing is returned.
+
+<a id=runpythonapplycelllistfillrgb"></a>
+##### RunPython.applyCellListFillRGB
+
+This function sets the background colour of a list of cells in an existing [`Table`](https://python-pptx.readthedocs.io/en/latest/api/table.html) object.
+###### Input
+
+* The [`Table`](https://python-pptx.readthedocs.io/en/latest/api/table.html) object.
+* The list of cells. Each item in the list is of the form
+    * The row number. Zero-indexed and not bounds checked.
+    * The column number. Zero-indexed and not bounds checked.
+* The red value - between 0 and 255.
+* The green value - between 0 and 255.
+* The blue value - between 0 and 255.
+
+###### Output
+
+* Nothing is returned.
+
+
+<a id="run-python-examples"></a>
+### Examples
+
+Here are a couple of examples that use the [Python helper routines](#python-helper-routines).
+<a id="graphing-example"></a>
+#### Graphing Example
+
+Here is sample code to add a graph to a slide. \
+The complete code snippet includes creating the new slide with a title, as well as graph creation from an external CSV file.
+
+    ### Here Is A Slide With A Graph
+    
+    ``` run-python
+    
+    # Read chart data from CSV file
+    chart_csv = RunPython.readCSV("chartdata.csv")
+    
+    # Make chart data from the array. Second parameter defaults to True for "Series Is Column"
+    chart_data = RunPython.makeChartData(chart_csv, True)
+    
+    chart1 = RunPython.makeChart(slide,
+      XL_CHART_TYPE.COLUMN_CLUSTERED,
+      renderingRectangle,
+      chart_data,
+      "My Important Chart",
+      XL_LEGEND_POSITION.BOTTOM)        
+    ```
+
+This example uses helper routines provided by md2pptx:
+
+* [`RunPython.readCSV`](#runpythonreadcsv) reads in a CSV file.
+* [`RunPython.makeChartData`](#runpythonmakechartdata) turns this CSV data into chart data that can be directly used to make a chart.
+* [`RunPython.makeChart`](#runpythonmakechart) turns this chart data into a chart. You can use the `chart1` object in further python-pptx calls.
+
+The CSV file that `readCSV` processes might look like this:
+
+    " ","East","West","Midwest"
+    "Series 1",19.2,21.4,16.7
+    "Series 2",17.8,13.1,22.9
+    "Series 3",19.2,21.4,16.7
+    "Series 4",17.8,13.1,22.9
+
+You will notice two chart control items:
+
+* `XL_CHART_TYPE.COLUMN_CLUSTERED` - the chart type
+* `XL_LEGEND_POSITION.BOTTOM` - the chart legend position.
+
+These are both from python-pptx. \
+Rather than copy all the possible values into this user guide, see [XL_CHART_TYPE](https://python-pptx.readthedocs.io/en/latest/api/enum/XlChartType.html) and [XL_LEGEND_POSITION](https://python-pptx.readthedocs.io/en/latest/api/enum/XlLegendPosition.html).
+Other chart modifiers are available in python-pptx.
+
+The result of this code looks something like this:
+
+![](python-graph-slide.png)
+
+<a id="table-manipulation-example"></a>
+#### Table Manipulation Example
+
+Here is sample code to add a table to a slide. \
+The complete code snippet includes creating the new slide with a title, as well as table creation from an external CSV file.
+
+    ### Here Is  A Table
+    
+    ``` run-python
+    
+    # Read chart data from CSV file
+    chart_csv = RunPython.readCSV("chartdata.csv")
+    
+    # Make the table with the data
+    table1 = RunPython.makeTable(slide,renderingRectangle, chart_csv)
+    
+    # Set a cell background to yellow
+    RunPython.applyCellFillRGB(table1, 2, 3, 255, 255, 0)
+    
+    # Set list of cells to green
+    greenList = [(0, 0), (2,1), (3,2)]
+    RunPython.applyCellListFillRGB(table1, greenList, 0, 255, 0)
+    ```
+This example uses helper routines provided by md2pptx:
+
+* [`RunPython.readCSV`](#runpythonreadcsv) reads in a CSV file.
+* [`RunPython.makeTable`](#runpythonmaketable) makes a table from the CSV data.
+* [`RunPython.applyCellFillRGB`](#runpythonapplycellfillrgb) turns the background of one cell yellow.
+* [`RunPython.applyCellListFillRGB`](#runpythonapplycelllistfillrgb) turns the background of three cells green.
+
+In this example `makeTable` computes the new table's row and column counts from the read in CSV file.
+
+The CSV file might look like the one in [Graphing Example](graphing-example).
+
+The result of this code looks something like this:
+
+![](python-table.example.png)

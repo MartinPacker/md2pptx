@@ -1378,6 +1378,59 @@ body .markdown-body
 </ul>
 </li>
 <li><a href="#deviations-from-standard-markdown">Deviations From Standard Markdown</a></li>
+<li><a href="#running-inline-python">Running Inline Python</a><ul>
+<li><a href="#an-important-caution">An Important Caution</a></li>
+<li><a href="#coding-inline-python">Coding Inline Python</a></li>
+<li><a href="#variables-you-can-rely-on">Variables You Can Rely On</a></li>
+<li><a href="#python-helper-routines">Python Helper Routines</a><ul>
+<li><a href="#general-helper-routines">General Helper Routines</a><ul>
+<li><a href="#runpythonreadcsv">RunPython.readCSV</a><ul>
+<li><a href="#input">Input</a></li>
+<li><a href="#output">Output</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#chartrelated-helper-routines">Chart-Related Helper Routines</a><ul>
+<li><a href="#runpythonmakechartdata">RunPython.makeChartData</a><ul>
+<li><a href="#input">Input</a></li>
+<li><a href="#output">Output</a></li>
+</ul>
+</li>
+<li><a href="#runpythonmakechart">RunPython.makeChart</a><ul>
+<li><a href="#input">Input</a></li>
+<li><a href="#output">Output</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#tablerelated-helper-routines">Table-Related Helper Routines</a><ul>
+<li><a href="#runpythonmaketable">RunPython.makeTable</a><ul>
+<li><a href="#input">Input</a></li>
+<li><a href="#output">Output</a></li>
+</ul>
+</li>
+<li><a href="#runpythonapplycellfillrgb">RunPython.applyCellFillRGB</a><ul>
+<li><a href="#input">Input</a></li>
+<li><a href="#output">Output</a></li>
+</ul>
+</li>
+<li><a href="#runpythonapplycelllistfillrgb">RunPython.applyCellListFillRGB</a><ul>
+<li><a href="#input">Input</a></li>
+<li><a href="#output">Output</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#examples">Examples</a><ul>
+<li><a href="#graphing-example">Graphing Example</a></li>
+<li><a href="#table-manipulation-example">Table Manipulation Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 <h2 id="why-md2pptx">Why md2pptx?<a class="headerlink" href="#why-md2pptx" title="Permanent link"></a></h2>
 <p>There are advantages in creating presentations using a flat file format. Some of these are:</p>
@@ -1405,7 +1458,7 @@ body .markdown-body
 <li>Markdown is used in popular sites, such as <a href="https://github.com">Github</a>.</li>
 </ul>
 <p>Every piece of text you use to create a Powerpoint presentation with md2pptx is valid Markdown - <a href="#deviations-from-standard-markdown">with very few exceptions</a>. While it might not render exactly the same way put through another Markdown processor, it is generally equivalent. This is one of the key aims of md2pptx.</p>
-<p>One final advantage of the md2pptx approach is you can generate presentations without using PowerPoint itself. Indeed you can create presentations on machines where PowerPoint won&rsquo;t even run. All you need is to be able to run Python 3 and install python-pptx.</p>
+<p>One final advantage of the md2pptx approach is you can generate presentations without using PowerPoint itself. Indeed you can create presentations on machines where PowerPoint won&rsquo;t even run. All you need is to be able to run Python 3 and install <a href="http://python-pptx.readthedocs.io/en/latest/">python-pptx</a>.</p>
 <h3 id="a-real-world-use-case">A Real World Use Case<a class="headerlink" href="#a-real-world-use-case" title="Permanent link"></a></h3>
 <p>The author developed a presentation over 10 years in Powerpoint and OpenOffice and LibreOffice. It became very inconsistent in formatting - fonts, colours, indentations, bullets, etc.. It was a horrible mess.</p>
 <p>He took the trouble to convert it to Markdown and regenerated it with a very early version of md2pptx. The presentation looks nice again, with consistent formatting.</p>
@@ -1486,6 +1539,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">5.0</td>
+<td align="right">7&nbsp;July&nbsp;2024</td>
+<td align="left">Added <a href="#running-inline-python"><code>run-python</code></a> support.</td>
+</tr>
 <tr>
 <td align="left">4.6.1</td>
 <td align="right">1&nbsp;July&nbsp;2024</td>
@@ -4502,4 +4560,211 @@ The default value is <code>no</code>.</p>
 <li>Using <strong>outbound</strong> hyperlinks in a heading is not standard Markdown - whether within the document or to the web.</li>
 <li><a href="#graphviz">GraphViz .dot files</a> aren&rsquo;t rendered by most Markdown processors.</li>
 <li><a href="#funnels">Funnels</a> aren&rsquo;t rendered by any other Markdown processor.</li>
-</ul></article></body></html>
+<li><a href="#running-inline-python">run-python functionality</a> isn&rsquo;t supported by any other Markdown processor.</li>
+</ul>
+<h2 id="running-inline-python">Running Inline Python<a class="headerlink" href="#running-inline-python" title="Permanent link"></a></h2>
+<p><a id="running-inline-python"></a></p>
+<p>md2pptx is a python program that uses the <a href="http://python-pptx.readthedocs.io/en/latest/">python-pptx</a> library. There are many python-pptx capabilities that md2pptx doesn&rsquo;t use - because they can&rsquo;t be expressed directly in Markdown or HTML.</p>
+<p>One good example is <a href="#graphing-example">graphing</a>. Another is <a href="#table-manipulation-example">highlighting cells in a table</a>.</p>
+<p>Running inline python, perhaps with <a href="#python-helper-routines">helper routines</a>, enables these.</p>
+<p>The deal remains the same: A flat text file you author turning into a PowerPoint presentation.</p>
+<p><strong>Note:</strong> It is probably not a good idea to create additional slides in your python code - unless they are in a separate presentation. If you do md2pptx might very well get confused.</p>
+<h3 id="an-important-caution">An Important Caution<a class="headerlink" href="#an-important-caution" title="Permanent link"></a></h3>
+<p>The support described in <a href="#running-inline-python">Running Inline Python</a> allows you to run <strong>arbitary python code</strong>. It would be unwise to embed python code of unknown provenance.
+Use only code you directly write (or, of known provenance, embedded with <a href="https://github.com/MartinPacker/mdpre">mdpre</a>&lsquo;s <code>=include</code> capability).</p>
+<p>In general, though, this function is worth exploring - if it enables you turn flat files into presentations that you otherwise couldn&rsquo;t make that way.</p>
+<h3 id="coding-inline-python">Coding Inline Python<a class="headerlink" href="#coding-inline-python" title="Permanent link"></a></h3>
+<p>To code python inline start with this line:</p>
+<pre><code>``` run-python
+</code></pre>
+<p>then code your python logic.</p>
+<p>Finish with the line:</p>
+<pre><code>```
+</code></pre>
+<p>This is like an ordinary code block but with the addition of <code>run-python</code> on the opening line.</p>
+<p>You could code your python in a separate file and embed it with <a href="https://github.com/MartinPacker/mdpre">mdpre&rsquo;s</a>&lsquo;s <code>=include</code> capability. That would be especially useful if you embed the same code in multiple slides or presentations.</p>
+<p><a id="variables-you-can-rely-on"></a></p>
+<h3 id="variables-you-can-rely-on">Variables You Can Rely On<a class="headerlink" href="#variables-you-can-rely-on" title="Permanent link"></a></h3>
+<p>While there is no absolute guarantee that variables won&rsquo;t get refactored the following variables are unlikely to be renamed.</p>
+<ul>
+<li><code>slide</code> - the current slide you can manipulate. See <a href="https://python-pptx.readthedocs.io/en/latest/api/slides.html">Slides</a> for the python-pptx documentation.</li>
+<li><code>renderingRectangle</code> - the dimensions and position of an area you can render into.</li>
+</ul>
+<p><a id="python-helper-routines"></a></p>
+<h3 id="python-helper-routines">Python Helper Routines<a class="headerlink" href="#python-helper-routines" title="Permanent link"></a></h3>
+<p>md2pptx provides a number of helper routines - to simplify common things such as chart creation and table manipulation.</p>
+<p><strong>Note:</strong> Most of the helper routines can be intermixed with standard python-pptx coding.</p>
+<h4 id="general-helper-routines">General Helper Routines<a class="headerlink" href="#general-helper-routines" title="Permanent link"></a></h4>
+<p><a id="runpythonreadcsv"></a></p>
+<h5 id="runpythonreadcsv">RunPython.readCSV<a class="headerlink" href="#runpythonreadcsv" title="Permanent link"></a></h5>
+<p>This function reads a CSV file into variables.</p>
+<h6 id="input">Input<a class="headerlink" href="#input" title="Permanent link"></a></h6>
+<ul>
+<li>file name.</li>
+</ul>
+<h6 id="output">Output<a class="headerlink" href="#output" title="Permanent link"></a></h6>
+<ul>
+<li>A list of rows, each row containing a list of cell values.</li>
+</ul>
+<p>The flavour of CSV reader is:</p>
+<pre><code>chart_reader = csv.reader(csvfile, quoting = csv.QUOTE_NONNUMERIC)
+</code></pre>
+<h4 id="chart-related-helper-routines">Chart-Related Helper Routines<a class="headerlink" href="#chart-related-helper-routines" title="Permanent link"></a></h4>
+<p><a id="runpythonmakechartdata"></a></p>
+<h5 id="runpythonmakechartdata">RunPython.makeChartData<a class="headerlink" href="#runpythonmakechartdata" title="Permanent link"></a></h5>
+<p>This function makes a <a href="https://python-pptx.readthedocs.io/en/latest/api/chart-data.html?highlight=categorychartdata">CategoryChartData</a> object, potentially for use with <a href="#runpythonmakechart"><code>RunPython.makeChart</code></a>.</p>
+<h6 id="input_1">Input<a class="headerlink" href="#input_1" title="Permanent link"></a></h6>
+<ul>
+<li>The chart data in the form created by <a href="#runpythonreadcsv"><code>RunPython.readCSV</code></a>.</li>
+<li><code>True</code> for series being columns, <code>False</code> otherwise. <code>True</code> is the default.</li>
+</ul>
+<h6 id="output_1">Output<a class="headerlink" href="#output_1" title="Permanent link"></a></h6>
+<ul>
+<li>A <a href="https://python-pptx.readthedocs.io/en/latest/api/chart-data.html?highlight=categorychartdata">CategoryChartData</a> object.</li>
+</ul>
+<p><a id="runpythonmakechart"></a></p>
+<h5 id="runpythonmakechart">RunPython.makeChart<a class="headerlink" href="#runpythonmakechart" title="Permanent link"></a></h5>
+<p>This function takes a <a href="https://python-pptx.readthedocs.io/en/latest/api/chart-data.html?highlight=categorychartdata">CategoryChartData</a> object, possibly made by <a href="#runpythonmakechartdata"><code>RunPython.makeChartData</code></a>, and creates a
+<a href="https://python-pptx.readthedocs.io/en/latest/api/chart.html">Chart</a> shape from it.
+This shape is added to the slide identified by the variable <code>slide</code>.</p>
+<h6 id="input_2">Input<a class="headerlink" href="#input_2" title="Permanent link"></a></h6>
+<ul>
+<li>The <code>slide</code> to add the chart to. Generally this is the <code>slide</code> object provided by md2pptx when your python code gets control.</li>
+<li>The chart type. This is one of the values documented in <a href="https://python-pptx.readthedocs.io/en/latest/api/enum/XlChartType.html">XL_CHART_TYPE</a>.</li>
+<li>The rectangle to render the new chart in. Most likely this is the <code>renderingRectangle</code> object provided by md2pptx when your python code gets control.</li>
+<li>The chart data in <a href="https://python-pptx.readthedocs.io/en/latest/api/chart-data.html?highlight=categorychartdata">CategoryChartData</a> format. Most likely this was created by <a href="#runpythonmakechartdata"><code>RunPython.makeChartData</code></a>.</li>
+<li>The title of the chart. This string defaults to <code>None</code> - which prevents a title being created.</li>
+<li>The legend position for the chart. This is one of the values documented in <a href="https://python-pptx.readthedocs.io/en/latest/api/enum/XlLegendPosition.html">XL_LEGEND_POSITION</a>. This defaults to <code>None</code> which prevents a legend being created.</li>
+</ul>
+<h6 id="output_2">Output<a class="headerlink" href="#output_2" title="Permanent link"></a></h6>
+<ul>
+<li>A <a href="https://python-pptx.readthedocs.io/en/latest/api/chart.html"><code>Chart</code></a> object - which you can further manipulate.</li>
+</ul>
+<h4 id="table-related-helper-routines">Table-Related Helper Routines<a class="headerlink" href="#table-related-helper-routines" title="Permanent link"></a></h4>
+<p><a id="runpythonmaketable"></a></p>
+<h5 id="runpythonmaketable">RunPython.makeTable<a class="headerlink" href="#runpythonmaketable" title="Permanent link"></a></h5>
+<p>This function creates a table from input data and makes a <a href="https://python-pptx.readthedocs.io/en/latest/api/table.html"><code>Table</code></a> shape from it.
+This shape is added to the slide identified by the variable <code>slide</code>.</p>
+<h6 id="input_3">Input<a class="headerlink" href="#input_3" title="Permanent link"></a></h6>
+<ul>
+<li>The <code>slide</code> to add the table to. Generally this is the <code>slide</code> object provided by md2pptx when your python code gets control.</li>
+<li>The rectangle to render the new table in. Most likely this is the <code>renderingRectangle</code> object provided by md2pptx when your python code gets control.</li>
+<li>The table data in the form created by <a href="#runpythonreadcsv"><code>RunPython.readCSV</code></a>.</li>
+</ul>
+<h6 id="output_3">Output<a class="headerlink" href="#output_3" title="Permanent link"></a></h6>
+<ul>
+<li>A <a href="https://python-pptx.readthedocs.io/en/latest/api/table.html"><code>Table</code></a> object - which you can further manipulate.</li>
+</ul>
+<p><a id=runpythonapplycellfillrgb"></a></p>
+<h5 id="runpythonapplycellfillrgb">RunPython.applyCellFillRGB<a class="headerlink" href="#runpythonapplycellfillrgb" title="Permanent link"></a></h5>
+<p>This function sets the background colour of a cell in an existing <a href="https://python-pptx.readthedocs.io/en/latest/api/table.html"><code>Table</code></a> object.</p>
+<h6 id="input_4">Input<a class="headerlink" href="#input_4" title="Permanent link"></a></h6>
+<ul>
+<li>The <a href="https://python-pptx.readthedocs.io/en/latest/api/table.html"><code>Table</code></a> object.</li>
+<li>The row number. Zero-indexed and not bounds checked.</li>
+<li>The column number. Zero-indexed and not bounds checked.</li>
+<li>The red value - between 0 and 255.</li>
+<li>The green value - between 0 and 255.</li>
+<li>The blue value - between 0 and 255.</li>
+</ul>
+<h6 id="output_4">Output<a class="headerlink" href="#output_4" title="Permanent link"></a></h6>
+<ul>
+<li>Nothing is returned.</li>
+</ul>
+<p><a id=runpythonapplycelllistfillrgb"></a></p>
+<h5 id="runpythonapplycelllistfillrgb">RunPython.applyCellListFillRGB<a class="headerlink" href="#runpythonapplycelllistfillrgb" title="Permanent link"></a></h5>
+<p>This function sets the background colour of a list of cells in an existing <a href="https://python-pptx.readthedocs.io/en/latest/api/table.html"><code>Table</code></a> object.</p>
+<h6 id="input_5">Input<a class="headerlink" href="#input_5" title="Permanent link"></a></h6>
+<ul>
+<li>The <a href="https://python-pptx.readthedocs.io/en/latest/api/table.html"><code>Table</code></a> object.</li>
+<li>The list of cells. Each item in the list is of the form<ul>
+<li>The row number. Zero-indexed and not bounds checked.</li>
+<li>The column number. Zero-indexed and not bounds checked.</li>
+</ul>
+</li>
+<li>The red value - between 0 and 255.</li>
+<li>The green value - between 0 and 255.</li>
+<li>The blue value - between 0 and 255.</li>
+</ul>
+<h6 id="output_5">Output<a class="headerlink" href="#output_5" title="Permanent link"></a></h6>
+<ul>
+<li>Nothing is returned.</li>
+</ul>
+<p><a id="run-python-examples"></a></p>
+<h3 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link"></a></h3>
+<p>Here are a couple of examples that use the <a href="#python-helper-routines">Python helper routines</a>.
+<a id="graphing-example"></a></p>
+<h4 id="graphing-example">Graphing Example<a class="headerlink" href="#graphing-example" title="Permanent link"></a></h4>
+<p>Here is sample code to add a graph to a slide. The complete code snippet includes creating the new slide with a title, as well as graph creation from an external CSV file.</p>
+<pre><code>### Here Is A Slide With A Graph
+
+``` run-python
+
+# Read chart data from CSV file
+chart_csv = RunPython.readCSV("chartdata.csv")
+
+# Make chart data from the array. Second parameter defaults to True for "Series Is Column"
+chart_data = RunPython.makeChartData(chart_csv, True)
+
+chart1 = RunPython.makeChart(slide,
+  XL_CHART_TYPE.COLUMN_CLUSTERED,
+  renderingRectangle,
+  chart_data,
+  "My Important Chart",
+  XL_LEGEND_POSITION.BOTTOM)        
+```
+</code></pre>
+<p>This example uses helper routines provided by md2pptx:</p>
+<ul>
+<li><a href="#runpythonreadcsv"><code>RunPython.readCSV</code></a> reads in a CSV file.</li>
+<li><a href="#runpythonmakechartdata"><code>RunPython.makeChartData</code></a> turns this CSV data into chart data that can be directly used to make a chart.</li>
+<li><a href="#runpythonmakechart"><code>RunPython.makeChart</code></a> turns this chart data into a chart. You can use the <code>chart1</code> object in further python-pptx calls.</li>
+</ul>
+<p>The CSV file that <code>readCSV</code> processes might look like this:</p>
+<pre><code>" ","East","West","Midwest"
+"Series 1",19.2,21.4,16.7
+"Series 2",17.8,13.1,22.9
+"Series 3",19.2,21.4,16.7
+"Series 4",17.8,13.1,22.9
+</code></pre>
+<p>You will notice two chart control items:</p>
+<ul>
+<li><code>XL_CHART_TYPE.COLUMN_CLUSTERED</code> - the chart type</li>
+<li><code>XL_LEGEND_POSITION.BOTTOM</code> - the chart legend position.</li>
+</ul>
+<p>These are both from python-pptx. Rather than copy all the possible values into this user guide, see <a href="https://python-pptx.readthedocs.io/en/latest/api/enum/XlChartType.html">XL_CHART_TYPE</a> and <a href="https://python-pptx.readthedocs.io/en/latest/api/enum/XlLegendPosition.html">XL_LEGEND_POSITION</a>.
+Other chart modifiers are available in python-pptx.</p>
+<p>The result of this code looks something like this:</p>
+<p><img alt="" src="/Users/martinpacker/md2pptx/docs/python-graph-slide.png" /></p>
+<p><a id="table-manipulation-example"></a></p>
+<h4 id="table-manipulation-example">Table Manipulation Example<a class="headerlink" href="#table-manipulation-example" title="Permanent link"></a></h4>
+<p>Here is sample code to add a table to a slide. The complete code snippet includes creating the new slide with a title, as well as table creation from an external CSV file.</p>
+<pre><code>### Here Is  A Table
+
+``` run-python
+
+# Read chart data from CSV file
+chart_csv = RunPython.readCSV("chartdata.csv")
+
+# Make the table with the data
+table1 = RunPython.makeTable(slide,renderingRectangle, chart_csv)
+
+# Set a cell background to yellow
+RunPython.applyCellFillRGB(table1, 2, 3, 255, 255, 0)
+
+# Set list of cells to green
+greenList = [(0, 0), (2,1), (3,2)]
+RunPython.applyCellListFillRGB(table1, greenList, 0, 255, 0)
+```
+</code></pre>
+<p>This example uses helper routines provided by md2pptx:</p>
+<ul>
+<li><a href="#runpythonreadcsv"><code>RunPython.readCSV</code></a> reads in a CSV file.</li>
+<li><a href="#runpythonmaketable"><code>RunPython.makeTable</code></a> makes a table from the CSV data.</li>
+<li><a href="#runpythonapplycellfillrgb"><code>RunPython.applyCellFillRGB</code></a> turns the background of one cell yellow.</li>
+<li><a href="#runpythonapplycelllistfillrgb"><code>RunPython.applyCellListFillRGB</code></a> turns the background of three cells green.</li>
+</ul>
+<p>In this example <code>makeTable</code> computes the new table&rsquo;s row and column counts from the read in CSV file.</p>
+<p>The CSV file might look like the one in <a href="/Users/martinpacker/md2pptx/docs/graphing-example">Graphing Example</a>.</p>
+<p>The result of this code looks something like this:</p>
+<p><img alt="" src="/Users/martinpacker/md2pptx/docs/python-table.example.png" /></p></article></body></html>
