@@ -2,7 +2,7 @@
 runPython
 """
 
-version = "0.1"
+version = "0.2"
 
 import csv
 from pptx.chart.data import CategoryChartData
@@ -10,6 +10,7 @@ from pptx.oxml.xmlchemy import OxmlElement, serialize_for_reading
 from pptx.dml.color import RGBColor
 from pptx.enum.chart import XL_CHART_TYPE
 from pptx.enum.chart import XL_LEGEND_POSITION
+from pptx.enum.text import PP_ALIGN
 
 class RunPython:
     def __init__(
@@ -113,3 +114,13 @@ class RunPython:
     def applyCellListFillRGB(table, cellList, red, green, blue):
         for row, column in cellList:
             RunPython.applyCellFillRGB(table, row, column, red, green, blue)
+            
+    def alignTableCellText(tableFrame, rowNumber, columnNumber, alignment):
+        # Get the cell's text_frame
+        tableCellFrame = tableFrame.table.cell(rowNumber, columnNumber).text_frame
+
+        # Iterate over the cell's paaragraph's, aligning right
+        for p in tableCellFrame.paragraphs:
+            p.alignment = alignment
+
+

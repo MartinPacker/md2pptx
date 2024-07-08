@@ -1,0 +1,9 @@
+template: Martin Template.pptx
+
+## Here Is A Table - With Smart Colouring
+
+``` run-python
+
+=include smartCells.py
+
+```
