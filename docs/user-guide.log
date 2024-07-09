@@ -1,3 +1,11 @@
+/Users/martinpacker/mdpre/mdpre:345: SyntaxWarning: invalid escape sequence '\s'
+  def parse_colalign(colString, p_separator="\s+"):
+/Users/martinpacker/mdpre/mdpre:351: SyntaxWarning: invalid escape sequence '\s'
+  def parse_colwidth(colString, p_separator="\s+"):
+/Users/martinpacker/mdpre/mdpre:361: SyntaxWarning: invalid escape sequence '\s'
+  def parse_calstart(calString, p_separator="\s+"):
+/Users/martinpacker/mdpre/mdpre:373: SyntaxWarning: invalid escape sequence '\s'
+  def parse_caldays(spanString, cal_spans, p_separator="\s+"):
 
 mdpre Markdown Preprocessor v0.6.8 (8 March, 2024)
 ==================================================
@@ -5,8 +13,8 @@ mdpre Markdown Preprocessor v0.6.8 (8 March, 2024)
 Def mdpre_date = 8 March, 2024
 Def mdpre_level = 0.6.8
 Def userid = martinpacker
-Def time = 16&colon;05
-Def date = 7 July&comma; 2024
+Def time = 08&colon;09
+Def date = 9 July&comma; 2024
 Def TOC = Table Of Contents
 Def md = Markdown
 Def pp = Powerpoint
@@ -272,6 +280,9 @@ CSV Stop
 ..... ..... ..... ..... .....  Input
 ..... ..... ..... ..... .....  Output
 ..... ..... ..... .....  RunPython.applyCellListFillRGB
+..... ..... ..... ..... .....  Input
+..... ..... ..... ..... .....  Output
+..... ..... ..... .....  RunPython.alignTableCellText
 ..... ..... ..... ..... .....  Input
 ..... ..... ..... ..... .....  Output
 ..... .....  Examples

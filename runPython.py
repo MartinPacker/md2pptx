@@ -115,12 +115,14 @@ class RunPython:
         for row, column in cellList:
             RunPython.applyCellFillRGB(table, row, column, red, green, blue)
             
-    def alignTableCellText(tableFrame, rowNumber, columnNumber, alignment):
+    def alignTableCellText(tableFrame, rowNumber, columnNumber, alignment, paragraphNumber = None):
         # Get the cell's text_frame
         tableCellFrame = tableFrame.table.cell(rowNumber, columnNumber).text_frame
 
-        # Iterate over the cell's paaragraph's, aligning right
-        for p in tableCellFrame.paragraphs:
-            p.alignment = alignment
-
+        if paragraphNumber == None:
+            # Iterate over the cell's paaragraph's, aligning right
+            for p in tableCellFrame.paragraphs:
+                p.alignment = alignment
+        else:
+            tableCellFrame.paragraphs[paragraphNumber].alignment = alignment
 

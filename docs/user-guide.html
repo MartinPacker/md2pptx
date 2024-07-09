@@ -1420,6 +1420,11 @@ body .markdown-body
 <li><a href="#output">Output</a></li>
 </ul>
 </li>
+<li><a href="#runpythonaligntablecelltext">RunPython.alignTableCellText</a><ul>
+<li><a href="#input">Input</a></li>
+<li><a href="#output">Output</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -1539,6 +1544,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">5.0+</td>
+<td align="right">?&nbsp;July&nbsp;2024</td>
+<td align="left">Added <a href="#runpythonaligntablecelltext"><code>RunPython.alignTableCellText</code></a> support.</td>
+</tr>
 <tr>
 <td align="left">5.0</td>
 <td align="right">7&nbsp;July&nbsp;2024</td>
@@ -4687,6 +4697,21 @@ This shape is added to the slide identified by the variable <code>slide</code>.<
 <li>The blue value - between 0 and 255.</li>
 </ul>
 <h6 id="output_5">Output<a class="headerlink" href="#output_5" title="Permanent link"></a></h6>
+<ul>
+<li>Nothing is returned.</li>
+</ul>
+<p><a id="runpythonaligntablecelltext"></a></p>
+<h5 id="runpythonaligntablecelltext">RunPython.alignTableCellText<a class="headerlink" href="#runpythonaligntablecelltext" title="Permanent link"></a></h5>
+<p>This function aligns all the text paragraphs in a table cell. Generally there will be only one paragraph in a cell - but this function iterates over them all.</p>
+<h6 id="input_6">Input<a class="headerlink" href="#input_6" title="Permanent link"></a></h6>
+<ul>
+<li>The <a href="https://python-pptx.readthedocs.io/en/latest/api/table.html"><code>Table</code></a> object.</li>
+<li>The row number. Zero-indexed and not bounds checked.</li>
+<li>The column number. Zero-indexed and not bounds checked.</li>
+<li>Alignment. See <a href="https://python-pptx.readthedocs.io/en/latest/api/enum/PpParagraphAlignment.html">PP_PARAGRAPH_ALIGNMENT</a>.</li>
+<li>(Optional) paragraph number. If not specified all paragraphs in the cell will be aligned. If specified just the (zero-indexed) paragraph will be aligned.</li>
+</ul>
+<h6 id="output_6">Output<a class="headerlink" href="#output_6" title="Permanent link"></a></h6>
 <ul>
 <li>Nothing is returned.</li>
 </ul>

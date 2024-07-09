@@ -253,6 +253,9 @@ As you can see in the [change log](#change-log), md2pptx is frequently updated -
 			* [RunPython.applyCellListFillRGB](#runpythonapplycelllistfillrgb)
 				* [Input](#input)
 				* [Output](#output)
+			* [RunPython.alignTableCellText](#runpythonaligntablecelltext)
+				* [Input](#input)
+				* [Output](#output)
 	* [Examples](#examples)
 		* [Graphing Example](#graphing-example)
 		* [Table Manipulation Example](#table-manipulation-example)
@@ -380,6 +383,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|5.0+|?&nbsp;July&nbsp;2024|Added [`RunPython.alignTableCellText`](#runpythonaligntablecelltext) support.|
 |5.0|7&nbsp;July&nbsp;2024|Added [`run-python`](#running-inline-python) support.|
 |4.6.1|1&nbsp;July&nbsp;2024|Fixed breakage in `hidden`.|
 |4.6|30&nbsp;June&nbsp;2024|Use Unicode noncharacters instead of high 8-bit characters for markers. Added `hidden`[metadata](#hiding-slides-hidden) and [dynamic metadata](#hidden-dynamic) item.|
@@ -3738,6 +3742,7 @@ This function sets the background colour of a cell in an existing [`Table`](http
 ##### RunPython.applyCellListFillRGB
 
 This function sets the background colour of a list of cells in an existing [`Table`](https://python-pptx.readthedocs.io/en/latest/api/table.html) object.
+
 ###### Input
 
 * The [`Table`](https://python-pptx.readthedocs.io/en/latest/api/table.html) object.
@@ -3752,6 +3757,23 @@ This function sets the background colour of a list of cells in an existing [`Tab
 
 * Nothing is returned.
 
+
+<a id="runpythonaligntablecelltext"></a>
+##### RunPython.alignTableCellText
+
+This function aligns all the text paragraphs in a table cell. Generally there will be only one paragraph in a cell - but this function iterates over them all.
+
+###### Input
+
+* The [`Table`](https://python-pptx.readthedocs.io/en/latest/api/table.html) object.
+* The row number. Zero-indexed and not bounds checked.
+* The column number. Zero-indexed and not bounds checked.
+* Alignment. See [PP_PARAGRAPH_ALIGNMENT](https://python-pptx.readthedocs.io/en/latest/api/enum/PpParagraphAlignment.html).
+* (Optional) paragraph number. If not specified all paragraphs in the cell will be aligned. If specified just the (zero-indexed) paragraph will be aligned.
+
+###### Output
+
+* Nothing is returned.
 
 <a id="run-python-examples"></a>
 ### Examples
