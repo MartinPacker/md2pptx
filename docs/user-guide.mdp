@@ -154,7 +154,7 @@ To quote from the python-pptx license statement:
 =colalign l r l
 =csv
 Level,Date,What
-5.0+,?&nbsp;July&nbsp;2024,Added [`RunPython.alignTableCellText`](#runpythonaligntablecelltext) support.
+5.0+,?&nbsp;July&nbsp;2024,Added [`RunPython.alignTableCellText`](#runpythonaligntablecelltext) and [`RunPython.makeDrawnShape`](#runpythonmakedrawnshape)support.
 5.0,7&nbsp;July&nbsp;2024,Added [`run-python`](#running-inline-python) support.
 4.6.1,1&nbsp;July&nbsp;2024,Fixed breakage in `hidden`.
 4.6,30&nbsp;June&nbsp;2024,Use Unicode noncharacters instead of high 8-bit characters for markers. Added `hidden`[metadata](#hiding-slides-hidden) and [dynamic metadata](#hidden-dynamic) item.
@@ -3891,10 +3891,38 @@ Generally there will be only one paragraph in a cell - but this function iterate
 
 * Nothing is returned.
 
-<a id="run-python-examples"></a>
-### Examples
+#### Drawing-Related Helper Routines
 
-Here are a couple of examples that use the [Python helper routines](#python-helper-routines).
+<a id=runpythonmakedrawnshape"></a>
+##### RunPython.makeDrawnShape
+
+This function draws a shape from a set of vertices, optionally filling it and adding text.
+
+###### Input
+
+* The `slide` to add the shape to. Generally this is the `slide` object provided by md2pptx when your python code gets control.
+* An array of points. Each point is of the form:
+    * x coordinate - in EMU units
+    * y coordinate - in EMU units
+* Whether the shape is to be filled. Defaults to `False`.
+* Text to add to the shape. Defaults to `None`.
+* The text colour. Defaults to `None` - which leads to black text. See [Specifying Colours](#specifying-colours).
+* The fill colour. Defaults to `None` - which, in the case of the shape being filled, leads to the presentation's default colour. See [Specifying Colours](#specifying-colours).
+* Whether the shape is to be filled. Defaults to `True`.
+
+###### Output
+
+* The created shape
+
+<a id="inline-python-examples"></a>
+### Inline Python Examples
+
+Here are a few examples that use the [Python helper routines](#python-helper-routines).
+
+* [Graphing Example](#graphing-example)
+* [Table Manipulation Example](#table-manipulation-example)
+* [Slide With A Shape Example](#slide-with-a-shape-example)
+
 <a id="graphing-example"></a>
 #### Graphing Example
 
@@ -3983,3 +4011,44 @@ The CSV file might look like the one in [Graphing Example](graphing-example).
 The result of this code looks something like this:
 
 ![](python-table.example.png)
+
+<a id="slide-with-a-shape-example"></a>
+#### Slide With A Shape Example
+
+Here is sample code to add a shape to a slide. \
+The complete code snippet includes creating the new slide with a title, as well as shape creation.
+
+In this example the shape occupies the whole of the offered rendering rectangle.
+
+The shape is created with [`RunPython.makeDrawnShape`](#runpythonmakedrawnshape) with the following parameters:
+
+* The current slide - given by the variable `slide`.
+* An array of points.
+* `True` to fill the shape.
+* Some text to add to the shape - "My Text".
+* A text colour that is red - `#FF0000`.
+* A background colour that is turquoise - `#00FFFF`.
+* `True` for joining up the shape (defaulted here).
+
+&nbsp;
+
+
+    ### Here Is A Slide - With Smart Colouring 
+
+	``` run-python
+	
+	vertices = [
+		(renderingRectangle.left, renderingRectangle.top),
+		(renderingRectangle.left + renderingRectangle.width, renderingRectangle.top),
+		(renderingRectangle.left + renderingRectangle.width, renderingRectangle.top + renderingRectangle.height),
+		(renderingRectangle.left, renderingRectangle.top + renderingRectangle.height),
+	]
+	
+	
+	s = RunPython.makeDrawnShape(slide, vertices, True, "My Text","#FF0000","#80FFFF")
+	
+	```
+
+The result of this code looks something like this:
+
+![](shapeSlide.png)

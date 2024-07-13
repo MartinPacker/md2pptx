@@ -1427,11 +1427,20 @@ body .markdown-body
 </li>
 </ul>
 </li>
+<li><a href="#drawingrelated-helper-routines">Drawing-Related Helper Routines</a><ul>
+<li><a href="#runpythonmakedrawnshape">RunPython.makeDrawnShape</a><ul>
+<li><a href="#input">Input</a></li>
+<li><a href="#output">Output</a></li>
 </ul>
 </li>
-<li><a href="#examples">Examples</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#inline-python-examples">Inline Python Examples</a><ul>
 <li><a href="#graphing-example">Graphing Example</a></li>
 <li><a href="#table-manipulation-example">Table Manipulation Example</a></li>
+<li><a href="#slide-with-a-shape-example">Slide With A Shape Example</a></li>
 </ul>
 </li>
 </ul>
@@ -1547,7 +1556,7 @@ THE SOFTWARE.
 <tr>
 <td align="left">5.0+</td>
 <td align="right">?&nbsp;July&nbsp;2024</td>
-<td align="left">Added <a href="#runpythonaligntablecelltext"><code>RunPython.alignTableCellText</code></a> support.</td>
+<td align="left">Added <a href="#runpythonaligntablecelltext"><code>RunPython.alignTableCellText</code></a> and <a href="#runpythonmakedrawnshape"><code>RunPython.makeDrawnShape</code></a>support.</td>
 </tr>
 <tr>
 <td align="left">5.0</td>
@@ -4715,10 +4724,37 @@ This shape is added to the slide identified by the variable <code>slide</code>.<
 <ul>
 <li>Nothing is returned.</li>
 </ul>
-<p><a id="run-python-examples"></a></p>
-<h3 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link"></a></h3>
-<p>Here are a couple of examples that use the <a href="#python-helper-routines">Python helper routines</a>.
-<a id="graphing-example"></a></p>
+<h4 id="drawing-related-helper-routines">Drawing-Related Helper Routines<a class="headerlink" href="#drawing-related-helper-routines" title="Permanent link"></a></h4>
+<p><a id=runpythonmakedrawnshape"></a></p>
+<h5 id="runpythonmakedrawnshape">RunPython.makeDrawnShape<a class="headerlink" href="#runpythonmakedrawnshape" title="Permanent link"></a></h5>
+<p>This function draws a shape from a set of vertices, optionally filling it and adding text.</p>
+<h6 id="input_7">Input<a class="headerlink" href="#input_7" title="Permanent link"></a></h6>
+<ul>
+<li>The <code>slide</code> to add the shape to. Generally this is the <code>slide</code> object provided by md2pptx when your python code gets control.</li>
+<li>An array of points. Each point is of the form:<ul>
+<li>x coordinate - in EMU units</li>
+<li>y coordinate - in EMU units</li>
+</ul>
+</li>
+<li>Whether the shape is to be filled. Defaults to <code>False</code>.</li>
+<li>Text to add to the shape. Defaults to <code>None</code>.</li>
+<li>The text colour. Defaults to <code>None</code> - which leads to black text. See <a href="#specifying-colours">Specifying Colours</a>.</li>
+<li>The fill colour. Defaults to <code>None</code> - which, in the case of the shape being filled, leads to the presentation&rsquo;s default colour. See <a href="#specifying-colours">Specifying Colours</a>.</li>
+<li>Whether the shape is to be filled. Defaults to <code>True</code>.</li>
+</ul>
+<h6 id="output_7">Output<a class="headerlink" href="#output_7" title="Permanent link"></a></h6>
+<ul>
+<li>The created shape</li>
+</ul>
+<p><a id="inline-python-examples"></a></p>
+<h3 id="inline-python-examples">Inline Python Examples<a class="headerlink" href="#inline-python-examples" title="Permanent link"></a></h3>
+<p>Here are a few examples that use the <a href="#python-helper-routines">Python helper routines</a>.</p>
+<ul>
+<li><a href="#graphing-example">Graphing Example</a></li>
+<li><a href="#table-manipulation-example">Table Manipulation Example</a></li>
+<li><a href="#slide-with-a-shape-example">Slide With A Shape Example</a></li>
+</ul>
+<p><a id="graphing-example"></a></p>
 <h4 id="graphing-example">Graphing Example<a class="headerlink" href="#graphing-example" title="Permanent link"></a></h4>
 <p>Here is sample code to add a graph to a slide. The complete code snippet includes creating the new slide with a title, as well as graph creation from an external CSV file.</p>
 <pre><code>### Here Is A Slide With A Graph
@@ -4792,4 +4828,37 @@ RunPython.applyCellListFillRGB(table1, greenList, 0, 255, 0)
 <p>In this example <code>makeTable</code> computes the new table&rsquo;s row and column counts from the read in CSV file.</p>
 <p>The CSV file might look like the one in <a href="/Users/martinpacker/md2pptx/docs/graphing-example">Graphing Example</a>.</p>
 <p>The result of this code looks something like this:</p>
-<p><img alt="" src="/Users/martinpacker/md2pptx/docs/python-table.example.png" /></p></article></body></html>
+<p><img alt="" src="/Users/martinpacker/md2pptx/docs/python-table.example.png" /></p>
+<p><a id="slide-with-a-shape-example"></a></p>
+<h4 id="slide-with-a-shape-example">Slide With A Shape Example<a class="headerlink" href="#slide-with-a-shape-example" title="Permanent link"></a></h4>
+<p>Here is sample code to add a shape to a slide. The complete code snippet includes creating the new slide with a title, as well as shape creation.</p>
+<p>In this example the shape occupies the whole of the offered rendering rectangle.</p>
+<p>The shape is created with <a href="#runpythonmakedrawnshape"><code>RunPython.makeDrawnShape</code></a> with the following parameters:</p>
+<ul>
+<li>The current slide - given by the variable <code>slide</code>.</li>
+<li>An array of points.</li>
+<li><code>True</code> to fill the shape.</li>
+<li>Some text to add to the shape - &ldquo;My Text&rdquo;.</li>
+<li>A text colour that is red - <code>#FF0000</code>.</li>
+<li>A background colour that is turquoise - <code>#00FFFF</code>.</li>
+<li><code>True</code> for joining up the shape (defaulted here).</li>
+</ul>
+<p>&nbsp;</p>
+<pre><code>### Here Is A Slide - With Smart Colouring
+
+``` run-python
+
+vertices = [
+    (renderingRectangle.left, renderingRectangle.top),
+    (renderingRectangle.left + renderingRectangle.width, renderingRectangle.top),
+    (renderingRectangle.left + renderingRectangle.width, renderingRectangle.top + renderingRectangle.height),
+    (renderingRectangle.left, renderingRectangle.top + renderingRectangle.height),
+]
+
+
+s = RunPython.makeDrawnShape(slide, vertices, True, "My Text","#FF0000","#80FFFF")
+
+```
+</code></pre>
+<p>The result of this code looks something like this:</p>
+<p><img alt="" src="/Users/martinpacker/md2pptx/docs/shapeSlide.png" /></p></article></body></html>

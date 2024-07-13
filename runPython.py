@@ -11,6 +11,8 @@ from pptx.dml.color import RGBColor
 from pptx.enum.chart import XL_CHART_TYPE
 from pptx.enum.chart import XL_LEGEND_POSITION
 from pptx.enum.text import PP_ALIGN
+from pptx.dml.color import RGBColor
+from colour import setColour, parseColour
 
 class RunPython:
     def __init__(
@@ -126,3 +128,25 @@ class RunPython:
         else:
             tableCellFrame.paragraphs[paragraphNumber].alignment = alignment
 
+    def makeDrawnShape(slide, vertices, fill = False, text = None, textColor = None, fillColor = None):
+        ffBuilder = slide.shapes.build_freeform(*vertices[0], True)
+    
+        ffBuilder.add_line_segments(vertices[1:], close = True)
+    
+        s = ffBuilder.convert_to_shape()
+        
+        if text is not None:
+            s.text = text
+            p = s.text_frame.paragraphs[0]
+            p.alignment = PP_ALIGN.CENTER
+            if textColor is None:
+                setColour(p.font.color, parseColour('#000000'))
+            else:
+                setColour(p.font.color, parseColour(textColor))
+    
+        if fill:
+            s.fill.solid()
+            if fillColor is not None:
+                setColour(s.fill.fore_color, parseColour(fillColor))
+        
+        return s

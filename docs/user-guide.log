@@ -13,8 +13,8 @@ mdpre Markdown Preprocessor v0.6.8 (8 March, 2024)
 Def mdpre_date = 8 March, 2024
 Def mdpre_level = 0.6.8
 Def userid = martinpacker
-Def time = 08&colon;09
-Def date = 9 July&comma; 2024
+Def time = 17&colon;04
+Def date = 13 July&comma; 2024
 Def TOC = Table Of Contents
 Def md = Markdown
 Def pp = Powerpoint
@@ -285,9 +285,14 @@ CSV Stop
 ..... ..... ..... .....  RunPython.alignTableCellText
 ..... ..... ..... ..... .....  Input
 ..... ..... ..... ..... .....  Output
-..... .....  Examples
+..... ..... .....  Drawing-Related Helper Routines
+..... ..... ..... .....  RunPython.makeDrawnShape
+..... ..... ..... ..... .....  Input
+..... ..... ..... ..... .....  Output
+..... .....  Inline Python Examples
 ..... ..... .....  Graphing Example
 ..... ..... .....  Table Manipulation Example
+..... ..... .....  Slide With A Shape Example
 --------------------------------------------------
 - Processing completed.
 --------------------------------------------------
