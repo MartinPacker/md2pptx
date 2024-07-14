@@ -154,7 +154,7 @@ To quote from the python-pptx license statement:
 =colalign l r l
 =csv
 Level,Date,What
-5.0+,?&nbsp;July&nbsp;2024,Added [`RunPython.alignTableCellText`](#runpythonaligntablecelltext) and [`RunPython.makeDrawnShape`](#runpythonmakedrawnshape)support.
+5.0.1,14&nbsp;July&nbsp;2024,Added [`RunPython.alignTableCellText`](#runpythonaligntablecelltext) and [`RunPython.makeDrawnShape`](#runpythonmakedrawnshape)support.
 5.0,7&nbsp;July&nbsp;2024,Added [`run-python`](#running-inline-python) support.
 4.6.1,1&nbsp;July&nbsp;2024,Fixed breakage in `hidden`.
 4.6,30&nbsp;June&nbsp;2024,Use Unicode noncharacters instead of high 8-bit characters for markers. Added `hidden`[metadata](#hiding-slides-hidden) and [dynamic metadata](#hidden-dynamic) item.
