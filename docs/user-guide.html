@@ -1389,6 +1389,16 @@ body .markdown-body
 <li><a href="#output">Output</a></li>
 </ul>
 </li>
+<li><a href="#runpythonfilterrows">RunPython.filterRows</a><ul>
+<li><a href="#input">Input</a></li>
+<li><a href="#output">Output</a></li>
+</ul>
+</li>
+<li><a href="#runpythontransposearray">RunPython.transposeArray</a><ul>
+<li><a href="#input">Input</a></li>
+<li><a href="#output">Output</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#chartrelated-helper-routines">Chart-Related Helper Routines</a><ul>
@@ -1553,6 +1563,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">5.0.1+</td>
+<td align="right">20&nbsp;July&nbsp;2024</td>
+<td align="left">Added optional <code>columns</code> parameter to <a href="#runpythonmakechartdata"><code>RunPython.makeChartData</code></a>. Added <a href="#runpythonfilterrows"><code>RunPython.filterRows</code></a> and <a href="#runpythontransposearray"><code>RunPython.transposeArray</code></a> support.</td>
+</tr>
 <tr>
 <td align="left">5.0.1</td>
 <td align="right">14&nbsp;July&nbsp;2024</td>
@@ -4614,6 +4629,10 @@ Use only code you directly write (or, of known provenance, embedded with <a href
 <p>md2pptx provides a number of helper routines - to simplify common things such as chart creation and table manipulation.</p>
 <p><strong>Note:</strong> Most of the helper routines can be intermixed with standard python-pptx coding.</p>
 <h4 id="general-helper-routines">General Helper Routines<a class="headerlink" href="#general-helper-routines" title="Permanent link"></a></h4>
+<p>These general helper routines are meant equally to help with graphing and table manipulation.
+They can be combined. So, for example you could combine <a href="#runpythonreadcsv">runPython.readCSV</a>, <a href="#runpythonfilterrows">runPython.filterRows</a>,  and <a href="#runpythontransposearray">runPython.transposeArray</a>:</p>
+<pre><code>chart_csv = RunPython.transposeArray(RunPython.filterRows(RunPython.readCSV("chartdata.csv"), myFilter))
+</code></pre>
 <p><a id="runpythonreadcsv"></a></p>
 <h5 id="runpythonreadcsv">RunPython.readCSV<a class="headerlink" href="#runpythonreadcsv" title="Permanent link"></a></h5>
 <p>This function reads a CSV file into variables.</p>
@@ -4623,21 +4642,50 @@ Use only code you directly write (or, of known provenance, embedded with <a href
 </ul>
 <h6 id="output">Output<a class="headerlink" href="#output" title="Permanent link"></a></h6>
 <ul>
-<li>A list of rows, each row containing a list of cell values.</li>
+<li>A list of rows, each row containing a list of cell values (e.g. <code>[["A","B"],[1,2],[3,4]]</code>)</li>
 </ul>
 <p>The flavour of CSV reader is:</p>
 <pre><code>chart_reader = csv.reader(csvfile, quoting = csv.QUOTE_NONNUMERIC)
 </code></pre>
+<p><a id="runpythonfilterrows"></a></p>
+<h5 id="runpythonfilterrows">RunPython.filterRows<a class="headerlink" href="#runpythonfilterrows" title="Permanent link"></a></h5>
+<p>This function filters your array of data using a function you supply, returning another array.</p>
+<h6 id="input_1">Input<a class="headerlink" href="#input_1" title="Permanent link"></a></h6>
+<ul>
+<li>Data in the form created by <a href="#runpythonreadcsv">RunPython.readCSV</a>.</li>
+<li>A function you supply, returning <code>True</code> for &ldquo;keep the row, otherwise <code>False</code>. The function should expect two parameters:<ul>
+<li>The row number, zero-indexed</li>
+<li>The row as a Python list</li>
+</ul>
+</li>
+</ul>
+<h6 id="output_1">Output<a class="headerlink" href="#output_1" title="Permanent link"></a></h6>
+<ul>
+<li>Data in the form created by <a href="#runpythonreadcsv">RunPython.readCSV</a>.</li>
+</ul>
+<p><a id="runpythontransposearray"></a></p>
+<h5 id="runpythontransposearray">RunPython.transposeArray<a class="headerlink" href="#runpythontransposearray" title="Permanent link"></a></h5>
+<p>This function transposes your array of data, returning another array.</p>
+<h6 id="input_2">Input<a class="headerlink" href="#input_2" title="Permanent link"></a></h6>
+<ul>
+<li>Data in the form created by <a href="#runpythonreadcsv">RunPython.readCSV</a>.</li>
+</ul>
+<h6 id="output_2">Output<a class="headerlink" href="#output_2" title="Permanent link"></a></h6>
+<ul>
+<li>Data in the form created by <a href="#runpythonreadcsv">RunPython.readCSV</a>.</li>
+</ul>
 <h4 id="chart-related-helper-routines">Chart-Related Helper Routines<a class="headerlink" href="#chart-related-helper-routines" title="Permanent link"></a></h4>
 <p><a id="runpythonmakechartdata"></a></p>
 <h5 id="runpythonmakechartdata">RunPython.makeChartData<a class="headerlink" href="#runpythonmakechartdata" title="Permanent link"></a></h5>
 <p>This function makes a <a href="https://python-pptx.readthedocs.io/en/latest/api/chart-data.html?highlight=categorychartdata">CategoryChartData</a> object, potentially for use with <a href="#runpythonmakechart"><code>RunPython.makeChart</code></a>.</p>
-<h6 id="input_1">Input<a class="headerlink" href="#input_1" title="Permanent link"></a></h6>
+<h6 id="input_3">Input<a class="headerlink" href="#input_3" title="Permanent link"></a></h6>
 <ul>
 <li>The chart data in the form created by <a href="#runpythonreadcsv"><code>RunPython.readCSV</code></a>.</li>
-<li><code>True</code> for series being columns, <code>False</code> otherwise. <code>True</code> is the default.</li>
+<li><code>True</code> for series being columns, <code>False</code> otherwise. <code>True</code> is the default. <code>True</code> causes the output array to be transposed.</li>
+<li>Optional list of column numbers to filter on. This is zero-indexed and uses Python list syntax. Filtering occurs before any transposition.</li>
 </ul>
-<h6 id="output_1">Output<a class="headerlink" href="#output_1" title="Permanent link"></a></h6>
+<p><strong>Note:</strong> You can use this function to reorder (e.g. <code>[3 1 2]</code>) and even duplicate rows (e.g. <code>[4 1 1]</code>).</p>
+<h6 id="output_3">Output<a class="headerlink" href="#output_3" title="Permanent link"></a></h6>
 <ul>
 <li>A <a href="https://python-pptx.readthedocs.io/en/latest/api/chart-data.html?highlight=categorychartdata">CategoryChartData</a> object.</li>
 </ul>
@@ -4646,7 +4694,7 @@ Use only code you directly write (or, of known provenance, embedded with <a href
 <p>This function takes a <a href="https://python-pptx.readthedocs.io/en/latest/api/chart-data.html?highlight=categorychartdata">CategoryChartData</a> object, possibly made by <a href="#runpythonmakechartdata"><code>RunPython.makeChartData</code></a>, and creates a
 <a href="https://python-pptx.readthedocs.io/en/latest/api/chart.html">Chart</a> shape from it.
 This shape is added to the slide identified by the variable <code>slide</code>.</p>
-<h6 id="input_2">Input<a class="headerlink" href="#input_2" title="Permanent link"></a></h6>
+<h6 id="input_4">Input<a class="headerlink" href="#input_4" title="Permanent link"></a></h6>
 <ul>
 <li>The <code>slide</code> to add the chart to. Generally this is the <code>slide</code> object provided by md2pptx when your python code gets control.</li>
 <li>The chart type. This is one of the values documented in <a href="https://python-pptx.readthedocs.io/en/latest/api/enum/XlChartType.html">XL_CHART_TYPE</a>.</li>
@@ -4655,7 +4703,7 @@ This shape is added to the slide identified by the variable <code>slide</code>.<
 <li>The title of the chart. This string defaults to <code>None</code> - which prevents a title being created.</li>
 <li>The legend position for the chart. This is one of the values documented in <a href="https://python-pptx.readthedocs.io/en/latest/api/enum/XlLegendPosition.html">XL_LEGEND_POSITION</a>. This defaults to <code>None</code> which prevents a legend being created.</li>
 </ul>
-<h6 id="output_2">Output<a class="headerlink" href="#output_2" title="Permanent link"></a></h6>
+<h6 id="output_4">Output<a class="headerlink" href="#output_4" title="Permanent link"></a></h6>
 <ul>
 <li>A <a href="https://python-pptx.readthedocs.io/en/latest/api/chart.html"><code>Chart</code></a> object - which you can further manipulate.</li>
 </ul>
@@ -4664,20 +4712,20 @@ This shape is added to the slide identified by the variable <code>slide</code>.<
 <h5 id="runpythonmaketable">RunPython.makeTable<a class="headerlink" href="#runpythonmaketable" title="Permanent link"></a></h5>
 <p>This function creates a table from input data and makes a <a href="https://python-pptx.readthedocs.io/en/latest/api/table.html"><code>Table</code></a> shape from it.
 This shape is added to the slide identified by the variable <code>slide</code>.</p>
-<h6 id="input_3">Input<a class="headerlink" href="#input_3" title="Permanent link"></a></h6>
+<h6 id="input_5">Input<a class="headerlink" href="#input_5" title="Permanent link"></a></h6>
 <ul>
 <li>The <code>slide</code> to add the table to. Generally this is the <code>slide</code> object provided by md2pptx when your python code gets control.</li>
 <li>The rectangle to render the new table in. Most likely this is the <code>renderingRectangle</code> object provided by md2pptx when your python code gets control.</li>
 <li>The table data in the form created by <a href="#runpythonreadcsv"><code>RunPython.readCSV</code></a>.</li>
 </ul>
-<h6 id="output_3">Output<a class="headerlink" href="#output_3" title="Permanent link"></a></h6>
+<h6 id="output_5">Output<a class="headerlink" href="#output_5" title="Permanent link"></a></h6>
 <ul>
 <li>A <a href="https://python-pptx.readthedocs.io/en/latest/api/table.html"><code>Table</code></a> object - which you can further manipulate.</li>
 </ul>
 <p><a id=runpythonapplycellfillrgb"></a></p>
 <h5 id="runpythonapplycellfillrgb">RunPython.applyCellFillRGB<a class="headerlink" href="#runpythonapplycellfillrgb" title="Permanent link"></a></h5>
 <p>This function sets the background colour of a cell in an existing <a href="https://python-pptx.readthedocs.io/en/latest/api/table.html"><code>Table</code></a> object.</p>
-<h6 id="input_4">Input<a class="headerlink" href="#input_4" title="Permanent link"></a></h6>
+<h6 id="input_6">Input<a class="headerlink" href="#input_6" title="Permanent link"></a></h6>
 <ul>
 <li>The <a href="https://python-pptx.readthedocs.io/en/latest/api/table.html"><code>Table</code></a> object.</li>
 <li>The row number. Zero-indexed and not bounds checked.</li>
@@ -4686,14 +4734,14 @@ This shape is added to the slide identified by the variable <code>slide</code>.<
 <li>The green value - between 0 and 255.</li>
 <li>The blue value - between 0 and 255.</li>
 </ul>
-<h6 id="output_4">Output<a class="headerlink" href="#output_4" title="Permanent link"></a></h6>
+<h6 id="output_6">Output<a class="headerlink" href="#output_6" title="Permanent link"></a></h6>
 <ul>
 <li>Nothing is returned.</li>
 </ul>
 <p><a id=runpythonapplycelllistfillrgb"></a></p>
 <h5 id="runpythonapplycelllistfillrgb">RunPython.applyCellListFillRGB<a class="headerlink" href="#runpythonapplycelllistfillrgb" title="Permanent link"></a></h5>
 <p>This function sets the background colour of a list of cells in an existing <a href="https://python-pptx.readthedocs.io/en/latest/api/table.html"><code>Table</code></a> object.</p>
-<h6 id="input_5">Input<a class="headerlink" href="#input_5" title="Permanent link"></a></h6>
+<h6 id="input_7">Input<a class="headerlink" href="#input_7" title="Permanent link"></a></h6>
 <ul>
 <li>The <a href="https://python-pptx.readthedocs.io/en/latest/api/table.html"><code>Table</code></a> object.</li>
 <li>The list of cells. Each item in the list is of the form<ul>
@@ -4705,14 +4753,14 @@ This shape is added to the slide identified by the variable <code>slide</code>.<
 <li>The green value - between 0 and 255.</li>
 <li>The blue value - between 0 and 255.</li>
 </ul>
-<h6 id="output_5">Output<a class="headerlink" href="#output_5" title="Permanent link"></a></h6>
+<h6 id="output_7">Output<a class="headerlink" href="#output_7" title="Permanent link"></a></h6>
 <ul>
 <li>Nothing is returned.</li>
 </ul>
 <p><a id="runpythonaligntablecelltext"></a></p>
 <h5 id="runpythonaligntablecelltext">RunPython.alignTableCellText<a class="headerlink" href="#runpythonaligntablecelltext" title="Permanent link"></a></h5>
 <p>This function aligns all the text paragraphs in a table cell. Generally there will be only one paragraph in a cell - but this function iterates over them all.</p>
-<h6 id="input_6">Input<a class="headerlink" href="#input_6" title="Permanent link"></a></h6>
+<h6 id="input_8">Input<a class="headerlink" href="#input_8" title="Permanent link"></a></h6>
 <ul>
 <li>The <a href="https://python-pptx.readthedocs.io/en/latest/api/table.html"><code>Table</code></a> object.</li>
 <li>The row number. Zero-indexed and not bounds checked.</li>
@@ -4720,7 +4768,7 @@ This shape is added to the slide identified by the variable <code>slide</code>.<
 <li>Alignment. See <a href="https://python-pptx.readthedocs.io/en/latest/api/enum/PpParagraphAlignment.html">PP_PARAGRAPH_ALIGNMENT</a>.</li>
 <li>(Optional) paragraph number. If not specified all paragraphs in the cell will be aligned. If specified just the (zero-indexed) paragraph will be aligned.</li>
 </ul>
-<h6 id="output_6">Output<a class="headerlink" href="#output_6" title="Permanent link"></a></h6>
+<h6 id="output_8">Output<a class="headerlink" href="#output_8" title="Permanent link"></a></h6>
 <ul>
 <li>Nothing is returned.</li>
 </ul>
@@ -4728,7 +4776,7 @@ This shape is added to the slide identified by the variable <code>slide</code>.<
 <p><a id=runpythonmakedrawnshape"></a></p>
 <h5 id="runpythonmakedrawnshape">RunPython.makeDrawnShape<a class="headerlink" href="#runpythonmakedrawnshape" title="Permanent link"></a></h5>
 <p>This function draws a shape from a set of vertices, optionally filling it and adding text.</p>
-<h6 id="input_7">Input<a class="headerlink" href="#input_7" title="Permanent link"></a></h6>
+<h6 id="input_9">Input<a class="headerlink" href="#input_9" title="Permanent link"></a></h6>
 <ul>
 <li>The <code>slide</code> to add the shape to. Generally this is the <code>slide</code> object provided by md2pptx when your python code gets control.</li>
 <li>An array of points. Each point is of the form:<ul>
@@ -4742,7 +4790,7 @@ This shape is added to the slide identified by the variable <code>slide</code>.<
 <li>The fill colour. Defaults to <code>None</code> - which, in the case of the shape being filled, leads to the presentation&rsquo;s default colour. See <a href="#specifying-colours">Specifying Colours</a>.</li>
 <li>Whether the shape is to be filled. Defaults to <code>True</code>.</li>
 </ul>
-<h6 id="output_7">Output<a class="headerlink" href="#output_7" title="Permanent link"></a></h6>
+<h6 id="output_9">Output<a class="headerlink" href="#output_9" title="Permanent link"></a></h6>
 <ul>
 <li>The created shape</li>
 </ul>

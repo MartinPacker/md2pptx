@@ -154,6 +154,7 @@ To quote from the python-pptx license statement:
 =colalign l r l
 =csv
 Level,Date,What
+5.0.1+,20&nbsp;July&nbsp;2024,Added optional `columns` parameter to [`RunPython.makeChartData`](#runpythonmakechartdata). Added [`RunPython.filterRows`](#runpythonfilterrows) and [`RunPython.transposeArray`](#runpythontransposearray) support.
 5.0.1,14&nbsp;July&nbsp;2024,Added [`RunPython.alignTableCellText`](#runpythonaligntablecelltext) and [`RunPython.makeDrawnShape`](#runpythonmakedrawnshape)support.
 5.0,7&nbsp;July&nbsp;2024,Added [`run-python`](#running-inline-python) support.
 4.6.1,1&nbsp;July&nbsp;2024,Fixed breakage in `hidden`.
@@ -3764,6 +3765,11 @@ md2pptx provides a number of helper routines - to simplify common things such as
 
 #### General Helper Routines
 
+These general helper routines are meant equally to help with graphing and table manipulation.
+They can be combined. So, for example you could combine [runPython.readCSV](#runpythonreadcsv), [runPython.filterRows](#runpythonfilterrows),  and [runPython.transposeArray](#runpythontransposearray):
+
+    chart_csv = RunPython.transposeArray(RunPython.filterRows(RunPython.readCSV("chartdata.csv"), myFilter))
+
 <a id="runpythonreadcsv"></a>
 ##### RunPython.readCSV
 
@@ -3775,11 +3781,41 @@ This function reads a CSV file into variables.
 
 ###### Output
 
-* A list of rows, each row containing a list of cell values.
+* A list of rows, each row containing a list of cell values (e.g. `[["A","B"],[1,2],[3,4]]`)
 
 The flavour of CSV reader is:
 
     chart_reader = csv.reader(csvfile, quoting = csv.QUOTE_NONNUMERIC)
+
+
+<a id="runpythonfilterrows"></a>
+##### RunPython.filterRows
+
+This function filters your array of data using a function you supply, returning another array.
+
+###### Input
+
+* Data in the form created by [RunPython.readCSV](#runpythonreadcsv).
+* A function you supply, returning `True` for "keep the row, otherwise `False`. The function should expect two parameters:
+    * The row number, zero-indexed
+    * The row as a Python list
+
+###### Output
+
+* Data in the form created by [RunPython.readCSV](#runpythonreadcsv).
+
+<a id="runpythontransposearray"></a>
+##### RunPython.transposeArray
+
+This function transposes your array of data, returning another array.
+
+###### Input
+
+* Data in the form created by [RunPython.readCSV](#runpythonreadcsv).
+
+###### Output
+
+* Data in the form created by [RunPython.readCSV](#runpythonreadcsv).
 
 #### Chart-Related Helper Routines
 
@@ -3791,7 +3827,10 @@ This function makes a [CategoryChartData](https://python-pptx.readthedocs.io/en/
 ###### Input
 
 * The chart data in the form created by [`RunPython.readCSV`](#runpythonreadcsv).
-* `True` for series being columns, `False` otherwise. `True` is the default.
+* `True` for series being columns, `False` otherwise. `True` is the default. `True` causes the output array to be transposed.
+* Optional list of column numbers to filter on. This is zero-indexed and uses Python list syntax. Filtering occurs before any transposition.
+
+**Note:** You can use this function to reorder (e.g. `[3 1 2]`) and even duplicate rows (e.g. `[4 1 1]`).
 
 ###### Output
 

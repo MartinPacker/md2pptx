@@ -2,7 +2,7 @@
 runPython
 """
 
-version = "0.2"
+version = "0.3"
 
 import csv
 from pptx.chart.data import CategoryChartData
@@ -37,14 +37,38 @@ class RunPython:
                 my_csv.append(row)
 
         return my_csv
+    
+    def filterRows(my_array, filterFunction):
+        my_array2 = []
+        for rowNumber, row in enumerate(my_array):
+            if filterFunction(rowNumber, row):
+                my_array2.append(row)
+        
+        return my_array2
+        
 
-    def makeChartData(chart_array, seriesIsColumn = True):
+    def transposeArray(chart_array):
+        return list(map(list, zip(*chart_array)))
+    
+    def makeChartData(chart_array, seriesIsColumn = True, columns = None):
 
         chart_data = CategoryChartData()
+        
+        if columns is not None:
+            chart_array2 = []
+            for rowNumber, row in enumerate(chart_array):
+                chart_row = []
+                for column in columns:
+                    chart_row.append(row[column])
+                
+                chart_array2.append(chart_row)
+            chart_array = chart_array2
+            print(pptx.enum.chart)
+
 
         if seriesIsColumn:
             # Transpose input data
-            chart_array = list(map(list, zip(*chart_array)))
+            chart_array = RunPython.transposeArray(chart_array)
         
         # x values
         chart_data.categories = chart_array[0][1:]
@@ -128,10 +152,10 @@ class RunPython:
         else:
             tableCellFrame.paragraphs[paragraphNumber].alignment = alignment
 
-    def makeDrawnShape(slide, vertices, fill = False, text = None, textColor = None, fillColor = None):
+    def makeDrawnShape(slide, vertices, fill = False, text = None, textColor = None, fillColor = None, closed = True):
         ffBuilder = slide.shapes.build_freeform(*vertices[0], True)
     
-        ffBuilder.add_line_segments(vertices[1:], close = True)
+        ffBuilder.add_line_segments(vertices[1:], close = closed)
     
         s = ffBuilder.convert_to_shape()
         

@@ -13,8 +13,8 @@ mdpre Markdown Preprocessor v0.6.8 (8 March, 2024)
 Def mdpre_date = 8 March, 2024
 Def mdpre_level = 0.6.8
 Def userid = martinpacker
-Def time = 17&colon;01
-Def date = 14 July&comma; 2024
+Def time = 16&colon;37
+Def date = 20 July&comma; 2024
 Def TOC = Table Of Contents
 Def md = Markdown
 Def pp = Powerpoint
@@ -263,6 +263,12 @@ CSV Stop
 ..... .....  Python Helper Routines
 ..... ..... .....  General Helper Routines
 ..... ..... ..... .....  RunPython.readCSV
+..... ..... ..... ..... .....  Input
+..... ..... ..... ..... .....  Output
+..... ..... ..... .....  RunPython.filterRows
+..... ..... ..... ..... .....  Input
+..... ..... ..... ..... .....  Output
+..... ..... ..... .....  RunPython.transposeArray
 ..... ..... ..... ..... .....  Input
 ..... ..... ..... ..... .....  Output
 ..... ..... .....  Chart-Related Helper Routines
