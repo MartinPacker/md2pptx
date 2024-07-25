@@ -83,7 +83,7 @@ except:
 
 
 md2pptx_level = "5.0.1+"
-md2pptx_date = "20 July, 2024"
+md2pptx_date = "25 July, 2024"
 
 namespaceURL = {
     "mc":  "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -4921,7 +4921,8 @@ if len(sys.argv) > 2:
 
     if Path(input_filename).exists():
         input_path = Path(input_filename)
-        with input_path.open() as file:
+
+        with input_path.open(mode='r', encoding='utf-8') as file:
             input_file = file.readlines()
     else:
         print("Input file specified but does not exist. Terminating.")
