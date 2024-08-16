@@ -2,11 +2,12 @@
 runPython
 """
 
-version = "0.3"
+version = "0.4"
 
 import csv
 from pptx.chart.data import CategoryChartData
 from pptx.oxml.xmlchemy import OxmlElement, serialize_for_reading
+from pptx.oxml import parse_xml
 from pptx.dml.color import RGBColor
 from pptx.enum.chart import XL_CHART_TYPE
 from pptx.enum.chart import XL_LEGEND_POSITION
@@ -174,3 +175,83 @@ class RunPython:
                 setColour(s.fill.fore_color, parseColour(fillColor))
         
         return s
+
+    def doChecklistChecks(placeholder, checklist):
+        tf = placeholder.text_frame
+        paras = tf.paragraphs
+    
+        for paraNumber, para in enumerate(paras):
+            # Save original font size
+            originalFontSize = para.font.size
+            
+            # Remove the original pPr element
+            para._element.remove(para._element.getchildren()[0])
+    
+            xml = ''
+            xml += '<a:pPr xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" marL="0" indent="0">'
+
+            if checklist[paraNumber] == None:
+                # Checkbox unchecked
+                xml += '<a:buFont xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" typeface="Wingdings" pitchFamily="2" charset="2"/>'
+                xml += '<a:buChar xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" char="o"/>'
+            elif checklist[paraNumber] == True:
+                # Checkbox ticked
+                xml += '<a:buFont xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" typeface="Wingdings 2" pitchFamily="2" charset="2"/>'
+                xml += '<a:buChar xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" char="R"/>'
+            else:
+                # Checkbox crossed
+                xml += '<a:buFont xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" typeface="Wingdings 2" pitchFamily="2" charset="2"/>'
+                xml += '<a:buChar xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" char="T"/>'
+          
+            xml += '</a:pPr>'
+    
+            # Parse this XML
+            parsed_xml = parse_xml(xml)
+    
+            # Insert the parsed XML fragment as a child of the pPr element
+            para._element.insert(0, parsed_xml)
+    
+            # Restore original font size
+            para.font.size = originalFontSize
+
+    def makeChecklist(placeholder, checklist):
+        checkMarks = []
+    
+        for paraNumber , checklistItem in enumerate(checklist):
+            checkMarks.append(checklistItem[1])
+            if paraNumber == 0:
+               para = placeholder.text_frame.paragraphs[0]
+            else:
+               para = placeholder.text_frame.add_paragraph()
+
+            para.text = checklistItem[0]
+
+        RunPython.doChecklistChecks(placeholder, checkMarks)
+
+    def makeTruthy(table_array, columnNumber, trueString = "Yes", falseString = "No", unsetString = ""):
+        for row in table_array:
+            if row[columnNumber] == unsetString:
+                row[columnNumber] = None
+            elif row[columnNumber] == trueString:
+                row[columnNumber] = True
+            else:
+                row[columnNumber] = False
+
+        return table_array
+
+    def ensureTextbox(slide, renderingRectangle):
+        if len(slide.shapes) < 2:
+            slide.shapes.add_textbox(renderingRectangle.left, renderingRectangle.top, renderingRectangle.width, renderingRectangle.height)
+            textShapeNumber = len(slide.shapes) - 1
+
+        return textShapeNumber
+
+    def checklistFromCSV(slide, renderingRectangle, filename):
+        # Read in CSV and turn second column into "truthy" values
+        myChecklist = RunPython.makeTruthy(RunPython.readCSV(filename), 1)
+
+        # Ensure we have a placeholder - whether first or second
+        textShapeNumber = RunPython.ensureTextbox(slide, renderingRectangle)
+
+        # Make the checklist in this placeholder from the imported file
+        RunPython.makeChecklist(slide.shapes[textShapeNumber], myChecklist)
