@@ -2006,7 +2006,7 @@ You can specify a different template file to create the presentation from than t
 
 	template: Martin Template.pptx
 
-If you want to create your own template you probably want to take Martin Template.pptx and modify it. See [Modifying The Slide Template](modifying-the-slide-template) for more information on how to do so.
+If you want to create your own template you probably want to take Martin Template.pptx and modify it. See [Modifying The Slide Template](#modifying-the-slide-template) for more information on how to do so.
 
 (For compatibility purposes, you can continue to use `master` instead of `template`. It's probably better practice, though, to use `template`.)
 
