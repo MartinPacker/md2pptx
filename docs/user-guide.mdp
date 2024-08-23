@@ -1964,7 +1964,7 @@ The one supplied with md2pptx is a very good one to work from:
 	template: Martin Template.pptx
 
 If you want to create your own template you probably want to take Martin Template.pptx and modify it. \
-See [Modifying The Slide Template](modifying-the-slide-template) for more information on how to do so.
+See [Modifying The Slide Template](#modifying-the-slide-template) for more information on how to do so.
 
 (For compatibility purposes, you can continue to use `master` instead of `template`. \
 It's probably better practice, though, to use `template`.)
