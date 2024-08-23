@@ -1455,6 +1455,7 @@ body .markdown-body
 </li>
 </ul>
 </li>
+<li><a href="#building-this-user-guide">Building This User Guide</a></li>
 </ul>
 <h2 id="why-md2pptx">Why md2pptx?<a class="headerlink" href="#why-md2pptx" title="Permanent link"></a></h2>
 <p>There are advantages in creating presentations using a flat file format. Some of these are:</p>
@@ -4914,4 +4915,18 @@ s = RunPython.makeDrawnShape(slide, vertices, True, "My Text","#FF0000","#80FFFF
 ```
 </code></pre>
 <p>The result of this code looks something like this:</p>
-<p><img alt="" src="/Users/martinpacker/md2pptx/docs/shapeSlide.png" /></p></article></body></html>
+<p><img alt="" src="/Users/martinpacker/md2pptx/docs/shapeSlide.png" /></p>
+<h2 id="building-this-user-guide">Building This User Guide<a class="headerlink" href="#building-this-user-guide" title="Permanent link"></a></h2>
+<p>This user guide is written in Markdown - but with a few extensions.
+To build it correctly you need to use <a href="https://github.com/MartinPacker/mdpre">mdpre</a>.</p>
+<p>The command to convert to standard Markdown is:</p>
+<pre><code>mdpre -v &lt; user-guide.mdp &gt; user-guide.md 2&gt;user-guide.log
+</code></pre>
+<p>Then convert user-guide.md from Markdown to HTML using your converter of choice. (The prime author of this package uses Sublime Text.)</p>
+<p>If committing include all the <code>user-guide.*</code> files.</p>
+<p>Obviously, it&rsquo;s user-guide.mdp you edit to make your changes.</p>
+<p><strong>Notes:</strong></p>
+<ul>
+<li>For extensive blocks of text you might like to use mdpre&rsquo;s <code>=include</code> capability - to embed a file with your text.</li>
+<li>If you are creating tables mdpre&rsquo;s <code>=csv</code> capability is what this user guide has used.</li>
+</ul></article></body></html>

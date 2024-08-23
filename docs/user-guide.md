@@ -270,6 +270,7 @@ As you can see in the [change log](#change-log), md2pptx is frequently updated -
 		* [Graphing Example](#graphing-example)
 		* [Table Manipulation Example](#table-manipulation-example)
 		* [Slide With A Shape Example](#slide-with-a-shape-example)
+* [Building This User Guide](#building-this-user-guide)
 
 ## Why md2pptx?
 
@@ -3983,3 +3984,23 @@ The shape is created with [`RunPython.makeDrawnShape`](#runpythonmakedrawnshape)
 The result of this code looks something like this:
 
 ![](shapeSlide.png)
+
+## Building This User Guide
+
+This user guide is written in Markdown - but with a few extensions.
+To build it correctly you need to use [mdpre](https://github.com/MartinPacker/mdpre).
+
+The command to convert to standard Markdown is:
+
+    mdpre -v < user-guide.mdp > user-guide.md 2>user-guide.log
+    
+Then convert user-guide.md from Markdown to HTML using your converter of choice. (The prime author of this package uses Sublime Text.)
+
+If committing include all the `user-guide.*` files.
+
+Obviously, it's user-guide.mdp you edit to make your changes.
+
+**Notes:**
+
+* For extensive blocks of text you might like to use mdpre's `=include` capability - to embed a file with your text.
+* If you are creating tables mdpre's `=csv` capability is what this user guide has used.
