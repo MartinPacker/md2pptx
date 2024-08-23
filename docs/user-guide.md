@@ -394,6 +394,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|5.0.2+|23&nbsp;August&nbsp;2024|Fixed failed `html` import for [Numeric Character References](#numeric-character-references).|
 |5.0.2|26&nbsp;July&nbsp;2024|Added optional `columns` parameter to [`RunPython.makeChartData`](#runpythonmakechartdata).<br/>Added [`RunPython.filterRows`](#runpythonfilterrows) and [`RunPython.transposeArray`](#runpythontransposearray) support.<br/>Specified 'UTF-8' on file read.|
 |5.0.1|14&nbsp;July&nbsp;2024|Added [`RunPython.alignTableCellText`](#runpythonaligntablecelltext) and [`RunPython.makeDrawnShape`](#runpythonmakedrawnshape)support.|
 |5.0|7&nbsp;July&nbsp;2024|Added [`run-python`](#running-inline-python) support.|
@@ -1033,7 +1034,7 @@ You can include [HTML entity references](#html-entity-references) and [numeric c
 
 **Notes:**
 
-1. Do not code numeric references in the range FFD0 to FFEF. These are - in Unicode terms - noncharacters. md2pptx uses them internally when parsing text.
+1. Do not code [numeric character references](#numeric-character-references) in the range FFD0 to FFEF. These are - in Unicode terms - noncharacters. md2pptx uses them internally when parsing text.
 1. You can more precisely control how code slides are laid out and their colours with [Code Metadata](#code-metadata).
 
 #### `<code>`

@@ -2,6 +2,7 @@
 symbols
 """
 import re
+import html
 
 
 # Resolve symbols and unescape any numeric character references

@@ -1564,6 +1564,11 @@ THE SOFTWARE.
 </thead>
 <tbody>
 <tr>
+<td align="left">5.0.2+</td>
+<td align="right">23&nbsp;August&nbsp;2024</td>
+<td align="left">Fixed failed <code>html</code> import for <a href="#numeric-character-references">Numeric Character References</a>.</td>
+</tr>
+<tr>
 <td align="left">5.0.2</td>
 <td align="right">26&nbsp;July&nbsp;2024</td>
 <td align="left">Added optional <code>columns</code> parameter to <a href="#runpythonmakechartdata"><code>RunPython.makeChartData</code></a>.<br/>Added <a href="#runpythonfilterrows"><code>RunPython.filterRows</code></a> and <a href="#runpythontransposearray"><code>RunPython.transposeArray</code></a> support.<br/>Specified &lsquo;UTF-8&rsquo; on file read.</td>
@@ -2470,7 +2475,7 @@ sectionTitleSize: 30
 <p>You can include <a href="#html-entity-references">HTML entity references</a> and <a href="#numeric-character-references">numeric character references</a>. For example you might code <code>&amp;#x2776;</code> to place &#x2776; next to a line of code. You could then code the same thing in a table below the code fragment, where each row explains a line of code.</p>
 <p><strong>Notes:</strong></p>
 <ol>
-<li>Do not code numeric references in the range FFD0 to FFEF. These are - in Unicode terms - noncharacters. md2pptx uses them internally when parsing text.</li>
+<li>Do not code <a href="#numeric-character-references">numeric character references</a> in the range FFD0 to FFEF. These are - in Unicode terms - noncharacters. md2pptx uses them internally when parsing text.</li>
 <li>You can more precisely control how code slides are laid out and their colours with <a href="#code-metadata">Code Metadata</a>.</li>
 </ol>
 <h4 id="code"><code>&lt;code&gt;</code><a class="headerlink" href="#code" title="Permanent link"></a></h4>
