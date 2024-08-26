@@ -5,8 +5,8 @@ mdpre Markdown Preprocessor v0.6.8 (8 March, 2024)
 Def mdpre_date = 8 March, 2024
 Def mdpre_level = 0.6.8
 Def userid = martinpacker
-Def time = 14&colon;08
-Def date = 23 August&comma; 2024
+Def time = 16&colon;30
+Def date = 26 August&comma; 2024
 Def TOC = Table Of Contents
 Def md = Markdown
 Def pp = Powerpoint
@@ -263,6 +263,9 @@ CSV Stop
 ..... ..... ..... .....  RunPython.transposeArray
 ..... ..... ..... ..... .....  Input
 ..... ..... ..... ..... .....  Output
+..... ..... ..... .....  RunPython.ensureTextbox
+..... ..... ..... ..... .....  Input
+..... ..... ..... ..... .....  Output
 ..... ..... .....  Chart-Related Helper Routines
 ..... ..... ..... .....  RunPython.makeChartData
 ..... ..... ..... ..... .....  Input
@@ -287,10 +290,24 @@ CSV Stop
 ..... ..... ..... .....  RunPython.makeDrawnShape
 ..... ..... ..... ..... .....  Input
 ..... ..... ..... ..... .....  Output
+..... ..... .....  Checklist-Related Helper routines
+..... ..... ..... .....  RunPython.makeTruthy
+..... ..... ..... ..... .....  Input
+..... ..... ..... ..... .....  Output
+..... ..... ..... .....  RunPython.checklistFromCSV
+..... ..... ..... ..... .....  Input
+..... ..... ..... ..... .....  Output
+..... ..... ..... .....  RunPython.makeChecklist
+..... ..... ..... ..... .....  Input
+..... ..... ..... ..... .....  Output
+..... ..... ..... .....  RunPython.doChecklistChecks
+..... ..... ..... ..... .....  Input
+..... ..... ..... ..... .....  Output
 ..... .....  Inline Python Examples
 ..... ..... .....  Graphing Example
 ..... ..... .....  Table Manipulation Example
 ..... ..... .....  Slide With A Shape Example
+..... ..... .....  Slide WIth A Checklist Example
 .....  Building This User Guide
 --------------------------------------------------
 - Processing completed.

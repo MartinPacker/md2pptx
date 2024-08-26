@@ -1,3 +1,9 @@
+<style>
+img {
+  border: 2px solid #555 !important;
+}
+</style>
+
 =def TOC Table Of Contents
 =def md Markdown
 =def pp Powerpoint
@@ -27,6 +33,8 @@ Some of these are:
 * Other flat file formats can be embedded.
 
 	With md2pptx you can use a simple Task Management format called [Taskpaper](https://support.omnigroup.com/omnifocus-taskpaper-reference/) to embed tasks. md2pptx will extract such tasks and generated a "Tasks" slide at the end of the presentation.
+	
+	You can run your own Python code to enhance md2pptx's processing.
 
 The flat file format that md2pptx uses is &md;. \
 Using &md; has further advantages:
@@ -154,7 +162,7 @@ To quote from the python-pptx license statement:
 =colalign l r l
 =csv
 Level,Date,What
-5.0.2+,23&nbsp;August&nbsp;2024,Fixed failed `html` import for [Numeric Character References](#numeric-character-references).
+5.1,26&nbsp;August&nbsp;2024,Fixed failed `html` import for [Numeric Character References](#numeric-character-references).<br/>Added Python functions for [checklist creation](#checklist-related-helper-routines).
 5.0.2,26&nbsp;July&nbsp;2024,Added optional `columns` parameter to [`RunPython.makeChartData`](#runpythonmakechartdata).<br/>Added [`RunPython.filterRows`](#runpythonfilterrows) and [`RunPython.transposeArray`](#runpythontransposearray) support.<br/>Specified 'UTF-8' on file read.
 5.0.1,14&nbsp;July&nbsp;2024,Added [`RunPython.alignTableCellText`](#runpythonaligntablecelltext) and [`RunPython.makeDrawnShape`](#runpythonmakedrawnshape)support.
 5.0,7&nbsp;July&nbsp;2024,Added [`run-python`](#running-inline-python) support.
@@ -2924,11 +2932,15 @@ You can override this on a slide-by-slide basis with [Dynamic ContentSplit](#dyn
 
 The default value is such as to make each block have equal space.
 
-Here is an example where the content split direction is horizontal and the 2 areas are int the ratio of 2 to 1.
+Here is an example where the content split direction is horizontal and the 2 areas are in the ratio of 2 to 1.
 
 <div style="border: 1px solid black">
 <img src="horizontal-split-2-1.png" />
 </div>
+
+
+**Note:** `0` is a perfectly valid value.
+It is used to ensure Python code takes up no slide space when running Python. See [Running Inline Python](#running-inline-python).
 
 #### Graphics Metadata
 
@@ -3722,8 +3734,20 @@ Running inline python, perhaps with [helper routines](#python-helper-routines), 
 The deal remains the same: \
 A flat text file you author turning into a PowerPoint presentation.
 
-**Note:** It is probably not a good idea to create additional slides in your python code - unless they are in a separate presentation. \
+**Notes:**
+
+It is probably not a good idea to create additional slides in your python code - unless they are in a separate presentation. \
 If you do md2pptx might very well get confused.
+
+This support reserves space for your Python code to draw in.
+For some applications you will want this space to be zero. 
+If that's the case consider the following dynamic metadata:
+
+    <!-- md2pptx: contentSplit: 1 0 -->
+
+This ensures the second shape (in this case your Python drawing space) is zero in both dimensions.
+You can, of course, extend this technique to multiple shapes on a slide.
+For more information see [ContentSplit](#split-proportions-contentsplit).
 
 ### An Important Caution
 
@@ -3817,6 +3841,29 @@ This function transposes your array of data, returning another array.
 ###### Output
 
 * Data in the form created by [RunPython.readCSV](#runpythonreadcsv).
+
+<a id="runpythonensuretextbox"></a>
+##### RunPython.ensureTextbox
+
+This function ensures your program has a textbox to insert content into.
+
+###### Input
+
+* The `slide` to add any needed textbox to. Generally this is the `slide` object provided by md2pptx when your python code gets control.
+* The rectangle to render any new textbox in. Most likely this is the `renderingRectangle` object provided by md2pptx when your python code gets control.
+* The index of the shape to try to use as a textbox. This is optional.
+
+###### Output
+
+* The textbox shape that is found or created.
+
+There are two use cases:
+
+1. If a shape index is passed in this routine will check if it is a textbox. If so it will be returned. If not, or if the index is invalid, a new textbox will be returned.
+
+1. If no shape index is passed in this routine will search for the last textbox shape on the slide. If it is at index `0` that is presumed to be a slide title and a new textbox is created. If no textbox is found a new one is created.
+
+This function is used in [`RunPython.checklistFromCSV``](#runpythonchecklistfromcsv).
 
 #### Chart-Related Helper Routines
 
@@ -3954,6 +4001,101 @@ This function draws a shape from a set of vertices, optionally filling it and ad
 
 * The created shape
 
+<a id=checklist-related-helper-routines"></a>
+#### Checklist-Related Helper routines
+
+
+<a id=runpythonmaketruthy"></a>
+##### RunPython.makeTruthy
+
+This function massages the output from [`RunPython.readCSV`](#runpythonreadcsv) to prepare it for input to [RunPython.makeChecklist](#runpythonmakechecklist).
+
+By default it operates on the second column and
+
+* sets cells with text value `"Yes"` to `True`.
+* sets cells with text value `"No"` to `False`.
+* sets cells with text value `""` to `None`.
+
+The column number and text string values can be changed from the defaults.
+
+###### Input
+
+* Data in the form created by [RunPython.readCSV](#runpythonreadcsv).
+* Column number to massage, zero-indexed. Defaults to "1".
+* String to be set to `True`. Defaults to `"Yes"`.
+* String to be set to `False`. Defaults to `"No"`.
+* String to be set to `None`. Defaults to `""`.
+
+###### Output
+
+* Data in the form created by [RunPython.readCSV](#runpythonreadcsv).
+
+The idea behind this function is to allow people to create CSV files with string values for state.
+Once massaged the resulting array of arrays can be fed into [`RunPython.makeChecklist`](#runpythonmakechecklist).
+
+<a id=runpythonchecklistfromcsv"></a>
+##### RunPython.checklistFromCSV
+
+This function creates a checklist in a textbox from a CSV file.
+
+###### Input
+
+* The `slide` to create the checklist on. Generally this is the `slide` object provided by md2pptx when your python code gets control.
+* The rectangle to render any new textbox in. Most likely this is the `renderingRectangle` object provided by md2pptx when your python code gets control.
+* The name of the CSV file containing the list of items and their statuses.
+* The index of the shape to try to use as a textbox. This is optional.
+
+###### Output
+
+* The textbox shape containing the rendered checklist.
+
+This function uses the following lower level routines
+
+* [`RunPython.readCSV`](#runpythonreadcsv) to read in a CSV file.
+* [`RunPython.makeTruthy`](#runpythonmaketruthy) to massage the contents of the CSV file.
+* [`RunPython.ensureTextbox`](#runpythonensuretextbox) to find a textbox. The shape index you optionally pass in is passed on to `RunPython.ensureTextbox`.
+* [`RunPython.makeChecklist`](#runpythonmakechecklist) to create the checklist content.
+* [`RunPython.doChecklistChecks`](#runpythondochecklistchecks) - called by [`RunPython.makeChecklist`](#runpythonmakechecklist).
+
+See [Slide WIth A Checklist Example](#slide-with-a-checklist-example) for an example with the format of the CSV file.
+
+<a id=runpythonmakechecklist"></a>
+##### RunPython.makeChecklist
+
+This function creates a checklist in a textbox from a CSV file.
+
+###### Input
+
+* The textbox shape to build the checklist in.
+* The checklist.
+* The index for the text of each item within each row. Defaults to `0`.
+* The index for the checked status of each item within each row. Defaults to `1`.
+
+###### Output
+
+* The textbox shape containing the rendered checklist.
+
+This function is called by [`RunPython.checklistFromCSV`](#runpythonchecklistfromcsv).
+In turn it calls [`RunPython.doChecklistChecks`](#runpythondochecklistchecks) to do the actually placement of checkmarks.
+
+<a id="runpythondochecklistchecks"></a>
+##### RunPython.doChecklistChecks
+
+###### Input
+
+* The textbox shape to set the checkmarks for.
+* A list - one per paragraph - of checkmark indicators.
+
+###### Output
+
+* The textbox shape containing the rendered checklist.
+
+The checkmark indicators are:
+
+* `None` - leave the paragraph unchecked.
+* `True` - give the paragraph a tick.
+* `False` - give the paragraph a cross.
+
 <a id="inline-python-examples"></a>
 ### Inline Python Examples
 
@@ -3962,6 +4104,7 @@ Here are a few examples that use the [Python helper routines](#python-helper-rou
 * [Graphing Example](#graphing-example)
 * [Table Manipulation Example](#table-manipulation-example)
 * [Slide With A Shape Example](#slide-with-a-shape-example)
+* [Slide WIth A Checklist Example](#slide-with-a-checklist-example)
 
 <a id="graphing-example"></a>
 #### Graphing Example
@@ -4092,6 +4235,40 @@ The shape is created with [`RunPython.makeDrawnShape`](#runpythonmakedrawnshape)
 The result of this code looks something like this:
 
 ![](shapeSlide.png)
+
+<a id="slide-with-a-checklist-example"></a>
+#### Slide WIth A Checklist Example
+
+Here is sample code to add a checklist to a slide. \
+
+Let's start with a CSV file with three lines in it.
+Each represents a task.
+The first has an empty completion cell, the second has a positive completion cell, and the third has a negative one.
+
+Let's call this "tasks.csv":
+
+    "One task",""
+    "Another task","Yes"
+    "A task that won't get done","No"
+
+This is the kind of file you could create and maintain by hand, or with a tool.
+
+If you run the following through md2pptx you get a slide with a title and a three-item checklist.
+
+    template: Martin Template.pptx
+    
+    ### Here Is A Slide With A Checklist
+    
+    ``` run-python
+    RunPython.checklistFromCSV(slide, renderingRectangle, "tasks.csv")
+    ```
+
+
+The resulting slide would look something like this:
+
+![](checklist.png)
+    
+Obviously you could create a presentation with multiple such slides, each from a different CSV file.
 
 ## Building This User Guide
 

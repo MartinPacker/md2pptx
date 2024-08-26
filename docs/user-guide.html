@@ -1076,7 +1076,13 @@ body .markdown-body
 .highlight .vi{color:teal}
 .highlight .il{color:#009999}
 .highlight .gc{color:#999;background-color:#EAF2F5}
-</style><title>user-guide</title></head><body><article class="markdown-body"><h1 id="markdown-to-powerpoint-user-guide">Markdown To Powerpoint User Guide<a class="headerlink" href="#markdown-to-powerpoint-user-guide" title="Permanent link"></a></h1>
+</style><title>user-guide</title></head><body><article class="markdown-body"><style>
+img {
+  border: 2px solid #555 !important;
+}
+</style>
+
+<h1 id="markdown-to-powerpoint-user-guide">Markdown To Powerpoint User Guide<a class="headerlink" href="#markdown-to-powerpoint-user-guide" title="Permanent link"></a></h1>
 <p>This document describes the md2pptx Markdown preprocessor, which turns Markdown text into a Powerpoint presentation (whether .pptx or <a href="#invoking-a-vba-macro">.pptm</a>).</p>
 <p>In this document we&rsquo;ll refer to it as &ldquo;md2pptx&rdquo;, pronounced &ldquo;em dee to pee pee tee ex&rdquo;.</p>
 <p>As you can see in the <a href="#change-log">change log</a>, md2pptx is frequently updated - both for bug fixes and enhancements.</p>
@@ -1399,6 +1405,11 @@ body .markdown-body
 <li><a href="#output">Output</a></li>
 </ul>
 </li>
+<li><a href="#runpythonensuretextbox">RunPython.ensureTextbox</a><ul>
+<li><a href="#input">Input</a></li>
+<li><a href="#output">Output</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#chartrelated-helper-routines">Chart-Related Helper Routines</a><ul>
@@ -1445,12 +1456,36 @@ body .markdown-body
 </li>
 </ul>
 </li>
+<li><a href="#checklistrelated-helper-routines">Checklist-Related Helper routines</a><ul>
+<li><a href="#runpythonmaketruthy">RunPython.makeTruthy</a><ul>
+<li><a href="#input">Input</a></li>
+<li><a href="#output">Output</a></li>
+</ul>
+</li>
+<li><a href="#runpythonchecklistfromcsv">RunPython.checklistFromCSV</a><ul>
+<li><a href="#input">Input</a></li>
+<li><a href="#output">Output</a></li>
+</ul>
+</li>
+<li><a href="#runpythonmakechecklist">RunPython.makeChecklist</a><ul>
+<li><a href="#input">Input</a></li>
+<li><a href="#output">Output</a></li>
+</ul>
+</li>
+<li><a href="#runpythondochecklistchecks">RunPython.doChecklistChecks</a><ul>
+<li><a href="#input">Input</a></li>
+<li><a href="#output">Output</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#inline-python-examples">Inline Python Examples</a><ul>
 <li><a href="#graphing-example">Graphing Example</a></li>
 <li><a href="#table-manipulation-example">Table Manipulation Example</a></li>
 <li><a href="#slide-with-a-shape-example">Slide With A Shape Example</a></li>
+<li><a href="#slide-with-a-checklist-example">Slide WIth A Checklist Example</a></li>
 </ul>
 </li>
 </ul>
@@ -1472,6 +1507,7 @@ body .markdown-body
 <li>
 <p>Other flat file formats can be embedded.</p>
 <p>With md2pptx you can use a simple Task Management format called <a href="https://support.omnigroup.com/omnifocus-taskpaper-reference/">Taskpaper</a> to embed tasks. md2pptx will extract such tasks and generated a &ldquo;Tasks&rdquo; slide at the end of the presentation.</p>
+<p>You can run your own Python code to enhance md2pptx&rsquo;s processing.</p>
 </li>
 </ul>
 <p>The flat file format that md2pptx uses is Markdown. Using Markdown has further advantages:</p>
@@ -1565,9 +1601,9 @@ THE SOFTWARE.
 </thead>
 <tbody>
 <tr>
-<td align="left">5.0.2+</td>
-<td align="right">23&nbsp;August&nbsp;2024</td>
-<td align="left">Fixed failed <code>html</code> import for <a href="#numeric-character-references">Numeric Character References</a>.</td>
+<td align="left">5.1</td>
+<td align="right">26&nbsp;August&nbsp;2024</td>
+<td align="left">Fixed failed <code>html</code> import for <a href="#numeric-character-references">Numeric Character References</a>.<br/>Added Python functions for <a href="#checklist-related-helper-routines">checklist creation</a>.</td>
 </tr>
 <tr>
 <td align="left">5.0.2</td>
@@ -4033,11 +4069,13 @@ For example</p>
 <p>will make the first block a quarter the height (or width) of the second. Specify proportions using integers.</p>
 <p>You can override this on a slide-by-slide basis with <a href="#dynamic-contentsplit">Dynamic ContentSplit</a>.</p>
 <p>The default value is such as to make each block have equal space.</p>
-<p>Here is an example where the content split direction is horizontal and the 2 areas are int the ratio of 2 to 1.</p>
+<p>Here is an example where the content split direction is horizontal and the 2 areas are in the ratio of 2 to 1.</p>
 <div style="border: 1px solid black">
 <img src="/Users/martinpacker/md2pptx/docs/horizontal-split-2-1.png" />
 </div>
 
+<p><strong>Note:</strong> <code>0</code> is a perfectly valid value.
+It is used to ensure Python code takes up no slide space when running Python. See <a href="#running-inline-python">Running Inline Python</a>.</p>
 <h4 id="graphics-metadata">Graphics Metadata<a class="headerlink" href="#graphics-metadata" title="Permanent link"></a></h4>
 <p><a id="exporting-converted-svg-and-png-files-exportGraphics"></a></p>
 <h5 id="exporting-converted-svg-and-png-files-exportgraphics">Exporting Converted SVG And PNG Files - <code>exportGraphics</code><a class="headerlink" href="#exporting-converted-svg-and-png-files-exportgraphics" title="Permanent link"></a></h5>
@@ -4608,7 +4646,16 @@ The default value is <code>no</code>.</p>
 <p>One good example is <a href="#graphing-example">graphing</a>. Another is <a href="#table-manipulation-example">highlighting cells in a table</a>.</p>
 <p>Running inline python, perhaps with <a href="#python-helper-routines">helper routines</a>, enables these.</p>
 <p>The deal remains the same: A flat text file you author turning into a PowerPoint presentation.</p>
-<p><strong>Note:</strong> It is probably not a good idea to create additional slides in your python code - unless they are in a separate presentation. If you do md2pptx might very well get confused.</p>
+<p><strong>Notes:</strong></p>
+<p>It is probably not a good idea to create additional slides in your python code - unless they are in a separate presentation. If you do md2pptx might very well get confused.</p>
+<p>This support reserves space for your Python code to draw in.
+For some applications you will want this space to be zero. 
+If that&rsquo;s the case consider the following dynamic metadata:</p>
+<pre><code>&lt;!-- md2pptx: contentSplit: 1 0 --&gt;
+</code></pre>
+<p>This ensures the second shape (in this case your Python drawing space) is zero in both dimensions.
+You can, of course, extend this technique to multiple shapes on a slide.
+For more information see <a href="#split-proportions-contentsplit">ContentSplit</a>.</p>
 <h3 id="an-important-caution">An Important Caution<a class="headerlink" href="#an-important-caution" title="Permanent link"></a></h3>
 <p>The support described in <a href="#running-inline-python">Running Inline Python</a> allows you to run <strong>arbitary python code</strong>. It would be unwise to embed python code of unknown provenance.
 Use only code you directly write (or, of known provenance, embedded with <a href="https://github.com/MartinPacker/mdpre">mdpre</a>&lsquo;s <code>=include</code> capability).</p>
@@ -4680,18 +4727,41 @@ They can be combined. So, for example you could combine <a href="#runpythonreadc
 <ul>
 <li>Data in the form created by <a href="#runpythonreadcsv">RunPython.readCSV</a>.</li>
 </ul>
+<p><a id="runpythonensuretextbox"></a></p>
+<h5 id="runpythonensuretextbox">RunPython.ensureTextbox<a class="headerlink" href="#runpythonensuretextbox" title="Permanent link"></a></h5>
+<p>This function ensures your program has a textbox to insert content into.</p>
+<h6 id="input_3">Input<a class="headerlink" href="#input_3" title="Permanent link"></a></h6>
+<ul>
+<li>The <code>slide</code> to add any needed textbox to. Generally this is the <code>slide</code> object provided by md2pptx when your python code gets control.</li>
+<li>The rectangle to render any new textbox in. Most likely this is the <code>renderingRectangle</code> object provided by md2pptx when your python code gets control.</li>
+<li>The index of the shape to try to use as a textbox. This is optional.</li>
+</ul>
+<h6 id="output_3">Output<a class="headerlink" href="#output_3" title="Permanent link"></a></h6>
+<ul>
+<li>The textbox shape that is found or created.</li>
+</ul>
+<p>There are two use cases:</p>
+<ol>
+<li>
+<p>If a shape index is passed in this routine will check if it is a textbox. If so it will be returned. If not, or if the index is invalid, a new textbox will be returned.</p>
+</li>
+<li>
+<p>If no shape index is passed in this routine will search for the last textbox shape on the slide. If it is at index <code>0</code> that is presumed to be a slide title and a new textbox is created. If no textbox is found a new one is created.</p>
+</li>
+</ol>
+<p>This function is used in <a href="#runpythonchecklistfromcsv">`RunPython.checklistFromCSV``</a>.</p>
 <h4 id="chart-related-helper-routines">Chart-Related Helper Routines<a class="headerlink" href="#chart-related-helper-routines" title="Permanent link"></a></h4>
 <p><a id="runpythonmakechartdata"></a></p>
 <h5 id="runpythonmakechartdata">RunPython.makeChartData<a class="headerlink" href="#runpythonmakechartdata" title="Permanent link"></a></h5>
 <p>This function makes a <a href="https://python-pptx.readthedocs.io/en/latest/api/chart-data.html?highlight=categorychartdata">CategoryChartData</a> object, potentially for use with <a href="#runpythonmakechart"><code>RunPython.makeChart</code></a>.</p>
-<h6 id="input_3">Input<a class="headerlink" href="#input_3" title="Permanent link"></a></h6>
+<h6 id="input_4">Input<a class="headerlink" href="#input_4" title="Permanent link"></a></h6>
 <ul>
 <li>The chart data in the form created by <a href="#runpythonreadcsv"><code>RunPython.readCSV</code></a>.</li>
 <li><code>True</code> for series being columns, <code>False</code> otherwise. <code>True</code> is the default. <code>True</code> causes the output array to be transposed.</li>
 <li>Optional list of column numbers to filter on. This is zero-indexed and uses Python list syntax. Filtering occurs before any transposition.</li>
 </ul>
 <p><strong>Note:</strong> You can use this function to reorder (e.g. <code>[3 1 2]</code>) and even duplicate rows (e.g. <code>[4 1 1]</code>).</p>
-<h6 id="output_3">Output<a class="headerlink" href="#output_3" title="Permanent link"></a></h6>
+<h6 id="output_4">Output<a class="headerlink" href="#output_4" title="Permanent link"></a></h6>
 <ul>
 <li>A <a href="https://python-pptx.readthedocs.io/en/latest/api/chart-data.html?highlight=categorychartdata">CategoryChartData</a> object.</li>
 </ul>
@@ -4700,7 +4770,7 @@ They can be combined. So, for example you could combine <a href="#runpythonreadc
 <p>This function takes a <a href="https://python-pptx.readthedocs.io/en/latest/api/chart-data.html?highlight=categorychartdata">CategoryChartData</a> object, possibly made by <a href="#runpythonmakechartdata"><code>RunPython.makeChartData</code></a>, and creates a
 <a href="https://python-pptx.readthedocs.io/en/latest/api/chart.html">Chart</a> shape from it.
 This shape is added to the slide identified by the variable <code>slide</code>.</p>
-<h6 id="input_4">Input<a class="headerlink" href="#input_4" title="Permanent link"></a></h6>
+<h6 id="input_5">Input<a class="headerlink" href="#input_5" title="Permanent link"></a></h6>
 <ul>
 <li>The <code>slide</code> to add the chart to. Generally this is the <code>slide</code> object provided by md2pptx when your python code gets control.</li>
 <li>The chart type. This is one of the values documented in <a href="https://python-pptx.readthedocs.io/en/latest/api/enum/XlChartType.html">XL_CHART_TYPE</a>.</li>
@@ -4709,7 +4779,7 @@ This shape is added to the slide identified by the variable <code>slide</code>.<
 <li>The title of the chart. This string defaults to <code>None</code> - which prevents a title being created.</li>
 <li>The legend position for the chart. This is one of the values documented in <a href="https://python-pptx.readthedocs.io/en/latest/api/enum/XlLegendPosition.html">XL_LEGEND_POSITION</a>. This defaults to <code>None</code> which prevents a legend being created.</li>
 </ul>
-<h6 id="output_4">Output<a class="headerlink" href="#output_4" title="Permanent link"></a></h6>
+<h6 id="output_5">Output<a class="headerlink" href="#output_5" title="Permanent link"></a></h6>
 <ul>
 <li>A <a href="https://python-pptx.readthedocs.io/en/latest/api/chart.html"><code>Chart</code></a> object - which you can further manipulate.</li>
 </ul>
@@ -4718,20 +4788,20 @@ This shape is added to the slide identified by the variable <code>slide</code>.<
 <h5 id="runpythonmaketable">RunPython.makeTable<a class="headerlink" href="#runpythonmaketable" title="Permanent link"></a></h5>
 <p>This function creates a table from input data and makes a <a href="https://python-pptx.readthedocs.io/en/latest/api/table.html"><code>Table</code></a> shape from it.
 This shape is added to the slide identified by the variable <code>slide</code>.</p>
-<h6 id="input_5">Input<a class="headerlink" href="#input_5" title="Permanent link"></a></h6>
+<h6 id="input_6">Input<a class="headerlink" href="#input_6" title="Permanent link"></a></h6>
 <ul>
 <li>The <code>slide</code> to add the table to. Generally this is the <code>slide</code> object provided by md2pptx when your python code gets control.</li>
 <li>The rectangle to render the new table in. Most likely this is the <code>renderingRectangle</code> object provided by md2pptx when your python code gets control.</li>
 <li>The table data in the form created by <a href="#runpythonreadcsv"><code>RunPython.readCSV</code></a>.</li>
 </ul>
-<h6 id="output_5">Output<a class="headerlink" href="#output_5" title="Permanent link"></a></h6>
+<h6 id="output_6">Output<a class="headerlink" href="#output_6" title="Permanent link"></a></h6>
 <ul>
 <li>A <a href="https://python-pptx.readthedocs.io/en/latest/api/table.html"><code>Table</code></a> object - which you can further manipulate.</li>
 </ul>
 <p><a id=runpythonapplycellfillrgb"></a></p>
 <h5 id="runpythonapplycellfillrgb">RunPython.applyCellFillRGB<a class="headerlink" href="#runpythonapplycellfillrgb" title="Permanent link"></a></h5>
 <p>This function sets the background colour of a cell in an existing <a href="https://python-pptx.readthedocs.io/en/latest/api/table.html"><code>Table</code></a> object.</p>
-<h6 id="input_6">Input<a class="headerlink" href="#input_6" title="Permanent link"></a></h6>
+<h6 id="input_7">Input<a class="headerlink" href="#input_7" title="Permanent link"></a></h6>
 <ul>
 <li>The <a href="https://python-pptx.readthedocs.io/en/latest/api/table.html"><code>Table</code></a> object.</li>
 <li>The row number. Zero-indexed and not bounds checked.</li>
@@ -4740,14 +4810,14 @@ This shape is added to the slide identified by the variable <code>slide</code>.<
 <li>The green value - between 0 and 255.</li>
 <li>The blue value - between 0 and 255.</li>
 </ul>
-<h6 id="output_6">Output<a class="headerlink" href="#output_6" title="Permanent link"></a></h6>
+<h6 id="output_7">Output<a class="headerlink" href="#output_7" title="Permanent link"></a></h6>
 <ul>
 <li>Nothing is returned.</li>
 </ul>
 <p><a id=runpythonapplycelllistfillrgb"></a></p>
 <h5 id="runpythonapplycelllistfillrgb">RunPython.applyCellListFillRGB<a class="headerlink" href="#runpythonapplycelllistfillrgb" title="Permanent link"></a></h5>
 <p>This function sets the background colour of a list of cells in an existing <a href="https://python-pptx.readthedocs.io/en/latest/api/table.html"><code>Table</code></a> object.</p>
-<h6 id="input_7">Input<a class="headerlink" href="#input_7" title="Permanent link"></a></h6>
+<h6 id="input_8">Input<a class="headerlink" href="#input_8" title="Permanent link"></a></h6>
 <ul>
 <li>The <a href="https://python-pptx.readthedocs.io/en/latest/api/table.html"><code>Table</code></a> object.</li>
 <li>The list of cells. Each item in the list is of the form<ul>
@@ -4759,14 +4829,14 @@ This shape is added to the slide identified by the variable <code>slide</code>.<
 <li>The green value - between 0 and 255.</li>
 <li>The blue value - between 0 and 255.</li>
 </ul>
-<h6 id="output_7">Output<a class="headerlink" href="#output_7" title="Permanent link"></a></h6>
+<h6 id="output_8">Output<a class="headerlink" href="#output_8" title="Permanent link"></a></h6>
 <ul>
 <li>Nothing is returned.</li>
 </ul>
 <p><a id="runpythonaligntablecelltext"></a></p>
 <h5 id="runpythonaligntablecelltext">RunPython.alignTableCellText<a class="headerlink" href="#runpythonaligntablecelltext" title="Permanent link"></a></h5>
 <p>This function aligns all the text paragraphs in a table cell. Generally there will be only one paragraph in a cell - but this function iterates over them all.</p>
-<h6 id="input_8">Input<a class="headerlink" href="#input_8" title="Permanent link"></a></h6>
+<h6 id="input_9">Input<a class="headerlink" href="#input_9" title="Permanent link"></a></h6>
 <ul>
 <li>The <a href="https://python-pptx.readthedocs.io/en/latest/api/table.html"><code>Table</code></a> object.</li>
 <li>The row number. Zero-indexed and not bounds checked.</li>
@@ -4774,7 +4844,7 @@ This shape is added to the slide identified by the variable <code>slide</code>.<
 <li>Alignment. See <a href="https://python-pptx.readthedocs.io/en/latest/api/enum/PpParagraphAlignment.html">PP_PARAGRAPH_ALIGNMENT</a>.</li>
 <li>(Optional) paragraph number. If not specified all paragraphs in the cell will be aligned. If specified just the (zero-indexed) paragraph will be aligned.</li>
 </ul>
-<h6 id="output_8">Output<a class="headerlink" href="#output_8" title="Permanent link"></a></h6>
+<h6 id="output_9">Output<a class="headerlink" href="#output_9" title="Permanent link"></a></h6>
 <ul>
 <li>Nothing is returned.</li>
 </ul>
@@ -4782,7 +4852,7 @@ This shape is added to the slide identified by the variable <code>slide</code>.<
 <p><a id=runpythonmakedrawnshape"></a></p>
 <h5 id="runpythonmakedrawnshape">RunPython.makeDrawnShape<a class="headerlink" href="#runpythonmakedrawnshape" title="Permanent link"></a></h5>
 <p>This function draws a shape from a set of vertices, optionally filling it and adding text.</p>
-<h6 id="input_9">Input<a class="headerlink" href="#input_9" title="Permanent link"></a></h6>
+<h6 id="input_10">Input<a class="headerlink" href="#input_10" title="Permanent link"></a></h6>
 <ul>
 <li>The <code>slide</code> to add the shape to. Generally this is the <code>slide</code> object provided by md2pptx when your python code gets control.</li>
 <li>An array of points. Each point is of the form:<ul>
@@ -4796,9 +4866,91 @@ This shape is added to the slide identified by the variable <code>slide</code>.<
 <li>The fill colour. Defaults to <code>None</code> - which, in the case of the shape being filled, leads to the presentation&rsquo;s default colour. See <a href="#specifying-colours">Specifying Colours</a>.</li>
 <li>Whether the shape is to be filled. Defaults to <code>True</code>.</li>
 </ul>
-<h6 id="output_9">Output<a class="headerlink" href="#output_9" title="Permanent link"></a></h6>
+<h6 id="output_10">Output<a class="headerlink" href="#output_10" title="Permanent link"></a></h6>
 <ul>
 <li>The created shape</li>
+</ul>
+<p><a id=checklist-related-helper-routines"></a></p>
+<h4 id="checklist-related-helper-routines">Checklist-Related Helper routines<a class="headerlink" href="#checklist-related-helper-routines" title="Permanent link"></a></h4>
+<p><a id=runpythonmaketruthy"></a></p>
+<h5 id="runpythonmaketruthy">RunPython.makeTruthy<a class="headerlink" href="#runpythonmaketruthy" title="Permanent link"></a></h5>
+<p>This function massages the output from <a href="#runpythonreadcsv"><code>RunPython.readCSV</code></a> to prepare it for input to <a href="#runpythonmakechecklist">RunPython.makeChecklist</a>.</p>
+<p>By default it operates on the second column and</p>
+<ul>
+<li>sets cells with text value <code>"Yes"</code> to <code>True</code>.</li>
+<li>sets cells with text value <code>"No"</code> to <code>False</code>.</li>
+<li>sets cells with text value <code>""</code> to <code>None</code>.</li>
+</ul>
+<p>The column number and text string values can be changed from the defaults.</p>
+<h6 id="input_11">Input<a class="headerlink" href="#input_11" title="Permanent link"></a></h6>
+<ul>
+<li>Data in the form created by <a href="#runpythonreadcsv">RunPython.readCSV</a>.</li>
+<li>Column number to massage, zero-indexed. Defaults to &ldquo;1&rdquo;.</li>
+<li>String to be set to <code>True</code>. Defaults to <code>"Yes"</code>.</li>
+<li>String to be set to <code>False</code>. Defaults to <code>"No"</code>.</li>
+<li>String to be set to <code>None</code>. Defaults to <code>""</code>.</li>
+</ul>
+<h6 id="output_11">Output<a class="headerlink" href="#output_11" title="Permanent link"></a></h6>
+<ul>
+<li>Data in the form created by <a href="#runpythonreadcsv">RunPython.readCSV</a>.</li>
+</ul>
+<p>The idea behind this function is to allow people to create CSV files with string values for state.
+Once massaged the resulting array of arrays can be fed into <a href="#runpythonmakechecklist"><code>RunPython.makeChecklist</code></a>.</p>
+<p><a id=runpythonchecklistfromcsv"></a></p>
+<h5 id="runpythonchecklistfromcsv">RunPython.checklistFromCSV<a class="headerlink" href="#runpythonchecklistfromcsv" title="Permanent link"></a></h5>
+<p>This function creates a checklist in a textbox from a CSV file.</p>
+<h6 id="input_12">Input<a class="headerlink" href="#input_12" title="Permanent link"></a></h6>
+<ul>
+<li>The <code>slide</code> to create the checklist on. Generally this is the <code>slide</code> object provided by md2pptx when your python code gets control.</li>
+<li>The rectangle to render any new textbox in. Most likely this is the <code>renderingRectangle</code> object provided by md2pptx when your python code gets control.</li>
+<li>The name of the CSV file containing the list of items and their statuses.</li>
+<li>The index of the shape to try to use as a textbox. This is optional.</li>
+</ul>
+<h6 id="output_12">Output<a class="headerlink" href="#output_12" title="Permanent link"></a></h6>
+<ul>
+<li>The textbox shape containing the rendered checklist.</li>
+</ul>
+<p>This function uses the following lower level routines</p>
+<ul>
+<li><a href="#runpythonreadcsv"><code>RunPython.readCSV</code></a> to read in a CSV file.</li>
+<li><a href="#runpythonmaketruthy"><code>RunPython.makeTruthy</code></a> to massage the contents of the CSV file.</li>
+<li><a href="#runpythonensuretextbox"><code>RunPython.ensureTextbox</code></a> to find a textbox. The shape index you optionally pass in is passed on to <code>RunPython.ensureTextbox</code>.</li>
+<li><a href="#runpythonmakechecklist"><code>RunPython.makeChecklist</code></a> to create the checklist content.</li>
+<li><a href="#runpythondochecklistchecks"><code>RunPython.doChecklistChecks</code></a> - called by <a href="#runpythonmakechecklist"><code>RunPython.makeChecklist</code></a>.</li>
+</ul>
+<p>See <a href="#slide-with-a-checklist-example">Slide WIth A Checklist Example</a> for an example with the format of the CSV file.</p>
+<p><a id=runpythonmakechecklist"></a></p>
+<h5 id="runpythonmakechecklist">RunPython.makeChecklist<a class="headerlink" href="#runpythonmakechecklist" title="Permanent link"></a></h5>
+<p>This function creates a checklist in a textbox from a CSV file.</p>
+<h6 id="input_13">Input<a class="headerlink" href="#input_13" title="Permanent link"></a></h6>
+<ul>
+<li>The textbox shape to build the checklist in.</li>
+<li>The checklist.</li>
+<li>The index for the text of each item within each row. Defaults to <code>0</code>.</li>
+<li>The index for the checked status of each item within each row. Defaults to <code>1</code>.</li>
+</ul>
+<h6 id="output_13">Output<a class="headerlink" href="#output_13" title="Permanent link"></a></h6>
+<ul>
+<li>The textbox shape containing the rendered checklist.</li>
+</ul>
+<p>This function is called by <a href="#runpythonchecklistfromcsv"><code>RunPython.checklistFromCSV</code></a>.
+In turn it calls <a href="#runpythondochecklistchecks"><code>RunPython.doChecklistChecks</code></a> to do the actually placement of checkmarks.</p>
+<p><a id="runpythondochecklistchecks"></a></p>
+<h5 id="runpythondochecklistchecks">RunPython.doChecklistChecks<a class="headerlink" href="#runpythondochecklistchecks" title="Permanent link"></a></h5>
+<h6 id="input_14">Input<a class="headerlink" href="#input_14" title="Permanent link"></a></h6>
+<ul>
+<li>The textbox shape to set the checkmarks for.</li>
+<li>A list - one per paragraph - of checkmark indicators.</li>
+</ul>
+<h6 id="output_14">Output<a class="headerlink" href="#output_14" title="Permanent link"></a></h6>
+<ul>
+<li>The textbox shape containing the rendered checklist.</li>
+</ul>
+<p>The checkmark indicators are:</p>
+<ul>
+<li><code>None</code> - leave the paragraph unchecked.</li>
+<li><code>True</code> - give the paragraph a tick.</li>
+<li><code>False</code> - give the paragraph a cross.</li>
 </ul>
 <p><a id="inline-python-examples"></a></p>
 <h3 id="inline-python-examples">Inline Python Examples<a class="headerlink" href="#inline-python-examples" title="Permanent link"></a></h3>
@@ -4807,6 +4959,7 @@ This shape is added to the slide identified by the variable <code>slide</code>.<
 <li><a href="#graphing-example">Graphing Example</a></li>
 <li><a href="#table-manipulation-example">Table Manipulation Example</a></li>
 <li><a href="#slide-with-a-shape-example">Slide With A Shape Example</a></li>
+<li><a href="#slide-with-a-checklist-example">Slide WIth A Checklist Example</a></li>
 </ul>
 <p><a id="graphing-example"></a></p>
 <h4 id="graphing-example">Graphing Example<a class="headerlink" href="#graphing-example" title="Permanent link"></a></h4>
@@ -4916,6 +5069,30 @@ s = RunPython.makeDrawnShape(slide, vertices, True, "My Text","#FF0000","#80FFFF
 </code></pre>
 <p>The result of this code looks something like this:</p>
 <p><img alt="" src="/Users/martinpacker/md2pptx/docs/shapeSlide.png" /></p>
+<p><a id="slide-with-a-checklist-example"></a></p>
+<h4 id="slide-with-a-checklist-example">Slide WIth A Checklist Example<a class="headerlink" href="#slide-with-a-checklist-example" title="Permanent link"></a></h4>
+<p>Here is sample code to add a checklist to a slide. 
+Let&rsquo;s start with a CSV file with three lines in it.
+Each represents a task.
+The first has an empty completion cell, the second has a positive completion cell, and the third has a negative one.</p>
+<p>Let&rsquo;s call this &ldquo;tasks.csv&rdquo;:</p>
+<pre><code>"One task",""
+"Another task","Yes"
+"A task that won't get done","No"
+</code></pre>
+<p>This is the kind of file you could create and maintain by hand, or with a tool.</p>
+<p>If you run the following through md2pptx you get a slide with a title and a three-item checklist.</p>
+<pre><code>template: Martin Template.pptx
+
+### Here Is A Slide With A Checklist
+
+``` run-python
+RunPython.checklistFromCSV(slide, renderingRectangle, "tasks.csv")
+```
+</code></pre>
+<p>The resulting slide would look something like this:</p>
+<p><img alt="" src="/Users/martinpacker/md2pptx/docs/checklist.png" /></p>
+<p>Obviously you could create a presentation with multiple such slides, each from a different CSV file.</p>
 <h2 id="building-this-user-guide">Building This User Guide<a class="headerlink" href="#building-this-user-guide" title="Permanent link"></a></h2>
 <p>This user guide is written in Markdown - but with a few extensions.
 To build it correctly you need to use <a href="https://github.com/MartinPacker/mdpre">mdpre</a>.</p>

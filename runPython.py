@@ -14,6 +14,7 @@ from pptx.enum.chart import XL_LEGEND_POSITION
 from pptx.enum.text import PP_ALIGN
 from pptx.dml.color import RGBColor
 from colour import setColour, parseColour
+from pptx.enum.shapes import MSO_SHAPE_TYPE
 
 class RunPython:
     def __init__(
@@ -213,22 +214,27 @@ class RunPython:
     
             # Restore original font size
             para.font.size = originalFontSize
+            
+        return placeholder
 
-    def makeChecklist(placeholder, checklist):
+    def makeChecklist(placeholder, checklist, checkTextIndex = 0, checkMarkIndex = 1):
         checkMarks = []
     
-        for paraNumber , checklistItem in enumerate(checklist):
-            checkMarks.append(checklistItem[1])
+        for paraNumber, checklistItem in enumerate(checklist):
+            checkMarks.append(checklistItem[checkMarkIndex])
+
             if paraNumber == 0:
                para = placeholder.text_frame.paragraphs[0]
             else:
                para = placeholder.text_frame.add_paragraph()
 
-            para.text = checklistItem[0]
+            para.text = checklistItem[checkTextIndex]
 
         RunPython.doChecklistChecks(placeholder, checkMarks)
+        
+        return placeholder
 
-    def makeTruthy(table_array, columnNumber, trueString = "Yes", falseString = "No", unsetString = ""):
+    def makeTruthy(table_array, columnNumber = 1, trueString = "Yes", falseString = "No", unsetString = ""):
         for row in table_array:
             if row[columnNumber] == unsetString:
                 row[columnNumber] = None
@@ -239,19 +245,58 @@ class RunPython:
 
         return table_array
 
-    def ensureTextbox(slide, renderingRectangle):
+    def ensureTextbox(slide, renderingRectangle, shapeIndex = None):
+        if shapeIndex is not None:
+            if len(slide.shapes) < shapeIndex + 1:
+                # Need to create a text box as shape index too high
+                newShape = slide.shapes.add_textbox(
+                    renderingRectangle.left,
+                    renderingRectangle.top,
+                    renderingRectangle.width,
+                    renderingRectangle.height
+                )
+
+                # Return new shape
+                return newShape
+            else:
+                # shape Index is valid
+                if (slide.shapes[shapeIndex].shape_type == MSO_SHAPE_TYPE.TEXT_BOX):
+                    # shape is a text box so return it
+                    return slide.shapes[shapeIndex]
+                else:
+                    # Shape isn't a text box so create one
+                    newShape = slide.shapes.add_textbox(renderingRectangle.left, renderingRectangle.top, renderingRectangle.width, renderingRectangle.height)
+
+                    # Return new shape
+                    return newShape
+
+        # shapeIndex wasn't set so potentially search for the last text box
         if len(slide.shapes) < 2:
-            slide.shapes.add_textbox(renderingRectangle.left, renderingRectangle.top, renderingRectangle.width, renderingRectangle.height)
-            textShapeNumber = len(slide.shapes) - 1
+            # Need to create a text box as only shape is presumed to be a title
+            newShape = slide.shapes.add_textbox(renderingRectangle.left, renderingRectangle.top, renderingRectangle.width, renderingRectangle.height)
 
-        return textShapeNumber
+            # Return new shape
+            return newShape
+        
+        # Search for last text box
+        for shapeIndex, theShape in reversed(list(enumerate(slide.shapes))):
+            if (theShape.shape_type == MSO_SHAPE_TYPE.TEXT_BOX) & shapeIndex > 0:
+                return theShape
 
-    def checklistFromCSV(slide, renderingRectangle, filename):
+        # Need to create a text box none found - other than perhaps at Index 0 (title)
+        newShape = slide.shapes.add_textbox(renderingRectangle.left, renderingRectangle.top, renderingRectangle.width, renderingRectangle.height)
+
+        # Return new shape's index as presumed to be the text box we want
+        return newShape
+        
+    def checklistFromCSV(slide, renderingRectangle, filename, shapeIndex = None):
         # Read in CSV and turn second column into "truthy" values
         myChecklist = RunPython.makeTruthy(RunPython.readCSV(filename), 1)
 
-        # Ensure we have a placeholder - whether first or second
-        textShapeNumber = RunPython.ensureTextbox(slide, renderingRectangle)
+        # Ensure we have a placeholder - whether first or second or specified
+        textShape = RunPython.ensureTextbox(slide, renderingRectangle, shapeIndex)
 
         # Make the checklist in this placeholder from the imported file
-        RunPython.makeChecklist(slide.shapes[textShapeNumber], myChecklist)
+        RunPython.makeChecklist(textShape, myChecklist)
+        
+        return textShape
