@@ -2,7 +2,7 @@
 runPython
 """
 
-version = "0.4"
+version = "0.5"
 
 import csv
 from pptx.chart.data import CategoryChartData
@@ -15,6 +15,8 @@ from pptx.enum.text import PP_ALIGN
 from pptx.dml.color import RGBColor
 from colour import setColour, parseColour
 from pptx.enum.shapes import MSO_SHAPE_TYPE
+from lxml import etree
+from pptx.enum.shapes import PP_PLACEHOLDER
 
 class RunPython:
     def __init__(
@@ -260,7 +262,7 @@ class RunPython:
                 return newShape
             else:
                 # shape Index is valid
-                if (slide.shapes[shapeIndex].shape_type == MSO_SHAPE_TYPE.TEXT_BOX):
+                if (theShape.shape_type == MSO_SHAPE_TYPE.TEXT_BOX) | (theShape.placeholder_format.type == PP_PLACEHOLDER.OBJECT):
                     # shape is a text box so return it
                     return slide.shapes[shapeIndex]
                 else:
@@ -280,8 +282,9 @@ class RunPython:
         
         # Search for last text box
         for shapeIndex, theShape in reversed(list(enumerate(slide.shapes))):
-            if (theShape.shape_type == MSO_SHAPE_TYPE.TEXT_BOX) & shapeIndex > 0:
+            if (theShape.shape_type == MSO_SHAPE_TYPE.TEXT_BOX) | (theShape.placeholder_format.type == PP_PLACEHOLDER.OBJECT):
                 return theShape
+
 
         # Need to create a text box none found - other than perhaps at Index 0 (title)
         newShape = slide.shapes.add_textbox(renderingRectangle.left, renderingRectangle.top, renderingRectangle.width, renderingRectangle.height)
@@ -300,3 +303,16 @@ class RunPython:
         RunPython.makeChecklist(textShape, myChecklist)
         
         return textShape
+
+    def removeBullet(paragraph):
+        pPr = paragraph._p.get_or_add_pPr()
+        pPr.insert(
+            0,
+            etree.Element("{http://schemas.openxmlformats.org/drawingml/2006/main}buNone"),
+        )
+
+
+    def removeBullets(shape):
+        for p in shape.text_frame.paragraphs:
+            RunPython.removeBullet(p)
+
