@@ -83,7 +83,7 @@ except:
 
 
 md2pptx_level = "5.1+"
-md2pptx_date = "5 September, 2024"
+md2pptx_date = "18 September, 2024"
 
 namespaceURL = {
     "mc":  "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -431,7 +431,7 @@ def substituteFooterVariables(footerText, liveFooters):
     )
 
     # Substitute any section title occurrences
-    sectionTitleLines = prs.lastSectionTitle.split("<br/>")
+    sectionTitleLines = resolveSymbols(prs.lastSectionTitle).split("<br/>")
 
     footerText = footerText.replace("<section>", sectionTitleLines[0])
     footerText = footerText.replace("<section1>", sectionTitleLines[0])
@@ -443,7 +443,8 @@ def substituteFooterVariables(footerText, liveFooters):
         footerText = footerText.replace("<section3>", sectionTitleLines[2])
 
     # Substitute any presentation title occurrences
-    presTitleLines = prs.lastPresTitle.split("<br/>")
+    presTitleLines = resolveSymbols(prs.lastPresTitle).split("<br/>")
+
     footerText = footerText.replace("<presTitle>", presTitleLines[0])
     footerText = footerText.replace("<presTitle1>", presTitleLines[0])
 
@@ -454,7 +455,7 @@ def substituteFooterVariables(footerText, liveFooters):
         footerText = footerText.replace("<presTitle3>", presTitleLines[2])
 
     # Substitute any presentation subtitle occurrences
-    presSubtitleLines = prs.lastPresSubtitle.split("<br/>")
+    presSubtitleLines = resolveSymbols(prs.lastPresSubtitle).split("<br/>")
 
     footerText = footerText.replace("<presSubtitle>", presSubtitleLines[0])
     footerText = footerText.replace("<presSubtitle1>", presSubtitleLines[0])
