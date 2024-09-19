@@ -44,6 +44,7 @@ import runPython
 from card import Card
 from rectangle import Rectangle
 from colour import *
+from paragraph import *
 from symbols import resolveSymbols
 
 from lxml import etree
@@ -83,7 +84,7 @@ except:
 
 
 md2pptx_level = "5.1+"
-md2pptx_date = "18 September, 2024"
+md2pptx_date = "19 September, 2024"
 
 namespaceURL = {
     "mc":  "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -905,19 +906,6 @@ def setHighlight(run, color):
     rPr.append(hl)
 
     return run
-
-
-def removeBullet(paragraph):
-    pPr = paragraph._p.get_or_add_pPr()
-    pPr.insert(
-        0,
-        etree.Element("{http://schemas.openxmlformats.org/drawingml/2006/main}buNone"),
-    )
-
-
-def removeBullets(textFrame):
-    for p in textFrame.paragraphs:
-        removeBullet(p)
 
 
 # Get the slide object the run is in

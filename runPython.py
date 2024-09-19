@@ -15,8 +15,8 @@ from pptx.enum.text import PP_ALIGN
 from pptx.dml.color import RGBColor
 from colour import setColour, parseColour
 from pptx.enum.shapes import MSO_SHAPE_TYPE
-from lxml import etree
 from pptx.enum.shapes import PP_PLACEHOLDER
+from paragraph import *
 
 class RunPython:
     def __init__(
@@ -304,15 +304,9 @@ class RunPython:
         
         return textShape
 
-    def removeBullet(paragraph):
-        pPr = paragraph._p.get_or_add_pPr()
-        pPr.insert(
-            0,
-            etree.Element("{http://schemas.openxmlformats.org/drawingml/2006/main}buNone"),
-        )
-
-
     def removeBullets(shape):
         for p in shape.text_frame.paragraphs:
-            RunPython.removeBullet(p)
+            removeBullet(p)
 
+    def removeSelectedBullets(shape, removalArray):
+        removeSelectedBullets(shape.text_frame, removalArray)
