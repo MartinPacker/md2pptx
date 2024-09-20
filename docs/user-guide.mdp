@@ -162,6 +162,7 @@ To quote from the python-pptx license statement:
 =colalign l r l
 =csv
 Level,Date,What
+5.1+,20&nbsp;September&nbsp;2024,Fixed symbol resolution in footers. Tweaked [`RunPython.ensureTextbox`](#runpythonensuretextbox). Added [`RunPython.removeBullet`](#runpythonremovebullet)&comma; [`RunPython.removeBullets`](#runpythonremovebullets)&comma; and [`RunPython.removeSelectedBullets`](#runpythonremoveselectedbullets).
 5.1,26&nbsp;August&nbsp;2024,Fixed failed `html` import for [Numeric Character References](#numeric-character-references).<br/>Added Python functions for [checklist creation](#checklist-related-helper-routines).
 5.0.2,26&nbsp;July&nbsp;2024,Added optional `columns` parameter to [`RunPython.makeChartData`](#runpythonmakechartdata).<br/>Added [`RunPython.filterRows`](#runpythonfilterrows) and [`RunPython.transposeArray`](#runpythontransposearray) support.<br/>Specified 'UTF-8' on file read.
 5.0.1,14&nbsp;July&nbsp;2024,Added [`RunPython.alignTableCellText`](#runpythonaligntablecelltext) and [`RunPython.makeDrawnShape`](#runpythonmakedrawnshape)support.
@@ -4096,6 +4097,52 @@ The checkmark indicators are:
 * `True` - give the paragraph a tick.
 * `False` - give the paragraph a cross.
 
+#### Text Paragraph Helper Routines
+
+There are a number of routines to enable you to manipulate paragraphs in text boxes.
+Recall each text box has a set of paragraphs, which might or might not have bullets.
+
+<a id="runpythonremovebullet"></a>
+##### RunPython.removeBullet
+
+This function removes a single bullet from a shape.
+
+###### Input
+
+* The text box shape to remove the bullet from.
+* The index of the paragraph to remove the bullet from. The first paragraph has an index of 0.
+
+###### Output
+
+* The text box shape
+
+<a id="runpythonremovebullets"></a>
+##### RunPython.removeBullets
+
+This function removes all the bullets from a text box shape.
+
+###### Input
+
+* The text box shape to remove all the bullets from.
+
+###### Output
+
+* The text box shape.
+
+<a id="runpythonremoveselectedbullets"></a>
+##### RunPython.removeSelectedBullets
+
+This function removes selected bullets from a text box shape.
+
+###### Input
+
+* The text box shape to remove selected bullets from.
+* A list of paragraph numbers to remove the bullets for. Each entry is a zero-indexed paragraph number.
+
+###### Output
+
+* The text box shape.
+
 <a id="inline-python-examples"></a>
 ### Inline Python Examples
 
@@ -4104,7 +4151,8 @@ Here are a few examples that use the [Python helper routines](#python-helper-rou
 * [Graphing Example](#graphing-example)
 * [Table Manipulation Example](#table-manipulation-example)
 * [Slide With A Shape Example](#slide-with-a-shape-example)
-* [Slide WIth A Checklist Example](#slide-with-a-checklist-example)
+* [Slide With A Checklist Example](#slide-with-a-checklist-example)
+* [Slide With Some Bullets Removed Example](#slide-with-some-bullets-removed-example)
 
 <a id="graphing-example"></a>
 #### Graphing Example
@@ -4269,6 +4317,32 @@ The resulting slide would look something like this:
 ![](checklist.png)
     
 Obviously you could create a presentation with multiple such slides, each from a different CSV file.
+
+
+<sa id = "slide-with-some-bullets-removed-example"></a>
+#### Slide With Some Bullets Removed Example
+
+Here is sample code to remove some bullets from a text box on a slide.
+
+    ### Here Is A Slide With Some bullets To Fix Up
+    
+    * One
+    * Two
+    * Three
+    
+    ``` run-python
+    
+    myTextbox = RunPython.ensureTextbox(slide, renderingRectangle)
+    
+    RunPython.removeSelectedBullets(myTextbox, [0, 2])
+
+    ```
+
+In this case - because the array of paragraphs to remove bullets from is zero-indexed - the first and third bullets are removed.
+
+The resulting slide would look something like this:
+
+![](selectedRemovedBullets.png)
 
 ## Building This User Guide
 

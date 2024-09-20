@@ -1479,6 +1479,24 @@ img {
 </li>
 </ul>
 </li>
+<li><a href="#text-paragraph-helper-routines">Text Paragraph Helper Routines</a><ul>
+<li><a href="#runpythonremovebullet">RunPython.removeBullet</a><ul>
+<li><a href="#input">Input</a></li>
+<li><a href="#output">Output</a></li>
+</ul>
+</li>
+<li><a href="#runpythonremovebullets">RunPython.removeBullets</a><ul>
+<li><a href="#input">Input</a></li>
+<li><a href="#output">Output</a></li>
+</ul>
+</li>
+<li><a href="#runpythonremoveselectedbullets">RunPython.removeSelectedBullets</a><ul>
+<li><a href="#input">Input</a></li>
+<li><a href="#output">Output</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#inline-python-examples">Inline Python Examples</a><ul>
@@ -1486,6 +1504,7 @@ img {
 <li><a href="#table-manipulation-example">Table Manipulation Example</a></li>
 <li><a href="#slide-with-a-shape-example">Slide With A Shape Example</a></li>
 <li><a href="#slide-with-a-checklist-example">Slide WIth A Checklist Example</a></li>
+<li><a href="#slide-with-some-bullets-removed-example">Slide With Some Bullets Removed Example</a></li>
 </ul>
 </li>
 </ul>
@@ -1600,6 +1619,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">5.1+</td>
+<td align="right">20&nbsp;September&nbsp;2024</td>
+<td align="left">Fixed symbol resolution in footers. Tweaked <a href="#runpythonensuretextbox"><code>RunPython.ensureTextbox</code></a>. Added <a href="#runpythonremovebullet"><code>RunPython.removeBullet</code></a>&comma; <a href="#runpythonremovebullets"><code>RunPython.removeBullets</code></a>&comma; and <a href="#runpythonremoveselectedbullets"><code>RunPython.removeSelectedBullets</code></a>.</td>
+</tr>
 <tr>
 <td align="left">5.1</td>
 <td align="right">26&nbsp;August&nbsp;2024</td>
@@ -4952,6 +4976,44 @@ In turn it calls <a href="#runpythondochecklistchecks"><code>RunPython.doCheckli
 <li><code>True</code> - give the paragraph a tick.</li>
 <li><code>False</code> - give the paragraph a cross.</li>
 </ul>
+<h4 id="text-paragraph-helper-routines">Text Paragraph Helper Routines<a class="headerlink" href="#text-paragraph-helper-routines" title="Permanent link"></a></h4>
+<p>There are a number of routines to enable you to manipulate paragraphs in text boxes.
+Recall each text box has a set of paragraphs, which might or might not have bullets.</p>
+<p><a id="runpythonremovebullet"></a></p>
+<h5 id="runpythonremovebullet">RunPython.removeBullet<a class="headerlink" href="#runpythonremovebullet" title="Permanent link"></a></h5>
+<p>This function removes a single bullet from a shape.</p>
+<h6 id="input_15">Input<a class="headerlink" href="#input_15" title="Permanent link"></a></h6>
+<ul>
+<li>The text box shape to remove the bullet from.</li>
+<li>The index of the paragraph to remove the bullet from. The first paragraph has an index of 0.</li>
+</ul>
+<h6 id="output_15">Output<a class="headerlink" href="#output_15" title="Permanent link"></a></h6>
+<ul>
+<li>The text box shape</li>
+</ul>
+<p><a id="runpythonremovebullets"></a></p>
+<h5 id="runpythonremovebullets">RunPython.removeBullets<a class="headerlink" href="#runpythonremovebullets" title="Permanent link"></a></h5>
+<p>This function removes all the bullets from a text box shape.</p>
+<h6 id="input_16">Input<a class="headerlink" href="#input_16" title="Permanent link"></a></h6>
+<ul>
+<li>The text box shape to remove all the bullets from.</li>
+</ul>
+<h6 id="output_16">Output<a class="headerlink" href="#output_16" title="Permanent link"></a></h6>
+<ul>
+<li>The text box shape.</li>
+</ul>
+<p><a id="runpythonremoveselectedbullets"></a></p>
+<h5 id="runpythonremoveselectedbullets">RunPython.removeSelectedBullets<a class="headerlink" href="#runpythonremoveselectedbullets" title="Permanent link"></a></h5>
+<p>This function removes selected bullets from a text box shape.</p>
+<h6 id="input_17">Input<a class="headerlink" href="#input_17" title="Permanent link"></a></h6>
+<ul>
+<li>The text box shape to remove selected bullets from.</li>
+<li>A list of paragraph numbers to remove the bullets for. Each entry is a zero-indexed paragraph number.</li>
+</ul>
+<h6 id="output_17">Output<a class="headerlink" href="#output_17" title="Permanent link"></a></h6>
+<ul>
+<li>The text box shape.</li>
+</ul>
 <p><a id="inline-python-examples"></a></p>
 <h3 id="inline-python-examples">Inline Python Examples<a class="headerlink" href="#inline-python-examples" title="Permanent link"></a></h3>
 <p>Here are a few examples that use the <a href="#python-helper-routines">Python helper routines</a>.</p>
@@ -4959,7 +5021,8 @@ In turn it calls <a href="#runpythondochecklistchecks"><code>RunPython.doCheckli
 <li><a href="#graphing-example">Graphing Example</a></li>
 <li><a href="#table-manipulation-example">Table Manipulation Example</a></li>
 <li><a href="#slide-with-a-shape-example">Slide With A Shape Example</a></li>
-<li><a href="#slide-with-a-checklist-example">Slide WIth A Checklist Example</a></li>
+<li><a href="#slide-with-a-checklist-example">Slide With A Checklist Example</a></li>
+<li><a href="#slide-with-some-bullets-removed-example">Slide With Some Bullets Removed Example</a></li>
 </ul>
 <p><a id="graphing-example"></a></p>
 <h4 id="graphing-example">Graphing Example<a class="headerlink" href="#graphing-example" title="Permanent link"></a></h4>
@@ -5093,6 +5156,26 @@ RunPython.checklistFromCSV(slide, renderingRectangle, "tasks.csv")
 <p>The resulting slide would look something like this:</p>
 <p><img alt="" src="/Users/martinpacker/md2pptx/docs/checklist.png" /></p>
 <p>Obviously you could create a presentation with multiple such slides, each from a different CSV file.</p>
+<p><sa id = "slide-with-some-bullets-removed-example"></a></p>
+<h4 id="slide-with-some-bullets-removed-example">Slide With Some Bullets Removed Example<a class="headerlink" href="#slide-with-some-bullets-removed-example" title="Permanent link"></a></h4>
+<p>Here is sample code to remove some bullets from a text box on a slide.</p>
+<pre><code>### Here Is A Slide With Some bullets To Fix Up
+
+* One
+* Two
+* Three
+
+``` run-python
+
+myTextbox = RunPython.ensureTextbox(slide, renderingRectangle)
+
+RunPython.removeSelectedBullets(myTextbox, [0, 2])
+
+```
+</code></pre>
+<p>In this case - because the array of paragraphs to remove bullets from is zero-indexed - the first and third bullets are removed.</p>
+<p>The resulting slide would look something like this:</p>
+<p><img alt="" src="/Users/martinpacker/md2pptx/docs/selectedRemovedBullets.png" /></p>
 <h2 id="building-this-user-guide">Building This User Guide<a class="headerlink" href="#building-this-user-guide" title="Permanent link"></a></h2>
 <p>This user guide is written in Markdown - but with a few extensions.
 To build it correctly you need to use <a href="https://github.com/MartinPacker/mdpre">mdpre</a>.</p>
