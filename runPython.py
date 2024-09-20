@@ -304,12 +304,18 @@ class RunPython:
         
         return textShape
 
-    def removeBullet(shape, paragraphNumber):
-        removeBullet(shape.text_frame.paragraphs[paragraphNumber])
+    def removeBullet(theShape, paragraphNumber):
+        removeBullet(theShape.text_frame.paragraphs[paragraphNumber])
+        
+        return theShape
     
-    def removeBullets(shape):
-        for p in shape.text_frame.paragraphs:
+    def removeBullets(theShape):
+        for p in theShape.text_frame.paragraphs:
             removeBullet(p)
+
+        return theShape
 
     def removeSelectedBullets(shape, removalArray):
         removeSelectedBullets(shape.text_frame, removalArray)
+
+        return theShape
