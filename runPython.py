@@ -304,6 +304,9 @@ class RunPython:
         
         return textShape
 
+    def removeBullet(shape, paragraphNumber):
+        removeBullet(shape.text_frame.paragraphs[paragraphNumber])
+    
     def removeBullets(shape):
         for p in shape.text_frame.paragraphs:
             removeBullet(p)
