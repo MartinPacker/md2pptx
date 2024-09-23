@@ -315,7 +315,7 @@ class RunPython:
 
         return theShape
 
-    def removeSelectedBullets(shape, removalArray):
-        removeSelectedBullets(shape.text_frame, removalArray)
+    def removeSelectedBullets(theShape, removalArray):
+        removeSelectedBullets(theShape.text_frame, removalArray)
 
         return theShape
