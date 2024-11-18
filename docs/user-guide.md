@@ -431,7 +431,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
-|5.1+|20&nbsp;September&nbsp;2024|Fixed symbol resolution in footers. Tweaked [`RunPython.ensureTextbox`](#runpythonensuretextbox). Added [`RunPython.removeBullet`](#runpythonremovebullet)&comma; [`RunPython.removeBullets`](#runpythonremovebullets)&comma; and [`RunPython.removeSelectedBullets`](#runpythonremoveselectedbullets).|
+|5.2|18&nbsp;November&nbsp;2024|Fixed symbol resolution in footers. Tweaked [`RunPython.ensureTextbox`](#runpythonensuretextbox). Added [`RunPython.removeBullet`](#runpythonremovebullet)&comma; [`RunPython.removeBullets`](#runpythonremovebullets)&comma; and [`RunPython.removeSelectedBullets`](#runpythonremoveselectedbullets). Checklists can be indented.|
 |5.1|26&nbsp;August&nbsp;2024|Fixed failed `html` import for [Numeric Character References](#numeric-character-references).<br/>Added Python functions for [checklist creation](#checklist-related-helper-routines).|
 |5.0.2|26&nbsp;July&nbsp;2024|Added optional `columns` parameter to [`RunPython.makeChartData`](#runpythonmakechartdata).<br/>Added [`RunPython.filterRows`](#runpythonfilterrows) and [`RunPython.transposeArray`](#runpythontransposearray) support.<br/>Specified 'UTF-8' on file read.|
 |5.0.1|14&nbsp;July&nbsp;2024|Added [`RunPython.alignTableCellText`](#runpythonaligntablecelltext) and [`RunPython.makeDrawnShape`](#runpythonmakedrawnshape)support.|
@@ -3995,6 +3995,7 @@ This function creates a checklist in a textbox from a CSV file.
 * The checklist.
 * The index for the text of each item within each row. Defaults to `0`.
 * The index for the checked status of each item within each row. Defaults to `1`.
+* The index for the indentation level of each item within each row. Defaults to `2`.
 
 ###### Output
 
@@ -4230,15 +4231,43 @@ If you run the following through md2pptx you get a slide with a title and a thre
     RunPython.checklistFromCSV(slide, renderingRectangle, "tasks.csv")
     ```
 
-
 The resulting slide would look something like this:
 
 ![](checklist.png)
     
 Obviously you could create a presentation with multiple such slides, each from a different CSV file.
 
+Checklists can be more sophisticated than this simple example shows.
+If you add a third column you can specify an indentation level for each checklist item.
+Here is such a CSV file:
 
-<sa id = "slide-with-some-bullets-removed-example"></a>
+```
+"Retrieved data","Yes",1
+"Built databases","",1
+"Analysis","",1
+"Architectural Introduction","",2
+"CPU","",2
+"Memory and I/O","",2
+"WLM","",2
+"Parallel Sysplex","",2
+"DDF","",2
+"Batch","",2
+"Workshop","",1
+"Executive Summary",""
+```
+
+You'll notice the "Executive Summary" row doesn't have a third cell.
+This leads to the item not being indented.
+All the other items have a third cell.
+Those with "1" in that cell are not indented.
+Those with "2" are indented by 1.
+
+The result looks something like this:
+
+![](indentedChecklist.png)
+
+
+<a id = "slide-with-some-bullets-removed-example"></a>
 #### Slide With Some Bullets Removed Example
 
 Here is sample code to remove some bullets from a text box on a slide.

@@ -2,7 +2,7 @@
 runPython
 """
 
-version = "0.5"
+version = "0.6"
 
 import csv
 from pptx.chart.data import CategoryChartData
@@ -17,6 +17,7 @@ from colour import setColour, parseColour
 from pptx.enum.shapes import MSO_SHAPE_TYPE
 from pptx.enum.shapes import PP_PLACEHOLDER
 from paragraph import *
+from pptx.util import Inches, Pt
 
 class RunPython:
     def __init__(
@@ -187,11 +188,16 @@ class RunPython:
             # Save original font size
             originalFontSize = para.font.size
             
+            # Save original indentation level
+            level = para.level
+            
             # Remove the original pPr element
             para._element.remove(para._element.getchildren()[0])
     
             xml = ''
-            xml += '<a:pPr xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" marL="0" indent="0">'
+            
+            # Note the level insertion
+            xml += f'<a:pPr xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" marL="{Inches(0.25) * level}" indent="{Inches(0.33)}" lvl="{level}">'
 
             if checklist[paraNumber] == None:
                 # Checkbox unchecked
@@ -216,10 +222,13 @@ class RunPython:
     
             # Restore original font size
             para.font.size = originalFontSize
+
+            # Restore original paragraph level
+            #para.level = level
             
         return placeholder
 
-    def makeChecklist(placeholder, checklist, checkTextIndex = 0, checkMarkIndex = 1):
+    def makeChecklist(placeholder, checklist, checkTextIndex = 0, checkMarkIndex = 1, levelIndex = 2):
         checkMarks = []
     
         for paraNumber, checklistItem in enumerate(checklist):
@@ -231,6 +240,17 @@ class RunPython:
                para = placeholder.text_frame.add_paragraph()
 
             para.text = checklistItem[checkTextIndex]
+            
+            # The actual level setting in the surviving XML is done by doChecklistChecks
+            # The below sets the level as a hint for doChecklistChecks to work with
+            if len(checklistItem) > levelIndex:
+                try:
+                    level = int(checklistItem[levelIndex])
+                    
+                    para.level = level - 1
+                except ValueError:
+                    para.level = 0
+            else: para.level = 0
 
         RunPython.doChecklistChecks(placeholder, checkMarks)
         
@@ -300,7 +320,7 @@ class RunPython:
         textShape = RunPython.ensureTextbox(slide, renderingRectangle, shapeIndex)
 
         # Make the checklist in this placeholder from the imported file
-        RunPython.makeChecklist(textShape, myChecklist)
+        RunPython.makeChecklist(textShape, myChecklist, 0, 1, 2)
         
         return textShape
 
@@ -319,3 +339,6 @@ class RunPython:
         removeSelectedBullets(theShape.text_frame, removalArray)
 
         return theShape
+
+    def getParagraphs(slide, wantedParagraphs = []):
+        return getParagraphs(slide, wantedParagraphs)

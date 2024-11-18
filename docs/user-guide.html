@@ -1620,9 +1620,9 @@ THE SOFTWARE.
 </thead>
 <tbody>
 <tr>
-<td align="left">5.1+</td>
-<td align="right">20&nbsp;September&nbsp;2024</td>
-<td align="left">Fixed symbol resolution in footers. Tweaked <a href="#runpythonensuretextbox"><code>RunPython.ensureTextbox</code></a>. Added <a href="#runpythonremovebullet"><code>RunPython.removeBullet</code></a>&comma; <a href="#runpythonremovebullets"><code>RunPython.removeBullets</code></a>&comma; and <a href="#runpythonremoveselectedbullets"><code>RunPython.removeSelectedBullets</code></a>.</td>
+<td align="left">5.2</td>
+<td align="right">18&nbsp;November&nbsp;2024</td>
+<td align="left">Fixed symbol resolution in footers. Tweaked <a href="#runpythonensuretextbox"><code>RunPython.ensureTextbox</code></a>. Added <a href="#runpythonremovebullet"><code>RunPython.removeBullet</code></a>&comma; <a href="#runpythonremovebullets"><code>RunPython.removeBullets</code></a>&comma; and <a href="#runpythonremoveselectedbullets"><code>RunPython.removeSelectedBullets</code></a>. Checklists can be indented.</td>
 </tr>
 <tr>
 <td align="left">5.1</td>
@@ -4952,6 +4952,7 @@ Once massaged the resulting array of arrays can be fed into <a href="#runpythonm
 <li>The checklist.</li>
 <li>The index for the text of each item within each row. Defaults to <code>0</code>.</li>
 <li>The index for the checked status of each item within each row. Defaults to <code>1</code>.</li>
+<li>The index for the indentation level of each item within each row. Defaults to <code>2</code>.</li>
 </ul>
 <h6 id="output_13">Output<a class="headerlink" href="#output_13" title="Permanent link"></a></h6>
 <ul>
@@ -5156,7 +5157,31 @@ RunPython.checklistFromCSV(slide, renderingRectangle, "tasks.csv")
 <p>The resulting slide would look something like this:</p>
 <p><img alt="" src="/Users/martinpacker/md2pptx/docs/checklist.png" /></p>
 <p>Obviously you could create a presentation with multiple such slides, each from a different CSV file.</p>
-<p><sa id = "slide-with-some-bullets-removed-example"></a></p>
+<p>Checklists can be more sophisticated than this simple example shows.
+If you add a third column you can specify an indentation level for each checklist item.
+Here is such a CSV file:</p>
+<div class="highlight"><pre>&quot;Retrieved data&quot;,&quot;Yes&quot;,1
+&quot;Built databases&quot;,&quot;&quot;,1
+&quot;Analysis&quot;,&quot;&quot;,1
+&quot;Architectural Introduction&quot;,&quot;&quot;,2
+&quot;CPU&quot;,&quot;&quot;,2
+&quot;Memory and I/O&quot;,&quot;&quot;,2
+&quot;WLM&quot;,&quot;&quot;,2
+&quot;Parallel Sysplex&quot;,&quot;&quot;,2
+&quot;DDF&quot;,&quot;&quot;,2
+&quot;Batch&quot;,&quot;&quot;,2
+&quot;Workshop&quot;,&quot;&quot;,1
+&quot;Executive Summary&quot;,&quot;&quot;
+</pre></div>
+
+<p>You&rsquo;ll notice the &ldquo;Executive Summary&rdquo; row doesn&rsquo;t have a third cell.
+This leads to the item not being indented.
+All the other items have a third cell.
+Those with &ldquo;1&rdquo; in that cell are not indented.
+Those with &ldquo;2&rdquo; are indented by 1.</p>
+<p>The result looks something like this:</p>
+<p><img alt="" src="/Users/martinpacker/md2pptx/docs/indentedChecklist.png" /></p>
+<p><a id = "slide-with-some-bullets-removed-example"></a></p>
 <h4 id="slide-with-some-bullets-removed-example">Slide With Some Bullets Removed Example<a class="headerlink" href="#slide-with-some-bullets-removed-example" title="Permanent link"></a></h4>
 <p>Here is sample code to remove some bullets from a text box on a slide.</p>
 <pre><code>### Here Is A Slide With Some bullets To Fix Up
