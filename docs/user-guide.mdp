@@ -162,7 +162,8 @@ To quote from the python-pptx license statement:
 =colalign l r l
 =csv
 Level,Date,What
-5.2,18&nbsp;November&nbsp;2024,Fixed symbol resolution in footers. Tweaked [`RunPython.ensureTextbox`](#runpythonensuretextbox). Added [`RunPython.removeBullet`](#runpythonremovebullet)&comma; [`RunPython.removeBullets`](#runpythonremovebullets)&comma; and [`RunPython.removeSelectedBullets`](#runpythonremoveselectedbullets). Checklists can be indented.
+5.2.1,23&nbsp;November&nbsp;2024,[Checklist](#checklist-related-helper-routines) items can be optionally coloured red or green&comma; according to status.
+5.2,18&nbsp;November&nbsp;2024,Fixed symbol resolution in footers. Tweaked [`RunPython.ensureTextbox`](#runpythonensuretextbox). Added [`RunPython.removeBullet`](#runpythonremovebullet)&comma; [`RunPython.removeBullets`](#runpythonremovebullets)&comma; and [`RunPython.removeSelectedBullets`](#runpythonremoveselectedbullets). [Checklist](#checklist-related-helper-routines) items can be indented.
 5.1,26&nbsp;August&nbsp;2024,Fixed failed `html` import for [Numeric Character References](#numeric-character-references).<br/>Added Python functions for [checklist creation](#checklist-related-helper-routines).
 5.0.2,26&nbsp;July&nbsp;2024,Added optional `columns` parameter to [`RunPython.makeChartData`](#runpythonmakechartdata).<br/>Added [`RunPython.filterRows`](#runpythonfilterrows) and [`RunPython.transposeArray`](#runpythontransposearray) support.<br/>Specified 'UTF-8' on file read.
 5.0.1,14&nbsp;July&nbsp;2024,Added [`RunPython.alignTableCellText`](#runpythonaligntablecelltext) and [`RunPython.makeDrawnShape`](#runpythonmakedrawnshape)support.
@@ -3750,6 +3751,8 @@ This ensures the second shape (in this case your Python drawing space) is zero i
 You can, of course, extend this technique to multiple shapes on a slide.
 For more information see [ContentSplit](#split-proportions-contentsplit).
 
+<a id="an-important-caution"></a>
+
 ### An Important Caution
 
 The support described in [Running Inline Python](#running-inline-python) allows you to run **arbitary python code**. \
@@ -3864,7 +3867,7 @@ There are two use cases:
 
 1. If no shape index is passed in this routine will search for the last textbox shape on the slide. If it is at index `0` that is presumed to be a slide title and a new textbox is created. If no textbox is found a new one is created.
 
-This function is used in [`RunPython.checklistFromCSV``](#runpythonchecklistfromcsv).
+This function is used in [`RunPython.checklistFromCSV`](#runpythonchecklistfromcsv).
 
 #### Chart-Related Helper Routines
 
@@ -3923,7 +3926,7 @@ This shape is added to the slide identified by the variable `slide`.
 
 * A [`Table`](https://python-pptx.readthedocs.io/en/latest/api/table.html) object - which you can further manipulate.
 
-<a id=runpythonapplycellfillrgb"></a>
+<a id="runpythonapplycellfillrgb"></a>
 ##### RunPython.applyCellFillRGB
 
 This function sets the background colour of a cell in an existing [`Table`](https://python-pptx.readthedocs.io/en/latest/api/table.html) object.
@@ -3941,7 +3944,7 @@ This function sets the background colour of a cell in an existing [`Table`](http
 
 * Nothing is returned.
 
-<a id=runpythonapplycelllistfillrgb"></a>
+<a id="runpythonapplycelllistfillrgb"></a>
 ##### RunPython.applyCellListFillRGB
 
 This function sets the background colour of a list of cells in an existing [`Table`](https://python-pptx.readthedocs.io/en/latest/api/table.html) object.
@@ -3981,7 +3984,7 @@ Generally there will be only one paragraph in a cell - but this function iterate
 
 #### Drawing-Related Helper Routines
 
-<a id=runpythonmakedrawnshape"></a>
+<a id="runpythonmakedrawnshape"></a>
 ##### RunPython.makeDrawnShape
 
 This function draws a shape from a set of vertices, optionally filling it and adding text.
@@ -4002,11 +4005,13 @@ This function draws a shape from a set of vertices, optionally filling it and ad
 
 * The created shape
 
-<a id=checklist-related-helper-routines"></a>
+<a id="checklist-related-helper-routines"></a>
 #### Checklist-Related Helper routines
 
+There are a number of functions that can help you make checklists, including pulling in a CSV file with status in.
+These checklists can have ticked, crossed, or empty boxes - depending on the input data.
 
-<a id=runpythonmaketruthy"></a>
+<a id="runpythonmaketruthy"></a>
 ##### RunPython.makeTruthy
 
 This function massages the output from [`RunPython.readCSV`](#runpythonreadcsv) to prepare it for input to [RunPython.makeChecklist](#runpythonmakechecklist).
@@ -4034,10 +4039,11 @@ The column number and text string values can be changed from the defaults.
 The idea behind this function is to allow people to create CSV files with string values for state.
 Once massaged the resulting array of arrays can be fed into [`RunPython.makeChecklist`](#runpythonmakechecklist).
 
-<a id=runpythonchecklistfromcsv"></a>
+<a id="runpythonchecklistfromcsv"></a>
 ##### RunPython.checklistFromCSV
 
 This function creates a checklist in a textbox from a CSV file.
+The checklist items can be indented and can, optionally, be coloured to reflect their state.
 
 ###### Input
 
@@ -4045,6 +4051,7 @@ This function creates a checklist in a textbox from a CSV file.
 * The rectangle to render any new textbox in. Most likely this is the `renderingRectangle` object provided by md2pptx when your python code gets control.
 * The name of the CSV file containing the list of items and their statuses.
 * The index of the shape to try to use as a textbox. This is optional.
+* Whether to colour the checklist items according to their state. This is optional and can be enabled by coding `colourChecks=True` as a parameter. The default is not to colour the checklist items.
 
 ###### Output
 
@@ -4058,12 +4065,13 @@ This function uses the following lower level routines
 * [`RunPython.makeChecklist`](#runpythonmakechecklist) to create the checklist content.
 * [`RunPython.doChecklistChecks`](#runpythondochecklistchecks) - called by [`RunPython.makeChecklist`](#runpythonmakechecklist).
 
-See [Slide WIth A Checklist Example](#slide-with-a-checklist-example) for an example with the format of the CSV file.
+See [Slide WIth A Checklist Examples](#slide-with-a-checklist-examples) for examples with the format of the CSV file.
 
-<a id=runpythonmakechecklist"></a>
+<a id="runpythonmakechecklist"></a>
 ##### RunPython.makeChecklist
 
-This function creates a checklist in a textbox from a CSV file.
+This function creates a checklist in a textbox from an array.
+The checklist items can be indented and can, optionally, be coloured to reflect their state.
 
 ###### Input
 
@@ -4072,6 +4080,7 @@ This function creates a checklist in a textbox from a CSV file.
 * The index for the text of each item within each row. Defaults to `0`.
 * The index for the checked status of each item within each row. Defaults to `1`.
 * The index for the indentation level of each item within each row. Defaults to `2`.
+* Whether to colour the checklist items according to their state. This is optional and can be enabled by coding `colourChecks=True` as a parameter. The default is not to colour the checklist items.
 
 ###### Output
 
@@ -4080,13 +4089,36 @@ This function creates a checklist in a textbox from a CSV file.
 This function is called by [`RunPython.checklistFromCSV`](#runpythonchecklistfromcsv).
 In turn it calls [`RunPython.doChecklistChecks`](#runpythondochecklistchecks) to do the actually placement of checkmarks.
 
+Here is an example of a checklist array:
+
+
+```
+[
+  ['Retrieved data', True, 1],
+  ['Built databases', False, 1],
+  ['Analysis', None, 1],
+  ['Architectural Introduction', None, 2],
+  ['CPU', None, 2],
+  ['Memory and I/O', None, 2],
+  ['WLM', None, 2],
+  ['Parallel Sysplex', None, 2],
+  ['DDF', None, 2],
+  ['Batch', None, 2],
+  ['Workshop', None, 1],
+  ['Executive Summary', None]
+]
+```
+
 <a id="runpythondochecklistchecks"></a>
 ##### RunPython.doChecklistChecks
+
+This function adds check marks to the checklist items and, optionally, colours them to reflect their state.
 
 ###### Input
 
 * The textbox shape to set the checkmarks for.
 * A list - one per paragraph - of checkmark indicators.
+* Whether to colour the checklist items according to their state. This is optional and can be enabled by coding `colourChecks=True` as a parameter. The default is not to colour the checklist items.
 
 ###### Output
 
@@ -4152,7 +4184,7 @@ Here are a few examples that use the [Python helper routines](#python-helper-rou
 * [Graphing Example](#graphing-example)
 * [Table Manipulation Example](#table-manipulation-example)
 * [Slide With A Shape Example](#slide-with-a-shape-example)
-* [Slide With A Checklist Example](#slide-with-a-checklist-example)
+* [Slide With A Checklist Examples](#slide-with-a-checklist-examples)
 * [Slide With Some Bullets Removed Example](#slide-with-some-bullets-removed-example)
 
 <a id="graphing-example"></a>
@@ -4285,11 +4317,10 @@ The result of this code looks something like this:
 
 ![](shapeSlide.png)
 
-<a id="slide-with-a-checklist-example"></a>
-#### Slide WIth A Checklist Example
+<a id="slide-with-a-checklist-examples"></a>
+#### Slide With A Checklist Examples
 
-Here is sample code to add a checklist to a slide. \
-
+Here is sample code to add a checklist to a slide.
 Let's start with a CSV file with three lines in it.
 Each represents a task.
 The first has an empty completion cell, the second has a positive completion cell, and the third has a negative one.
@@ -4347,8 +4378,13 @@ The result looks something like this:
 
 ![](indentedChecklist.png)
 
+You can optionally colour the checklist, based on each item's status.
+You do this by adding `colourChecks = True` to the [`RunPython.checklistFromCSV`](#runpythonchecklistfromcsv) function call.
+The result might look something like this:
 
-<a id = "slide-with-some-bullets-removed-example"></a>
+![](colouredChecklist.png)
+
+<a id ="slide-with-some-bullets-removed-example"></a>
 #### Slide With Some Bullets Removed Example
 
 Here is sample code to remove some bullets from a text box on a slide.

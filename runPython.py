@@ -180,10 +180,10 @@ class RunPython:
         
         return s
 
-    def doChecklistChecks(placeholder, checklist):
+    def doChecklistChecks(placeholder, checklist, colourChecks = False):
         tf = placeholder.text_frame
         paras = tf.paragraphs
-    
+
         for paraNumber, para in enumerate(paras):
             # Save original font size
             originalFontSize = para.font.size
@@ -199,19 +199,39 @@ class RunPython:
             # Note the level insertion
             xml += f'<a:pPr xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" marL="{Inches(0.25) * level}" indent="{Inches(0.33)}" lvl="{level}">'
 
+
             if checklist[paraNumber] == None:
                 # Checkbox unchecked
+
+                # Set the bullet to an empty square - and don't colour it
                 xml += '<a:buFont xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" typeface="Wingdings" pitchFamily="2" charset="2"/>'
                 xml += '<a:buChar xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" char="o"/>'
             elif checklist[paraNumber] == True:
                 # Checkbox ticked
+
+                # Maybe colour the mark
+                if colourChecks:
+                    xml += '<a:buClr xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">'
+                    xml += '<a:srgbClr val="00FF00" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" />'
+                    xml += '</a:buClr>'
+
+                # Set the bullet to a square with a tick
                 xml += '<a:buFont xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" typeface="Wingdings 2" pitchFamily="2" charset="2"/>'
                 xml += '<a:buChar xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" char="R"/>'
             else:
                 # Checkbox crossed
+
+                # Maybe colour the mark
+                if colourChecks:
+                    xml += '<a:buClr xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">'
+                    xml += '<a:srgbClr val="FF0000" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" />'
+                    xml += '</a:buClr>'
+                
+                # Set the bullet to a square with a cross
                 xml += '<a:buFont xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" typeface="Wingdings 2" pitchFamily="2" charset="2"/>'
                 xml += '<a:buChar xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" char="T"/>'
-          
+                
+     
             xml += '</a:pPr>'
     
             # Parse this XML
@@ -223,14 +243,11 @@ class RunPython:
             # Restore original font size
             para.font.size = originalFontSize
 
-            # Restore original paragraph level
-            #para.level = level
-            
         return placeholder
 
-    def makeChecklist(placeholder, checklist, checkTextIndex = 0, checkMarkIndex = 1, levelIndex = 2):
+    def makeChecklist(placeholder, checklist, checkTextIndex = 0, checkMarkIndex = 1, levelIndex = 2, colourChecks = False):
         checkMarks = []
-    
+        
         for paraNumber, checklistItem in enumerate(checklist):
             checkMarks.append(checklistItem[checkMarkIndex])
 
@@ -252,7 +269,7 @@ class RunPython:
                     para.level = 0
             else: para.level = 0
 
-        RunPython.doChecklistChecks(placeholder, checkMarks)
+        RunPython.doChecklistChecks(placeholder, checkMarks, colourChecks)
         
         return placeholder
 
@@ -312,7 +329,7 @@ class RunPython:
         # Return new shape's index as presumed to be the text box we want
         return newShape
         
-    def checklistFromCSV(slide, renderingRectangle, filename, shapeIndex = None):
+    def checklistFromCSV(slide, renderingRectangle, filename, shapeIndex = None, colourChecks = False):
         # Read in CSV and turn second column into "truthy" values
         myChecklist = RunPython.makeTruthy(RunPython.readCSV(filename), 1)
 
@@ -320,7 +337,7 @@ class RunPython:
         textShape = RunPython.ensureTextbox(slide, renderingRectangle, shapeIndex)
 
         # Make the checklist in this placeholder from the imported file
-        RunPython.makeChecklist(textShape, myChecklist, 0, 1, 2)
+        RunPython.makeChecklist(textShape, myChecklist, 0, 1, 2, colourChecks)
         
         return textShape
 

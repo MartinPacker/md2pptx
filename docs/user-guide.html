@@ -1503,7 +1503,7 @@ img {
 <li><a href="#graphing-example">Graphing Example</a></li>
 <li><a href="#table-manipulation-example">Table Manipulation Example</a></li>
 <li><a href="#slide-with-a-shape-example">Slide With A Shape Example</a></li>
-<li><a href="#slide-with-a-checklist-example">Slide WIth A Checklist Example</a></li>
+<li><a href="#slide-with-a-checklist-examples">Slide With A Checklist Examples</a></li>
 <li><a href="#slide-with-some-bullets-removed-example">Slide With Some Bullets Removed Example</a></li>
 </ul>
 </li>
@@ -1620,9 +1620,14 @@ THE SOFTWARE.
 </thead>
 <tbody>
 <tr>
+<td align="left">5.2.1</td>
+<td align="right">23&nbsp;November&nbsp;2024</td>
+<td align="left"><a href="#checklist-related-helper-routines">Checklist</a> items can be optionally coloured red or green&comma; according to status.</td>
+</tr>
+<tr>
 <td align="left">5.2</td>
 <td align="right">18&nbsp;November&nbsp;2024</td>
-<td align="left">Fixed symbol resolution in footers. Tweaked <a href="#runpythonensuretextbox"><code>RunPython.ensureTextbox</code></a>. Added <a href="#runpythonremovebullet"><code>RunPython.removeBullet</code></a>&comma; <a href="#runpythonremovebullets"><code>RunPython.removeBullets</code></a>&comma; and <a href="#runpythonremoveselectedbullets"><code>RunPython.removeSelectedBullets</code></a>. Checklists can be indented.</td>
+<td align="left">Fixed symbol resolution in footers. Tweaked <a href="#runpythonensuretextbox"><code>RunPython.ensureTextbox</code></a>. Added <a href="#runpythonremovebullet"><code>RunPython.removeBullet</code></a>&comma; <a href="#runpythonremovebullets"><code>RunPython.removeBullets</code></a>&comma; and <a href="#runpythonremoveselectedbullets"><code>RunPython.removeSelectedBullets</code></a>. <a href="#checklist-related-helper-routines">Checklist</a> items can be indented.</td>
 </tr>
 <tr>
 <td align="left">5.1</td>
@@ -4680,6 +4685,7 @@ If that&rsquo;s the case consider the following dynamic metadata:</p>
 <p>This ensures the second shape (in this case your Python drawing space) is zero in both dimensions.
 You can, of course, extend this technique to multiple shapes on a slide.
 For more information see <a href="#split-proportions-contentsplit">ContentSplit</a>.</p>
+<p><a id="an-important-caution"></a></p>
 <h3 id="an-important-caution">An Important Caution<a class="headerlink" href="#an-important-caution" title="Permanent link"></a></h3>
 <p>The support described in <a href="#running-inline-python">Running Inline Python</a> allows you to run <strong>arbitary python code</strong>. It would be unwise to embed python code of unknown provenance.
 Use only code you directly write (or, of known provenance, embedded with <a href="https://github.com/MartinPacker/mdpre">mdpre</a>&lsquo;s <code>=include</code> capability).</p>
@@ -4773,7 +4779,7 @@ They can be combined. So, for example you could combine <a href="#runpythonreadc
 <p>If no shape index is passed in this routine will search for the last textbox shape on the slide. If it is at index <code>0</code> that is presumed to be a slide title and a new textbox is created. If no textbox is found a new one is created.</p>
 </li>
 </ol>
-<p>This function is used in <a href="#runpythonchecklistfromcsv">`RunPython.checklistFromCSV``</a>.</p>
+<p>This function is used in <a href="#runpythonchecklistfromcsv"><code>RunPython.checklistFromCSV</code></a>.</p>
 <h4 id="chart-related-helper-routines">Chart-Related Helper Routines<a class="headerlink" href="#chart-related-helper-routines" title="Permanent link"></a></h4>
 <p><a id="runpythonmakechartdata"></a></p>
 <h5 id="runpythonmakechartdata">RunPython.makeChartData<a class="headerlink" href="#runpythonmakechartdata" title="Permanent link"></a></h5>
@@ -4822,7 +4828,7 @@ This shape is added to the slide identified by the variable <code>slide</code>.<
 <ul>
 <li>A <a href="https://python-pptx.readthedocs.io/en/latest/api/table.html"><code>Table</code></a> object - which you can further manipulate.</li>
 </ul>
-<p><a id=runpythonapplycellfillrgb"></a></p>
+<p><a id="runpythonapplycellfillrgb"></a></p>
 <h5 id="runpythonapplycellfillrgb">RunPython.applyCellFillRGB<a class="headerlink" href="#runpythonapplycellfillrgb" title="Permanent link"></a></h5>
 <p>This function sets the background colour of a cell in an existing <a href="https://python-pptx.readthedocs.io/en/latest/api/table.html"><code>Table</code></a> object.</p>
 <h6 id="input_7">Input<a class="headerlink" href="#input_7" title="Permanent link"></a></h6>
@@ -4838,7 +4844,7 @@ This shape is added to the slide identified by the variable <code>slide</code>.<
 <ul>
 <li>Nothing is returned.</li>
 </ul>
-<p><a id=runpythonapplycelllistfillrgb"></a></p>
+<p><a id="runpythonapplycelllistfillrgb"></a></p>
 <h5 id="runpythonapplycelllistfillrgb">RunPython.applyCellListFillRGB<a class="headerlink" href="#runpythonapplycelllistfillrgb" title="Permanent link"></a></h5>
 <p>This function sets the background colour of a list of cells in an existing <a href="https://python-pptx.readthedocs.io/en/latest/api/table.html"><code>Table</code></a> object.</p>
 <h6 id="input_8">Input<a class="headerlink" href="#input_8" title="Permanent link"></a></h6>
@@ -4873,7 +4879,7 @@ This shape is added to the slide identified by the variable <code>slide</code>.<
 <li>Nothing is returned.</li>
 </ul>
 <h4 id="drawing-related-helper-routines">Drawing-Related Helper Routines<a class="headerlink" href="#drawing-related-helper-routines" title="Permanent link"></a></h4>
-<p><a id=runpythonmakedrawnshape"></a></p>
+<p><a id="runpythonmakedrawnshape"></a></p>
 <h5 id="runpythonmakedrawnshape">RunPython.makeDrawnShape<a class="headerlink" href="#runpythonmakedrawnshape" title="Permanent link"></a></h5>
 <p>This function draws a shape from a set of vertices, optionally filling it and adding text.</p>
 <h6 id="input_10">Input<a class="headerlink" href="#input_10" title="Permanent link"></a></h6>
@@ -4894,9 +4900,11 @@ This shape is added to the slide identified by the variable <code>slide</code>.<
 <ul>
 <li>The created shape</li>
 </ul>
-<p><a id=checklist-related-helper-routines"></a></p>
+<p><a id="checklist-related-helper-routines"></a></p>
 <h4 id="checklist-related-helper-routines">Checklist-Related Helper routines<a class="headerlink" href="#checklist-related-helper-routines" title="Permanent link"></a></h4>
-<p><a id=runpythonmaketruthy"></a></p>
+<p>There are a number of functions that can help you make checklists, including pulling in a CSV file with status in.
+These checklists can have ticked, crossed, or empty boxes - depending on the input data.</p>
+<p><a id="runpythonmaketruthy"></a></p>
 <h5 id="runpythonmaketruthy">RunPython.makeTruthy<a class="headerlink" href="#runpythonmaketruthy" title="Permanent link"></a></h5>
 <p>This function massages the output from <a href="#runpythonreadcsv"><code>RunPython.readCSV</code></a> to prepare it for input to <a href="#runpythonmakechecklist">RunPython.makeChecklist</a>.</p>
 <p>By default it operates on the second column and</p>
@@ -4920,15 +4928,17 @@ This shape is added to the slide identified by the variable <code>slide</code>.<
 </ul>
 <p>The idea behind this function is to allow people to create CSV files with string values for state.
 Once massaged the resulting array of arrays can be fed into <a href="#runpythonmakechecklist"><code>RunPython.makeChecklist</code></a>.</p>
-<p><a id=runpythonchecklistfromcsv"></a></p>
+<p><a id="runpythonchecklistfromcsv"></a></p>
 <h5 id="runpythonchecklistfromcsv">RunPython.checklistFromCSV<a class="headerlink" href="#runpythonchecklistfromcsv" title="Permanent link"></a></h5>
-<p>This function creates a checklist in a textbox from a CSV file.</p>
+<p>This function creates a checklist in a textbox from a CSV file.
+The checklist items can be indented and can, optionally, be coloured to reflect their state.</p>
 <h6 id="input_12">Input<a class="headerlink" href="#input_12" title="Permanent link"></a></h6>
 <ul>
 <li>The <code>slide</code> to create the checklist on. Generally this is the <code>slide</code> object provided by md2pptx when your python code gets control.</li>
 <li>The rectangle to render any new textbox in. Most likely this is the <code>renderingRectangle</code> object provided by md2pptx when your python code gets control.</li>
 <li>The name of the CSV file containing the list of items and their statuses.</li>
 <li>The index of the shape to try to use as a textbox. This is optional.</li>
+<li>Whether to colour the checklist items according to their state. This is optional and can be enabled by coding <code>colourChecks=True</code> as a parameter. The default is not to colour the checklist items.</li>
 </ul>
 <h6 id="output_12">Output<a class="headerlink" href="#output_12" title="Permanent link"></a></h6>
 <ul>
@@ -4942,10 +4952,11 @@ Once massaged the resulting array of arrays can be fed into <a href="#runpythonm
 <li><a href="#runpythonmakechecklist"><code>RunPython.makeChecklist</code></a> to create the checklist content.</li>
 <li><a href="#runpythondochecklistchecks"><code>RunPython.doChecklistChecks</code></a> - called by <a href="#runpythonmakechecklist"><code>RunPython.makeChecklist</code></a>.</li>
 </ul>
-<p>See <a href="#slide-with-a-checklist-example">Slide WIth A Checklist Example</a> for an example with the format of the CSV file.</p>
-<p><a id=runpythonmakechecklist"></a></p>
+<p>See <a href="#slide-with-a-checklist-examples">Slide WIth A Checklist Examples</a> for examples with the format of the CSV file.</p>
+<p><a id="runpythonmakechecklist"></a></p>
 <h5 id="runpythonmakechecklist">RunPython.makeChecklist<a class="headerlink" href="#runpythonmakechecklist" title="Permanent link"></a></h5>
-<p>This function creates a checklist in a textbox from a CSV file.</p>
+<p>This function creates a checklist in a textbox from an array.
+The checklist items can be indented and can, optionally, be coloured to reflect their state.</p>
 <h6 id="input_13">Input<a class="headerlink" href="#input_13" title="Permanent link"></a></h6>
 <ul>
 <li>The textbox shape to build the checklist in.</li>
@@ -4953,6 +4964,7 @@ Once massaged the resulting array of arrays can be fed into <a href="#runpythonm
 <li>The index for the text of each item within each row. Defaults to <code>0</code>.</li>
 <li>The index for the checked status of each item within each row. Defaults to <code>1</code>.</li>
 <li>The index for the indentation level of each item within each row. Defaults to <code>2</code>.</li>
+<li>Whether to colour the checklist items according to their state. This is optional and can be enabled by coding <code>colourChecks=True</code> as a parameter. The default is not to colour the checklist items.</li>
 </ul>
 <h6 id="output_13">Output<a class="headerlink" href="#output_13" title="Permanent link"></a></h6>
 <ul>
@@ -4960,12 +4972,31 @@ Once massaged the resulting array of arrays can be fed into <a href="#runpythonm
 </ul>
 <p>This function is called by <a href="#runpythonchecklistfromcsv"><code>RunPython.checklistFromCSV</code></a>.
 In turn it calls <a href="#runpythondochecklistchecks"><code>RunPython.doChecklistChecks</code></a> to do the actually placement of checkmarks.</p>
+<p>Here is an example of a checklist array:</p>
+<div class="highlight"><pre>[
+  [&#39;Retrieved data&#39;, True, 1],
+  [&#39;Built databases&#39;, False, 1],
+  [&#39;Analysis&#39;, None, 1],
+  [&#39;Architectural Introduction&#39;, None, 2],
+  [&#39;CPU&#39;, None, 2],
+  [&#39;Memory and I/O&#39;, None, 2],
+  [&#39;WLM&#39;, None, 2],
+  [&#39;Parallel Sysplex&#39;, None, 2],
+  [&#39;DDF&#39;, None, 2],
+  [&#39;Batch&#39;, None, 2],
+  [&#39;Workshop&#39;, None, 1],
+  [&#39;Executive Summary&#39;, None]
+]
+</pre></div>
+
 <p><a id="runpythondochecklistchecks"></a></p>
 <h5 id="runpythondochecklistchecks">RunPython.doChecklistChecks<a class="headerlink" href="#runpythondochecklistchecks" title="Permanent link"></a></h5>
+<p>This function adds check marks to the checklist items and, optionally, colours them to reflect their state.</p>
 <h6 id="input_14">Input<a class="headerlink" href="#input_14" title="Permanent link"></a></h6>
 <ul>
 <li>The textbox shape to set the checkmarks for.</li>
 <li>A list - one per paragraph - of checkmark indicators.</li>
+<li>Whether to colour the checklist items according to their state. This is optional and can be enabled by coding <code>colourChecks=True</code> as a parameter. The default is not to colour the checklist items.</li>
 </ul>
 <h6 id="output_14">Output<a class="headerlink" href="#output_14" title="Permanent link"></a></h6>
 <ul>
@@ -5022,7 +5053,7 @@ Recall each text box has a set of paragraphs, which might or might not have bull
 <li><a href="#graphing-example">Graphing Example</a></li>
 <li><a href="#table-manipulation-example">Table Manipulation Example</a></li>
 <li><a href="#slide-with-a-shape-example">Slide With A Shape Example</a></li>
-<li><a href="#slide-with-a-checklist-example">Slide With A Checklist Example</a></li>
+<li><a href="#slide-with-a-checklist-examples">Slide With A Checklist Examples</a></li>
 <li><a href="#slide-with-some-bullets-removed-example">Slide With Some Bullets Removed Example</a></li>
 </ul>
 <p><a id="graphing-example"></a></p>
@@ -5133,9 +5164,9 @@ s = RunPython.makeDrawnShape(slide, vertices, True, "My Text","#FF0000","#80FFFF
 </code></pre>
 <p>The result of this code looks something like this:</p>
 <p><img alt="" src="/Users/martinpacker/md2pptx/docs/shapeSlide.png" /></p>
-<p><a id="slide-with-a-checklist-example"></a></p>
-<h4 id="slide-with-a-checklist-example">Slide WIth A Checklist Example<a class="headerlink" href="#slide-with-a-checklist-example" title="Permanent link"></a></h4>
-<p>Here is sample code to add a checklist to a slide. 
+<p><a id="slide-with-a-checklist-examples"></a></p>
+<h4 id="slide-with-a-checklist-examples">Slide With A Checklist Examples<a class="headerlink" href="#slide-with-a-checklist-examples" title="Permanent link"></a></h4>
+<p>Here is sample code to add a checklist to a slide.
 Let&rsquo;s start with a CSV file with three lines in it.
 Each represents a task.
 The first has an empty completion cell, the second has a positive completion cell, and the third has a negative one.</p>
@@ -5181,7 +5212,11 @@ Those with &ldquo;1&rdquo; in that cell are not indented.
 Those with &ldquo;2&rdquo; are indented by 1.</p>
 <p>The result looks something like this:</p>
 <p><img alt="" src="/Users/martinpacker/md2pptx/docs/indentedChecklist.png" /></p>
-<p><a id = "slide-with-some-bullets-removed-example"></a></p>
+<p>You can optionally colour the checklist, based on each item&rsquo;s status.
+You do this by adding <code>colourChecks = True</code> to the <a href="#runpythonchecklistfromcsv"><code>RunPython.checklistFromCSV</code></a> function call.
+The result might look something like this:</p>
+<p><img alt="" src="/Users/martinpacker/md2pptx/docs/colouredChecklist.png" /></p>
+<p><a id ="slide-with-some-bullets-removed-example"></a></p>
 <h4 id="slide-with-some-bullets-removed-example">Slide With Some Bullets Removed Example<a class="headerlink" href="#slide-with-some-bullets-removed-example" title="Permanent link"></a></h4>
 <p>Here is sample code to remove some bullets from a text box on a slide.</p>
 <pre><code>### Here Is A Slide With Some bullets To Fix Up

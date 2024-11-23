@@ -5,8 +5,8 @@ mdpre Markdown Preprocessor v0.6.9 (17 September, 2024)
 Def mdpre_date = 17 September, 2024
 Def mdpre_level = 0.6.9
 Def userid = martinpacker
-Def time = 14&colon;24
-Def date = 18 November&comma; 2024
+Def time = 13&colon;52
+Def date = 23 November&comma; 2024
 Def TOC = Table Of Contents
 Def md = Markdown
 Def pp = Powerpoint
@@ -317,7 +317,7 @@ CSV Stop
 ..... ..... .....  Graphing Example
 ..... ..... .....  Table Manipulation Example
 ..... ..... .....  Slide With A Shape Example
-..... ..... .....  Slide WIth A Checklist Example
+..... ..... .....  Slide With A Checklist Examples
 ..... ..... .....  Slide With Some Bullets Removed Example
 .....  Building This User Guide
 -------------------------------------------------------
