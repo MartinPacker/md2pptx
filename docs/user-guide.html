@@ -1620,6 +1620,11 @@ THE SOFTWARE.
 </thead>
 <tbody>
 <tr>
+<td align="left">5.2.2</td>
+<td align="right">31&nbsp;December&nbsp;2024</td>
+<td align="left"><a href="#checklist-related-helper-routines">Checklist</a> items can be richer&comma; for example using <code>&lt;span&gt;</code> elements.</td>
+</tr>
+<tr>
 <td align="left">5.2.1</td>
 <td align="right">23&nbsp;November&nbsp;2024</td>
 <td align="left"><a href="#checklist-related-helper-routines">Checklist</a> items can be optionally coloured red or green&comma; according to status.</td>
@@ -4900,7 +4905,8 @@ This shape is added to the slide identified by the variable <code>slide</code>.<
 <ul>
 <li>The created shape</li>
 </ul>
-<p><a id="checklist-related-helper-routines"></a></p>
+<p><a id="checklistrelated-helper-routines"></a>
+<a id="checklist-related-helper-routines"></a></p>
 <h4 id="checklist-related-helper-routines">Checklist-Related Helper routines<a class="headerlink" href="#checklist-related-helper-routines" title="Permanent link"></a></h4>
 <p>There are a number of functions that can help you make checklists, including pulling in a CSV file with status in.
 These checklists can have ticked, crossed, or empty boxes - depending on the input data.</p>
@@ -4989,6 +4995,25 @@ In turn it calls <a href="#runpythondochecklistchecks"><code>RunPython.doCheckli
 ]
 </pre></div>
 
+<p>In this example the checklist items are plain text.
+They can be more complex than that, perhaps with some words bolded or wrapped in a <code>&lt;span&gt;</code> element.
+To do this simply ensure the first element of each item has the appropriate markup.
+For example:
+<div class="highlight"><pre>[
+  [&#39;Retrieved data&#39;, True, 1],
+  [&#39;Built databases&#39;, False, 1],
+  [&#39;Analysis&#39;, None, 1],
+  [&#39;Architectural Introduction&#39;, None, 2],
+  [&#39;CPU&#39;, None, 2],
+  [&#39;Memory and I/O&#39;, None, 2],
+  [&#39;WLM&#39;, None, 2],
+  [&#39;Parallel Sysplex&#39;, None, 2],
+  [&#39;&lt;span class=&quot;optional&quot;&gt;DDF&lt;/span&gt;&#39;, None, 2],
+  [&#39;Batch&#39;, None, 2],
+  [&#39;Workshop&#39;, None, 1],
+  [&#39;&lt;span class=&quot;Important&quot;&gt;Executive Summary&lt;/span&gt;&#39;, None]
+]
+</pre></div></p>
 <p><a id="runpythondochecklistchecks"></a></p>
 <h5 id="runpythondochecklistchecks">RunPython.doChecklistChecks<a class="headerlink" href="#runpythondochecklistchecks" title="Permanent link"></a></h5>
 <p>This function adds check marks to the checklist items and, optionally, colours them to reflect their state.</p>

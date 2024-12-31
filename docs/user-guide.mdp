@@ -162,6 +162,7 @@ To quote from the python-pptx license statement:
 =colalign l r l
 =csv
 Level,Date,What
+5.2.2,31&nbsp;December&nbsp;2024,[Checklist](#checklist-related-helper-routines) items can be richer&comma; for example using `<span>` elements.
 5.2.1,23&nbsp;November&nbsp;2024,[Checklist](#checklist-related-helper-routines) items can be optionally coloured red or green&comma; according to status.
 5.2,18&nbsp;November&nbsp;2024,Fixed symbol resolution in footers. Tweaked [`RunPython.ensureTextbox`](#runpythonensuretextbox). Added [`RunPython.removeBullet`](#runpythonremovebullet)&comma; [`RunPython.removeBullets`](#runpythonremovebullets)&comma; and [`RunPython.removeSelectedBullets`](#runpythonremoveselectedbullets). [Checklist](#checklist-related-helper-routines) items can be indented.
 5.1,26&nbsp;August&nbsp;2024,Fixed failed `html` import for [Numeric Character References](#numeric-character-references).<br/>Added Python functions for [checklist creation](#checklist-related-helper-routines).
@@ -4005,6 +4006,7 @@ This function draws a shape from a set of vertices, optionally filling it and ad
 
 * The created shape
 
+<a id="checklistrelated-helper-routines"></a>
 <a id="checklist-related-helper-routines"></a>
 #### Checklist-Related Helper routines
 
@@ -4106,6 +4108,27 @@ Here is an example of a checklist array:
   ['Batch', None, 2],
   ['Workshop', None, 1],
   ['Executive Summary', None]
+]
+```
+
+In this example the checklist items are plain text.
+They can be more complex than that, perhaps with some words bolded or wrapped in a `<span>` element.
+To do this simply ensure the first element of each item has the appropriate markup.
+For example:
+```
+[
+  ['Retrieved data', True, 1],
+  ['Built databases', False, 1],
+  ['Analysis', None, 1],
+  ['Architectural Introduction', None, 2],
+  ['CPU', None, 2],
+  ['Memory and I/O', None, 2],
+  ['WLM', None, 2],
+  ['Parallel Sysplex', None, 2],
+  ['<span class="optional">DDF</span>', None, 2],
+  ['Batch', None, 2],
+  ['Workshop', None, 1],
+  ['<span class="Important">Executive Summary</span>', None]
 ]
 ```
 

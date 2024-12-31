@@ -18,6 +18,7 @@ from pptx.enum.shapes import MSO_SHAPE_TYPE
 from pptx.enum.shapes import PP_PLACEHOLDER
 from paragraph import *
 from pptx.util import Inches, Pt
+import globals
 
 class RunPython:
     def __init__(
@@ -256,7 +257,7 @@ class RunPython:
             else:
                para = placeholder.text_frame.add_paragraph()
 
-            para.text = checklistItem[checkTextIndex]
+            addFormattedText(para, checklistItem[checkTextIndex])
             
             # The actual level setting in the surviving XML is done by doChecklistChecks
             # The below sets the level as a hint for doChecklistChecks to work with
