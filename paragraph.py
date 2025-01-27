@@ -635,7 +635,7 @@ def addFormattedText(p, text):
                 if linkURL.startswith("#"):
                     # Is an internal Url
                     linkHref = linkURL[1:].strip()
-                    href_runs[linkHref] = run
+                    globals.href_runs[linkHref] = run
                 else:
                     # Not an internal link so create it
                     hlink = run.hyperlink

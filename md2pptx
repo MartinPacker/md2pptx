@@ -6222,8 +6222,8 @@ if globals.processingOptions.getCurrentOption("sectionArrows"):
 #                                                                                    #
 ######################################################################################
 xrefCheck_errors = False
-for href in href_runs.keys():
-    run = href_runs[href]
+for href in globals.href_runs.keys():
+    run = globals.href_runs[href]
     if href in slideHrefs.keys():
         createRunHyperlinkOrTooltip(
             run, prs.slides[slideHrefs[href] - 2 + templateSlideCount], ""
