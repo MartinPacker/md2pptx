@@ -17,6 +17,10 @@ spanClassRegex = re.compile("<span( )*class=")
 global spanStyleRegex
 spanStyleRegex = re.compile("<span( )*style=")
 
+
+global href_runs
+href_runs = {}
+
 ######################################################################################
 #                                                                                    #
 #  Prime for style. metadata                                                         #
@@ -37,7 +41,4 @@ emphases = {}
 
 # Font size class correspondence
 global fontsizes
-fontsizes = {} 
-
-
-
+fontsizes = {}
