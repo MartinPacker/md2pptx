@@ -2,7 +2,7 @@
 runPython
 """
 
-version = "0.6"
+version = "0.7"
 
 import csv
 from pptx.chart.data import CategoryChartData
@@ -18,6 +18,8 @@ from pptx.enum.shapes import MSO_SHAPE_TYPE
 from pptx.enum.shapes import PP_PLACEHOLDER
 from paragraph import *
 from pptx.util import Inches, Pt
+from pptx.enum.shapes import MSO_CONNECTOR, MSO_SHAPE
+
 import globals
 
 class RunPython:
@@ -360,3 +362,93 @@ class RunPython:
 
     def getParagraphs(slide, wantedParagraphs = []):
         return getParagraphs(slide, wantedParagraphs)
+        
+    def doAnnotations(slide, annotationList):
+        for annotation in annotationList:
+            x = Inches(float(annotation[0]))
+            y = Inches(float(annotation[1]))
+            w = Inches(float(annotation[2]))
+            h = Inches(float(annotation[3]))
+            
+            text = annotation[4]
+            
+            if text in [
+                "-",
+                "<-",
+                "->",
+            ]:
+                # Draw an line from x, y to x+w, y+h
+                c = slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, x, y, x + w, y + h)
+                
+                if text in [
+                    "->",
+                    "<-",
+                ]:
+                    for element in c._element.getchildren():
+                        if element.tag == "{http://schemas.openxmlformats.org/presentationml/2006/main}spPr":
+                            spPr = element
+                            break
+                        
+                    if text == "->":
+                        xml = '<a:ln xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">'
+                        xml += '  <a:tailEnd type="triangle" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" />'
+                        xml += '</a:ln>'
+                        
+                    elif text == "<-":
+                        xml = '<a:ln xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">'
+                        xml += '  <a:headEnd type="triangle" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" />'
+                        xml += '</a:ln>'
+                        
+                    # Parse this XML
+                    parsed_xml = parse_xml(xml)
+    
+                    # Insert the parsed XML fragment as a child of the pPr element
+                    spPr.append(parsed_xml)
+                        
+                if len(annotation) > 5:
+                    toColour = c.line.color
+                    setColour(toColour, parseColour(annotation[5]))
+
+            elif text[0] == "!":
+                filename = text[1:]
+                slide.shapes.add_picture(filename, x, y, w, h)
+            elif text in [
+                "[]",
+                "()",
+            ]:
+                if text == "[]":
+                    b = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, x, y, w, h)
+                else:
+                    b = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, x, y, w, h)
+                if len(annotation) > 5:
+                    b.text = annotation[5]
+                    f = b.text_frame
+                    p = f.paragraphs[0].alignment = PP_ALIGN.CENTER
+
+                if len(annotation) > 6:
+                    # Foreground colour
+                    foreColour = annotation[6]
+                    if foreColour != "":
+                        toColour = b.text_frame.paragraphs[0].runs[0].font.color
+                        setColour(toColour, parseColour(foreColour))
+                    
+                    if len(annotation) > 7:
+                        # Background colour
+                        backColour = annotation[7]
+                        if backColour != "":
+                            b.fill.solid()
+                            toColour = b.fill.fore_color
+                            setColour(toColour, parseColour(annotation[7]))
+                    
+
+            else:
+                t = slide.shapes.add_textbox(x, y, w, h)
+                t.text = text
+                if len(annotation) > 5:
+                    toColour = t.text_frame.paragraphs[0].runs[0].font.color
+                    setColour(toColour, parseColour(annotation[5]))
+
+    def annotationsFromCSV(slide, filename):
+        annotations = RunPython.readCSV(filename)
+        
+        RunPython.doAnnotations(slide, annotations)
