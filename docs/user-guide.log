@@ -5,8 +5,8 @@ mdpre Markdown Preprocessor v0.6.9 (17 September, 2024)
 Def mdpre_date = 17 September, 2024
 Def mdpre_level = 0.6.9
 Def userid = martinpacker
-Def time = 15&colon;36
-Def date = 31 December&comma; 2025
+Def time = 19&colon;05
+Def date = 11 February&comma; 2025
 Def TOC = Table Of Contents
 Def md = Markdown
 Def pp = Powerpoint
@@ -313,12 +313,20 @@ CSV Stop
 ..... ..... ..... .....  RunPython.removeSelectedBullets
 ..... ..... ..... ..... .....  Input
 ..... ..... ..... ..... .....  Output
+..... ..... .....  Annotations-Related Helper routines
+..... ..... ..... .....  RunPython.doAnnotations
+..... ..... ..... ..... .....  Input
+..... ..... ..... ..... .....  Output
+..... ..... ..... .....  RunPython.annotationsFromCSV
+..... ..... ..... ..... .....  Input
+..... ..... ..... ..... .....  Output
 ..... .....  Inline Python Examples
 ..... ..... .....  Graphing Example
 ..... ..... .....  Table Manipulation Example
 ..... ..... .....  Slide With A Shape Example
 ..... ..... .....  Slide With A Checklist Examples
 ..... ..... .....  Slide With Some Bullets Removed Example
+..... ..... .....  Annotations Example
 .....  Building This User Guide
 -------------------------------------------------------
 - Processing completed.

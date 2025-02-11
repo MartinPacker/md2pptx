@@ -298,12 +298,20 @@ As you can see in the [change log](#change-log), md2pptx is frequently updated -
 			* [RunPython.removeSelectedBullets](#runpythonremoveselectedbullets)
 				* [Input](#input)
 				* [Output](#output)
+		* [Annotations-Related Helper routines](#annotationsrelated-helper-routines)
+			* [RunPython.doAnnotations](#runpythondoannotations)
+				* [Input](#input)
+				* [Output](#output)
+			* [RunPython.annotationsFromCSV](#runpythonannotationsfromcsv)
+				* [Input](#input)
+				* [Output](#output)
 	* [Inline Python Examples](#inline-python-examples)
 		* [Graphing Example](#graphing-example)
 		* [Table Manipulation Example](#table-manipulation-example)
 		* [Slide With A Shape Example](#slide-with-a-shape-example)
 		* [Slide With A Checklist Examples](#slide-with-a-checklist-examples)
 		* [Slide With Some Bullets Removed Example](#slide-with-some-bullets-removed-example)
+		* [Annotations Example](#annotations-example)
 * [Building This User Guide](#building-this-user-guide)
 
 ## Why md2pptx?
@@ -431,6 +439,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|5.3|11&nbsp;February&nbsp;2025|Added [Annotations](#annotations-related-helper-routines) to [`run-python`](#running-inline-python).|
 |5.2.2|31&nbsp;December&nbsp;2024|[Checklist](#checklist-related-helper-routines) items can be richer&comma; for example using `<span>` elements.|
 |5.2.1|23&nbsp;November&nbsp;2024|[Checklist](#checklist-related-helper-routines) items can be optionally coloured red or green&comma; according to status.|
 |5.2|18&nbsp;November&nbsp;2024|Fixed symbol resolution in footers. Tweaked [`RunPython.ensureTextbox`](#runpythonensuretextbox). Added [`RunPython.removeBullet`](#runpythonremovebullet)&comma; [`RunPython.removeBullets`](#runpythonremovebullets)&comma; and [`RunPython.removeSelectedBullets`](#runpythonremoveselectedbullets). [Checklist](#checklist-related-helper-routines) items can be indented.|
@@ -4123,6 +4132,96 @@ This function removes selected bullets from a text box shape.
 
 * The text box shape.
 
+<a id="annotations-related-helper-routines"></a>
+<a id="annotationsrelated-helper-routines"></a>
+#### Annotations-Related Helper routines
+
+You can annotate a slide using these helper routines.
+
+A number of annotation types are supported:
+
+* Lines, with or without a single line ending arrow
+* Rectangles, with or without rounded corners, with or without text
+* Images
+
+The foreground colour can be set for each annotation.
+For an annotation with a closed shape the background colour can also be set.
+
+All dimensions are in inches and can be negative.
+Positions are relative to the top left of the slide.
+
+How to specify colours is described in [Specifying Colours](#specifying-colours).
+This information will be handy with most of the annotations described below.
+
+An annotation consists of a number of values.
+For [RunPython.doAnnotations](#runpythondoannotations) this is a list of values.
+For [RunPython.annotationsFromCSV](#runpythonannotationsfromcsv) this is a line in a CSV file.
+
+Each annotation starts with four floating point values:
+
+1. The starting x value, relative to the left edge of the slide.
+1. The starting y value, relative to the top edge of the slide.
+1. The width of the annotation. (Or the end x value relative to the beginning.)
+1. The height of the annotation. (Or the end y value relative to the end.)
+
+The fifth item is either a code for the type of annotation or the text of the annotation.
+
+The remainder of the list / line depends on the type of the annotation:
+
+* For a line the fifth item is one of `-`, `<-`, or `->`:
+    * `-`  denotes a line with no arrow heads.
+    * `<-` denotes a line with an arrow head at the beginning.
+    * `->` denotes a line with an arrow head at the end.
+
+    An optional line colour can be specified as the sixth item. For example `#FF0000` or `ACCENT 1`.
+
+* For a rectangle the fifth item is one of `[]`, or `()`:
+    * `[]` denotes a rectangle without rounded corners.
+    * `()` denotes a rectangle with rounded corners.
+    
+    If there is a non-empty sixth item it is text to be centred in the rectangle.
+    If there is a non-empty seventh item it is the foreground colour.
+    If there is a non-empty eighth item it is the background colour.
+
+* For a graphic the fifth item begins with a `!` and the remaining characters are the filename.
+The graphic is scaled to fit the rectangle defined by the first four items.
+
+* Any other string is literally a text annotation, without a box.
+If there is a non-empty sixth item it is the foreground colour.
+
+<a id="runpythondoannotations"></a>
+##### RunPython.doAnnotations
+
+This function adds annotations to a slide from a list of lists.
+Each top-level list item describes a single annotation.
+
+###### Input
+
+* The slide to annotate. Generally this is the `slide` object provided by md2pptx when your python code gets control.
+* Data in the form created by [RunPython.readCSV](#runpythonreadcsv).
+
+###### Output
+
+* Nothing is returned.
+
+<a id="runpythonannotationsfromcsv"></a>
+##### RunPython.annotationsFromCSV
+
+This function adds annotations to a slide from a CSV file.
+Each line describes a single annotation.
+
+###### Input
+
+* The slide to annotate. Generally this is the `slide` object provided by md2pptx when your python code gets control.
+* The name of the file to read annotations from.
+
+###### Output
+
+* Nothing is returned.
+
+This function uses [`RunPython.readCSV`](#runpythonreadcsv) to read in a CSV file.
+It calls [`RunPython.doAnnotations`](#runpythondoannotations) to perform the annotations.
+
 <a id="inline-python-examples"></a>
 ### Inline Python Examples
 
@@ -4133,6 +4232,7 @@ Here are a few examples that use the [Python helper routines](#python-helper-rou
 * [Slide With A Shape Example](#slide-with-a-shape-example)
 * [Slide With A Checklist Examples](#slide-with-a-checklist-examples)
 * [Slide With Some Bullets Removed Example](#slide-with-some-bullets-removed-example)
+* [Annotations Example](#annotations-example)
 
 <a id="graphing-example"></a>
 #### Graphing Example
@@ -4351,6 +4451,61 @@ In this case - because the array of paragraphs to remove bullets from is zero-in
 The resulting slide would look something like this:
 
 ![](selectedRemovedBullets.png)
+
+<a id="annotations-example"></a>
+#### Annotations Example
+
+This example shows how to annotate a slide using a CSV file to handle the annotations.
+This is probably the most common and simplest case.
+
+The Python code is very simple:
+
+    ### Here Is A Slide
+    
+    * **Here** is some text
+     
+    ``` run-python
+    RunPython.annotationsFromCSV(slide, "annotations.csv")
+
+    ```
+
+In this example the slide has a title and a list with a single bullet.
+The Python code follows.
+It calls `RunPython.annotationsFromCSV` with two parameters:
+
+* The current slide.
+* The annotations CSV file.
+
+In this example you probably want to add the dynamic metadata line below the title line:
+
+```
+<!-- md2pptx: contentsplit: 1 0 -->
+```
+
+This will ensure no space is reserved on the slide for the Python code, just for the bulleted list.
+
+Here is a sample Annotations CSV file:
+
+```
+"1.0","2.0","2.0","2.0","Hello from Annotations","#FF0000"
+"1.0","6.0","2.0","2.0","Hello again from Annotations","ACCENT 3"
+"3.0","4.0","5.0","6.0","->"
+"6.0","4.0","1.0","1.0","!block.png"
+"4.0","3.0","5.0","6.0","<-","#FF0000"
+"5.0","2.0","5.0","6.0","-","ACCENT 4"
+"7.0","2.0","2.0","0.75","[]","Fred","","ACCENT 4"
+"8.0","3.0","2.0","0.5","()","Jim","#00FF00","#FF0000"
+```
+
+You can see the first four cells are dimensions and the fifth an "annotation code":
+
+* The first two lines are character strings, one with an RGB colour and the other with a theme colour.
+* The third is a line with an arrow head on the end. It uses default colouring.
+* The fourth is a graphic.
+* The fifth is a line with an arrow head at the start. It uses RGB colouring.
+* The sixth is a line with no arrow heads. It uses theme colouring.
+* The seventh is a rectangle with text in it. Its foreground colour is defaulted and its background is set to a theme colour.
+* The eighth is a rectangle with rounded corners, with text in it. Both the foreground and background are set to RGB colours.
 
 ## Building This User Guide
 

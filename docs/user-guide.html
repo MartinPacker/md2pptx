@@ -1497,6 +1497,19 @@ img {
 </li>
 </ul>
 </li>
+<li><a href="#annotationsrelated-helper-routines">Annotations-Related Helper routines</a><ul>
+<li><a href="#runpythondoannotations">RunPython.doAnnotations</a><ul>
+<li><a href="#input">Input</a></li>
+<li><a href="#output">Output</a></li>
+</ul>
+</li>
+<li><a href="#runpythonannotationsfromcsv">RunPython.annotationsFromCSV</a><ul>
+<li><a href="#input">Input</a></li>
+<li><a href="#output">Output</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#inline-python-examples">Inline Python Examples</a><ul>
@@ -1505,6 +1518,7 @@ img {
 <li><a href="#slide-with-a-shape-example">Slide With A Shape Example</a></li>
 <li><a href="#slide-with-a-checklist-examples">Slide With A Checklist Examples</a></li>
 <li><a href="#slide-with-some-bullets-removed-example">Slide With Some Bullets Removed Example</a></li>
+<li><a href="#annotations-example">Annotations Example</a></li>
 </ul>
 </li>
 </ul>
@@ -1619,6 +1633,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">5.3</td>
+<td align="right">11&nbsp;February&nbsp;2025</td>
+<td align="left">Added <a href="#annotations-related-helper-routines">Annotations</a> to <a href="#running-inline-python"><code>run-python</code></a>.</td>
+</tr>
 <tr>
 <td align="left">5.2.2</td>
 <td align="right">31&nbsp;December&nbsp;2024</td>
@@ -5071,6 +5090,91 @@ Recall each text box has a set of paragraphs, which might or might not have bull
 <ul>
 <li>The text box shape.</li>
 </ul>
+<p><a id="annotations-related-helper-routines"></a>
+<a id="annotationsrelated-helper-routines"></a></p>
+<h4 id="annotations-related-helper-routines">Annotations-Related Helper routines<a class="headerlink" href="#annotations-related-helper-routines" title="Permanent link"></a></h4>
+<p>You can annotate a slide using these helper routines.</p>
+<p>A number of annotation types are supported:</p>
+<ul>
+<li>Lines, with or without a single line ending arrow</li>
+<li>Rectangles, with or without rounded corners, with or without text</li>
+<li>Images</li>
+</ul>
+<p>The foreground colour can be set for each annotation.
+For an annotation with a closed shape the background colour can also be set.</p>
+<p>All dimensions are in inches and can be negative.
+Positions are relative to the top left of the slide.</p>
+<p>How to specify colours is described in <a href="#specifying-colours">Specifying Colours</a>.
+This information will be handy with most of the annotations described below.</p>
+<p>An annotation consists of a number of values.
+For <a href="#runpythondoannotations">RunPython.doAnnotations</a> this is a list of values.
+For <a href="#runpythonannotationsfromcsv">RunPython.annotationsFromCSV</a> this is a line in a CSV file.</p>
+<p>Each annotation starts with four floating point values:</p>
+<ol>
+<li>The starting x value, relative to the left edge of the slide.</li>
+<li>The starting y value, relative to the top edge of the slide.</li>
+<li>The width of the annotation. (Or the end x value relative to the beginning.)</li>
+<li>The height of the annotation. (Or the end y value relative to the end.)</li>
+</ol>
+<p>The fifth item is either a code for the type of annotation or the text of the annotation.</p>
+<p>The remainder of the list / line depends on the type of the annotation:</p>
+<ul>
+<li>
+<p>For a line the fifth item is one of <code>-</code>, <code>&lt;-</code>, or <code>-&gt;</code>:</p>
+<ul>
+<li><code>-</code>  denotes a line with no arrow heads.</li>
+<li><code>&lt;-</code> denotes a line with an arrow head at the beginning.</li>
+<li><code>-&gt;</code> denotes a line with an arrow head at the end.</li>
+</ul>
+<p>An optional line colour can be specified as the sixth item. For example <code>#FF0000</code> or <code>ACCENT 1</code>.</p>
+</li>
+<li>
+<p>For a rectangle the fifth item is one of <code>[]</code>, or <code>()</code>:</p>
+<ul>
+<li><code>[]</code> denotes a rectangle without rounded corners.</li>
+<li><code>()</code> denotes a rectangle with rounded corners.</li>
+</ul>
+<p>If there is a non-empty sixth item it is text to be centred in the rectangle.
+If there is a non-empty seventh item it is the foreground colour.
+If there is a non-empty eighth item it is the background colour.</p>
+</li>
+<li>
+<p>For a graphic the fifth item begins with a <code>!</code> and the remaining characters are the filename.
+The graphic is scaled to fit the rectangle defined by the first four items.</p>
+</li>
+<li>
+<p>Any other string is literally a text annotation, without a box.
+If there is a non-empty sixth item it is the foreground colour.</p>
+</li>
+</ul>
+<p><a id="runpythondoannotations"></a></p>
+<h5 id="runpythondoannotations">RunPython.doAnnotations<a class="headerlink" href="#runpythondoannotations" title="Permanent link"></a></h5>
+<p>This function adds annotations to a slide from a list of lists.
+Each top-level list item describes a single annotation.</p>
+<h6 id="input_18">Input<a class="headerlink" href="#input_18" title="Permanent link"></a></h6>
+<ul>
+<li>The slide to annotate. Generally this is the <code>slide</code> object provided by md2pptx when your python code gets control.</li>
+<li>Data in the form created by <a href="#runpythonreadcsv">RunPython.readCSV</a>.</li>
+</ul>
+<h6 id="output_18">Output<a class="headerlink" href="#output_18" title="Permanent link"></a></h6>
+<ul>
+<li>Nothing is returned.</li>
+</ul>
+<p><a id="runpythonannotationsfromcsv"></a></p>
+<h5 id="runpythonannotationsfromcsv">RunPython.annotationsFromCSV<a class="headerlink" href="#runpythonannotationsfromcsv" title="Permanent link"></a></h5>
+<p>This function adds annotations to a slide from a CSV file.
+Each line describes a single annotation.</p>
+<h6 id="input_19">Input<a class="headerlink" href="#input_19" title="Permanent link"></a></h6>
+<ul>
+<li>The slide to annotate. Generally this is the <code>slide</code> object provided by md2pptx when your python code gets control.</li>
+<li>The name of the file to read annotations from.</li>
+</ul>
+<h6 id="output_19">Output<a class="headerlink" href="#output_19" title="Permanent link"></a></h6>
+<ul>
+<li>Nothing is returned.</li>
+</ul>
+<p>This function uses <a href="#runpythonreadcsv"><code>RunPython.readCSV</code></a> to read in a CSV file.
+It calls <a href="#runpythondoannotations"><code>RunPython.doAnnotations</code></a> to perform the annotations.</p>
 <p><a id="inline-python-examples"></a></p>
 <h3 id="inline-python-examples">Inline Python Examples<a class="headerlink" href="#inline-python-examples" title="Permanent link"></a></h3>
 <p>Here are a few examples that use the <a href="#python-helper-routines">Python helper routines</a>.</p>
@@ -5080,6 +5184,7 @@ Recall each text box has a set of paragraphs, which might or might not have bull
 <li><a href="#slide-with-a-shape-example">Slide With A Shape Example</a></li>
 <li><a href="#slide-with-a-checklist-examples">Slide With A Checklist Examples</a></li>
 <li><a href="#slide-with-some-bullets-removed-example">Slide With Some Bullets Removed Example</a></li>
+<li><a href="#annotations-example">Annotations Example</a></li>
 </ul>
 <p><a id="graphing-example"></a></p>
 <h4 id="graphing-example">Graphing Example<a class="headerlink" href="#graphing-example" title="Permanent link"></a></h4>
@@ -5261,6 +5366,53 @@ RunPython.removeSelectedBullets(myTextbox, [0, 2])
 <p>In this case - because the array of paragraphs to remove bullets from is zero-indexed - the first and third bullets are removed.</p>
 <p>The resulting slide would look something like this:</p>
 <p><img alt="" src="/Users/martinpacker/md2pptx/docs/selectedRemovedBullets.png" /></p>
+<p><a id="annotations-example"></a></p>
+<h4 id="annotations-example">Annotations Example<a class="headerlink" href="#annotations-example" title="Permanent link"></a></h4>
+<p>This example shows how to annotate a slide using a CSV file to handle the annotations.
+This is probably the most common and simplest case.</p>
+<p>The Python code is very simple:</p>
+<pre><code>### Here Is A Slide
+
+* **Here** is some text
+
+``` run-python
+RunPython.annotationsFromCSV(slide, "annotations.csv")
+
+```
+</code></pre>
+<p>In this example the slide has a title and a list with a single bullet.
+The Python code follows.
+It calls <code>RunPython.annotationsFromCSV</code> with two parameters:</p>
+<ul>
+<li>The current slide.</li>
+<li>The annotations CSV file.</li>
+</ul>
+<p>In this example you probably want to add the dynamic metadata line below the title line:</p>
+<div class="highlight"><pre>&lt;!-- md2pptx: contentsplit: 1 0 --&gt;
+</pre></div>
+
+<p>This will ensure no space is reserved on the slide for the Python code, just for the bulleted list.</p>
+<p>Here is a sample Annotations CSV file:</p>
+<div class="highlight"><pre>&quot;1.0&quot;,&quot;2.0&quot;,&quot;2.0&quot;,&quot;2.0&quot;,&quot;Hello from Annotations&quot;,&quot;#FF0000&quot;
+&quot;1.0&quot;,&quot;6.0&quot;,&quot;2.0&quot;,&quot;2.0&quot;,&quot;Hello again from Annotations&quot;,&quot;ACCENT 3&quot;
+&quot;3.0&quot;,&quot;4.0&quot;,&quot;5.0&quot;,&quot;6.0&quot;,&quot;-&gt;&quot;
+&quot;6.0&quot;,&quot;4.0&quot;,&quot;1.0&quot;,&quot;1.0&quot;,&quot;!block.png&quot;
+&quot;4.0&quot;,&quot;3.0&quot;,&quot;5.0&quot;,&quot;6.0&quot;,&quot;&lt;-&quot;,&quot;#FF0000&quot;
+&quot;5.0&quot;,&quot;2.0&quot;,&quot;5.0&quot;,&quot;6.0&quot;,&quot;-&quot;,&quot;ACCENT 4&quot;
+&quot;7.0&quot;,&quot;2.0&quot;,&quot;2.0&quot;,&quot;0.75&quot;,&quot;[]&quot;,&quot;Fred&quot;,&quot;&quot;,&quot;ACCENT 4&quot;
+&quot;8.0&quot;,&quot;3.0&quot;,&quot;2.0&quot;,&quot;0.5&quot;,&quot;()&quot;,&quot;Jim&quot;,&quot;#00FF00&quot;,&quot;#FF0000&quot;
+</pre></div>
+
+<p>You can see the first four cells are dimensions and the fifth an &ldquo;annotation code&rdquo;:</p>
+<ul>
+<li>The first two lines are character strings, one with an RGB colour and the other with a theme colour.</li>
+<li>The third is a line with an arrow head on the end. It uses default colouring.</li>
+<li>The fourth is a graphic.</li>
+<li>The fifth is a line with an arrow head at the start. It uses RGB colouring.</li>
+<li>The sixth is a line with no arrow heads. It uses theme colouring.</li>
+<li>The seventh is a rectangle with text in it. Its foreground colour is defaulted and its background is set to a theme colour.</li>
+<li>The eighth is a rectangle with rounded corners, with text in it. Both the foreground and background are set to RGB colours.</li>
+</ul>
 <h2 id="building-this-user-guide">Building This User Guide<a class="headerlink" href="#building-this-user-guide" title="Permanent link"></a></h2>
 <p>This user guide is written in Markdown - but with a few extensions.
 To build it correctly you need to use <a href="https://github.com/MartinPacker/mdpre">mdpre</a>.</p>
