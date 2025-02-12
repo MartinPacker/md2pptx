@@ -1634,6 +1634,11 @@ THE SOFTWARE.
 </thead>
 <tbody>
 <tr>
+<td align="left">5.3+</td>
+<td align="right">12&nbsp;February&nbsp;2025</td>
+<td align="left">Added Added a double-headed arrow to <a href="#annotations-related-helper-routines">Annotations</a>.</td>
+</tr>
+<tr>
 <td align="left">5.3</td>
 <td align="right">11&nbsp;February&nbsp;2025</td>
 <td align="left">Added <a href="#annotations-related-helper-routines">Annotations</a> to <a href="#running-inline-python"><code>run-python</code></a>.</td>
@@ -5096,7 +5101,7 @@ Recall each text box has a set of paragraphs, which might or might not have bull
 <p>You can annotate a slide using these helper routines.</p>
 <p>A number of annotation types are supported:</p>
 <ul>
-<li>Lines, with or without a single line ending arrow</li>
+<li>Lines, with or without line ending arrow heads</li>
 <li>Rectangles, with or without rounded corners, with or without text</li>
 <li>Images</li>
 </ul>
@@ -5120,11 +5125,12 @@ For <a href="#runpythonannotationsfromcsv">RunPython.annotationsFromCSV</a> this
 <p>The remainder of the list / line depends on the type of the annotation:</p>
 <ul>
 <li>
-<p>For a line the fifth item is one of <code>-</code>, <code>&lt;-</code>, or <code>-&gt;</code>:</p>
+<p>For a line the fifth item is one of <code>-</code>, <code>&lt;-</code>, <code>-&gt;</code>, or <code>&lt;-&gt;</code>:</p>
 <ul>
 <li><code>-</code>  denotes a line with no arrow heads.</li>
 <li><code>&lt;-</code> denotes a line with an arrow head at the beginning.</li>
 <li><code>-&gt;</code> denotes a line with an arrow head at the end.</li>
+<li><code>&lt;-&gt;</code> denotes a line with arrow heads at both ends.</li>
 </ul>
 <p>An optional line colour can be specified as the sixth item. For example <code>#FF0000</code> or <code>ACCENT 1</code>.</p>
 </li>

@@ -2,7 +2,7 @@
 runPython
 """
 
-version = "0.7"
+version = "0.8"
 
 import csv
 from pptx.chart.data import CategoryChartData
@@ -27,8 +27,6 @@ class RunPython:
         self,
     ):
         pass
-
-
 
     # Execute the lines of code passed in
     def run(self,slide, renderingRectangle, codeLines, codeType):
@@ -376,6 +374,7 @@ class RunPython:
                 "-",
                 "<-",
                 "->",
+                "<->",
             ]:
                 # Draw an line from x, y to x+w, y+h
                 c = slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, x, y, x + w, y + h)
@@ -383,21 +382,22 @@ class RunPython:
                 if text in [
                     "->",
                     "<-",
+                    "<->",
                 ]:
                     for element in c._element.getchildren():
                         if element.tag == "{http://schemas.openxmlformats.org/presentationml/2006/main}spPr":
                             spPr = element
                             break
+
+                    xml = '<a:ln xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">'
                         
-                    if text == "->":
-                        xml = '<a:ln xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">'
-                        xml += '  <a:tailEnd type="triangle" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" />'
-                        xml += '</a:ln>'
-                        
-                    elif text == "<-":
-                        xml = '<a:ln xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">'
+                    if "<" in text:
                         xml += '  <a:headEnd type="triangle" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" />'
-                        xml += '</a:ln>'
+                        
+                    if ">" in text:
+                        xml += '  <a:tailEnd type="triangle" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" />'
+                        
+                    xml += '</a:ln>'
                         
                     # Parse this XML
                     parsed_xml = parse_xml(xml)

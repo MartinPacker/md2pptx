@@ -439,6 +439,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|5.3+|12&nbsp;February&nbsp;2025|Added Added a double-headed arrow to [Annotations](#annotations-related-helper-routines).|
 |5.3|11&nbsp;February&nbsp;2025|Added [Annotations](#annotations-related-helper-routines) to [`run-python`](#running-inline-python).|
 |5.2.2|31&nbsp;December&nbsp;2024|[Checklist](#checklist-related-helper-routines) items can be richer&comma; for example using `<span>` elements.|
 |5.2.1|23&nbsp;November&nbsp;2024|[Checklist](#checklist-related-helper-routines) items can be optionally coloured red or green&comma; according to status.|
@@ -4140,7 +4141,7 @@ You can annotate a slide using these helper routines.
 
 A number of annotation types are supported:
 
-* Lines, with or without a single line ending arrow
+* Lines, with or without line ending arrow heads
 * Rectangles, with or without rounded corners, with or without text
 * Images
 
@@ -4168,10 +4169,11 @@ The fifth item is either a code for the type of annotation or the text of the an
 
 The remainder of the list / line depends on the type of the annotation:
 
-* For a line the fifth item is one of `-`, `<-`, or `->`:
+* For a line the fifth item is one of `-`, `<-`, `->`, or `<->`:
     * `-`  denotes a line with no arrow heads.
     * `<-` denotes a line with an arrow head at the beginning.
     * `->` denotes a line with an arrow head at the end.
+    * `<->` denotes a line with arrow heads at both ends.
 
     An optional line colour can be specified as the sixth item. For example `#FF0000` or `ACCENT 1`.
 
