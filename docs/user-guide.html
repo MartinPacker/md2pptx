@@ -1234,6 +1234,7 @@ img {
 <li><a href="#adding-lines-after-table-rows-and-columns-with-addtablerowlines-and-addtablecolumnlines">Adding Lines After Table Rows And Columns With <code>addTableRowLines</code> And <code>addTableColumnLines</code></a></li>
 <li><a href="#specifying-what-the-added-table-lines-look-like-with-addtablelinecolour-addtablelinecount-and-addtablelinewidth">Specifying What The Added Table Lines Look Like With <code>addTableLineColour</code>, <code>addTableLineCount</code> and <code>addTableLineWidth</code></a></li>
 <li><a href="#controlling-whether-empty-table-cells-cause-column-spanning-spancells">Controlling Whether Empty Table Cells Cause Column Spanning - <code>SpanCells</code></a></li>
+<li><a href="#controlling-whether-tables-have-drop-shadows-tableshadow">Controlling Whether Tables Have Drop Shadows - <code>tableShadow</code></a></li>
 </ul>
 </li>
 <li><a href="#card-metadata">Card Metadata</a><ul>
@@ -1636,7 +1637,7 @@ THE SOFTWARE.
 <tr>
 <td align="left">5.3+</td>
 <td align="right">12&nbsp;February&nbsp;2025</td>
-<td align="left">Added Added a double-headed arrow to <a href="#annotations-related-helper-routines">Annotations</a>.</td>
+<td align="left">Added a double-headed arrow to <a href="#annotations-related-helper-routines">Annotations</a>. Added optional drop shadows for tables with <a href="#controlling-whether-tables-have-drop-shadows-tableshadow"><code>tableShadow</code></a>.</td>
 </tr>
 <tr>
 <td align="left">5.3</td>
@@ -3698,6 +3699,12 @@ For example</p>
 </code></pre>
 <p>The default is <code>yes</code>.</p>
 <p>You can override this value at the slide level with <a href="#spancells-dynamic">Dynamic SpanCells</a>.</p>
+<h5 id="controlling-whether-tables-have-drop-shadows-tableshadow">Controlling Whether Tables Have Drop Shadows - <code>tableShadow</code><a class="headerlink" href="#controlling-whether-tables-have-drop-shadows-tableshadow" title="Permanent link"></a></h5>
+<p><a id="controlling-whether-tables-have-drop-shadows-tableshadow"></a></p>
+<p>You can control whether tables have drop shadows:</p>
+<pre><code>tableShadow: yes
+</code></pre>
+<p>The default is <code>no</code>.</p>
 <h4 id="card-metadata">Card Metadata<a class="headerlink" href="#card-metadata" title="Permanent link"></a></h4>
 <h5 id="card-background-colour-cardcolour">Card Background Colour - <code>CardColour</code><a class="headerlink" href="#card-background-colour-cardcolour" title="Permanent link"></a></h5>
 <p><a id="card-background-colour-cardcolour"></a></p>

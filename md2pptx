@@ -397,6 +397,23 @@ def substituteFooterVariables(footerText, liveFooters):
 
     return footerText, wantLiveFooter
 
+def addTableShadow(t):
+    tblPr = t._tbl.getchildren()[0]
+
+    xml = """
+    <a:effectLst xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
+        <a:outerShdw xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" blurRad="50800" dist="190500" dir="2700000" algn="tl" rotWithShape="0">
+            <a:prstClr xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" val="black">
+                <a:alpha xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" val="40000" />
+            </a:prstClr>
+        </a:outerShdw>
+    </a:effectLst>
+"""
+    # Parse this XML
+    parsed_xml = parse_xml(xml)
+    
+    # Insert the parsed XML fragment as a child of the pPr element
+    tblPr.insert(0, parsed_xml)
 
 def _applyCellBorderStyling(
     tcPr, linePosition, lineWidthMultiplier=1, lineCount=1, lineColour="000000"
@@ -677,14 +694,18 @@ def makeNumberedListItem(p):
     buAutoNum.set("type", "arabicPeriod")
     pPr.append(buAutoNum)
 
-
 # Add a drop shadow to a shape
 def createShadow(shape):
-    spPr = shape.fill._xPr
+    if "Table" in shape.__class__.__name__:
+        # Table has to be handled differently
+        return addTableShadow(shape)
 
     el = OxmlElement("a:effectLst")
-    spPr.append(el)
 
+    spPr = shape.fill._xPr
+    
+    spPr.append(el)
+    
     outerShdw = OxmlElement("a:outerShdw")
     outerShdw.set("algn", "tl")
     outerShdw.set("blurRad", "50800")
@@ -703,7 +724,7 @@ def createShadow(shape):
     alpha.set("val", "40000")
 
     prstClr.append(alpha)
-
+    
 
 # Clone a shape in a slide and return the new shape.
 # (This is a deep copy so the new shape will have the same
@@ -2473,7 +2494,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
     tableMargin = globals.processingOptions.getCurrentOption("tableMargin")
     marginBase = globals.processingOptions.getCurrentOption("marginBase")
     baseTextSize = globals.processingOptions.getCurrentOption("baseTextSize")
-    tempDir = globals.processingOptions.getCurrentOption("tempDir")
+    tableShadow = globals.processingOptions.getCurrentOption("tableShadow")
 
     printableTopLeftGraphicFilename = ""
     printableTopRightGraphicFilename = ""
@@ -3178,6 +3199,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
 
         # Create the table with the above number of rows and columns
         newTableShape = slide.shapes.add_table(rows, columns, 0, 0, 0, 0)
+        
         newTable = newTableShape.table
 
         newTableShape.top = renderingRectangle.top
@@ -3185,6 +3207,10 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
         newTableShape.height = min(renderingRectangle.height, Inches(0.25) * rows)
         newTableShape.width = renderingRectangle.width - 2 * (tableMargin - marginBase)
         shapeWidth = newTableShape.width
+
+        # Perhaps create a drop shadow for a table
+        if tableShadow:
+            createShadow(newTable)
 
         # Set whether first row is not special
         newTable.first_row = haveTableHeading
@@ -4370,6 +4396,7 @@ globals.processingOptions.setOptionValuesArray(
         ["tableMargin", Inches(0.2)],
         ["spanCells", "yes"],
         ["tableHeadingSize", 0],
+        ["tableShadow", False],
     ]
 )
 
@@ -4712,6 +4739,10 @@ for line in metadata_lines:
 
     elif name == "tableheadingsize":
         globals.processingOptions.setOptionValues(name, float(value))
+
+    elif name == "tableshadow":
+        if value.lower() == "yes":
+            globals.processingOptions.setOptionValues(name, True)
 
     elif name == "abstracttitle":
         globals.processingOptions.setOptionValues(name, value)

@@ -119,6 +119,7 @@ As you can see in the [change log](#change-log), md2pptx is frequently updated -
 			* [Adding Lines After Table Rows And Columns With `addTableRowLines` And `addTableColumnLines`](#adding-lines-after-table-rows-and-columns-with-addtablerowlines-and-addtablecolumnlines)
 			* [Specifying What The Added Table Lines Look Like With `addTableLineColour`, `addTableLineCount` and `addTableLineWidth`](#specifying-what-the-added-table-lines-look-like-with-addtablelinecolour-addtablelinecount-and-addtablelinewidth)
 			* [Controlling Whether Empty Table Cells Cause Column Spanning - `SpanCells`](#controlling-whether-empty-table-cells-cause-column-spanning-spancells)
+			* [Controlling Whether Tables Have Drop Shadows - `tableShadow`](#controlling-whether-tables-have-drop-shadows-tableshadow)
 		* [Card Metadata](#card-metadata)
 			* [Card Background Colour - `CardColour`](#card-background-colour-cardcolour)
 			* [Card Border Colour - `CardBorderColour`](#card-border-colour-cardbordercolour)
@@ -439,7 +440,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
-|5.3+|12&nbsp;February&nbsp;2025|Added Added a double-headed arrow to [Annotations](#annotations-related-helper-routines).|
+|5.3+|12&nbsp;February&nbsp;2025|Added a double-headed arrow to [Annotations](#annotations-related-helper-routines). Added optional drop shadows for tables with [`tableShadow`](#controlling-whether-tables-have-drop-shadows-tableshadow).|
 |5.3|11&nbsp;February&nbsp;2025|Added [Annotations](#annotations-related-helper-routines) to [`run-python`](#running-inline-python).|
 |5.2.2|31&nbsp;December&nbsp;2024|[Checklist](#checklist-related-helper-routines) items can be richer&comma; for example using `<span>` elements.|
 |5.2.1|23&nbsp;November&nbsp;2024|[Checklist](#checklist-related-helper-routines) items can be optionally coloured red or green&comma; according to status.|
@@ -2361,6 +2362,15 @@ For some use cases you don't want an empty table cell to cause the cell to the l
 The default is `yes`.
 
 You can override this value at the slide level with [Dynamic SpanCells](#spancells-dynamic).
+
+##### Controlling Whether Tables Have Drop Shadows - `tableShadow`
+<a id="controlling-whether-tables-have-drop-shadows-tableshadow"></a>
+
+You can control whether tables have drop shadows:
+
+    tableShadow: yes
+    
+The default is `no`.
 
 #### Card Metadata
 

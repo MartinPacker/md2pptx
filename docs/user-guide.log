@@ -5,7 +5,7 @@ mdpre Markdown Preprocessor v0.6.9 (17 September, 2024)
 Def mdpre_date = 17 September, 2024
 Def mdpre_level = 0.6.9
 Def userid = martinpacker
-Def time = 15&colon;13
+Def time = 19&colon;37
 Def date = 12 February&comma; 2025
 Def TOC = Table Of Contents
 Def md = Markdown
@@ -125,6 +125,7 @@ CSV Stop
 ..... ..... ..... .....  Adding Lines After Table Rows And Columns With `addTableRowLines` And `addTableColumnLines`
 ..... ..... ..... .....  Specifying What The Added Table Lines Look Like With `addTableLineColour`, `addTableLineCount` and `addTableLineWidth`
 ..... ..... ..... .....  Controlling Whether Empty Table Cells Cause Column Spanning - `SpanCells`
+..... ..... ..... .....  Controlling Whether Tables Have Drop Shadows - `tableShadow`
 ..... ..... .....  Card Metadata
 ..... ..... ..... .....  Card Background Colour - `CardColour`
 ..... ..... ..... .....  Card Border Colour - `CardBorderColour`
