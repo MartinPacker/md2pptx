@@ -162,7 +162,7 @@ To quote from the python-pptx license statement:
 =colalign l r l
 =csv
 Level,Date,What
-5.3+,15&nbsp;February&nbsp;2025,Added a double-headed arrow and line widths to [Annotations](#annotations-related-helper-routines). Added optional drop shadows for tables with [`tableShadow`](#controlling-whether-tables-have-drop-shadows-tableshadow).
+5.3+,15&nbsp;February&nbsp;2025,Added a double-headed arrow&comma; double lines&comma; and line widths to [Annotations](#annotations-related-helper-routines). Added optional drop shadows for tables with [`tableShadow`](#controlling-whether-tables-have-drop-shadows-tableshadow).
 5.3,11&nbsp;February&nbsp;2025,Added [Annotations](#annotations-related-helper-routines) to [`run-python`](#running-inline-python).
 5.2.2,31&nbsp;December&nbsp;2024,[Checklist](#checklist-related-helper-routines) items can be richer&comma; for example using `<span>` elements.
 5.2.1,23&nbsp;November&nbsp;2024,[Checklist](#checklist-related-helper-routines) items can be optionally coloured red or green&comma; according to status.
@@ -4225,8 +4225,9 @@ A number of annotation types are supported:
 The foreground colour can be set for each annotation.
 For an annotation with a closed shape the background colour can also be set.
 
-For lines and shapes' line widths can be specified - in points.
+For lines and shapes' border line widths can be specified - in points.
 Line widths can be set independently of shapes' line widths.
+Whether an individual shape's border line or a line is double can be set - with `-` signifying a single line and `=` a double.
 
 All dimensions, except for line widths, are in inches and can be negative.
 Positions are relative to the top left of the slide.
@@ -4249,17 +4250,17 @@ The fifth item is either a code for the type of annotation or the text of the an
 
 The remainder of the list / line depends on the type of the annotation:
 
-* For a line the fifth item is one of `-`, `<-`, `->`, or `<->`:
-    * `-`  denotes a line with no arrow heads.
-    * `<-` denotes a line with an arrow head at the beginning.
-    * `->` denotes a line with an arrow head at the end.
-    * `<->` denotes a line with arrow heads at both ends.
+* For a line the fifth item is one of `-`, `=`, `<-`, `<=`, `->`, `=>`, `<->`, or `<=>`:
+    * `-`  and `=` denote a line with no arrow heads. The first denotes the line is single, the second double.
+    * `<-` and `<=` denote a line with an arrow head at the beginning. The first denotes the line is single, the second double.
+    * `->` and `=>` denote a line with an arrow head at the end. The first denotes the line is single, the second double.
+    * `<->` and `<=>` denote a line with arrow heads at both ends. The first denotes the line is single, the second double.
 
     An optional line colour can be specified as the sixth item. For example `#FF0000` or `ACCENT 1`.
 
-* For a rectangle the fifth item is one of `[]`, or `()`:
-    * `[]` denotes a rectangle without rounded corners.
-    * `()` denotes a rectangle with rounded corners.
+* For a rectangle the fifth item is one of `[]`, `[-]`, `[=]`, `()`, `(-)`, or `(=)`:
+    * `[]`, `[-]`, and `[=]` denote a rectangle without rounded corners. The first two denote the border line is single, the third double.
+    * `()`, `(-)`, and `(=)` denote a rectangle with rounded corners. The first two denote the border line is single, the third double.
     
     If there is a non-empty sixth item it is text to be centred in the rectangle.
     If there is a non-empty seventh item it is the foreground colour.

@@ -375,21 +375,28 @@ class RunPython:
                 "<-",
                 "->",
                 "<->",
+                "=",
+                "<=",
+                "=>",
+                "<=>",
             ]:
                 # Draw an line from x, y to x+w, y+h
                 c = slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, x, y, x + w, y + h)
                 
-                if text in [
-                    "->",
-                    "<-",
-                    "<->",
-                ]:
+                if text != "-":
+                    # Will need an a:ln element
+                    
+                    # Find the spPr element to hang this off
                     for element in c._element.getchildren():
                         if element.tag == "{http://schemas.openxmlformats.org/presentationml/2006/main}spPr":
                             spPr = element
                             break
+                    if "=" in text:
+                        cmpd = "dbl"
+                    else:
+                        cmpd = "sng"
 
-                    xml = '<a:ln xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">'
+                    xml = '<a:ln xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" cmpd="' + cmpd + '">'
                         
                     if "<" in text:
                         xml += '  <a:headEnd type="triangle" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" />'
@@ -417,8 +424,16 @@ class RunPython:
             elif text in [
                 "[]",
                 "()",
+                "[-]",
+                "(-)",
+                "[=]",
+                "(=)",
             ]:
-                if text == "[]":
+                if text in [
+                    "[]",
+                    "[-]",
+                    "[=]",
+                ]:
                     b = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, x, y, w, h)
                 else:
                     b = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, x, y, w, h)
@@ -444,7 +459,11 @@ class RunPython:
                     
                 if shapeWidth is not None:
                     b.line.width = Pt(float(shapeWidth))
-
+                
+                if "=" in text:
+                    be = b._element
+                    ln= b.get_or_add_ln()
+                    ln.set("cmpd", "dbl")
             else:
                 t = slide.shapes.add_textbox(x, y, w, h)
                 t.text = text

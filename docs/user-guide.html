@@ -1637,7 +1637,7 @@ THE SOFTWARE.
 <tr>
 <td align="left">5.3+</td>
 <td align="right">15&nbsp;February&nbsp;2025</td>
-<td align="left">Added a double-headed arrow and line widths to <a href="#annotations-related-helper-routines">Annotations</a>. Added optional drop shadows for tables with <a href="#controlling-whether-tables-have-drop-shadows-tableshadow"><code>tableShadow</code></a>.</td>
+<td align="left">Added a double-headed arrow&comma; double lines&comma; and line widths to <a href="#annotations-related-helper-routines">Annotations</a>. Added optional drop shadows for tables with <a href="#controlling-whether-tables-have-drop-shadows-tableshadow"><code>tableShadow</code></a>.</td>
 </tr>
 <tr>
 <td align="left">5.3</td>
@@ -5114,8 +5114,9 @@ Recall each text box has a set of paragraphs, which might or might not have bull
 </ul>
 <p>The foreground colour can be set for each annotation.
 For an annotation with a closed shape the background colour can also be set.</p>
-<p>For lines and shapes&rsquo; line widths can be specified - in points.
-Line widths can be set independently of shapes&rsquo; line widths.</p>
+<p>For lines and shapes&rsquo; border line widths can be specified - in points.
+Line widths can be set independently of shapes&rsquo; line widths.
+Whether an individual shape&rsquo;s border line or a line is double can be set - with <code>-</code> signifying a single line and <code>=</code> a double.</p>
 <p>All dimensions, except for line widths, are in inches and can be negative.
 Positions are relative to the top left of the slide.</p>
 <p>How to specify colours is described in <a href="#specifying-colours">Specifying Colours</a>.
@@ -5134,20 +5135,20 @@ For <a href="#runpythonannotationsfromcsv">RunPython.annotationsFromCSV</a> this
 <p>The remainder of the list / line depends on the type of the annotation:</p>
 <ul>
 <li>
-<p>For a line the fifth item is one of <code>-</code>, <code>&lt;-</code>, <code>-&gt;</code>, or <code>&lt;-&gt;</code>:</p>
+<p>For a line the fifth item is one of <code>-</code>, <code>=</code>, <code>&lt;-</code>, <code>&lt;=</code>, <code>-&gt;</code>, <code>=&gt;</code>, <code>&lt;-&gt;</code>, or <code>&lt;=&gt;</code>:</p>
 <ul>
-<li><code>-</code>  denotes a line with no arrow heads.</li>
-<li><code>&lt;-</code> denotes a line with an arrow head at the beginning.</li>
-<li><code>-&gt;</code> denotes a line with an arrow head at the end.</li>
-<li><code>&lt;-&gt;</code> denotes a line with arrow heads at both ends.</li>
+<li><code>-</code>  and <code>=</code> denote a line with no arrow heads. The first denotes the line is single, the second double.</li>
+<li><code>&lt;-</code> and <code>&lt;=</code> denote a line with an arrow head at the beginning. The first denotes the line is single, the second double.</li>
+<li><code>-&gt;</code> and <code>=&gt;</code> denote a line with an arrow head at the end. The first denotes the line is single, the second double.</li>
+<li><code>&lt;-&gt;</code> and <code>&lt;=&gt;</code> denote a line with arrow heads at both ends. The first denotes the line is single, the second double.</li>
 </ul>
 <p>An optional line colour can be specified as the sixth item. For example <code>#FF0000</code> or <code>ACCENT 1</code>.</p>
 </li>
 <li>
-<p>For a rectangle the fifth item is one of <code>[]</code>, or <code>()</code>:</p>
+<p>For a rectangle the fifth item is one of <code>[]</code>, <code>[-]</code>, <code>[=]</code>, <code>()</code>, <code>(-)</code>, or <code>(=)</code>:</p>
 <ul>
-<li><code>[]</code> denotes a rectangle without rounded corners.</li>
-<li><code>()</code> denotes a rectangle with rounded corners.</li>
+<li><code>[]</code>, <code>[-]</code>, and <code>[=]</code> denote a rectangle without rounded corners. The first two denote the border line is single, the third double.</li>
+<li><code>()</code>, <code>(-)</code>, and <code>(=)</code> denote a rectangle with rounded corners. The first two denote the border line is single, the third double.</li>
 </ul>
 <p>If there is a non-empty sixth item it is text to be centred in the rectangle.
 If there is a non-empty seventh item it is the foreground colour.
