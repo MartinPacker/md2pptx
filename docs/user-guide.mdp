@@ -162,7 +162,7 @@ To quote from the python-pptx license statement:
 =colalign l r l
 =csv
 Level,Date,What
-5.3+,12&nbsp;February&nbsp;2025,Added a double-headed arrow to [Annotations](#annotations-related-helper-routines). Added optional drop shadows for tables with [`tableShadow`](#controlling-whether-tables-have-drop-shadows-tableshadow).
+5.3+,15&nbsp;February&nbsp;2025,Added a double-headed arrow and line widths to [Annotations](#annotations-related-helper-routines). Added optional drop shadows for tables with [`tableShadow`](#controlling-whether-tables-have-drop-shadows-tableshadow).
 5.3,11&nbsp;February&nbsp;2025,Added [Annotations](#annotations-related-helper-routines) to [`run-python`](#running-inline-python).
 5.2.2,31&nbsp;December&nbsp;2024,[Checklist](#checklist-related-helper-routines) items can be richer&comma; for example using `<span>` elements.
 5.2.1,23&nbsp;November&nbsp;2024,[Checklist](#checklist-related-helper-routines) items can be optionally coloured red or green&comma; according to status.
@@ -4225,7 +4225,10 @@ A number of annotation types are supported:
 The foreground colour can be set for each annotation.
 For an annotation with a closed shape the background colour can also be set.
 
-All dimensions are in inches and can be negative.
+For lines and shapes' line widths can be specified - in points.
+Line widths can be set independently of shapes' line widths.
+
+All dimensions, except for line widths, are in inches and can be negative.
 Positions are relative to the top left of the slide.
 
 How to specify colours is described in [Specifying Colours](#specifying-colours).
@@ -4278,6 +4281,8 @@ Each top-level list item describes a single annotation.
 
 * The slide to annotate. Generally this is the `slide` object provided by md2pptx when your python code gets control.
 * Data in the form created by [RunPython.readCSV](#runpythonreadcsv).
+* Optional line width - in points. Defaults to `None` which means the width isn't explicitly set.
+* Optional shapes' border line width - in points. Defaults to `None` which means the width isn't explicitly set.
 
 ###### Output
 
@@ -4293,6 +4298,8 @@ Each line describes a single annotation.
 
 * The slide to annotate. Generally this is the `slide` object provided by md2pptx when your python code gets control.
 * The name of the file to read annotations from.
+* Optional line width - in points. Defaults to `None` which means the width isn't explicitly set.
+* Optional shapes' border line width - in points. Defaults to `None` which means the width isn't explicitly set.
 
 ###### Output
 

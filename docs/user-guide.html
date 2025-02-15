@@ -1636,8 +1636,8 @@ THE SOFTWARE.
 <tbody>
 <tr>
 <td align="left">5.3+</td>
-<td align="right">12&nbsp;February&nbsp;2025</td>
-<td align="left">Added a double-headed arrow to <a href="#annotations-related-helper-routines">Annotations</a>. Added optional drop shadows for tables with <a href="#controlling-whether-tables-have-drop-shadows-tableshadow"><code>tableShadow</code></a>.</td>
+<td align="right">15&nbsp;February&nbsp;2025</td>
+<td align="left">Added a double-headed arrow and line widths to <a href="#annotations-related-helper-routines">Annotations</a>. Added optional drop shadows for tables with <a href="#controlling-whether-tables-have-drop-shadows-tableshadow"><code>tableShadow</code></a>.</td>
 </tr>
 <tr>
 <td align="left">5.3</td>
@@ -5114,7 +5114,9 @@ Recall each text box has a set of paragraphs, which might or might not have bull
 </ul>
 <p>The foreground colour can be set for each annotation.
 For an annotation with a closed shape the background colour can also be set.</p>
-<p>All dimensions are in inches and can be negative.
+<p>For lines and shapes&rsquo; line widths can be specified - in points.
+Line widths can be set independently of shapes&rsquo; line widths.</p>
+<p>All dimensions, except for line widths, are in inches and can be negative.
 Positions are relative to the top left of the slide.</p>
 <p>How to specify colours is described in <a href="#specifying-colours">Specifying Colours</a>.
 This information will be handy with most of the annotations described below.</p>
@@ -5168,6 +5170,8 @@ Each top-level list item describes a single annotation.</p>
 <ul>
 <li>The slide to annotate. Generally this is the <code>slide</code> object provided by md2pptx when your python code gets control.</li>
 <li>Data in the form created by <a href="#runpythonreadcsv">RunPython.readCSV</a>.</li>
+<li>Optional line width - in points. Defaults to <code>None</code> which means the width isn&rsquo;t explicitly set.</li>
+<li>Optional shapes&rsquo; border line width - in points. Defaults to <code>None</code> which means the width isn&rsquo;t explicitly set.</li>
 </ul>
 <h6 id="output_18">Output<a class="headerlink" href="#output_18" title="Permanent link"></a></h6>
 <ul>
@@ -5181,6 +5185,8 @@ Each line describes a single annotation.</p>
 <ul>
 <li>The slide to annotate. Generally this is the <code>slide</code> object provided by md2pptx when your python code gets control.</li>
 <li>The name of the file to read annotations from.</li>
+<li>Optional line width - in points. Defaults to <code>None</code> which means the width isn&rsquo;t explicitly set.</li>
+<li>Optional shapes&rsquo; border line width - in points. Defaults to <code>None</code> which means the width isn&rsquo;t explicitly set.</li>
 </ul>
 <h6 id="output_19">Output<a class="headerlink" href="#output_19" title="Permanent link"></a></h6>
 <ul>

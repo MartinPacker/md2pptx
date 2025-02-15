@@ -361,7 +361,7 @@ class RunPython:
     def getParagraphs(slide, wantedParagraphs = []):
         return getParagraphs(slide, wantedParagraphs)
         
-    def doAnnotations(slide, annotationList):
+    def doAnnotations(slide, annotationList, lineWidth = None, shapeWidth = None):
         for annotation in annotationList:
             x = Inches(float(annotation[0]))
             y = Inches(float(annotation[1]))
@@ -404,6 +404,8 @@ class RunPython:
     
                     # Insert the parsed XML fragment as a child of the pPr element
                     spPr.append(parsed_xml)
+                if lineWidth is not None:
+                    c.line.width = Pt(float(lineWidth))
                         
                 if len(annotation) > 5:
                     toColour = c.line.color
@@ -440,6 +442,8 @@ class RunPython:
                             toColour = b.fill.fore_color
                             setColour(toColour, parseColour(annotation[7]))
                     
+                if shapeWidth is not None:
+                    b.line.width = Pt(float(shapeWidth))
 
             else:
                 t = slide.shapes.add_textbox(x, y, w, h)
@@ -448,7 +452,7 @@ class RunPython:
                     toColour = t.text_frame.paragraphs[0].runs[0].font.color
                     setColour(toColour, parseColour(annotation[5]))
 
-    def annotationsFromCSV(slide, filename):
+    def annotationsFromCSV(slide, filename, lineWidth = None, shapeWidth = None):
         annotations = RunPython.readCSV(filename)
         
-        RunPython.doAnnotations(slide, annotations)
+        RunPython.doAnnotations(slide, annotations, lineWidth, shapeWidth)

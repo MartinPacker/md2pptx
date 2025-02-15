@@ -87,7 +87,7 @@ except:
 
 
 md2pptx_level = "5.3+"
-md2pptx_date = "12 February, 2025"
+md2pptx_date = "15 February, 2025"
 
 namespaceURL = {
     "mc":  "http://schemas.openxmlformats.org/markup-compatibility/2006",
