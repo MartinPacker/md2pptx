@@ -421,6 +421,7 @@ class RunPython:
             elif text[0] == "!":
                 filename = text[1:]
                 slide.shapes.add_picture(filename, x, y, w, h)
+
             elif text in [
                 "[]",
                 "()",
@@ -428,6 +429,8 @@ class RunPython:
                 "(-)",
                 "[=]",
                 "(=)",
+                "o",
+                "O",
             ]:
                 if text in [
                     "[]",
@@ -435,8 +438,16 @@ class RunPython:
                     "[=]",
                 ]:
                     b = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, x, y, w, h)
+                    
+                elif text in [
+                    "o",
+                    "O",
+                ]:
+                    b = slide.shapes.add_shape(MSO_SHAPE.OVAL, x, y, w, h)
+                    
                 else:
                     b = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, x, y, w, h)
+
                 if len(annotation) > 5:
                     b.text = annotation[5]
                     f = b.text_frame
@@ -460,7 +471,7 @@ class RunPython:
                 if shapeWidth is not None:
                     b.line.width = Pt(float(shapeWidth))
                 
-                if "=" in text:
+                if ("=" in text) | (text == "O"):
                     be = b._element
                     ln= b.get_or_add_ln()
                     ln.set("cmpd", "dbl")

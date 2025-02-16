@@ -1635,9 +1635,9 @@ THE SOFTWARE.
 </thead>
 <tbody>
 <tr>
-<td align="left">5.3+</td>
-<td align="right">15&nbsp;February&nbsp;2025</td>
-<td align="left">Added a double-headed arrow&comma; double lines&comma; and line widths to <a href="#annotations-related-helper-routines">Annotations</a>. Added optional drop shadows for tables with <a href="#controlling-whether-tables-have-drop-shadows-tableshadow"><code>tableShadow</code></a>.</td>
+<td align="left">5.3.1</td>
+<td align="right">16&nbsp;February&nbsp;2025</td>
+<td align="left">Added a double-headed arrow&comma; an oval&comma; double lines&comma; and line widths to <a href="#annotations-related-helper-routines">Annotations</a>. Added optional drop shadows for tables with <a href="#controlling-whether-tables-have-drop-shadows-tableshadow"><code>tableShadow</code></a>.</td>
 </tr>
 <tr>
 <td align="left">5.3</td>
@@ -5110,6 +5110,7 @@ Recall each text box has a set of paragraphs, which might or might not have bull
 <ul>
 <li>Lines, with or without line ending arrow heads</li>
 <li>Rectangles, with or without rounded corners, with or without text</li>
+<li>Ovals, with or without text</li>
 <li>Images</li>
 </ul>
 <p>The foreground colour can be set for each annotation.
@@ -5145,12 +5146,13 @@ For <a href="#runpythonannotationsfromcsv">RunPython.annotationsFromCSV</a> this
 <p>An optional line colour can be specified as the sixth item. For example <code>#FF0000</code> or <code>ACCENT 1</code>.</p>
 </li>
 <li>
-<p>For a rectangle the fifth item is one of <code>[]</code>, <code>[-]</code>, <code>[=]</code>, <code>()</code>, <code>(-)</code>, or <code>(=)</code>:</p>
+<p>For a rectangle or oval the fifth item is one of <code>[]</code>, <code>[-]</code>, <code>[=]</code>, <code>()</code>, <code>(-)</code>, <code>(=)</code>, <code>o</code>, or <code>O</code>:</p>
 <ul>
 <li><code>[]</code>, <code>[-]</code>, and <code>[=]</code> denote a rectangle without rounded corners. The first two denote the border line is single, the third double.</li>
 <li><code>()</code>, <code>(-)</code>, and <code>(=)</code> denote a rectangle with rounded corners. The first two denote the border line is single, the third double.</li>
+<li><code>o</code> and <code>O</code> denote an oval. The first denotes the line is single, the second double.</li>
 </ul>
-<p>If there is a non-empty sixth item it is text to be centred in the rectangle.
+<p>If there is a non-empty sixth item it is text to be centred in the shape.
 If there is a non-empty seventh item it is the foreground colour.
 If there is a non-empty eighth item it is the background colour.</p>
 </li>
