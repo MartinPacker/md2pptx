@@ -86,8 +86,8 @@ except:
     have_graphviz = False
 
 
-md2pptx_level = "5.3.1"
-md2pptx_date = "16 February, 2025"
+md2pptx_level = "5.3.1+"
+md2pptx_date = "22 February, 2025"
 
 namespaceURL = {
     "mc":  "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -1552,10 +1552,13 @@ def handleFunnel(slide, renderingRectangle, codeLines, codeType):
     )
 
 # Handler function for immediately executing python in a code block
-def handleRunPython(slide, renderingRectangle, codeLines, codeType):
+def handleRunPython(pythonType, prs, slide, renderingRectangle, codeLinesOrFile, codeType):
     r = runPython.RunPython()
 
-    r.run(slide, renderingRectangle, codeLines, codeType)
+    if pythonType == "inline":
+        r.run(prs, slide, renderingRectangle, codeLinesOrFile, codeType)
+    else:
+        r.runFromFile(codeLinesOrFile[0], prs, slide, renderingRectangle)
 
 def createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber):
     monoFont = globals.processingOptions.getCurrentOption("monoFont")
@@ -1576,7 +1579,8 @@ def createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber):
             codeType = "backticks"
         else:
             # Some other type - such as GraphViz .dot
-            codeType = codeLines[0][3:].strip().lower()
+            codeTypeRaw = codeLines[0][3:].strip()
+            codeType = codeTypeRaw.lower()
 
             if codeType.startswith("dot"):
                 # GraphViz dot
@@ -1599,9 +1603,14 @@ def createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber):
 
                 return slide
 
-            elif codeType == "run-python":
-                # Built-in Funnel Diagram
-                handleRunPython(slide, renderingRectangle, codeLines[1:-1], codeType)
+            elif codeType.startswith("run-python"):
+                if codeType == "run-python":
+                    # Run inline lines as Python
+                    handleRunPython("inline", prs, slide, renderingRectangle, codeLines[1:-1], codeType)
+                else:
+                    # Run Python file
+                    runPythonFile = codeTypeRaw.split(" ")[1]
+                    handleRunPython("fromfile", prs, slide, renderingRectangle, [runPythonFile], codeType)
 
                 return slide
 

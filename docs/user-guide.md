@@ -236,7 +236,9 @@ As you can see in the [change log](#change-log), md2pptx is frequently updated -
 * [Deviations From Standard Markdown](#deviations-from-standard-markdown)
 * [Running Inline Python](#running-inline-python)
 	* [An Important Caution](#an-important-caution)
-	* [Coding Inline Python](#coding-inline-python)
+	* [How To Invoke Python In md2pptx](#how-to-invoke-python-in-md2pptx)
+		* [Coding Inline Python](#coding-inline-python)
+		* [Importing Python From A File](#importing-python-from-a-file)
 	* [Variables You Can Rely On](#variables-you-can-rely-on)
 	* [Python Helper Routines](#python-helper-routines)
 		* [General Helper Routines](#general-helper-routines)
@@ -250,6 +252,9 @@ As you can see in the [change log](#change-log), md2pptx is frequently updated -
 				* [Input](#input)
 				* [Output](#output)
 			* [RunPython.ensureTextbox](#runpythonensuretextbox)
+				* [Input](#input)
+				* [Output](#output)
+			* [RunPython.runFromFile](#runpythonrunfromfile)
 				* [Input](#input)
 				* [Output](#output)
 		* [Chart-Related Helper Routines](#chartrelated-helper-routines)
@@ -440,6 +445,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|5.3.1+|22&nbsp;February&nbsp;2025|Added  the ability to run Python code from named files in [`run-python`](#running-inline-python).|
 |5.3.1|16&nbsp;February&nbsp;2025|Added a double-headed arrow&comma; an oval&comma; double lines&comma; and line widths to [Annotations](#annotations-related-helper-routines). Added optional drop shadows for tables with [`tableShadow`](#controlling-whether-tables-have-drop-shadows-tableshadow).|
 |5.3|11&nbsp;February&nbsp;2025|Added [Annotations](#annotations-related-helper-routines) to [`run-python`](#running-inline-python).|
 |5.2.2|31&nbsp;December&nbsp;2024|[Checklist](#checklist-related-helper-routines) items can be richer&comma; for example using `<span>` elements.|
@@ -3687,7 +3693,7 @@ The deal remains the same: A flat text file you author turning into a PowerPoint
 
 **Notes:**
 
-It is probably not a good idea to create additional slides in your python code - unless they are in a separate presentation. If you do md2pptx might very well get confused.
+It is probably not a good idea to create additional slides in your python code - unless they are in a separate presentation (created by python-pptx). If you do md2pptx might very well get confused.
 
 This support reserves space for your Python code to draw in.
 For some applications you will want this space to be zero. 
@@ -3704,11 +3710,22 @@ For more information see [ContentSplit](#split-proportions-contentsplit).
 ### An Important Caution
 
 The support described in [Running Inline Python](#running-inline-python) allows you to run **arbitary python code**. It would be unwise to embed python code of unknown provenance.
-Use only code you directly write (or, of known provenance, embedded with [mdpre](https://github.com/MartinPacker/mdpre)'s `=include` capability).
+Use only code you directly write (or, of known provenance, embedded with [mdpre](https://github.com/MartinPacker/mdpre)'s `=include` capability or as an optional parameter to the invocation).
 
 In general, though, this function is worth exploring - if it enables you turn flat files into presentations that you otherwise couldn't make that way.
 
-### Coding Inline Python
+<a id="how-to-invoke-python-in-md2pptx"></a>
+### How To Invoke Python In md2pptx
+
+There are two ways you can invoke Python in md2pptx:
+
+* [Coding Inline Python](#coding-inline-python)
+* [Importing Python From A File](#importing-python-from-a-file)
+
+**Note:** You can invoke Python in a file from inline python.
+
+<a id="coding-inline-python"></a>
+#### Coding Inline Python
 
 To code python inline start with this line:
 
@@ -3723,11 +3740,28 @@ This is like an ordinary code block but with the addition of `run-python` on the
 
 You could code your python in a separate file and embed it with [mdpre's](https://github.com/MartinPacker/mdpre)'s `=include` capability. That would be especially useful if you embed the same code in multiple slides or presentations.
 
+<a id="importing-python-from-a-file"></a>
+#### Importing Python From A File
+
+The simplest way to import python from a file is to start with this line:
+
+    ``` run-python filename
+
+where `filename` is the name of your python file.
+
+The next line should be:
+
+    ```
+This is like an ordinary code block but with the addition of `run-python` on the opening line - with a file name.
+
+**Note:** If there is anything between the `run-python` line and the line with the three backticks it will be ignored.
+
 <a id="variables-you-can-rely-on"></a>
 ### Variables You Can Rely On
 
 While there is no absolute guarantee that variables won't get refactored the following variables are unlikely to be renamed.
 
+* `prs` - the presentation md2pptx is creating. See [Presentation](https://python-pptx.readthedocs.io/en/latest/api/presentation.html#presentation-objects) for the python-pptx documentation. You can, of course, use python-pptx to create other presentations. Just use a different variable.
 * `slide` - the current slide you can manipulate. See [Slides](https://python-pptx.readthedocs.io/en/latest/api/slides.html) for the python-pptx documentation.
 * `renderingRectangle` - the dimensions and position of an area you can render into.
 
@@ -3814,6 +3848,28 @@ There are two use cases:
 1. If no shape index is passed in this routine will search for the last textbox shape on the slide. If it is at index `0` that is presumed to be a slide title and a new textbox is created. If no textbox is found a new one is created.
 
 This function is used in [`RunPython.checklistFromCSV`](#runpythonchecklistfromcsv).
+
+<a id="runpythonrunfromfile"></a>
+##### RunPython.runFromFile
+
+You can run python from a file, but you need to pass in a few parameters. For example:
+
+    runFromFile(self, "test.py", prs, slide, renderingRectangle):
+
+Unless you wanted to alter the rendering rectangle dimensions, you should probably use the above, substituting your code's file name for `test.py`.
+
+###### Input
+
+* `self` - the RunPython instance.
+* The file to execute Python code from.
+* The `Presentation` the code is to operate on.  Generally this is the `prs` object provided by md2pptx when your python code gets control.
+* The `slide` to add any needed textbox to. Generally this is the `slide` object provided by md2pptx when your python code gets control.
+* The rectangle to render any new textbox in. Most likely this is the `renderingRectangle` object provided by md2pptx when your python code gets control.
+
+###### Output
+
+* Nothing is returned.
+
 
 #### Chart-Related Helper Routines
 

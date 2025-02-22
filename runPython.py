@@ -2,7 +2,7 @@
 runPython
 """
 
-version = "0.8"
+version = "0.9"
 
 import csv
 from pptx.chart.data import CategoryChartData
@@ -29,10 +29,13 @@ class RunPython:
         pass
 
     # Execute the lines of code passed in
-    def run(self,slide, renderingRectangle, codeLines, codeType):
+    def run(self, prs, slide, renderingRectangle, codeLines, codeType):
         concatenatedCodeLines = "\n".join(codeLines)
         exec(concatenatedCodeLines)
 
+    def runFromFile(self, filename, prs, slide, renderingRectangle):
+        exec(open(filename).read())
+    
 
     # Helper function for run-python
     def readCSV(filename):

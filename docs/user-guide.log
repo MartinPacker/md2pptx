@@ -5,8 +5,8 @@ mdpre Markdown Preprocessor v0.6.9 (17 September, 2024)
 Def mdpre_date = 17 September, 2024
 Def mdpre_level = 0.6.9
 Def userid = martinpacker
-Def time = 11&colon;24
-Def date = 16 February&comma; 2025
+Def time = 17&colon;26
+Def date = 22 February&comma; 2025
 Def TOC = Table Of Contents
 Def md = Markdown
 Def pp = Powerpoint
@@ -251,7 +251,9 @@ CSV Stop
 .....  Deviations From Standard Markdown
 .....  Running Inline Python
 ..... .....  An Important Caution
-..... .....  Coding Inline Python
+..... .....  How To Invoke Python In md2pptx
+..... ..... .....  Coding Inline Python
+..... ..... .....  Importing Python From A File
 ..... .....  Variables You Can Rely On
 ..... .....  Python Helper Routines
 ..... ..... .....  General Helper Routines
@@ -265,6 +267,9 @@ CSV Stop
 ..... ..... ..... ..... .....  Input
 ..... ..... ..... ..... .....  Output
 ..... ..... ..... .....  RunPython.ensureTextbox
+..... ..... ..... ..... .....  Input
+..... ..... ..... ..... .....  Output
+..... ..... ..... .....  RunPython.runFromFile
 ..... ..... ..... ..... .....  Input
 ..... ..... ..... ..... .....  Output
 ..... ..... .....  Chart-Related Helper Routines
