@@ -1313,6 +1313,12 @@ img {
 </ul>
 </li>
 <li><a href="#slide-transitions-transition">Slide Transitions - <code>Transition</code></a></li>
+<li><a href="#python-exit-routines">Python Exit Routines</a><ul>
+<li><a href="#after-loading-onpresentationinitialisation">After Loading - <code>onPresentationInitialisation</code></a></li>
+<li><a href="#before-saving-onpresentationbeforesave">Before Saving - <code>onPresentationBeforeSave</code></a></li>
+<li><a href="#after-saving-onpresentationaftersave">After Saving - <code>onPresentationAfterSave</code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#dynamic-metadata">Dynamic Metadata</a><ul>
@@ -1644,9 +1650,9 @@ THE SOFTWARE.
 </thead>
 <tbody>
 <tr>
-<td align="left">5.3.1+</td>
-<td align="right">22&nbsp;February&nbsp;2025</td>
-<td align="left">Added  the ability to run Python code from named files in <a href="#running-inline-python"><code>run-python</code></a>.</td>
+<td align="left">5.4</td>
+<td align="right">23&nbsp;February&nbsp;2025</td>
+<td align="left">Added the ability to run Python code from named files in <a href="#running-inline-python"><code>run-python</code></a>. Added <a href="#python-exit-routines">3 exit routine points</a> where user Python code can run.</td>
 </tr>
 <tr>
 <td align="left">5.3.1</td>
@@ -4353,6 +4359,40 @@ The default value is <code>no</code>.</p>
 </ul>
 <p>The default is <code>no</code> - which prevents slide transition effects being generated.</p>
 <p>You can override this value with <a href="#transition-dynamic">Dynamic Metadata</a>.</p>
+<p><a id="python-exit-routines"></a></p>
+<h4 id="python-exit-routines">Python Exit Routines<a class="headerlink" href="#python-exit-routines" title="Permanent link"></a></h4>
+<p>With md2pptx you can specify python &ldquo;exit routines&rdquo; - files containing python code.</p>
+<p>These routines run</p>
+<ul>
+<li><a href="#after-loading-onpresentationinitialisation">When any template presentation has been loaded</a>, or even if none has been specified.</li>
+<li><a href="#before-saving-onpresentationbeforesave">Just before the presentation is saved</a>.</li>
+<li><a href="#after-saving-onpresentationaftersave">Just after the presentation is saved</a>.</li>
+</ul>
+<p>Each routine has access to the python-pptx <a href="https://python-pptx.readthedocs.io/en/latest/api/presentation.html#presentation-objects">Presentation</a> object - in variable <code>prs</code>.</p>
+<p>Before writing or using exit routines others have supplied see <a href="#an-important-caution">An Important Caution</a>.</p>
+<p><strong>Note:</strong> You can run python within an individual slide&rsquo;s processing.
+See <a href="#running-inline-python">Running Inline Python</a>.</p>
+<p><a id="after-loading-onpresentationinitialisation"></a></p>
+<h5 id="after-loading-onpresentationinitialisation">After Loading - <code>onPresentationInitialisation</code><a class="headerlink" href="#after-loading-onpresentationinitialisation" title="Permanent link"></a></h5>
+<p>With suitable code at this exit point you could adjust the presentation&rsquo;s properties.
+For example</p>
+<pre><code>from pptx.util import Inches
+
+prs.slide_height = Inches(10.0)
+</code></pre>
+<p>This would, obviously set the height of each slide to 10 inches.</p>
+<p><a id="before-saving-onpresentationbeforesave"></a></p>
+<h5 id="before-saving-onpresentationbeforesave">Before Saving - <code>onPresentationBeforeSave</code><a class="headerlink" href="#before-saving-onpresentationbeforesave" title="Permanent link"></a></h5>
+<p>Again, this exit point could allow you to adjust properties of the presentation.
+This is the last opportunity before the presentation is saved.</p>
+<p><a id="after-saving-onpresentationaftersave"></a></p>
+<h5 id="after-saving-onpresentationaftersave">After Saving - <code>onPresentationAfterSave</code><a class="headerlink" href="#after-saving-onpresentationaftersave" title="Permanent link"></a></h5>
+<p>When this code runs the <code>prs</code> variable is still available.
+You might use this exit point to save an adjusted copy of the presentation.
+For example</p>
+<pre><code>prs.save("Mycopy.pptx")
+</code></pre>
+<p>Or you might want to run some analysis on the presentation you&rsquo;ve just created.</p>
 <p><a id="dynamic-metadata"></a></p>
 <h3 id="dynamic-metadata">Dynamic Metadata<a class="headerlink" href="#dynamic-metadata" title="Permanent link"></a></h3>
 <p>md2pptx can alter some in-effect settings, starting at a particular slide. Straight after the heading code a special form of (HTML) comment like so:</p>
@@ -4738,14 +4778,15 @@ For more information see <a href="#split-proportions-contentsplit">ContentSplit<
 <p><a id="an-important-caution"></a></p>
 <h3 id="an-important-caution">An Important Caution<a class="headerlink" href="#an-important-caution" title="Permanent link"></a></h3>
 <p>The support described in <a href="#running-inline-python">Running Inline Python</a> allows you to run <strong>arbitary python code</strong>. It would be unwise to embed python code of unknown provenance.
-Use only code you directly write (or, of known provenance, embedded with <a href="https://github.com/MartinPacker/mdpre">mdpre</a>&lsquo;s <code>=include</code> capability or as an optional parameter to the invocation).</p>
+Use only code you directly write (or, of known provenance, embedded with <a href="https://github.com/MartinPacker/mdpre">mdpre</a>&lsquo;s <code>=include</code> capability, or as an optional parameter to the invocation).</p>
 <p>In general, though, this function is worth exploring - if it enables you turn flat files into presentations that you otherwise couldn&rsquo;t make that way.</p>
 <p><a id="how-to-invoke-python-in-md2pptx"></a></p>
 <h3 id="how-to-invoke-python-in-md2pptx">How To Invoke Python In md2pptx<a class="headerlink" href="#how-to-invoke-python-in-md2pptx" title="Permanent link"></a></h3>
-<p>There are two ways you can invoke Python in md2pptx:</p>
+<p>There are three ways you can invoke Python in md2pptx:</p>
 <ul>
 <li><a href="#coding-inline-python">Coding Inline Python</a></li>
 <li><a href="#importing-python-from-a-file">Importing Python From A File</a></li>
+<li><a href="#python-exit-routines">Python Exit Routines</a></li>
 </ul>
 <p><strong>Note:</strong> You can invoke Python in a file from inline python.</p>
 <p><a id="coding-inline-python"></a></p>

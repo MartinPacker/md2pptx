@@ -5,8 +5,8 @@ mdpre Markdown Preprocessor v0.6.9 (17 September, 2024)
 Def mdpre_date = 17 September, 2024
 Def mdpre_level = 0.6.9
 Def userid = martinpacker
-Def time = 17&colon;26
-Def date = 22 February&comma; 2025
+Def time = 16&colon;09
+Def date = 23 February&comma; 2025
 Def TOC = Table Of Contents
 Def md = Markdown
 Def pp = Powerpoint
@@ -192,6 +192,10 @@ CSV Stop
 ..... ..... ..... .....  Section Navigation Button Colour - `SectionArrowsColour`
 ..... ..... ..... .....  Make Expandable Sections - `SectionsExpand`
 ..... ..... .....  Slide Transitions - `Transition`
+..... ..... .....  Python Exit Routines
+..... ..... ..... .....  After Loading - `onPresentationInitialisation`
+..... ..... ..... .....  Before Saving - `onPresentationBeforeSave`
+..... ..... ..... .....  After Saving - `onPresentationAfterSave`
 ..... .....  Dynamic Metadata
 ..... ..... .....  `hidden`
 ..... ..... .....  Tables

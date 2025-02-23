@@ -86,8 +86,8 @@ except:
     have_graphviz = False
 
 
-md2pptx_level = "5.3.1+"
-md2pptx_date = "22 February, 2025"
+md2pptx_level = "5.4"
+md2pptx_date = "23 February, 2025"
 
 namespaceURL = {
     "mc":  "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -4566,6 +4566,15 @@ globals.processingOptions.setOptionValuesArray(
     ]
 )
 
+# "on" exit files initialisation
+globals.processingOptions.setOptionValuesArray(
+    [
+        ["onPresentationInitialisation", ""],
+        ["onPresentationBeforeSave", ""],
+        ["onPresentationAfterSave", ""],
+    ]
+)
+
 ######################################################################################
 #                                                                                    #
 #  Prime for footnotes                                                               #
@@ -4665,7 +4674,13 @@ for line in metadata_lines:
     elif name == "backgroundimage":
         globals.processingOptions.setOptionValues(name, value)
 
-
+    elif name in [
+        "onpresentationinitialisation",
+        "onpresentationbeforesave",
+        "onpresentationaftersave",
+    ]:
+        globals.processingOptions.setOptionValues(name, value)
+        print(value, "<===")
 
     elif name in [
         "sectiontitlesize",
@@ -5124,6 +5139,11 @@ else:
     # Prime template slides with slideInfo as None
     for slide in prs.slides:
         slide.slideInfo = None
+
+# Maybe call an exit as the presentation is initialised
+onPresentationInitialisation = globals.processingOptions.getCurrentOption("onPresentationInitialisation")
+if onPresentationInitialisation != "":
+    exec(open(onPresentationInitialisation).read())
 
 # Following might be used in slide footers
 prs.lastSectionTitle = ""
@@ -6315,7 +6335,18 @@ except:
 if globals.processingOptions.getCurrentOption("SectionsExpand"):
     createExpandingSections(prs)
 
+# Maybe call an exit before the presentation is saved
+onPresentationBeforeSave = globals.processingOptions.getCurrentOption("onPresentationBeforeSave")
+if onPresentationBeforeSave != "":
+    exec(open(onPresentationBeforeSave).read())
+
 prs.save(output_filename)
+
+# Maybe call an exit after the presentation is saved
+onPresentationAfterSave = globals.processingOptions.getCurrentOption("onPresentationAfterSave")
+if onPresentationAfterSave != "":
+    exec(open(onPresentationAfterSave).read())
+
 
 elapsed_time = time.time() - start_time
 
