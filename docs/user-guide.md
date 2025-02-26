@@ -20,6 +20,7 @@ As you can see in the [change log](#change-log), md2pptx is frequently updated -
 	* [Using md2pptx With mdpre](#using-md2pptx-with-mdpre)
 * [How Do You Use md2pptx?](#how-do-you-use-md2pptx)
 	* [Installation](#installation)
+	* [Updating](#updating)
 	* [Use](#use)
 * [python-pptx license](#pythonpptx-license)
 * [Change Log](#change-log)
@@ -397,6 +398,16 @@ To install md2pptx and its prerequisites
 1. Install python-pptx using the command `pip3 install python-pptx`. (You might have to install pip firsst.)
 1. Optionally install CairoSVG - using the command `pip3 install cairosvg`. (This is for SVG graphics support.)
 1. Install md2pptx by copying a version and unzipping it or using `git clone`. md2pptx can be found [here](https://github.com/MartinPacker/md2pptx).
+
+### Updating
+
+If you examine [the change log](#change-log) You'll see md2pptx is updated on a frequent-but-irregular basis.
+Reviewing the changes you'll see they are a mixture of fixes and enhancements.
+
+There are two approaches to updating:
+
+* Obtaining the latest commit. Usually this is safe but is often missing documentation for enhancements. Those tend to be written just before release. You might do this with `git pull origin master`.
+* You might prefer the latest version. These are usually announced on socia media and can be downloaded as zip file.
 
 ### Use
 
