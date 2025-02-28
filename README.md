@@ -21,6 +21,18 @@ Specifically python-pptx
 * requires 3.8 or later - to use the "Walrus Operator"
 * has been tested with 3.12 and alphas of 3.13 - with some changes made to handle issues
 
+#### Future Python Release Support
+
+Please note, and plan accordingly:
+
+* From 1 April, 2025 expect releases to only support 3.10 or later
+* From 1 April, 2026 expect releases to only support 3.11 or later
+
+md2pptx moves forward on Python every so often to:
+
+* Take advantage of new language capabilities
+* Remain on a supported Python release with adequate fix likelihood.
+
 ### Installation
 
 Installation is straightforward:
