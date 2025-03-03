@@ -85,3 +85,5 @@ See `docs/user-guide.html` or `docs/user-guide.md`.
 ### Issues &amp; Suggestions
 
 This repo's Issues are regularly monitored. Use them for bug reports, suggestions, and questions.
+
+### Contributing
