@@ -37,20 +37,34 @@ md2pptx moves forward on Python every so often to:
 
 Installation is straightforward:
 
-1. Install python-pptx
-2. Clone md2pptx into a new directory
+1.  Clone md2pptx into a new directory
+2.  Install the cloned directory:
+
+    ```shell
+    pip install ./path/to/the/md2pptx/directory
+    ```
 
 The md2pptx repo includes all the essentials, such as funnel.py. You don't install these with eg pip. There are some optional packages, outlined in the User Guide.
 
 You can install python-pptx with
 
-  `pip3 install python-pptx`
+```shell
+pip3 install python-pptx
+```
 
 (On a Raspberry Pi you might want to use `pip3` (or `python3 -m pip`) to install for Python 3.)
 
-You will probably need to issue the following command from the directory where you install it:
+Try without parameters:
 
-  `chmod +x md2pptx`
+```shell
+md2pptx
+```
+
+You can also install directly from GitHub:
+
+```shell
+pip install git+https://github.com/MartinPacker/md2pptx.git#egg=md2pptx
+```
 
 ### Starting To Use md2pptx
 
@@ -87,3 +101,6 @@ See `docs/user-guide.html` or `docs/user-guide.md`.
 This repo's Issues are regularly monitored. Use them for bug reports, suggestions, and questions.
 
 ### Contributing
+
+Clone the repository, setup a virtual environnement and install `md2pptx`
+as an editable package using ``pip install -Ue .``.
