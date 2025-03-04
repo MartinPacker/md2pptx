@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "md2pptx"
+authors = [
+    {name = "Martin Packer", email = "martin_packer@uk.ibm.com"},
+]
+description = "Markdown to Powerpoint Converter"
+version = "5.4"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+classifiers = [
+    "Programming Language :: Python :: 3",
+]
+dependencies = [
+    'python-pptx',
+]
+
+[project.optional-dependencies]
+csv = ["cairosvg"]
+eps = ["Pillow"]
+dot = ["graphviz"]
+
+[project.scripts]
+md2pptx = "md2pptx.main:cli"
+
+[tool.setuptools]
+package-dir = {"" = "src"}

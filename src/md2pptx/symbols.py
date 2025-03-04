@@ -80,7 +80,7 @@ def resolveSymbols(text):
         ("&Oslash;",u"\u00D8"),
         ("&oslash;",u"\u00F8"),
     ]
-    
+
     for term, replacement in replacementRules:
         text2 = text2.replace(term, replacement)
 

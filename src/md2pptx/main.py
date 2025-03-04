@@ -42,13 +42,13 @@ import uuid
 
 import md2pptx.funnel
 import md2pptx.runPython
-from card import Card
-from rectangle import Rectangle
-from colour import *
-from paragraph import *
-from symbols import resolveSymbols
-import globals
-from processingOptions import *
+from md2pptx.card import Card
+from md2pptx.rectangle import Rectangle
+from md2pptx.colour import *
+from md2pptx.paragraph import *
+from md2pptx.symbols import resolveSymbols
+import md2pptx.globals
+from md2pptx.processingOptions import *
 
 
 from lxml import etree
@@ -232,7 +232,7 @@ def addSlide(presentation, slideLayout, slideInfo=None):
     slide = presentation.slides.add_slide(slideLayout)
     slide.slideInfo = slideInfo
 
-    backgroundImage = globals.processingOptions.getCurrentOption("backgroundImage")
+    backgroundImage = md2pptx.globals.processingOptions.getCurrentOption("backgroundImage")
 
     if backgroundImage != "":
         add_background(presentation, slide, backgroundImage)
@@ -240,7 +240,7 @@ def addSlide(presentation, slideLayout, slideInfo=None):
 
 
 def createSectionsXML(prs):
-    sectionSlideLayout = globals.processingOptions.getCurrentOption("SectionSlideLayout")
+    sectionSlideLayout = md2pptx.globals.processingOptions.getCurrentOption("SectionSlideLayout")
 
     xml = '  <p:ext ' + namespacesFragment(["p"])
 
@@ -562,9 +562,9 @@ def applyTableLineStyling(
             applyCellBorderStyling(
                 cell,
                 cellStyling[rowNumber][columnNumber],
-                globals.processingOptions.getCurrentOption("addTableLineWidth"),
-                globals.processingOptions.getCurrentOption("addTableLineCount"),
-                globals.processingOptions.getCurrentOption("addTableLineColour"),
+                md2pptx.globals.processingOptions.getCurrentOption("addTableLineWidth"),
+                md2pptx.globals.processingOptions.getCurrentOption("addTableLineCount"),
+                md2pptx.globals.processingOptions.getCurrentOption("addTableLineColour"),
             )
 
 
@@ -953,8 +953,8 @@ def getVideoInfo(audioVideoInfo):
 
 # Render a list of bullets
 def renderText(shape, bullets):
-    baseTextDecrement = globals.processingOptions.getCurrentOption("baseTextDecrement")
-    baseTextSize = globals.processingOptions.getCurrentOption("baseTextSize")
+    baseTextDecrement = md2pptx.globals.processingOptions.getCurrentOption("baseTextDecrement")
+    baseTextSize = md2pptx.globals.processingOptions.getCurrentOption("baseTextSize")
 
     tf = shape.text_frame
 
@@ -1002,7 +1002,7 @@ def findBodyShape(slide):
 
 # Returns a top, left, width, height for content to be rendered into
 def getContentRect(presentation, slide, topOfContent, margin):
-    numbersHeight = globals.processingOptions.getCurrentOption("numbersHeight")
+    numbersHeight = md2pptx.globals.processingOptions.getCurrentOption("numbersHeight")
     # Left and right are always defined by the margins
     rectLeft = margin
     rectWidth = presentation.slide_width - 2 * margin
@@ -1021,8 +1021,8 @@ def getContentRect(presentation, slide, topOfContent, margin):
 # Finds the title and adds the text to it, returning title bottom, title shape, and
 # flattened title
 def formatTitle(presentation, slide, titleText, titleFontSize, subtitleFontSize):
-    marginBase = globals.processingOptions.getCurrentOption("marginBase")
-    pageTitleAlign = globals.processingOptions.getCurrentOption("pagetitlealign")
+    marginBase = md2pptx.globals.processingOptions.getCurrentOption("marginBase")
+    pageTitleAlign = md2pptx.globals.processingOptions.getCurrentOption("pagetitlealign")
 
     # Convert page title alignment text value to constant
     if pageTitleAlign == "left":
@@ -1040,7 +1040,7 @@ def formatTitle(presentation, slide, titleText, titleFontSize, subtitleFontSize)
 
         return (marginBase, None, "<No title>")
 
-    if globals.processingOptions.getCurrentOption("adjustTitles"):
+    if md2pptx.globals.processingOptions.getCurrentOption("adjustTitles"):
         title.top = marginBase
         title.left = marginBase
         title.width = presentation.slide_width - marginBase * 2
@@ -1088,7 +1088,7 @@ def formatTitle(presentation, slide, titleText, titleFontSize, subtitleFontSize)
         newPara.alignment = titleAlignment
 
     # Note: Working off pageTitleSize and pageSubtitleSize
-    if globals.processingOptions.getCurrentOption("adjustTitles"):
+    if md2pptx.globals.processingOptions.getCurrentOption("adjustTitles"):
         title.height = Pt(titleFontSize) + Pt(subtitleFontSize) * (titleLineCount - 1)
 
     # Massage title line for printing a little
@@ -1121,9 +1121,9 @@ def parseTitleText(titleLineString):
 
 
 def addFooter(presentation, slideNumber, slide):
-    numbersHeight = globals.processingOptions.getCurrentOption("numbersHeight")
+    numbersHeight = md2pptx.globals.processingOptions.getCurrentOption("numbersHeight")
 
-    numbersglobals.fontsizespec = globals.processingOptions.getCurrentOption("numbersFontSize")
+    numbersglobals.fontsizespec = md2pptx.globals.processingOptions.getCurrentOption("numbersFontSize")
     if numbersglobals.fontsizespec == "":
         numbersFontSize = Pt(12)
     else:
@@ -1153,9 +1153,9 @@ def deleteSimpleShape(shape):
 
 
 def createProcessingSummarySlide(presentation, rawMetadata):
-    tableMargin = globals.processingOptions.getCurrentOption("tableMargin")
-    pageTitleSize = globals.processingOptions.getCurrentOption("pageTitleSize")
-    pageSubtitleSize = globals.processingOptions.getCurrentOption("pageSubtitleSize")
+    tableMargin = md2pptx.globals.processingOptions.getCurrentOption("tableMargin")
+    pageTitleSize = md2pptx.globals.processingOptions.getCurrentOption("pageTitleSize")
+    pageSubtitleSize = md2pptx.globals.processingOptions.getCurrentOption("pageSubtitleSize")
     # Use the first slide in the template presentation as the base
     slide = presentation.slides[0]
 
@@ -1180,7 +1180,7 @@ def createProcessingSummarySlide(presentation, rawMetadata):
     )
 
     # Work out how many pairs of columns we need
-    if globals.processingOptions.hideMetadataStyle:
+    if md2pptx.globals.processingOptions.hideMetadataStyle:
         # Adjust metadata item count to remove style.
         metadata = []
         for metadataItem in rawMetadata:
@@ -1241,7 +1241,7 @@ def createProcessingSummarySlide(presentation, rawMetadata):
 
         # Set text of metadata key cell
         newTable.cell(row, column).text = key
-        if globals.processingOptions.dynamicallyChangedOptions.get(key) is not None:
+        if md2pptx.globals.processingOptions.dynamicallyChangedOptions.get(key) is not None:
             # Set text of metadata value cell - with asterisk
             newTable.cell(row, column + 1).text = value + "*"
 
@@ -1285,7 +1285,7 @@ def createTitleOrSectionSlide(
     subtitleSize,
     notes_text,
 ):
-    marginBase = globals.processingOptions.getCurrentOption("marginBase")
+    marginBase = md2pptx.globals.processingOptions.getCurrentOption("marginBase")
 
     slide = addSlide(presentation, presentation.slide_layouts[layout], None)
 
@@ -1344,7 +1344,7 @@ def handleWhateverGraphicType(GraphicFilename):
             printableGraphicFilename = GraphicFilename
 
         # Get Temporary File Directory - which might be None
-        tempDir = globals.processingOptions.getCurrentOption("tempDir")
+        tempDir = md2pptx.globals.processingOptions.getCurrentOption("tempDir")
 
         # Retrieve the data into a temporary file
         try:
@@ -1431,7 +1431,7 @@ def handleWhateverGraphicType(GraphicFilename):
             # Store in a temporary file
 
             # Get Temporary File Directory - which might be None
-            tempDir = globals.processingOptions.getCurrentOption("tempDir")
+            tempDir = md2pptx.globals.processingOptions.getCurrentOption("tempDir")
 
             try:
                 graphicFile = tempfile.NamedTemporaryFile(
@@ -1446,7 +1446,7 @@ def handleWhateverGraphicType(GraphicFilename):
             # Retrieve the temporary file name
             GraphicFilename = graphicFile.name
 
-            if globals.processingOptions.getCurrentOption("exportGraphics"):
+            if md2pptx.globals.processingOptions.getCurrentOption("exportGraphics"):
                 try:
                     shutil.copy(GraphicFilename, PNGname)
                 except:
@@ -1461,7 +1461,7 @@ def handleWhateverGraphicType(GraphicFilename):
             im = PIL.Image.open(GraphicFilename)
 
             # Get Temporary File Directory - which might be None
-            tempDir = globals.processingOptions.getCurrentOption("tempDir")
+            tempDir = md2pptx.globals.processingOptions.getCurrentOption("tempDir")
 
             # Store in a temporary file
             try:
@@ -1481,7 +1481,7 @@ def handleWhateverGraphicType(GraphicFilename):
 
             # Retrieve the temporary file name
             GraphicFilename = graphicFile.name
-            if globals.processingOptions.getCurrentOption("exportGraphics"):
+            if md2pptx.globals.processingOptions.getCurrentOption("exportGraphics"):
                 try:
                     shutil.copy(GraphicFilename, PNGname)
                 except:
@@ -1528,13 +1528,13 @@ def handleGraphViz(slide, renderingRectangle, codeLines, codeType):
 
 
 def handleFunnel(slide, renderingRectangle, codeLines, codeType):
-    funnelColours = globals.processingOptions.getCurrentOption("funnelColours")
-    funnelBorderColour = globals.processingOptions.getCurrentOption("funnelBorderColour")
-    funnelTitleColour = globals.processingOptions.getCurrentOption("funnelTitleColour")
-    funnelTextColour = globals.processingOptions.getCurrentOption("funnelTextColour")
-    funnelLabelsPercent = globals.processingOptions.getCurrentOption("funnelLabelsPercent")
-    funnelLabelPosition = globals.processingOptions.getCurrentOption("funnelLabelPosition")
-    funnelWidest = globals.processingOptions.getCurrentOption("funnelWidest")
+    funnelColours = md2pptx.globals.processingOptions.getCurrentOption("funnelColours")
+    funnelBorderColour = md2pptx.globals.processingOptions.getCurrentOption("funnelBorderColour")
+    funnelTitleColour = md2pptx.globals.processingOptions.getCurrentOption("funnelTitleColour")
+    funnelTextColour = md2pptx.globals.processingOptions.getCurrentOption("funnelTextColour")
+    funnelLabelsPercent = md2pptx.globals.processingOptions.getCurrentOption("funnelLabelsPercent")
+    funnelLabelPosition = md2pptx.globals.processingOptions.getCurrentOption("funnelLabelPosition")
+    funnelWidest = md2pptx.globals.processingOptions.getCurrentOption("funnelWidest")
 
     f = md2pptx.funnel.Funnel()
 
@@ -1562,9 +1562,9 @@ def handleRunPython(pythonType, prs, slide, renderingRectangle, codeLinesOrFile,
         r.runFromFile(codeLinesOrFile[0], prs, slide, renderingRectangle)
 
 def createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber):
-    monoFont = globals.processingOptions.getCurrentOption("monoFont")
-    baseTextSize = globals.processingOptions.getCurrentOption("baseTextSize")
-    defaultBaseTextSize = globals.processingOptions.getDefaultOption("baseTextSize")
+    monoFont = md2pptx.globals.processingOptions.getCurrentOption("monoFont")
+    baseTextSize = md2pptx.globals.processingOptions.getCurrentOption("baseTextSize")
+    defaultBaseTextSize = md2pptx.globals.processingOptions.getDefaultOption("baseTextSize")
 
     # A variable number of newlines appear before the actual code
     codeLines = slideInfo.code[codeBlockNumber]
@@ -1650,7 +1650,7 @@ def createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber):
     fill = codeBox.fill
     fill.solid()
     fill.fore_color.rgb = RGBColor.from_string(
-        globals.processingOptions.getCurrentOption("codeBackground")
+        md2pptx.globals.processingOptions.getCurrentOption("codeBackground")
     )
 
     # Get the sole paragraph
@@ -1668,8 +1668,8 @@ def createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber):
 
     # Estimate how wide the code box would need to be at the current font size
     # versus actual width
-    codeColumns = globals.processingOptions.getCurrentOption("codeColumns")
-    fixedPitchHeightWidthRatio = globals.processingOptions.getCurrentOption(
+    codeColumns = md2pptx.globals.processingOptions.getCurrentOption("codeColumns")
+    fixedPitchHeightWidthRatio = md2pptx.globals.processingOptions.getCurrentOption(
         "fixedPitchHeightWidthRatio"
     )
 
@@ -1689,7 +1689,7 @@ def createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber):
 
     # Use the code foreground colour - whether explicit or defaulted
     p.font.color.rgb = RGBColor.from_string(
-        globals.processingOptions.getCurrentOption("codeforeground")
+        md2pptx.globals.processingOptions.getCurrentOption("codeforeground")
     )
 
     # Adjust code box height based on lines
@@ -1713,13 +1713,13 @@ def createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber):
                     if fragmentNumber > 0:
                         # Find start of span class
                         fragment = "<span " + fragment
-                        if spanClassMatch := globals.spanClassRegex.match(fragment):
+                        if spanClassMatch := md2pptx.globals.spanClassRegex.match(fragment):
                             afterSpanTag = fragment[spanClassMatch.end(1) :]
                             className = afterSpanTag[7 : afterSpanTag.index(">") - 1]
                             if (
-                                (className in globals.bgcolors)
-                                | (className in globals.fgcolors)
-                                | (className in globals.emphases)
+                                (className in md2pptx.globals.bgcolors)
+                                | (className in md2pptx.globals.fgcolors)
+                                | (className in md2pptx.globals.emphases)
                             ):
                                 afterClosingAngle = afterSpanTag[
                                     afterSpanTag.index(">") + 1 :
@@ -1735,7 +1735,7 @@ def createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber):
                                     className
                                     + " is not defined. Ignoring reference to it in <span> element."
                                 )
-                        elif spanStyleMatch := globals.spanStyleRegex.match(fragment):
+                        elif spanStyleMatch := md2pptx.globals.spanStyleRegex.match(fragment):
                             afterSpanTag = fragment[spanStyleMatch.end(1) :]
                             styleText = afterSpanTag[7 : afterSpanTag.index(">") - 1]
                             styleElements = styleText.split(";")
@@ -1812,10 +1812,10 @@ def createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber):
 
 
 def createAbstractSlide(presentation, slideNumber, titleText, paragraphs):
-    titleOnlyLayout = globals.processingOptions.getCurrentOption("titleOnlyLayout")
-    marginBase = globals.processingOptions.getCurrentOption("marginBase")
-    pageTitleSize = globals.processingOptions.getCurrentOption("pageTitleSize")
-    pageSubtitleSize = globals.processingOptions.getCurrentOption("pageSubtitleSize")
+    titleOnlyLayout = md2pptx.globals.processingOptions.getCurrentOption("titleOnlyLayout")
+    marginBase = md2pptx.globals.processingOptions.getCurrentOption("marginBase")
+    pageTitleSize = md2pptx.globals.processingOptions.getCurrentOption("pageTitleSize")
+    pageSubtitleSize = md2pptx.globals.processingOptions.getCurrentOption("pageSubtitleSize")
 
     slide = addSlide(presentation, presentation.slide_layouts[titleOnlyLayout], None)
 
@@ -1870,11 +1870,11 @@ def createAbstractSlide(presentation, slideNumber, titleText, paragraphs):
 
 # Unified creation of a table or a code or a content slide
 def createContentSlide(presentation, slideNumber, slideInfo):
-    titleOnlyLayout = globals.processingOptions.getCurrentOption("titleOnlyLayout")
-    contentSlideLayout = globals.processingOptions.getCurrentOption("contentSlideLayout")
-    marginBase = globals.processingOptions.getCurrentOption("marginBase")
-    pageTitleSize = globals.processingOptions.getCurrentOption("pageTitleSize")
-    pageSubtitleSize = globals.processingOptions.getCurrentOption("pageSubtitleSize")
+    titleOnlyLayout = md2pptx.globals.processingOptions.getCurrentOption("titleOnlyLayout")
+    contentSlideLayout = md2pptx.globals.processingOptions.getCurrentOption("contentSlideLayout")
+    marginBase = md2pptx.globals.processingOptions.getCurrentOption("marginBase")
+    pageTitleSize = md2pptx.globals.processingOptions.getCurrentOption("pageTitleSize")
+    pageSubtitleSize = md2pptx.globals.processingOptions.getCurrentOption("pageSubtitleSize")
 
     # slideInfo's body text is only filled in if there is code - and that's
     # where the code - plus preamble and postamble is.
@@ -1936,7 +1936,7 @@ def createContentSlide(presentation, slideNumber, slideInfo):
     # and their top left corner coordinates                            #
     ####################################################################
     allContentSplit = 0
-    contentSplit = globals.processingOptions.getCurrentOption("contentSplit")
+    contentSplit = md2pptx.globals.processingOptions.getCurrentOption("contentSplit")
     for b in range(blocksToRender):
         allContentSplit = allContentSplit + contentSplit[b]
 
@@ -1947,7 +1947,7 @@ def createContentSlide(presentation, slideNumber, slideInfo):
     tableBlockNumber = 0
 
     for b in range(blocksToRender):
-        if globals.processingOptions.getCurrentOption("contentSplitDirection") == "vertical":
+        if md2pptx.globals.processingOptions.getCurrentOption("contentSplitDirection") == "vertical":
             # Height and top
             blockHeight = int(contentHeight * contentSplit[b] / allContentSplit)
             blockTop = verticalCursor
@@ -1985,27 +1985,27 @@ def createContentSlide(presentation, slideNumber, slideInfo):
 
 
 def createListBlock(slideInfo, slide, renderingRectangle):
-    horizontalCardGap = globals.processingOptions.getCurrentOption("horizontalcardgap")
-    verticalCardGap = globals.processingOptions.getCurrentOption("verticalcardgap")
-    cardTitleAlign = globals.processingOptions.getCurrentOption("cardtitlealign")
-    cardTitlePosition = globals.processingOptions.getCurrentOption("cardtitleposition")
-    cardShape = globals.processingOptions.getCurrentOption("cardshape")
-    cardLayout = globals.processingOptions.getCurrentOption("cardlayout")
-    cardPercent = globals.processingOptions.getCurrentOption("cardpercent")
-    cardShadow = globals.processingOptions.getCurrentOption("cardshadow")
-    cardTitleSize = globals.processingOptions.getCurrentOption("cardtitlesize")
-    cardBorderWidth = globals.processingOptions.getCurrentOption("cardborderwidth")
-    cardBorderColour = globals.processingOptions.getCurrentOption("cardbordercolour")
-    cardTitleColour = globals.processingOptions.getCurrentOption("cardtitlecolour")
-    cardTitleBackgrounds = globals.processingOptions.getCurrentOption("cardtitlebackground")
-    cardColours = globals.processingOptions.getCurrentOption("cardcolour")
-    cardDividerColour = globals.processingOptions.getCurrentOption("carddividercolour")
-    cardGraphicSize = globals.processingOptions.getCurrentOption("cardgraphicsize")
-    cardGraphicPosition = globals.processingOptions.getCurrentOption("cardGraphicPosition")
-    cardGraphicPadding = int(Inches(globals.processingOptions.getCurrentOption("cardgraphicpadding")))
-    marginBase = globals.processingOptions.getCurrentOption("marginBase")
-    pageTitleSize = globals.processingOptions.getCurrentOption("pageTitleSize")
-    pageSubtitleSize = globals.processingOptions.getCurrentOption("pageSubtitleSize")
+    horizontalCardGap = md2pptx.globals.processingOptions.getCurrentOption("horizontalcardgap")
+    verticalCardGap = md2pptx.globals.processingOptions.getCurrentOption("verticalcardgap")
+    cardTitleAlign = md2pptx.globals.processingOptions.getCurrentOption("cardtitlealign")
+    cardTitlePosition = md2pptx.globals.processingOptions.getCurrentOption("cardtitleposition")
+    cardShape = md2pptx.globals.processingOptions.getCurrentOption("cardshape")
+    cardLayout = md2pptx.globals.processingOptions.getCurrentOption("cardlayout")
+    cardPercent = md2pptx.globals.processingOptions.getCurrentOption("cardpercent")
+    cardShadow = md2pptx.globals.processingOptions.getCurrentOption("cardshadow")
+    cardTitleSize = md2pptx.globals.processingOptions.getCurrentOption("cardtitlesize")
+    cardBorderWidth = md2pptx.globals.processingOptions.getCurrentOption("cardborderwidth")
+    cardBorderColour = md2pptx.globals.processingOptions.getCurrentOption("cardbordercolour")
+    cardTitleColour = md2pptx.globals.processingOptions.getCurrentOption("cardtitlecolour")
+    cardTitleBackgrounds = md2pptx.globals.processingOptions.getCurrentOption("cardtitlebackground")
+    cardColours = md2pptx.globals.processingOptions.getCurrentOption("cardcolour")
+    cardDividerColour = md2pptx.globals.processingOptions.getCurrentOption("carddividercolour")
+    cardGraphicSize = md2pptx.globals.processingOptions.getCurrentOption("cardgraphicsize")
+    cardGraphicPosition = md2pptx.globals.processingOptions.getCurrentOption("cardGraphicPosition")
+    cardGraphicPadding = int(Inches(md2pptx.globals.processingOptions.getCurrentOption("cardgraphicpadding")))
+    marginBase = md2pptx.globals.processingOptions.getCurrentOption("marginBase")
+    pageTitleSize = md2pptx.globals.processingOptions.getCurrentOption("pageTitleSize")
+    pageSubtitleSize = md2pptx.globals.processingOptions.getCurrentOption("pageSubtitleSize")
 
     # Get bulleted text shape - either for bullets above cards or first card's body shape
     bulletsShape = findBodyShape(slide)
@@ -2501,10 +2501,10 @@ def createListBlock(slideInfo, slide, renderingRectangle):
 
 def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
     tableRows = slideInfo.tableRows[tableBlockNumber]
-    tableMargin = globals.processingOptions.getCurrentOption("tableMargin")
-    marginBase = globals.processingOptions.getCurrentOption("marginBase")
-    baseTextSize = globals.processingOptions.getCurrentOption("baseTextSize")
-    tableShadow = globals.processingOptions.getCurrentOption("tableShadow")
+    tableMargin = md2pptx.globals.processingOptions.getCurrentOption("tableMargin")
+    marginBase = md2pptx.globals.processingOptions.getCurrentOption("marginBase")
+    baseTextSize = md2pptx.globals.processingOptions.getCurrentOption("baseTextSize")
+    tableShadow = md2pptx.globals.processingOptions.getCurrentOption("tableShadow")
 
     printableTopLeftGraphicFilename = ""
     printableTopRightGraphicFilename = ""
@@ -3240,9 +3240,9 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
             cols[colno].width = int(shapeWidth * widths[colno] / widths_total)
 
         # Get options for filling in the cells
-        compactTables = globals.processingOptions.getCurrentOption("compactTables")
-        spanCells = globals.processingOptions.getCurrentOption("spanCells")
-        tableHeadingSize = globals.processingOptions.getCurrentOption("tableHeadingSize")
+        compactTables = md2pptx.globals.processingOptions.getCurrentOption("compactTables")
+        spanCells = md2pptx.globals.processingOptions.getCurrentOption("spanCells")
+        tableHeadingSize = md2pptx.globals.processingOptions.getCurrentOption("tableHeadingSize")
 
         # Fill in the cells
         for rowNumber, row in enumerate(tableRows):
@@ -3308,7 +3308,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
         # Apply table border styling - whether there is any or not
         applyTableLineStyling(
             newTable,
-            globals.processingOptions,
+            md2pptx.globals.processingOptions,
         )
 
     return slide
@@ -3433,12 +3433,12 @@ def delinkify(text):
 
 def createTOCSlide(presentation, slideNumber, titleText, bullets, tocStyle):
     global SectionSlides
-    titleOnlyLayout = globals.processingOptions.getCurrentOption("titleOnlyLayout")
-    blankLayout = globals.processingOptions.getCurrentOption("blankLayout")
-    tocTitle = globals.processingOptions.getCurrentOption("tocTitle")
-    marginBase = globals.processingOptions.getCurrentOption("marginBase")
-    pageTitleSize = globals.processingOptions.getCurrentOption("pageTitleSize")
-    pageSubtitleSize = globals.processingOptions.getCurrentOption("pageSubtitleSize")
+    titleOnlyLayout = md2pptx.globals.processingOptions.getCurrentOption("titleOnlyLayout")
+    blankLayout = md2pptx.globals.processingOptions.getCurrentOption("blankLayout")
+    tocTitle = md2pptx.globals.processingOptions.getCurrentOption("tocTitle")
+    marginBase = md2pptx.globals.processingOptions.getCurrentOption("marginBase")
+    pageTitleSize = md2pptx.globals.processingOptions.getCurrentOption("pageTitleSize")
+    pageSubtitleSize = md2pptx.globals.processingOptions.getCurrentOption("pageSubtitleSize")
 
     if tocStyle != "plain":
         if titleText == tocTitle:
@@ -3455,10 +3455,10 @@ def createTOCSlide(presentation, slideNumber, titleText, bullets, tocStyle):
                 presentation,
                 slideNumber,
                 titleText,
-                globals.processingOptions.getCurrentOption("sectionSlideLayout"),
-                globals.processingOptions.getCurrentOption("sectionTitleSize"),
+                md2pptx.globals.processingOptions.getCurrentOption("sectionSlideLayout"),
+                md2pptx.globals.processingOptions.getCurrentOption("sectionTitleSize"),
                 slideInfo.subtitleText,
-                globals.processingOptions.getCurrentOption("sectionSubtitleSize"),
+                md2pptx.globals.processingOptions.getCurrentOption("sectionSubtitleSize"),
                 notes_text,
             )
         else:
@@ -3522,11 +3522,11 @@ def createTOCSlide(presentation, slideNumber, titleText, bullets, tocStyle):
 
     TOCEntryCount = len(TOCEntries)
 
-    TOCFontSize = globals.processingOptions.getCurrentOption("TOCFontSize")
+    TOCFontSize = md2pptx.globals.processingOptions.getCurrentOption("TOCFontSize")
 
-    TOCItemHeight = globals.processingOptions.getCurrentOption("TOCItemHeight")
+    TOCItemHeight = md2pptx.globals.processingOptions.getCurrentOption("TOCItemHeight")
 
-    TOCItemColour = globals.processingOptions.getCurrentOption("TOCItemColour")
+    TOCItemColour = md2pptx.globals.processingOptions.getCurrentOption("TOCItemColour")
 
     height = Inches(TOCItemHeight)
 
@@ -3552,7 +3552,7 @@ def createTOCSlide(presentation, slideNumber, titleText, bullets, tocStyle):
         if TOCFontSize == 0:
             TOCFontSize = 12
 
-    rowGap = Inches(globals.processingOptions.getCurrentOption("TOCRowGap"))
+    rowGap = Inches(md2pptx.globals.processingOptions.getCurrentOption("TOCRowGap"))
 
     TOCEntriesPerRow = int(
         (presentation.slide_width - 2 * marginBase) / (width + entryGap)
@@ -3654,21 +3654,21 @@ def createTOCSlide(presentation, slideNumber, titleText, bullets, tocStyle):
 
 
 def createSlide(presentation, slideNumber, slideInfo):
-    abstractTitle = globals.processingOptions.getCurrentOption("abstractTitle")
-    tocTitle = globals.processingOptions.getCurrentOption("tocTitle")
-    tocStyle = globals.processingOptions.getCurrentOption("tocStyle")
-    sectionTitleSize = globals.processingOptions.getCurrentOption("sectionTitleSize")
-    presTitleSize = globals.processingOptions.getCurrentOption("presTitleSize")
-    sectionSubtitleSize = globals.processingOptions.getCurrentOption("sectionSubtitleSize")
-    presSubtitleSize = globals.processingOptions.getCurrentOption("presSubtitleSize")
-    leftFooterText = globals.processingOptions.getCurrentOption("leftFooterText")
-    footerfontsizespec = globals.processingOptions.getCurrentOption("footerFontSize")
-    middleFooterText = globals.processingOptions.getCurrentOption("middleFooterText")
-    rightFooterText = globals.processingOptions.getCurrentOption("rightFooterText")
-    sectionFooters = globals.processingOptions.getCurrentOption("sectionFooters")
-    liveFooters = globals.processingOptions.getCurrentOption("liveFooters")
-    transition = globals.processingOptions.getCurrentOption("transition")
-    hidden = globals.processingOptions.getCurrentOption("hidden")
+    abstractTitle = md2pptx.globals.processingOptions.getCurrentOption("abstractTitle")
+    tocTitle = md2pptx.globals.processingOptions.getCurrentOption("tocTitle")
+    tocStyle = md2pptx.globals.processingOptions.getCurrentOption("tocStyle")
+    sectionTitleSize = md2pptx.globals.processingOptions.getCurrentOption("sectionTitleSize")
+    presTitleSize = md2pptx.globals.processingOptions.getCurrentOption("presTitleSize")
+    sectionSubtitleSize = md2pptx.globals.processingOptions.getCurrentOption("sectionSubtitleSize")
+    presSubtitleSize = md2pptx.globals.processingOptions.getCurrentOption("presSubtitleSize")
+    leftFooterText = md2pptx.globals.processingOptions.getCurrentOption("leftFooterText")
+    footerfontsizespec = md2pptx.globals.processingOptions.getCurrentOption("footerFontSize")
+    middleFooterText = md2pptx.globals.processingOptions.getCurrentOption("middleFooterText")
+    rightFooterText = md2pptx.globals.processingOptions.getCurrentOption("rightFooterText")
+    sectionFooters = md2pptx.globals.processingOptions.getCurrentOption("sectionFooters")
+    liveFooters = md2pptx.globals.processingOptions.getCurrentOption("liveFooters")
+    transition = md2pptx.globals.processingOptions.getCurrentOption("transition")
+    hidden = md2pptx.globals.processingOptions.getCurrentOption("hidden")
 
     if slideInfo.blockType in ["content", "code", "table"]:
         if (tocStyle != "") & (tocTitle == slideInfo.titleText):
@@ -3711,7 +3711,7 @@ def createSlide(presentation, slideNumber, slideInfo):
                 presentation,
                 slideNumber,
                 slideInfo.titleText,
-                globals.processingOptions.getCurrentOption("sectionSlideLayout"),
+                md2pptx.globals.processingOptions.getCurrentOption("sectionSlideLayout"),
                 sectionTitleSize,
                 slideInfo.subtitleText,
                 sectionSubtitleSize,
@@ -3723,7 +3723,7 @@ def createSlide(presentation, slideNumber, slideInfo):
             presentation,
             slideNumber,
             slideInfo.titleText,
-            globals.processingOptions.getCurrentOption("titleSlideLayout"),
+            md2pptx.globals.processingOptions.getCurrentOption("titleSlideLayout"),
             presTitleSize,
             slideInfo.subtitleText,
             presSubtitleSize,
@@ -3921,7 +3921,7 @@ def addSlideTransition(slide, transitionType):
 
 
 def createTaskSlides(prs, slideNumber, tasks, titleStem):
-    tasksPerPage = globals.processingOptions.getCurrentOption("tasksPerPage")
+    tasksPerPage = md2pptx.globals.processingOptions.getCurrentOption("tasksPerPage")
 
     taskSlideNumber = 0
 
@@ -4008,11 +4008,11 @@ def createGlossarySlides(prs, slideNumber, abbrevDictionary):
     termSlideNumber = 0
     glossarySlides = []
 
-    glossaryTitle = globals.processingOptions.getCurrentOption("glossaryTitle")
-    glossaryTerm = globals.processingOptions.getCurrentOption("glossaryTerm")
-    glossaryTermsPerPage = globals.processingOptions.getCurrentOption("glossaryTermsPerPage")
-    glossaryMeaningWidth = globals.processingOptions.getCurrentOption("glossaryMeaningWidth")
-    glossaryMeaning = globals.processingOptions.getCurrentOption("glossaryMeaning")
+    glossaryTitle = md2pptx.globals.processingOptions.getCurrentOption("glossaryTitle")
+    glossaryTerm = md2pptx.globals.processingOptions.getCurrentOption("glossaryTerm")
+    glossaryTermsPerPage = md2pptx.globals.processingOptions.getCurrentOption("glossaryTermsPerPage")
+    glossaryMeaningWidth = md2pptx.globals.processingOptions.getCurrentOption("glossaryMeaningWidth")
+    glossaryMeaning = md2pptx.globals.processingOptions.getCurrentOption("glossaryMeaning")
 
     termCount = len(abbrevDictionary)
 
@@ -4085,8 +4085,8 @@ def createFootnoteSlides(prs, slideNumber, footnoteDefinitions):
     footnotesSlideNumber = 0
     footnoteSlides = []
 
-    footnotesTitle = globals.processingOptions.getCurrentOption("footnotesTitle")
-    footnotesPerPage = globals.processingOptions.getCurrentOption("footnotesPerPage")
+    footnotesTitle = md2pptx.globals.processingOptions.getCurrentOption("footnotesTitle")
+    footnotesPerPage = md2pptx.globals.processingOptions.getCurrentOption("footnotesPerPage")
 
     footnoteCount = len(footnoteDefinitions)
 
@@ -4147,2221 +4147,2222 @@ def createFootnoteSlides(prs, slideNumber, footnoteDefinitions):
     return slideNumber, footnoteSlides
 
 
-start_time = time.time()
+def cli():
+    start_time = time.time()
 
-banner = (
-    "md2pptx Markdown To Powerpoint Converter " + md2pptx_level + " " + md2pptx_date
-)
+    banner = (
+        "md2pptx Markdown To Powerpoint Converter " + md2pptx_level + " " + md2pptx_date
+    )
 
-bannerUnderline = ""
-for i in range(len(banner)):
-    bannerUnderline = bannerUnderline + "="
+    bannerUnderline = ""
+    for i in range(len(banner)):
+        bannerUnderline = bannerUnderline + "="
 
-print("\n" + banner + "\n" + bannerUnderline)
-print("\nOpen source project: https://github.com/MartinPacker/md2pptx")
+    print("\n" + banner + "\n" + bannerUnderline)
+    print("\nOpen source project: https://github.com/MartinPacker/md2pptx")
 
-print("\nExternal Dependencies:")
-print("\n  Python: " + platform.python_version())
+    print("\nExternal Dependencies:")
+    print("\n  Python: " + platform.python_version())
 
-print("  python-pptx: " + pptx_version)
+    print("  python-pptx: " + pptx_version)
 
-if have_pillow:
-    print("  Pillow: " + PIL.__version__)
-else:
-    print("  Pillow: Not Installed")
-
-if have_cairosvg:
-    print("  CairoSVG: " + cairosvg.__version__)
-else:
-    print("  CairoSVG: Not Installed")
-
-if have_graphviz:
-    print("  graphviz: " + graphviz.__version__)
-else:
-    print("  graphviz: Not Installed")
-
-print("\nInternal Dependencies:")
-print(f"\n  funnel: {md2pptx.funnel.version}")
-print(f"  runPython: {md2pptx.runPython.version}")
-
-input_file = []
-
-if len(sys.argv) > 2:
-    # Have input file as well as output file
-    input_filename = sys.argv[1]
-    output_filename = sys.argv[2]
-
-    if Path(input_filename).exists():
-        input_path = Path(input_filename)
-
-        with input_path.open(mode='r', encoding='utf-8') as file:
-            input_file = file.readlines()
+    if have_pillow:
+        print("  Pillow: " + PIL.__version__)
     else:
-        print("Input file specified but does not exist. Terminating.")
-elif len(sys.argv) == 1:
-    print("No parameters. Terminating")
-    sys.exit()
-else:
-    output_filename = sys.argv[1]
+        print("  Pillow: Not Installed")
 
-    input_file = sys.stdin.readlines()
-
-if len(input_file) == 0:
-    print("Empty input file. Terminating")
-    sys.exit()
-
-slideNumber = 1
-
-bulletRegex = re.compile(r"^(\s)*(\*)(.*)")
-numberRegex = re.compile(r"^(\s)*(\d+)\.(.*)")
-metadataRegex = re.compile("^(.+):(.+)")
-
-graphicRE = r"!\[(.*?)\]\((.+?)\)"
-graphicRegex = re.compile(graphicRE)
-
-clickableGraphicRE = r"\[" + graphicRE + r"\]\((.+?)\)"
-clickableGraphicRegex = re.compile(clickableGraphicRE)
-
-videoRE = "<video (.*?)></video>"
-videoRegex = re.compile(videoRE)
-
-audioRE = "<audio (.*?)></audio>"
-audioRegex = re.compile(audioRE)
-
-linkRegex = re.compile(r"^\[(.+)\]\((.+)\)")
-footnoteDefinitionRegex = re.compile(r"^\[\^(.+?)\]: (.+)")
-slideHrefRegex = re.compile(r"(.+)\[(.+)\]$")
-anchorRegex = re.compile("^<a id=[\"'](.+)[\"']></a>")
-dynamicMetadataRegex = re.compile("^<!-- md2pptx: (.+): (.+) -->")
-indirectReferenceAnchorRegex = re.compile(r"^\[(.+?)\]: (.+)")
-indirectReferenceUsageRegex = re.compile(r"[(.+?)]\[(.+?)]")
-
-# Default slide layout enumeration
-globals.processingOptions.setOptionValuesArray(
-    [
-        ["titleSlideLayout", 0],
-        ["sectionSlideLayout", 1],
-        ["contentSlideLayout", 2],
-        ["titleOnlyLayout", 5],
-        ["blanklayout", 6],
-    ]
-)
-
-# Abbreviation Dictionary
-abbrevDictionary = {}
-
-# Abbreviation Runs Dictionary
-abbrevRunsDictionary = {}
-
-# Footnote runs Dictionary
-footnoteRunsDictionary = {}
-
-# Extract metadata
-metadata_lines = []
-afterMetadataAndHTML = []
-
-
-TOCruns = []
-SectionSlides = {}
-
-inMetadata = True
-in_comment = False
-inHTML = False
-inCode = False
-
-# Pass 1: Strip out comments and metadata, storing the latter
-for line in input_file:
-    if line.lstrip().startswith("<!-- md2pptx: "):
-        # md2pptx dynamic metadata so keep it
-        afterMetadataAndHTML.append(line)
-
-    if line.lstrip().startswith("<!--"):
-        if line.rstrip().endswith("-->"):
-            # Note: Not taking text after end of comment
-            continue
-        else:
-            in_comment = True
-            continue
-
-    elif line.rstrip().endswith("-->"):
-        # Note: Not taking text after end of comment
-        in_comment = False
-        continue
-
-    elif in_comment is True:
-        continue
-
-    elif (line.lstrip()[:1] == "<") & (inCode is False):
-        lineLstrip = line.lstrip()
-        if startswithOneOf(lineLstrip, ["<a id=", "<span "]):
-            # Line goes to post-metadata array
-            afterMetadataAndHTML.append(line)
-
-        elif startswithOneOf(lineLstrip, ["<code>", "<pre>"]):
-            inCode = True
-            afterMetadataAndHTML.append(line)
-
-        elif startswithOneOf(lineLstrip, ["</code>", "</pre>"]):
-            inCode = False
-            afterMetadataAndHTML.append(line)
-
-        elif startswithOneOf(lineLstrip, ["<video ", "<audio "]):
-            # Line goes to post-metadata array
-            afterMetadataAndHTML.append(line)
-
-        else:
-            inHTML = True
-
-        continue
-
-    elif line.startswith("```"):
-        inCode = not inCode
-        # afterMetadataAndHTML.append(line)
-
-    elif line.lstrip()[:1] == "#":
-        # Heading has triggered end of metadata and end of HTML
-        inMetadata = False
-        inHTML = False
-
-    elif inHTML:
-        continue
-
-    elif inCode:
-        afterMetadataAndHTML.append(line)
-        continue
-
-    elif line == "\n":
-        # Blank line has triggered end of metadata
-        inMetadata = False
-
-    if inMetadata is True:
-        # Line goes to metadata array
-        metadata_lines.append(line)
-
+    if have_cairosvg:
+        print("  CairoSVG: " + cairosvg.__version__)
     else:
-        # Line goes to post-metadata array
-        afterMetadataAndHTML.append(line)
+        print("  CairoSVG: Not Installed")
 
-want_numbers_headings = False
-want_numbers_content = False
+    if have_graphviz:
+        print("  graphviz: " + graphviz.__version__)
+    else:
+        print("  graphviz: Not Installed")
 
-globals.processingOptions.setOptionValues("slideTemplateFile", "")
-globals.processingOptions.setOptionValues("tempDir", None)
-globals.processingOptions.setOptionValues("hidden",False)
+    print("\nInternal Dependencies:")
+    print(f"\n  funnel: {md2pptx.funnel.version}")
+    print(f"  runPython: {md2pptx.runPython.version}")
 
-######################################################################################
-#                                                                                    #
-# Set default, presentation and current values for some key options                  #
-#                                                                                    #
-######################################################################################
+    input_file = []
 
-globals.processingOptions.setOptionValuesArray(
-    [
-        ["pageTitleSize", 30],
-        ["pageSubtitleSize", "same"],
-        ["pageTitleAlign", "left"],
-    ]
-)
+    if len(sys.argv) > 2:
+        # Have input file as well as output file
+        input_filename = sys.argv[1]
+        output_filename = sys.argv[2]
 
-globals.processingOptions.setOptionValues("backgroundImage", "")
+        if Path(input_filename).exists():
+            input_path = Path(input_filename)
 
-# Text size defaults
-globals.processingOptions.setOptionValuesArray(
-    [
-        ["baseTextSize", 18],
-        ["baseTextDecrement", 2],
-    ]
-)
+            with input_path.open(mode='r', encoding='utf-8') as file:
+                input_file = file.readlines()
+        else:
+            print("Input file specified but does not exist. Terminating.")
+    elif len(sys.argv) == 1:
+        print("No parameters. Terminating")
+        sys.exit()
+    else:
+        output_filename = sys.argv[1]
 
-# Code defaults
-globals.processingOptions.setOptionValuesArray(
-    [
-        ["codeForeground", "000000"],
-        ["codeBackground", "DFFFDF"],
-        ["codeColumns", 80],
-        ["fixedPitchHeightWidthRatio", 1.2],
-    ]
-)
+        input_file = sys.stdin.readlines()
 
-# Text defaults
-globals.processingOptions.setOptionValuesArray(
-    [
-        ["italicItalic", True],
-        ["italicColour", ("None", "")],
-        ["boldBold", True],
-        ["boldColour", ("None", "")],
-    ]
-)
+    if len(input_file) == 0:
+        print("Empty input file. Terminating")
+        sys.exit()
 
-# Tables defaults
-globals.processingOptions.setOptionValuesArray(
-    [
-        ["compactTables", 0],
-        ["addTableLines", "no"],
-        ["addTableColumnLines", []],
-        ["addTableRowLines", []],
-        ["addTableLineWidth", 1],
-        ["addTableLineCount", 1],
-        ["addTableLineColour", "000000"],
-        ["tableMargin", Inches(0.2)],
-        ["spanCells", "yes"],
-        ["tableHeadingSize", 0],
-        ["tableShadow", False],
-    ]
-)
+    slideNumber = 1
 
-# Cards defaults
-globals.processingOptions.setOptionValuesArray(
-    [
-        ["cardPercent", 80],
-        ["cardLayout", "horizontal"],
-        ["cardTitleAlign", "c"],
-        ["cardTitlePosition", "above"],
-        ["cardShape", "rounded"],
-        ["horizontalCardGap", 0.25],
-        ["verticalCardGap", 0.15],
-        ["cardShadow", False],
-        ["cardTitleSize", 0],
-        ["cardBorderWidth", 0],
-        ["cardBorderColour", ("None", "")],
-        ["cardTitleColour", ("None", "")],
-        ["cardColour", [("None", "")]],
-        ["cardTitleBackground", [("None", "")]],
-        ["cardDividerColour", ("RGB", "#000000")],
-        ["cardGraphicSize", 0],
-        ["cardGraphicPosition", "before"],
-        ["cardGraphicPadding", 0.1],
-    ]
-)
+    bulletRegex = re.compile(r"^(\s)*(\*)(.*)")
+    numberRegex = re.compile(r"^(\s)*(\d+)\.(.*)")
+    metadataRegex = re.compile("^(.+):(.+)")
 
+    graphicRE = r"!\[(.*?)\]\((.+?)\)"
+    graphicRegex = re.compile(graphicRE)
 
-globals.processingOptions.setOptionValues("contentSplit", [1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
+    clickableGraphicRE = r"\[" + graphicRE + r"\]\((.+?)\)"
+    clickableGraphicRegex = re.compile(clickableGraphicRE)
 
-globals.processingOptions.setOptionValues("contentSplitDirection", "vertical")
+    videoRE = "<video (.*?)></video>"
+    videoRegex = re.compile(videoRE)
 
-# Number of spaces a single level of indentation is
-globals.processingOptions.setOptionValues("indentSpaces", 2)
+    audioRE = "<audio (.*?)></audio>"
+    audioRegex = re.compile(audioRE)
 
-# Whether titles are adjusted or not
-globals.processingOptions.setOptionValues("adjustTitles", True)
+    linkRegex = re.compile(r"^\[(.+)\]\((.+)\)")
+    footnoteDefinitionRegex = re.compile(r"^\[\^(.+?)\]: (.+)")
+    slideHrefRegex = re.compile(r"(.+)\[(.+)\]$")
+    anchorRegex = re.compile("^<a id=[\"'](.+)[\"']></a>")
+    dynamicMetadataRegex = re.compile("^<!-- md2pptx: (.+): (.+) -->")
+    indirectReferenceAnchorRegex = re.compile(r"^\[(.+?)\]: (.+)")
+    indirectReferenceUsageRegex = re.compile(r"[(.+?)]\[(.+?)]")
 
-# Title and section defaults
-globals.processingOptions.setOptionValuesArray(
-    [
-        ["sectionTitleSize", 40],
-        ["sectionSubtitleSize", 28],
-        ["presTitleSize", 40],
-        ["presSubtitleSize", 28],
-        ["sectionsExpand", False],
-    ]
-)
-
-globals.processingOptions.setOptionValues("monoFont", "Courier")
-
-topHeadingLevel = 1
-titleLevel = topHeadingLevel
-sectionLevel = titleLevel + 1
-contentLevel = sectionLevel + 1
-cardLevel = contentLevel + 1
-
-# Abstracts defaults
-abstractTitle = globals.processingOptions.setOptionValues("abstractTitle", "")
-
-# Tasks defaults
-globals.processingOptions.setOptionValuesArray([["taskSlides", "all"], ["tasksPerPage", 20]])
-
-# Glossary defaults
-globals.processingOptions.setOptionValuesArray(
-    [
-        ["glossaryTitle", "Title"],
-        ["glossaryTerm", "Term"],
-        ["glossaryMeaning", "Meaning"],
-        ["glossaryMeaningWidth", 5],
-        ["glossaryTermsPerPage", 20],
-    ]
-)
-
-# Footnotes defaults
-globals.processingOptions.setOptionValuesArray(
-    [["footnotesTitle", "Footnotes"], ["footnotesPerPage", 20]]
-)
-
-# Table Of Contents defaults
-globals.processingOptions.setOptionValuesArray(
-    [
-        ["tocTitle", "Topics"],
-        ["tocStyle", ""],
-        ["tocItemHeight", 0],
-        ["tocItemColour", ""],
-        ["tocRowGap", 0.75],
-        ["tocFontSize", 0],
-        ["tocLinks", False],
-        ["sectionArrows", False],
-        ["sectionArrowsColour", ""],
-    ]
-)
-
-globals.processingOptions.setOptionValues("marginBase", Inches(0.2))
-
-globals.processingOptions.setOptionValues("transition", "none")
-
-globals.processingOptions.setOptionValues("deleteFirstSlide", False)
-
-globals.processingOptions.setOptionValuesArray(
-    [
-        ["leftFooterText", ""],
-        ["middleFooterText", ""],
-        ["rightFooterText", ""],
-        ["sectionFooters", "no"],
-        ["liveFooters", "no"],
-        ["footerFontSize", ""],
-    ]
-)
-
-TOCEntries = []
-
-
-metadata = []
-
-
-# Space to leave at bottom if numbers
-numbersHeight = Inches(0.4)
-
-# If no numbers leave all the above height anyway
-globals.processingOptions.setOptionValuesArray(
-    [
-        ["numbersHeight", numbersHeight],
-        ["numbersContentMargin", numbersHeight],
-        ["numbersHeadingsMargin", numbersHeight],
-        ["numbersFontSize", ""],
-    ]
-)
-
-# Graphics options
-globals.processingOptions.setOptionValuesArray(
-    [
-        ["exportGraphics", False],
-    ]
-)
-
-# Funnel options
-globals.processingOptions.setOptionValuesArray(
-    [
+    # Default slide layout enumeration
+    md2pptx.globals.processingOptions.setOptionValuesArray(
         [
-            "funnelColours",
-            [
-                ("Theme", MSO_THEME_COLOR.ACCENT_1),
-                ("Theme", MSO_THEME_COLOR.ACCENT_2),
-                ("Theme", MSO_THEME_COLOR.ACCENT_3),
-                ("Theme", MSO_THEME_COLOR.ACCENT_4),
-                ("Theme", MSO_THEME_COLOR.ACCENT_5),
-                ("Theme", MSO_THEME_COLOR.ACCENT_6),
-            ],
-        ],
-        ["funnelBorderColour", ("None", "")],
-        ["funnelTitleColour", ("None", "")],
-        ["funnelTextColour", ("None", "")],
-        ["funnelLabelsPercent", 10],
-        ["funnelLabelPosition", "before"],
-        ["funnelWidest", "left"],
-    ]
-)
-
-# "on" exit files initialisation
-globals.processingOptions.setOptionValuesArray(
-    [
-        ["onPresentationInitialisation", ""],
-        ["onPresentationBeforeSave", ""],
-        ["onPresentationAfterSave", ""],
-    ]
-)
-
-######################################################################################
-#                                                                                    #
-#  Prime for footnotes                                                               #
-#                                                                                    #
-######################################################################################
-
-# List of footnote definitions. Each is a (ref, text) pair.
-# Also array of names - for quick searching
-footnoteDefinitions = []
-footnoteReferences = []
-
-maxBlocks = 10
-
-######################################################################################
-#                                                                                    #
-#  Parse metadata and report on the items found, setting options                     #
-#                                                                                    #
-######################################################################################
-
-if len(metadata_lines) > 0:
-    print("")
-    print("Metadata:")
-    print("=========")
-    print("")
-    print("Name".ljust(40) + " " + "Value")
-    print("----".ljust(40) + " " + "-----")
-
-
-for line in metadata_lines:
-    matchInfo = metadataRegex.match(line)
-
-    if matchInfo is None:
-        print("Ignoring invalid metadata line: " + line)
-        continue
-
-    name = matchInfo.group(1).strip()
-    value = matchInfo.group(2).strip()
-    metadata.append([name, value])
-
-    # Print name as it was typed
-    print(name.ljust(40) + " " + value)
-
-    # Lower case name for checking
-    name = name.lower()
-
-    if name == "numbers":
-        numbersHeight = globals.processingOptions.getCurrentOption("numbersHeight")
-        if value.lower() == "yes":
-            # Want slide numbers everywhere
-            want_numbers_headings = True
-            globals.processingOptions.setOptionValues("numbersHeadingsMargin", numbersHeight)
-
-            want_numbers_content = True
-            globals.processingOptions.setOptionValues("numbersContentMargin", numbersHeight)
-        elif value.lower() == "content":
-            # Want slide numbers on content slides but not headings & sections
-            want_numbers_headings = False
-            want_numbers_content = True
-            globals.processingOptions.setOptionValues("numbersContentMargin", numbersHeight)
-        else:
-            # Don't want slide numbers - but they could still be added by slide master
-            # (Can code any other value, including 'no' or omit this metadata type)
-            want_numbers_headings = False
-            want_numbers_content = False
-
-    elif name == "numbersfontsize":
-        globals.processingOptions.setOptionValues(name, float(value))
-
-    elif name == "pagetitlesize":
-        globals.processingOptions.setOptionValues(name, float(value))
-
-    elif name == "pagetitlealign":
-        if value in ["left", "right", "center", "centre", "l", "r", "c"]:
-            if value[:1] == "l":
-                globals.processingOptions.setOptionValues(name, "left")
-            elif value[:1] == "r":
-                globals.processingOptions.setOptionValues(name, "right")
-            elif value[:1] == "c":
-                globals.processingOptions.setOptionValues(name, "center")
-        else:
-            print(
-                f'PageTitleAlign value \'{value}\' unsupported. "left", "right", "centre", or "center" required.'
-            )
-
-    elif name == "pagesubtitlesize":
-        if value == "same":
-            globals.processingOptions.setOptionValues(name, value)
-        else:
-            globals.processingOptions.setOptionValues(name, float(value))
-
-    elif name == "basetextsize":
-        globals.processingOptions.setOptionValues(name, float(value))
-
-    elif name == "basetextdecrement":
-        globals.processingOptions.setOptionValues(name, float(value))
-
-    elif name == "backgroundimage":
-        globals.processingOptions.setOptionValues(name, value)
-
-    elif name in [
-        "onpresentationinitialisation",
-        "onpresentationbeforesave",
-        "onpresentationaftersave",
-    ]:
-        globals.processingOptions.setOptionValues(name, value)
-        print(value, "<===")
-
-    elif name in [
-        "sectiontitlesize",
-        "sectionsubtitlesize",
-        "prestitlesize",
-        "pressubtitlesize",
-    ]:
-        globals.processingOptions.setOptionValues(name, float(value))
-
-    elif name == "deletefirstslide":
-        if value.lower() == "yes":
-            globals.processingOptions.setOptionValues(name, True)
-        else:
-             globals.processingOptions.setOptionValues(name, False)
-
-    elif name == "hidden":
-        if value.lower() == "yes":
-            globals.processingOptions.setOptionValues(name, True)
-        else:
-            globals.processingOptions.setOptionValues(name, False)
-
-    elif name == "sectionsexpand":
-        if value.lower() == "yes":
-            globals.processingOptions.setOptionValues(name, True)
-        else:
-            globals.processingOptions.setOptionValues(name, False)
-
-    elif (name == "template") | (name == "master"):
-        if value == "Martin Master.pptx":
-            slideTemplateFile = "Martin Template.pptx"
-        else:
-            slideTemplateFile = value
-        globals.processingOptions.setOptionValues("slideTemplateFile", slideTemplateFile)
-
-    elif name == "monofont":
-        globals.processingOptions.setOptionValues(name, value)
-
-    elif name == "marginbase":
-        globals.processingOptions.setOptionValues(name, Inches(float(value)))
-
-    elif name == "tablemargin":
-        globals.processingOptions.setOptionValues(name, Inches(float(value)))
-
-    elif name == "tocstyle":
-        if value in ["chevron", "circle", "plain"]:
-            globals.processingOptions.setOptionValues(name, value)
-        else:
-            print(
-                f'TOCStyle value \'{value}\' unsupported. "chevron" or "circle" required.'
-            )
-
-    elif name == "toctitle":
-        globals.processingOptions.setOptionValues(name, value)
-
-    elif name == "tocitemheight":
-        globals.processingOptions.setOptionValues(name, float(value))
-
-    elif (name == "tocitemcolour") | (name == "tocitemcolor"):
-        globals.processingOptions.setOptionValues("tocItemColour", value)
-
-    elif name == "toclinks":
-        if value.lower() == "yes":
-            globals.processingOptions.setOptionValues(name, True)
-
-    elif name == "sectionarrows":
-        if value.lower() == "yes":
-            globals.processingOptions.setOptionValues(name, True)
-
-    elif (name == "sectionarrowscolour") | (name == "sectionarrowscolor"):
-        globals.processingOptions.setOptionValues("sectionArrowsColour", value)
-
-    elif name == "tocrowgap":
-        globals.processingOptions.setOptionValues(name, float(value))
-
-    elif name == "tocfontsize":
-        globals.processingOptions.setOptionValues(name, float(value))
-
-    elif name == "compacttables":
-        globals.processingOptions.setOptionValues(name, float(value))
-
-    elif name == "tableheadingsize":
-        globals.processingOptions.setOptionValues(name, float(value))
-
-    elif name == "tableshadow":
-        if value.lower() == "yes":
-            globals.processingOptions.setOptionValues(name, True)
-
-    elif name == "abstracttitle":
-        globals.processingOptions.setOptionValues(name, value)
-
-    elif name in [
-        "leftfootertext",
-        "middlefootertext",
-        "rightfootertext",
-        "sectionfooters",
-        "livefooters",
-    ]:
-        globals.processingOptions.setOptionValues(name, value)
-
-    elif name == "footerfontsize":
-        globals.processingOptions.setOptionValues(name, float(value))
-
-    elif name == "boldbold":
-        if value.lower() == "no":
-            globals.processingOptions.setOptionValues("boldBold", False)
-
-    elif (name == "boldcolour") | (name == "boldcolor"):
-        globals.processingOptions.setOptionValues("boldColour", (parseColour(value.strip())))
-
-    elif name == "italicitalic":
-        if value == "no":
-            globals.processingOptions.setOptionValues("italicItalic", False)
-
-    elif (name == "italiccolour") | (name == "italiccolor"):
-        globals.processingOptions.setOptionValues("italicColour", (parseColour(value.strip())))
-
-    elif name in ["cardcolour", "cardcolor", "cardcolours", "cardcolors"]:
-        valueArray2 = [parseColour(c.strip()) for c in value.split(",")]
-
-        globals.processingOptions.setOptionValues("cardColour", valueArray2)
-
-    elif name in ["cardtitlebackground", "cardtitlebackgrounds"]:
-        valueArray2 = [parseColour(c.strip()) for c in value.split(",")]
-
-        globals.processingOptions.setOptionValues("cardTitleBackground", valueArray2)
-
-    elif (name == "cardbordercolour") | (name == "cardbordercolor"):
-        globals.processingOptions.setOptionValues(
-            "cardBorderColour", parseColour(value.strip())
-        )
-
-    elif (name == "cardtitlecolour") | (name == "cardtitlecolor"):
-        globals.processingOptions.setOptionValues("cardTitleColour", parseColour(value.strip()))
-
-    elif (name == "carddividercolour") | (name == "carddividercolor"):
-        globals.processingOptions.setOptionValues(
-            "cardDividerColour", parseColour(value.strip())
-        )
-
-    elif name == "cardborderwidth":
-        globals.processingOptions.setOptionValues(name, float(value))
-
-    elif name == "cardtitlesize":
-        globals.processingOptions.setOptionValues(name, float(value))
-
-    elif name == "cardshadow":
-        if value.lower() == "yes":
-            globals.processingOptions.setOptionValues(name, True)
-
-    elif name in ["cardpercent", "cardgraphicsize", "cardgraphicpadding"]:
-        globals.processingOptions.setOptionValues(name, float(value))
-
-    elif name == "cardlayout":
-        if value in ["horizontal", "vertical"]:
-            globals.processingOptions.setOptionValues(name, value)
-        else:
-            print(
-                f'CardLayout value \'{value}\' unsupported. "horizontal" or "vertical" required.'
-            )
-
-    elif name == "cardshape":
-        if value in ["squared", "rounded", "line"]:
-            globals.processingOptions.setOptionValues(name, value)
-        else:
-            print(
-                f'CardShape value \'{value}\' unsupported. "squared", "rounded", or "line" required.'
-            )
-
-    elif name == "cardtitleposition":
-        if value in ["above", "inside", "before", "after"]:
-            globals.processingOptions.setOptionValues(name, value)
-        else:
-            print(
-                f'CardTitlePosition value \'{value}\' unsupported. "inside", "above", "before", or "after" required.'
-            )
-
-    elif name == "cardGraphicPosition":
-        if value in ["before", "after"]:
-            globals.processingOptions.setOptionValues(name, value)
-        else:
-            print(
-                f'cardGraphicPosition value \'{value}\' unsupported. "before",or "after" required.'
-            )
-
-    elif name == "cardtitlealign":
-        val1l = value[:1].lower()
-        if val1l in ["l", "r", "c"]:
-            globals.processingOptions.setOptionValues(name, val1l)
-        else:
-            print(f"CardAlign value '{value}' unsupported.")
-
-    elif name in ["horizontalcardgap", "verticalcardgap"]:
-        globals.processingOptions.setOptionValues(name, float(value))
-        print(float(value))
-
-    elif name == "contentsplit":
-        splitValue = value.split()
-        cs = []
-        for v in splitValue:
-            cs.append(int(v))
-
-        # Extend to maximum allowed
-        needMore = maxBlocks - len(cs)
-        for _ in range(needMore):
-            cs.append(1)
-
-        globals.processingOptions.setOptionValues("contentSplit", cs)
-
-    elif name in ["contentsplitdirection", "contentsplitdirn"]:
-        if value in [
-            "vertical",
-            "horizontal",
-            "v",
-            "h",
-            "default",
-            "pres",
-            "pop",
-            "prev",
-        ]:
-            if value in ["vertical", "horizontal"]:
-                adjustedValue = value
-            elif value == "v":
-                adjustedValue = "vertical"
-            elif value == "h":
-                adjustedValue = "horizontal"
+            ["titleSlideLayout", 0],
+            ["sectionSlideLayout", 1],
+            ["contentSlideLayout", 2],
+            ["titleOnlyLayout", 5],
+            ["blanklayout", 6],
+        ]
+    )
+
+    # Abbreviation Dictionary
+    abbrevDictionary = {}
+
+    # Abbreviation Runs Dictionary
+    abbrevRunsDictionary = {}
+
+    # Footnote runs Dictionary
+    footnoteRunsDictionary = {}
+
+    # Extract metadata
+    metadata_lines = []
+    afterMetadataAndHTML = []
+
+
+    TOCruns = []
+    SectionSlides = {}
+
+    inMetadata = True
+    in_comment = False
+    inHTML = False
+    inCode = False
+
+    # Pass 1: Strip out comments and metadata, storing the latter
+    for line in input_file:
+        if line.lstrip().startswith("<!-- md2pptx: "):
+            # md2pptx dynamic metadata so keep it
+            afterMetadataAndHTML.append(line)
+
+        if line.lstrip().startswith("<!--"):
+            if line.rstrip().endswith("-->"):
+                # Note: Not taking text after end of comment
+                continue
             else:
-                adjustedValue = value
+                in_comment = True
+                continue
 
-            globals.processingOptions.setOptionValues("contentSplitDirection", adjustedValue)
+        elif line.rstrip().endswith("-->"):
+            # Note: Not taking text after end of comment
+            in_comment = False
+            continue
+
+        elif in_comment is True:
+            continue
+
+        elif (line.lstrip()[:1] == "<") & (inCode is False):
+            lineLstrip = line.lstrip()
+            if startswithOneOf(lineLstrip, ["<a id=", "<span "]):
+                # Line goes to post-metadata array
+                afterMetadataAndHTML.append(line)
+
+            elif startswithOneOf(lineLstrip, ["<code>", "<pre>"]):
+                inCode = True
+                afterMetadataAndHTML.append(line)
+
+            elif startswithOneOf(lineLstrip, ["</code>", "</pre>"]):
+                inCode = False
+                afterMetadataAndHTML.append(line)
+
+            elif startswithOneOf(lineLstrip, ["<video ", "<audio "]):
+                # Line goes to post-metadata array
+                afterMetadataAndHTML.append(line)
+
+            else:
+                inHTML = True
+
+            continue
+
+        elif line.startswith("```"):
+            inCode = not inCode
+            # afterMetadataAndHTML.append(line)
+
+        elif line.lstrip()[:1] == "#":
+            # Heading has triggered end of metadata and end of HTML
+            inMetadata = False
+            inHTML = False
+
+        elif inHTML:
+            continue
+
+        elif inCode:
+            afterMetadataAndHTML.append(line)
+            continue
+
+        elif line == "\n":
+            # Blank line has triggered end of metadata
+            inMetadata = False
+
+        if inMetadata is True:
+            # Line goes to metadata array
+            metadata_lines.append(line)
 
         else:
-            print(
-                f'{name} value \'{value}\' unsupported. "vertical" or "horizontal" required.'
-            )
+            # Line goes to post-metadata array
+            afterMetadataAndHTML.append(line)
 
-    elif name == "taskslides":
-        globals.processingOptions.setOptionValues(name, value)
+    want_numbers_headings = False
+    want_numbers_content = False
 
-    elif name == "tasksperpage":
-        globals.processingOptions.setOptionValues(name, int(value))
+    md2pptx.globals.processingOptions.setOptionValues("slideTemplateFile", "")
+    md2pptx.globals.processingOptions.setOptionValues("tempDir", None)
+    md2pptx.globals.processingOptions.setOptionValues("hidden",False)
 
-    elif name in [
-        "titleslidelayout",
-        "sectionslidelayout",
-        "contentslidelayout",
-        "titleonlylayout",
-        "blanklayout",
-    ]:
-        globals.processingOptions.setOptionValues(name, int(value))
+    ######################################################################################
+    #                                                                                    #
+    # Set default, presentation and current values for some key options                  #
+    #                                                                                    #
+    ######################################################################################
 
-    elif name == "numbersheight":
-        numbersHeight = Inches(float(value))
+    md2pptx.globals.processingOptions.setOptionValuesArray(
+        [
+            ["pageTitleSize", 30],
+            ["pageSubtitleSize", "same"],
+            ["pageTitleAlign", "left"],
+        ]
+    )
 
-        # If no numbers leave all the above height anyway
-        globals.processingOptions.setOptionValues("numbersHeight", numbersHeight)
-        globals.processingOptions.setOptionValues("numbersContentMargin", numbersHeight)
-        globals.processingOptions.setOptionValues("numbersHeadingsMargin", numbersHeight)
+    md2pptx.globals.processingOptions.setOptionValues("backgroundImage", "")
 
-    elif name == "glossarytitle":
-        globals.processingOptions.setOptionValues(name, value)
+    # Text size defaults
+    md2pptx.globals.processingOptions.setOptionValuesArray(
+        [
+            ["baseTextSize", 18],
+            ["baseTextDecrement", 2],
+        ]
+    )
 
-    elif name == "glossaryterm":
-        globals.processingOptions.setOptionValues(name, value)
+    # Code defaults
+    md2pptx.globals.processingOptions.setOptionValuesArray(
+        [
+            ["codeForeground", "000000"],
+            ["codeBackground", "DFFFDF"],
+            ["codeColumns", 80],
+            ["fixedPitchHeightWidthRatio", 1.2],
+        ]
+    )
 
-    elif name == "glossarymeaning":
-        globals.processingOptions.setOptionValues(name, value)
+    # Text defaults
+    md2pptx.globals.processingOptions.setOptionValuesArray(
+        [
+            ["italicItalic", True],
+            ["italicColour", ("None", "")],
+            ["boldBold", True],
+            ["boldColour", ("None", "")],
+        ]
+    )
 
-    elif name == "glossarymeaningwidth":
-        globals.processingOptions.setOptionValues(name, int(value))
+    # Tables defaults
+    md2pptx.globals.processingOptions.setOptionValuesArray(
+        [
+            ["compactTables", 0],
+            ["addTableLines", "no"],
+            ["addTableColumnLines", []],
+            ["addTableRowLines", []],
+            ["addTableLineWidth", 1],
+            ["addTableLineCount", 1],
+            ["addTableLineColour", "000000"],
+            ["tableMargin", Inches(0.2)],
+            ["spanCells", "yes"],
+            ["tableHeadingSize", 0],
+            ["tableShadow", False],
+        ]
+    )
 
-    elif name == "glossarytermsperpage":
-        globals.processingOptions.setOptionValues(name, int(value))
+    # Cards defaults
+    md2pptx.globals.processingOptions.setOptionValuesArray(
+        [
+            ["cardPercent", 80],
+            ["cardLayout", "horizontal"],
+            ["cardTitleAlign", "c"],
+            ["cardTitlePosition", "above"],
+            ["cardShape", "rounded"],
+            ["horizontalCardGap", 0.25],
+            ["verticalCardGap", 0.15],
+            ["cardShadow", False],
+            ["cardTitleSize", 0],
+            ["cardBorderWidth", 0],
+            ["cardBorderColour", ("None", "")],
+            ["cardTitleColour", ("None", "")],
+            ["cardColour", [("None", "")]],
+            ["cardTitleBackground", [("None", "")]],
+            ["cardDividerColour", ("RGB", "#000000")],
+            ["cardGraphicSize", 0],
+            ["cardGraphicPosition", "before"],
+            ["cardGraphicPadding", 0.1],
+        ]
+    )
 
-    elif name == "footnotesperpage":
-        globals.processingOptions.setOptionValues(name, int(value))
 
-    elif name == "footnotestitle":
-        globals.processingOptions.setOptionValues(name, value)
+    md2pptx.globals.processingOptions.setOptionValues("contentSplit", [1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
 
-    # Following relate to styling and don't use Processing Options class
+    md2pptx.globals.processingOptions.setOptionValues("contentSplitDirection", "vertical")
 
-    elif name.startswith("style.bgcolor."):
-        spanClass = name[14:]
-        if value.startswith("#"):
-            value2 = value
-        else:
-            value2 = "#" + value
-        (check, colour) = parseRGB(value2)
-        if check:
-            # Valid RGB hex value
-            globals.bgcolors[spanClass] = colour
-        else:
-            print(f"Invalid value for {name} - {value}. Ignoring.")
+    # Number of spaces a single level of indentation is
+    md2pptx.globals.processingOptions.setOptionValues("indentSpaces", 2)
 
-    elif name.startswith("style.fgcolor."):
-        spanClass = name[14:]
-        if value.startswith("#"):
-            value2 = value
-        else:
-            value2 = "#" + value
-        (check, colour) = parseRGB(value2)
-        if check:
-            # Valid RGB hex value
-            globals.fgcolors[spanClass] = colour
-        else:
-            print(f"Invalid value for {name} - {value}. Ignoring.")
+    # Whether titles are adjusted or not
+    md2pptx.globals.processingOptions.setOptionValues("adjustTitles", True)
 
-    elif name.startswith("style.emphasis."):
-        spanClass = name[15:]
-        globals.emphases[spanClass] = value
+    # Title and section defaults
+    md2pptx.globals.processingOptions.setOptionValuesArray(
+        [
+            ["sectionTitleSize", 40],
+            ["sectionSubtitleSize", 28],
+            ["presTitleSize", 40],
+            ["presSubtitleSize", 28],
+            ["sectionsExpand", False],
+        ]
+    )
 
-    elif name.startswith("style.fontsize."):
-        spanClass = name[15:]
+    md2pptx.globals.processingOptions.setOptionValues("monoFont", "Courier")
 
-        # Assumed "px" on the end
-        value2 = value[:-2]
-        globals.fontsizes[spanClass] = value2
+    topHeadingLevel = 1
+    titleLevel = topHeadingLevel
+    sectionLevel = titleLevel + 1
+    contentLevel = sectionLevel + 1
+    cardLevel = contentLevel + 1
 
-    elif name in ["codeforeground", "codebackground"]:
-        globals.processingOptions.setOptionValues(name, value)
+    # Abstracts defaults
+    abstractTitle = md2pptx.globals.processingOptions.setOptionValues("abstractTitle", "")
 
-    elif name == "fpratio":
-        globals.processingOptions.setOptionValues("fixedPitchHeightWidthRatio", float(value))
+    # Tasks defaults
+    md2pptx.globals.processingOptions.setOptionValuesArray([["taskSlides", "all"], ["tasksPerPage", 20]])
 
-    elif name == "codecolumns":
-        globals.processingOptions.setOptionValues(name, int(value))
+    # Glossary defaults
+    md2pptx.globals.processingOptions.setOptionValuesArray(
+        [
+            ["glossaryTitle", "Title"],
+            ["glossaryTerm", "Term"],
+            ["glossaryMeaning", "Meaning"],
+            ["glossaryMeaningWidth", 5],
+            ["glossaryTermsPerPage", 20],
+        ]
+    )
 
-    elif name == "topheadinglevel":
-        titleLevel = int(value)
-        sectionLevel = titleLevel + 1
-        contentLevel = sectionLevel + 1
-        cardLevel = contentLevel + 1
+    # Footnotes defaults
+    md2pptx.globals.processingOptions.setOptionValuesArray(
+        [["footnotesTitle", "Footnotes"], ["footnotesPerPage", 20]]
+    )
 
-    elif name == "indentspaces":
-        globals.processingOptions.setOptionValues(name, int(value))
+    # Table Of Contents defaults
+    md2pptx.globals.processingOptions.setOptionValuesArray(
+        [
+            ["tocTitle", "Topics"],
+            ["tocStyle", ""],
+            ["tocItemHeight", 0],
+            ["tocItemColour", ""],
+            ["tocRowGap", 0.75],
+            ["tocFontSize", 0],
+            ["tocLinks", False],
+            ["sectionArrows", False],
+            ["sectionArrowsColour", ""],
+        ]
+    )
 
-    elif name == "adjusttitles":
-        if value == "no":
-            globals.processingOptions.setOptionValues(name, False)
+    md2pptx.globals.processingOptions.setOptionValues("marginBase", Inches(0.2))
 
-    elif name in ["addtablelines", "addtablelinecolour"]:
-        globals.processingOptions.setOptionValues(name, value)
+    md2pptx.globals.processingOptions.setOptionValues("transition", "none")
 
-    elif name in ["addtablecolumnlines", "addtablerowlines"]:
-        globals.processingOptions.setOptionValues(name, sortedNumericList(value))
+    md2pptx.globals.processingOptions.setOptionValues("deleteFirstSlide", False)
 
-    elif name in ["addtablelinecount", "addtablelinewidth"]:
-        globals.processingOptions.setOptionValues(name, int(value))
+    md2pptx.globals.processingOptions.setOptionValuesArray(
+        [
+            ["leftFooterText", ""],
+            ["middleFooterText", ""],
+            ["rightFooterText", ""],
+            ["sectionFooters", "no"],
+            ["liveFooters", "no"],
+            ["footerFontSize", ""],
+        ]
+    )
 
-    elif name == "spancells":
-        globals.processingOptions.setOptionValues(name, value)
+    TOCEntries = []
 
-    elif name == "hidemetadata":
-        if value == "style":
-            globals.processingOptions.hideMetadataStyle = True
 
-    elif name == "exportgraphics":
-        if value.lower() == "yes":
-            globals.processingOptions.setOptionValues(name, True)
+    metadata = []
 
-    elif name == "tempdir":
-        globals.processingOptions.setOptionValues(name, os.path.expanduser(value))
 
-    elif name == "transition":
-        if value.lower() in [
-            "none",
-            "ripple",
-            "reveal",
-            "honeycomb",
-            "shred",
-            "wipe",
-            "push",
-            "vortex",
-            "split",
-            "fracture",
+    # Space to leave at bottom if numbers
+    numbersHeight = Inches(0.4)
+
+    # If no numbers leave all the above height anyway
+    md2pptx.globals.processingOptions.setOptionValuesArray(
+        [
+            ["numbersHeight", numbersHeight],
+            ["numbersContentMargin", numbersHeight],
+            ["numbersHeadingsMargin", numbersHeight],
+            ["numbersFontSize", ""],
+        ]
+    )
+
+    # Graphics options
+    md2pptx.globals.processingOptions.setOptionValuesArray(
+        [
+            ["exportGraphics", False],
+        ]
+    )
+
+    # Funnel options
+    md2pptx.globals.processingOptions.setOptionValuesArray(
+        [
+            [
+                "funnelColours",
+                [
+                    ("Theme", MSO_THEME_COLOR.ACCENT_1),
+                    ("Theme", MSO_THEME_COLOR.ACCENT_2),
+                    ("Theme", MSO_THEME_COLOR.ACCENT_3),
+                    ("Theme", MSO_THEME_COLOR.ACCENT_4),
+                    ("Theme", MSO_THEME_COLOR.ACCENT_5),
+                    ("Theme", MSO_THEME_COLOR.ACCENT_6),
+                ],
+            ],
+            ["funnelBorderColour", ("None", "")],
+            ["funnelTitleColour", ("None", "")],
+            ["funnelTextColour", ("None", "")],
+            ["funnelLabelsPercent", 10],
+            ["funnelLabelPosition", "before"],
+            ["funnelWidest", "left"],
+        ]
+    )
+
+    # "on" exit files initialisation
+    md2pptx.globals.processingOptions.setOptionValuesArray(
+        [
+            ["onPresentationInitialisation", ""],
+            ["onPresentationBeforeSave", ""],
+            ["onPresentationAfterSave", ""],
+        ]
+    )
+
+    ######################################################################################
+    #                                                                                    #
+    #  Prime for footnotes                                                               #
+    #                                                                                    #
+    ######################################################################################
+
+    # List of footnote definitions. Each is a (ref, text) pair.
+    # Also array of names - for quick searching
+    footnoteDefinitions = []
+    footnoteReferences = []
+
+    maxBlocks = 10
+
+    ######################################################################################
+    #                                                                                    #
+    #  Parse metadata and report on the items found, setting options                     #
+    #                                                                                    #
+    ######################################################################################
+
+    if len(metadata_lines) > 0:
+        print("")
+        print("Metadata:")
+        print("=========")
+        print("")
+        print("Name".ljust(40) + " " + "Value")
+        print("----".ljust(40) + " " + "-----")
+
+
+    for line in metadata_lines:
+        matchInfo = metadataRegex.match(line)
+
+        if matchInfo is None:
+            print("Ignoring invalid metadata line: " + line)
+            continue
+
+        name = matchInfo.group(1).strip()
+        value = matchInfo.group(2).strip()
+        metadata.append([name, value])
+
+        # Print name as it was typed
+        print(name.ljust(40) + " " + value)
+
+        # Lower case name for checking
+        name = name.lower()
+
+        if name == "numbers":
+            numbersHeight = md2pptx.globals.processingOptions.getCurrentOption("numbersHeight")
+            if value.lower() == "yes":
+                # Want slide numbers everywhere
+                want_numbers_headings = True
+                md2pptx.globals.processingOptions.setOptionValues("numbersHeadingsMargin", numbersHeight)
+
+                want_numbers_content = True
+                md2pptx.globals.processingOptions.setOptionValues("numbersContentMargin", numbersHeight)
+            elif value.lower() == "content":
+                # Want slide numbers on content slides but not headings & sections
+                want_numbers_headings = False
+                want_numbers_content = True
+                md2pptx.globals.processingOptions.setOptionValues("numbersContentMargin", numbersHeight)
+            else:
+                # Don't want slide numbers - but they could still be added by slide master
+                # (Can code any other value, including 'no' or omit this metadata type)
+                want_numbers_headings = False
+                want_numbers_content = False
+
+        elif name == "numbersfontsize":
+            md2pptx.globals.processingOptions.setOptionValues(name, float(value))
+
+        elif name == "pagetitlesize":
+            md2pptx.globals.processingOptions.setOptionValues(name, float(value))
+
+        elif name == "pagetitlealign":
+            if value in ["left", "right", "center", "centre", "l", "r", "c"]:
+                if value[:1] == "l":
+                    md2pptx.globals.processingOptions.setOptionValues(name, "left")
+                elif value[:1] == "r":
+                    md2pptx.globals.processingOptions.setOptionValues(name, "right")
+                elif value[:1] == "c":
+                    md2pptx.globals.processingOptions.setOptionValues(name, "center")
+            else:
+                print(
+                    f'PageTitleAlign value \'{value}\' unsupported. "left", "right", "centre", or "center" required.'
+                )
+
+        elif name == "pagesubtitlesize":
+            if value == "same":
+                md2pptx.globals.processingOptions.setOptionValues(name, value)
+            else:
+                md2pptx.globals.processingOptions.setOptionValues(name, float(value))
+
+        elif name == "basetextsize":
+            md2pptx.globals.processingOptions.setOptionValues(name, float(value))
+
+        elif name == "basetextdecrement":
+            md2pptx.globals.processingOptions.setOptionValues(name, float(value))
+
+        elif name == "backgroundimage":
+            md2pptx.globals.processingOptions.setOptionValues(name, value)
+
+        elif name in [
+            "onpresentationinitialisation",
+            "onpresentationbeforesave",
+            "onpresentationaftersave",
         ]:
-            # Valid transition name
-            globals.processingOptions.setOptionValues(name, value.lower())
-        else:
-            print(f"Invalid value for {name} - {value}. Ignoring.")
+            md2pptx.globals.processingOptions.setOptionValues(name, value)
+            print(value, "<===")
 
-    elif (name == "funnelcolours") | (name == "funnelcolors"):
-        valueArray2 = [parseColour(c.strip()) for c in value.split(",")]
+        elif name in [
+            "sectiontitlesize",
+            "sectionsubtitlesize",
+            "prestitlesize",
+            "pressubtitlesize",
+        ]:
+            md2pptx.globals.processingOptions.setOptionValues(name, float(value))
 
-        globals.processingOptions.setOptionValues("funnelColours", valueArray2)
+        elif name == "deletefirstslide":
+            if value.lower() == "yes":
+                md2pptx.globals.processingOptions.setOptionValues(name, True)
+            else:
+                md2pptx.globals.processingOptions.setOptionValues(name, False)
 
-    elif (name == "funnelbordercolour") | (name == "funnelbordercolor"):
-        globals.processingOptions.setOptionValues(
-            "funnelBorderColour", parseColour(value.strip())
-        )
+        elif name == "hidden":
+            if value.lower() == "yes":
+                md2pptx.globals.processingOptions.setOptionValues(name, True)
+            else:
+                md2pptx.globals.processingOptions.setOptionValues(name, False)
 
-    elif (name == "funneltitlecolour") | (name == "funneltitlecolor"):
-        globals.processingOptions.setOptionValues(
-            "funnelTitleColour", parseColour(value.strip())
-        )
+        elif name == "sectionsexpand":
+            if value.lower() == "yes":
+                md2pptx.globals.processingOptions.setOptionValues(name, True)
+            else:
+                md2pptx.globals.processingOptions.setOptionValues(name, False)
 
-    elif (name == "funneltextcolour") | (name == "funneltextcolor"):
-        globals.processingOptions.setOptionValues(
-            "funnelTextColour", parseColour(value.strip())
-        )
+        elif (name == "template") | (name == "master"):
+            if value == "Martin Master.pptx":
+                slideTemplateFile = "Martin Template.pptx"
+            else:
+                slideTemplateFile = value
+            md2pptx.globals.processingOptions.setOptionValues("slideTemplateFile", slideTemplateFile)
 
-    elif name == "funnellabelspercent":
-        globals.processingOptions.setOptionValues(name, float(value))
+        elif name == "monofont":
+            md2pptx.globals.processingOptions.setOptionValues(name, value)
 
-    elif name == "funnellabelposition":
-        if value in ["before", "after"]:
-            globals.processingOptions.setOptionValues(name, value)
-        else:
-            print(
-                f'funnelLabelPosition value \'{value}\' unsupported. "before" or "after" required.'
+        elif name == "marginbase":
+            md2pptx.globals.processingOptions.setOptionValues(name, Inches(float(value)))
+
+        elif name == "tablemargin":
+            md2pptx.globals.processingOptions.setOptionValues(name, Inches(float(value)))
+
+        elif name == "tocstyle":
+            if value in ["chevron", "circle", "plain"]:
+                md2pptx.globals.processingOptions.setOptionValues(name, value)
+            else:
+                print(
+                    f'TOCStyle value \'{value}\' unsupported. "chevron" or "circle" required.'
+                )
+
+        elif name == "toctitle":
+            md2pptx.globals.processingOptions.setOptionValues(name, value)
+
+        elif name == "tocitemheight":
+            md2pptx.globals.processingOptions.setOptionValues(name, float(value))
+
+        elif (name == "tocitemcolour") | (name == "tocitemcolor"):
+            md2pptx.globals.processingOptions.setOptionValues("tocItemColour", value)
+
+        elif name == "toclinks":
+            if value.lower() == "yes":
+                md2pptx.globals.processingOptions.setOptionValues(name, True)
+
+        elif name == "sectionarrows":
+            if value.lower() == "yes":
+                md2pptx.globals.processingOptions.setOptionValues(name, True)
+
+        elif (name == "sectionarrowscolour") | (name == "sectionarrowscolor"):
+            md2pptx.globals.processingOptions.setOptionValues("sectionArrowsColour", value)
+
+        elif name == "tocrowgap":
+            md2pptx.globals.processingOptions.setOptionValues(name, float(value))
+
+        elif name == "tocfontsize":
+            md2pptx.globals.processingOptions.setOptionValues(name, float(value))
+
+        elif name == "compacttables":
+            md2pptx.globals.processingOptions.setOptionValues(name, float(value))
+
+        elif name == "tableheadingsize":
+            md2pptx.globals.processingOptions.setOptionValues(name, float(value))
+
+        elif name == "tableshadow":
+            if value.lower() == "yes":
+                md2pptx.globals.processingOptions.setOptionValues(name, True)
+
+        elif name == "abstracttitle":
+            md2pptx.globals.processingOptions.setOptionValues(name, value)
+
+        elif name in [
+            "leftfootertext",
+            "middlefootertext",
+            "rightfootertext",
+            "sectionfooters",
+            "livefooters",
+        ]:
+            md2pptx.globals.processingOptions.setOptionValues(name, value)
+
+        elif name == "footerfontsize":
+            md2pptx.globals.processingOptions.setOptionValues(name, float(value))
+
+        elif name == "boldbold":
+            if value.lower() == "no":
+                md2pptx.globals.processingOptions.setOptionValues("boldBold", False)
+
+        elif (name == "boldcolour") | (name == "boldcolor"):
+            md2pptx.globals.processingOptions.setOptionValues("boldColour", (parseColour(value.strip())))
+
+        elif name == "italicitalic":
+            if value == "no":
+                md2pptx.globals.processingOptions.setOptionValues("italicItalic", False)
+
+        elif (name == "italiccolour") | (name == "italiccolor"):
+            md2pptx.globals.processingOptions.setOptionValues("italicColour", (parseColour(value.strip())))
+
+        elif name in ["cardcolour", "cardcolor", "cardcolours", "cardcolors"]:
+            valueArray2 = [parseColour(c.strip()) for c in value.split(",")]
+
+            md2pptx.globals.processingOptions.setOptionValues("cardColour", valueArray2)
+
+        elif name in ["cardtitlebackground", "cardtitlebackgrounds"]:
+            valueArray2 = [parseColour(c.strip()) for c in value.split(",")]
+
+            md2pptx.globals.processingOptions.setOptionValues("cardTitleBackground", valueArray2)
+
+        elif (name == "cardbordercolour") | (name == "cardbordercolor"):
+            md2pptx.globals.processingOptions.setOptionValues(
+                "cardBorderColour", parseColour(value.strip())
             )
 
-    elif name == "funnelwidest":
-        if value in ["left", "right", "pipe", "hpipe", "vpipe", "top", "bottom"]:
-            globals.processingOptions.setOptionValues(name, value)
+        elif (name == "cardtitlecolour") | (name == "cardtitlecolor"):
+            md2pptx.globals.processingOptions.setOptionValues("cardTitleColour", parseColour(value.strip()))
+
+        elif (name == "carddividercolour") | (name == "carddividercolor"):
+            md2pptx.globals.processingOptions.setOptionValues(
+                "cardDividerColour", parseColour(value.strip())
+            )
+
+        elif name == "cardborderwidth":
+            md2pptx.globals.processingOptions.setOptionValues(name, float(value))
+
+        elif name == "cardtitlesize":
+            md2pptx.globals.processingOptions.setOptionValues(name, float(value))
+
+        elif name == "cardshadow":
+            if value.lower() == "yes":
+                md2pptx.globals.processingOptions.setOptionValues(name, True)
+
+        elif name in ["cardpercent", "cardgraphicsize", "cardgraphicpadding"]:
+            md2pptx.globals.processingOptions.setOptionValues(name, float(value))
+
+        elif name == "cardlayout":
+            if value in ["horizontal", "vertical"]:
+                md2pptx.globals.processingOptions.setOptionValues(name, value)
+            else:
+                print(
+                    f'CardLayout value \'{value}\' unsupported. "horizontal" or "vertical" required.'
+                )
+
+        elif name == "cardshape":
+            if value in ["squared", "rounded", "line"]:
+                md2pptx.globals.processingOptions.setOptionValues(name, value)
+            else:
+                print(
+                    f'CardShape value \'{value}\' unsupported. "squared", "rounded", or "line" required.'
+                )
+
+        elif name == "cardtitleposition":
+            if value in ["above", "inside", "before", "after"]:
+                md2pptx.globals.processingOptions.setOptionValues(name, value)
+            else:
+                print(
+                    f'CardTitlePosition value \'{value}\' unsupported. "inside", "above", "before", or "after" required.'
+                )
+
+        elif name == "cardGraphicPosition":
+            if value in ["before", "after"]:
+                md2pptx.globals.processingOptions.setOptionValues(name, value)
+            else:
+                print(
+                    f'cardGraphicPosition value \'{value}\' unsupported. "before",or "after" required.'
+                )
+
+        elif name == "cardtitlealign":
+            val1l = value[:1].lower()
+            if val1l in ["l", "r", "c"]:
+                md2pptx.globals.processingOptions.setOptionValues(name, val1l)
+            else:
+                print(f"CardAlign value '{value}' unsupported.")
+
+        elif name in ["horizontalcardgap", "verticalcardgap"]:
+            md2pptx.globals.processingOptions.setOptionValues(name, float(value))
+            print(float(value))
+
+        elif name == "contentsplit":
+            splitValue = value.split()
+            cs = []
+            for v in splitValue:
+                cs.append(int(v))
+
+            # Extend to maximum allowed
+            needMore = maxBlocks - len(cs)
+            for _ in range(needMore):
+                cs.append(1)
+
+            md2pptx.globals.processingOptions.setOptionValues("contentSplit", cs)
+
+        elif name in ["contentsplitdirection", "contentsplitdirn"]:
+            if value in [
+                "vertical",
+                "horizontal",
+                "v",
+                "h",
+                "default",
+                "pres",
+                "pop",
+                "prev",
+            ]:
+                if value in ["vertical", "horizontal"]:
+                    adjustedValue = value
+                elif value == "v":
+                    adjustedValue = "vertical"
+                elif value == "h":
+                    adjustedValue = "horizontal"
+                else:
+                    adjustedValue = value
+
+                md2pptx.globals.processingOptions.setOptionValues("contentSplitDirection", adjustedValue)
+
+            else:
+                print(
+                    f'{name} value \'{value}\' unsupported. "vertical" or "horizontal" required.'
+                )
+
+        elif name == "taskslides":
+            md2pptx.globals.processingOptions.setOptionValues(name, value)
+
+        elif name == "tasksperpage":
+            md2pptx.globals.processingOptions.setOptionValues(name, int(value))
+
+        elif name in [
+            "titleslidelayout",
+            "sectionslidelayout",
+            "contentslidelayout",
+            "titleonlylayout",
+            "blanklayout",
+        ]:
+            md2pptx.globals.processingOptions.setOptionValues(name, int(value))
+
+        elif name == "numbersheight":
+            numbersHeight = Inches(float(value))
+
+            # If no numbers leave all the above height anyway
+            md2pptx.globals.processingOptions.setOptionValues("numbersHeight", numbersHeight)
+            md2pptx.globals.processingOptions.setOptionValues("numbersContentMargin", numbersHeight)
+            md2pptx.globals.processingOptions.setOptionValues("numbersHeadingsMargin", numbersHeight)
+
+        elif name == "glossarytitle":
+            md2pptx.globals.processingOptions.setOptionValues(name, value)
+
+        elif name == "glossaryterm":
+            md2pptx.globals.processingOptions.setOptionValues(name, value)
+
+        elif name == "glossarymeaning":
+            md2pptx.globals.processingOptions.setOptionValues(name, value)
+
+        elif name == "glossarymeaningwidth":
+            md2pptx.globals.processingOptions.setOptionValues(name, int(value))
+
+        elif name == "glossarytermsperpage":
+            md2pptx.globals.processingOptions.setOptionValues(name, int(value))
+
+        elif name == "footnotesperpage":
+            md2pptx.globals.processingOptions.setOptionValues(name, int(value))
+
+        elif name == "footnotestitle":
+            md2pptx.globals.processingOptions.setOptionValues(name, value)
+
+        # Following relate to styling and don't use Processing Options class
+
+        elif name.startswith("style.bgcolor."):
+            spanClass = name[14:]
+            if value.startswith("#"):
+                value2 = value
+            else:
+                value2 = "#" + value
+            (check, colour) = parseRGB(value2)
+            if check:
+                # Valid RGB hex value
+                md2pptx.globals.bgcolors[spanClass] = colour
+            else:
+                print(f"Invalid value for {name} - {value}. Ignoring.")
+
+        elif name.startswith("style.fgcolor."):
+            spanClass = name[14:]
+            if value.startswith("#"):
+                value2 = value
+            else:
+                value2 = "#" + value
+            (check, colour) = parseRGB(value2)
+            if check:
+                # Valid RGB hex value
+                md2pptx.globals.fgcolors[spanClass] = colour
+            else:
+                print(f"Invalid value for {name} - {value}. Ignoring.")
+
+        elif name.startswith("style.emphasis."):
+            spanClass = name[15:]
+            md2pptx.globals.emphases[spanClass] = value
+
+        elif name.startswith("style.fontsize."):
+            spanClass = name[15:]
+
+            # Assumed "px" on the end
+            value2 = value[:-2]
+            md2pptx.globals.fontsizes[spanClass] = value2
+
+        elif name in ["codeforeground", "codebackground"]:
+            md2pptx.globals.processingOptions.setOptionValues(name, value)
+
+        elif name == "fpratio":
+            md2pptx.globals.processingOptions.setOptionValues("fixedPitchHeightWidthRatio", float(value))
+
+        elif name == "codecolumns":
+            md2pptx.globals.processingOptions.setOptionValues(name, int(value))
+
+        elif name == "topheadinglevel":
+            titleLevel = int(value)
+            sectionLevel = titleLevel + 1
+            contentLevel = sectionLevel + 1
+            cardLevel = contentLevel + 1
+
+        elif name == "indentspaces":
+            md2pptx.globals.processingOptions.setOptionValues(name, int(value))
+
+        elif name == "adjusttitles":
+            if value == "no":
+                md2pptx.globals.processingOptions.setOptionValues(name, False)
+
+        elif name in ["addtablelines", "addtablelinecolour"]:
+            md2pptx.globals.processingOptions.setOptionValues(name, value)
+
+        elif name in ["addtablecolumnlines", "addtablerowlines"]:
+            md2pptx.globals.processingOptions.setOptionValues(name, sortedNumericList(value))
+
+        elif name in ["addtablelinecount", "addtablelinewidth"]:
+            md2pptx.globals.processingOptions.setOptionValues(name, int(value))
+
+        elif name == "spancells":
+            md2pptx.globals.processingOptions.setOptionValues(name, value)
+
+        elif name == "hidemetadata":
+            if value == "style":
+                md2pptx.globals.processingOptions.hideMetadataStyle = True
+
+        elif name == "exportgraphics":
+            if value.lower() == "yes":
+                md2pptx.globals.processingOptions.setOptionValues(name, True)
+
+        elif name == "tempdir":
+            md2pptx.globals.processingOptions.setOptionValues(name, os.path.expanduser(value))
+
+        elif name == "transition":
+            if value.lower() in [
+                "none",
+                "ripple",
+                "reveal",
+                "honeycomb",
+                "shred",
+                "wipe",
+                "push",
+                "vortex",
+                "split",
+                "fracture",
+            ]:
+                # Valid transition name
+                md2pptx.globals.processingOptions.setOptionValues(name, value.lower())
+            else:
+                print(f"Invalid value for {name} - {value}. Ignoring.")
+
+        elif (name == "funnelcolours") | (name == "funnelcolors"):
+            valueArray2 = [parseColour(c.strip()) for c in value.split(",")]
+
+            md2pptx.globals.processingOptions.setOptionValues("funnelColours", valueArray2)
+
+        elif (name == "funnelbordercolour") | (name == "funnelbordercolor"):
+            md2pptx.globals.processingOptions.setOptionValues(
+                "funnelBorderColour", parseColour(value.strip())
+            )
+
+        elif (name == "funneltitlecolour") | (name == "funneltitlecolor"):
+            md2pptx.globals.processingOptions.setOptionValues(
+                "funnelTitleColour", parseColour(value.strip())
+            )
+
+        elif (name == "funneltextcolour") | (name == "funneltextcolor"):
+            md2pptx.globals.processingOptions.setOptionValues(
+                "funnelTextColour", parseColour(value.strip())
+            )
+
+        elif name == "funnellabelspercent":
+            md2pptx.globals.processingOptions.setOptionValues(name, float(value))
+
+        elif name == "funnellabelposition":
+            if value in ["before", "after"]:
+                md2pptx.globals.processingOptions.setOptionValues(name, value)
+            else:
+                print(
+                    f'funnelLabelPosition value \'{value}\' unsupported. "before" or "after" required.'
+                )
+
+        elif name == "funnelwidest":
+            if value in ["left", "right", "pipe", "hpipe", "vpipe", "top", "bottom"]:
+                md2pptx.globals.processingOptions.setOptionValues(name, value)
+            else:
+                print(
+                    f'funnelLabelPosition value \'{value}\' unsupported. "left", "right", "pipe", or "hpipe" required.'
+                )
+
+    slideTemplateFile = md2pptx.globals.processingOptions.getCurrentOption("slideTemplateFile")
+    if slideTemplateFile != "":
+        originalSlideTemplateFile = slideTemplateFile
+        if Path(os.path.expanduser(slideTemplateFile)).exists():
+            # We can successfully expand the path to pick up the file
+            slideTemplateFile = os.path.expanduser(slideTemplateFile)
         else:
-            print(
-                f'funnelLabelPosition value \'{value}\' unsupported. "left", "right", "pipe", or "hpipe" required.'
-            )
+            # Slide template file is not present if we expand path
+            script_path = os.path.dirname(__file__)
+            slideTemplateFile = script_path + os.sep + slideTemplateFile
+            if not Path(slideTemplateFile).exists():
+                print(
+                    f"\nTemplate file {originalSlideTemplateFile} does not exist. Terminating."
+                )
+                sys.exit()
 
-slideTemplateFile = globals.processingOptions.getCurrentOption("slideTemplateFile")
-if slideTemplateFile != "":
-    originalSlideTemplateFile = slideTemplateFile
-    if Path(os.path.expanduser(slideTemplateFile)).exists():
-        # We can successfully expand the path to pick up the file
-        slideTemplateFile = os.path.expanduser(slideTemplateFile)
-    else:
-        # Slide template file is not present if we expand path
-        script_path = os.path.dirname(__file__)
-        slideTemplateFile = script_path + os.sep + slideTemplateFile
-        if not Path(slideTemplateFile).exists():
-            print(
-                f"\nTemplate file {originalSlideTemplateFile} does not exist. Terminating."
-            )
-            sys.exit()
+        print(f"\nUsing {slideTemplateFile} as base for presentation")
 
-    print(f"\nUsing {slideTemplateFile} as base for presentation")
-
-if slideTemplateFile == "":
-    # Use default slide deck that comes with python-pptx as base
-    prs = Presentation()
-    print("\nNo slide to document metadata on. Continuing without it.")
-
-    templateSlideCount = 0
-else:
-    # Use user-specified presentation as base
-    prs = Presentation(slideTemplateFile)
-
-    # If there is a slide to use fill it with metadata
-    templateSlideCount = len(prs.slides)
-    if templateSlideCount > 0:
-        print("\nWriting processing summary slide with metadata on it.")
-    else:
+    if slideTemplateFile == "":
+        # Use default slide deck that comes with python-pptx as base
+        prs = Presentation()
         print("\nNo slide to document metadata on. Continuing without it.")
 
-    # Prime template slides with slideInfo as None
-    for slide in prs.slides:
-        slide.slideInfo = None
-
-# Maybe call an exit as the presentation is initialised
-onPresentationInitialisation = globals.processingOptions.getCurrentOption("onPresentationInitialisation")
-if onPresentationInitialisation != "":
-    exec(open(onPresentationInitialisation).read())
-
-# Following might be used in slide footers
-prs.lastSectionTitle = ""
-prs.lastSectionSlide = None
-prs.lastPresTitle = ""
-prs.lastPresSubtitle = ""
-
-print("")
-print("Slides:")
-print("=======")
-print("")
-
-inBlock = False
-inList = False
-inTable = False
-inCard = False
-inTitle = False
-
-blockType = ""
-slideTitle = ""
-slideSubtitle = ""
-bullets = []
-tableRows = []
-cards = []
-code = []
-inCode = False
-inHTMLCode = False
-inFencedCode = False
-notes_text = ""
-slide = None
-tasks = []
-sequence = []
-
-slideHrefs = {}
-
-# Each of these is a picture, then a href, then a tooltip - as a tuple
-pictureInfos = []
-
-# Pass 2: Concatenate lines with continuations
-previousLine = "\n"
-linesAfterConcatenation = []
-
-for line in afterMetadataAndHTML:
-    if startswithOneOf(line, ["<pre>", "<code>"]):
-        # These are around code lines
-        linesAfterConcatenation.append(line)
-        inHTMLCode = True
-
-    elif startswithOneOf(line, ["</pre>", "</code>"]):
-        # These are around code lines
-        linesAfterConcatenation.append(line)
-        inHTMLCode = False
-
-    elif line.startswith("```"):
-        linesAfterConcatenation.append(line)
-        inCode = not inCode
-
-    elif line == "\n":
-        # This is a blank line so copy it over
-        linesAfterConcatenation.append(line)
-
-    elif previousLine == "\n":
-        # Previous line was blank so copy this one over
-        linesAfterConcatenation.append(line)
-
-    elif line.startswith("<!-- md2pptx: "):
-        # This is a dynamic metadata line so keep it separate
-        linesAfterConcatenation.append(line)
-
-    elif line.startswith("<a id="):
-        # This is an anchor line so keep it separate
-        linesAfterConcatenation.append(line)
-
-    elif startswithOneOf(line, ["<video ", "<audio "]):
-        # This is a video / audio element line
-        linesAfterConcatenation.append(line)
-
-    elif line.lstrip() == "":
-        # This is an empty line
-        linesAfterConcatenation.append(line)
-
+        templateSlideCount = 0
     else:
-        # Previous line was not blank and nor is this one so consider concatenation
-        if line.lstrip()[0] not in r"*#\|0123456789!":
-            if (
-                (previousLine[0:2] != "# ")
-                & (previousLine[0:3] != "## ")
-                & (previousLine[0:4] != "    ")
-                & (previousLine[0] != "|")
-                & (inCode is False)
-                & (inHTMLCode is False)
-            ):
-                # Previous line was not Heading Level 1 or 2 and we're not in code so concatenate
-                linesAfterConcatenation[-1] = (
-                    linesAfterConcatenation[-1].rstrip() + " " + line.lstrip()
-                )
+        # Use user-specified presentation as base
+        prs = Presentation(slideTemplateFile)
+
+        # If there is a slide to use fill it with metadata
+        templateSlideCount = len(prs.slides)
+        if templateSlideCount > 0:
+            print("\nWriting processing summary slide with metadata on it.")
+        else:
+            print("\nNo slide to document metadata on. Continuing without it.")
+
+        # Prime template slides with slideInfo as None
+        for slide in prs.slides:
+            slide.slideInfo = None
+
+    # Maybe call an exit as the presentation is initialised
+    onPresentationInitialisation = md2pptx.globals.processingOptions.getCurrentOption("onPresentationInitialisation")
+    if onPresentationInitialisation != "":
+        exec(open(onPresentationInitialisation).read())
+
+    # Following might be used in slide footers
+    prs.lastSectionTitle = ""
+    prs.lastSectionSlide = None
+    prs.lastPresTitle = ""
+    prs.lastPresSubtitle = ""
+
+    print("")
+    print("Slides:")
+    print("=======")
+    print("")
+
+    inBlock = False
+    inList = False
+    inTable = False
+    inCard = False
+    inTitle = False
+
+    blockType = ""
+    slideTitle = ""
+    slideSubtitle = ""
+    bullets = []
+    tableRows = []
+    cards = []
+    code = []
+    inCode = False
+    inHTMLCode = False
+    inFencedCode = False
+    notes_text = ""
+    slide = None
+    tasks = []
+    sequence = []
+
+    slideHrefs = {}
+
+    # Each of these is a picture, then a href, then a tooltip - as a tuple
+    pictureInfos = []
+
+    # Pass 2: Concatenate lines with continuations
+    previousLine = "\n"
+    linesAfterConcatenation = []
+
+    for line in afterMetadataAndHTML:
+        if startswithOneOf(line, ["<pre>", "<code>"]):
+            # These are around code lines
+            linesAfterConcatenation.append(line)
+            inHTMLCode = True
+
+        elif startswithOneOf(line, ["</pre>", "</code>"]):
+            # These are around code lines
+            linesAfterConcatenation.append(line)
+            inHTMLCode = False
+
+        elif line.startswith("```"):
+            linesAfterConcatenation.append(line)
+            inCode = not inCode
+
+        elif line == "\n":
+            # This is a blank line so copy it over
+            linesAfterConcatenation.append(line)
+
+        elif previousLine == "\n":
+            # Previous line was blank so copy this one over
+            linesAfterConcatenation.append(line)
+
+        elif line.startswith("<!-- md2pptx: "):
+            # This is a dynamic metadata line so keep it separate
+            linesAfterConcatenation.append(line)
+
+        elif line.startswith("<a id="):
+            # This is an anchor line so keep it separate
+            linesAfterConcatenation.append(line)
+
+        elif startswithOneOf(line, ["<video ", "<audio "]):
+            # This is a video / audio element line
+            linesAfterConcatenation.append(line)
+
+        elif line.lstrip() == "":
+            # This is an empty line
+            linesAfterConcatenation.append(line)
+
+        else:
+            # Previous line was not blank and nor is this one so consider concatenation
+            if line.lstrip()[0] not in r"*#\|0123456789!":
+                if (
+                    (previousLine[0:2] != "# ")
+                    & (previousLine[0:3] != "## ")
+                    & (previousLine[0:4] != "    ")
+                    & (previousLine[0] != "|")
+                    & (inCode is False)
+                    & (inHTMLCode is False)
+                ):
+                    # Previous line was not Heading Level 1 or 2 and we're not in code so concatenate
+                    linesAfterConcatenation[-1] = (
+                        linesAfterConcatenation[-1].rstrip() + " " + line.lstrip()
+                    )
+                else:
+                    linesAfterConcatenation.append(line)
+
             else:
                 linesAfterConcatenation.append(line)
 
-        else:
-            linesAfterConcatenation.append(line)
+        # Store previous line to see if it was H1 or blank
+        previousLine = line
 
-    # Store previous line to see if it was H1 or blank
-    previousLine = line
+    # Pass 3: Get footnote definitions
+    metadataLinenumber = 0
+    for line in linesAfterConcatenation:
+        line = line.rstrip()
+        if m := footnoteDefinitionRegex.match(line):
+            fnRef = m.group(1).strip()
+            fnText = m.group(2).strip()
+            footnoteDefinitions.append([fnRef, fnText])
+            footnoteReferences.append(fnRef)
 
-# Pass 3: Get footnote definitions
-metadataLinenumber = 0
-for line in linesAfterConcatenation:
-    line = line.rstrip()
-    if m := footnoteDefinitionRegex.match(line):
-        fnRef = m.group(1).strip()
-        fnText = m.group(2).strip()
-        footnoteDefinitions.append([fnRef, fnText])
-        footnoteReferences.append(fnRef)
+            linesAfterConcatenation[metadataLinenumber] = "<ignoreme>"
+        metadataLinenumber += 1
 
-        linesAfterConcatenation[metadataLinenumber] = "<ignoreme>"
-    metadataLinenumber += 1
+    # Pass 4: Extract any indirect reference anchors
+    metadataLinenumber = 0
+    indirectAnchors = []
+    for line in linesAfterConcatenation:
+        line = line.rstrip()
+        if m := indirectReferenceAnchorRegex.match(line):
+            anchorName = m.group(1).strip()
+            anchorURL = m.group(2).strip()
 
-# Pass 4: Extract any indirect reference anchors
-metadataLinenumber = 0
-indirectAnchors = []
-for line in linesAfterConcatenation:
-    line = line.rstrip()
-    if m := indirectReferenceAnchorRegex.match(line):
-        anchorName = m.group(1).strip()
-        anchorURL = m.group(2).strip()
+            indirectAnchors.append([anchorName, anchorURL])
 
-        indirectAnchors.append([anchorName, anchorURL])
+            linesAfterConcatenation[metadataLinenumber] = "<ignoreme>"
+        metadataLinenumber += 1
 
-        linesAfterConcatenation[metadataLinenumber] = "<ignoreme>"
-    metadataLinenumber += 1
+    lastTableLine = -1
+    tableCaptions = []
 
-lastTableLine = -1
-tableCaptions = []
+    # Pass 5: Main pass over the input file, now that footnote
+    # references have been gathered
+    for lineNumber, line in enumerate(linesAfterConcatenation):
+        # Remove trailing white space
+        line = line.rstrip()
 
-# Pass 5: Main pass over the input file, now that footnote
-# references have been gathered
-for lineNumber, line in enumerate(linesAfterConcatenation):
-    # Remove trailing white space
-    line = line.rstrip()
+        # Convert tabs to spaces
+        line = line.replace("\t", " " * md2pptx.globals.processingOptions.getCurrentOption("indentSpaces"))
 
-    # Convert tabs to spaces
-    line = line.replace("\t", " " * globals.processingOptions.getCurrentOption("indentSpaces"))
+        if line == "<ignoreme>":
+            # Line was taken care of in the previous pass
+            continue
 
-    if line == "<ignoreme>":
-        # Line was taken care of in the previous pass
-        continue
-
-    if startswithOneOf(line, ["<pre>", "<code>"]):
-        code.append([])
-        inCode = True
-        inHTMLCode = True
-        inTable = False
-        inTitle = False
-
-    if startswithOneOf(line, ["</pre>", "</code>"]):
-        inCode = False
-        inHTMLCode = False
-        inTitle = False
-
-    if line.startswith("```"):
-        inCode = not inCode
-        if inCode:
-            # Just entered code
+        if startswithOneOf(line, ["<pre>", "<code>"]):
             code.append([])
-            blockType = "code"
-            inTable = False
-        else:
-            # Just exited code - but add closing line
-            code[-1].append(line)
-        inFencedCode = not inFencedCode
-        inTitle = False
-
-    if inCode or inHTMLCode or inFencedCode:
-        if len(code) == 0:
-            code.append([])
-        code[-1].append(line)
-
-        # If first line of code then mark the current sequence entry as "code"
-        if len(code[-1]) == 1:
-            sequence.append("code")
-
-        inTitle = False
-    if (
-        (line == "")
-        & (inCode is True)
-        & (inHTMLCode is False)
-        & (inFencedCode is False)
-    ):
-        inCode = False
-        inTitle = False
-
-    if (line.startswith("    ")) & (inList is False):
-        # Only list items and code can be indented by 4 characters
-        if inCode is False:
-            code.append([])
-            blockType = "code"
-            code[-1].append(line[4:])
             inCode = True
-        inTitle = False
-
-    # Rewrite horizontal rule as a heading 3 with non-breaking space
-    if startswithOneOf(line, ["<hr/>", "---", "***", "___"]):
-        line = "### &nbsp;"
-        inTitle = True
-
-    # Taskpaper task
-    if line[:1] == "-":
-        # Get start of attributes
-        attributesStart = line.find("@")
-
-        # Get text up to attributes
-        if attributesStart == -1:
-            text = line[2:]
-        else:
-            text = line[2 : attributesStart - 1]
-
-        # Attempt to extract @due information
-        startDue = line.find("@due(")
-        if startDue > -1:
-            startDue += 5
-            endDue = line.find(")", startDue)
-            if endDue > -1:
-                dueDate = line[startDue:endDue]
-        else:
-            dueDate = ""
-
-        # Attempt to extract @tags information
-        startTags = line.find("@tags(")
-        if startTags > -1:
-            startTags += 6
-            endTags = line.find(")", startTags)
-            if endTags > -1:
-                tags = line[startTags:endTags]
-        else:
-            tags = ""
-
-        # Attempt to extract @done information
-        startDone = line.find("@done(")
-        if startDone > -1:
-            startDone += 6
-            endDone = line.find(")", startDone)
-            if endDone > -1:
-                done = line[startDone:endDone]
-        else:
-            done = ""
-
-        tasks.append([slideNumber + 1, text, dueDate, tags, done])
-        inTitle = False
-
-    elif line.startswith("<a id="):
-        # Anchor on whatever slide we're on
-        if hrefMatch := anchorRegex.match(line):
-            href = hrefMatch.group(1)
-            if (href != "") & (href in slideHrefs.keys()):
-                print(f"Heading Reference redefined: '{href}' for slide {slideNumber}")
-        inTitle = False
-
-    elif line.startswith("<!-- md2pptx: "):
-        # Dynamic metadata line
-        inTitle = False
-        if DMMatch := dynamicMetadataRegex.match(line):
-            metadataKey = DMMatch.group(1).lower().strip()
-            metadataValue = DMMatch.group(2).lower()
-            if (metadataKey != "") & (metadataValue != ""):
-                # Valid metadata pair so parse key / value - and apply if valid
-
-                if (metadataKey == "pagesubtitlesize") & (metadataValue == "same"):
-                    # Cards' layout - horizontal or vertical
-                    globals.processingOptions.dynamicallySetOption(
-                        metadataKey, metadataValue, ""
-                    )
-
-                # Floating point values where metadata key matches directly
-                elif metadataKey in [
-                    # Font size for tables
-                    "compacttables",
-                    # Heading font size for tables
-                    "tableheadingsize",
-                    # Page Title Font size
-                    "pagetitlesize",
-                    # Page Subtitle Font size
-                    "pagesubtitlesize",
-                    # Cards' vertical percent of content area
-                    "cardpercent",
-                    # Card graphic's vertical or horizontal space
-                    "cardgraphicsize",
-                    # Base text size
-                    "basetextsize",
-                    # Base text decrement
-                    "basetextdecrement",
-                    # Horizontal card gap
-                    "horizontalcardgap",
-                    # Vertical card gap
-                    "verticalcardgap",
-                    # Funnel label percentage
-                    "funnellabelspercent",
-                ]:
-                    globals.processingOptions.dynamicallySetOption(
-                        # Use the metadata key directly
-                        metadataKey,
-                        metadataValue.lower(),
-                        "float",
-                    )
-
-                elif metadataKey == "cardlayout":
-                    # Cards' layout - horizontal or vertical
-                    globals.processingOptions.dynamicallySetOption(
-                        metadataKey, metadataValue, ""
-                    )
-                elif metadataKey == "hidden":
-                    # Slides hidden in slideshow
-                    if metadataValue == "yes":
-                        metadataValue = True
-                    elif metadataValue == "no":
-                        metadataValue = False
-
-                    globals.processingOptions.dynamicallySetOption(
-                        metadataKey, metadataValue, ""
-                    )
-
-                elif metadataKey == "numbersheight":
-                    # vertical space to reserve for slide number
-                    if metadataValue == "default":
-                        numbersheight = globals.processingOptions.getDefaultOption(
-                            "numbersHeight"
-                        )
-                    elif metadataValue == "pres":
-                        numbersheight = globals.processingOptions.getPresentationOption(
-                            "numbersHeight"
-                        )
-                    else:
-                        numbersheight = int(Inches(float(metadataValue)))
-
-                    globals.processingOptions.dynamicallySetOption(
-                        metadataKey, numbersheight, "int"
-                    )
-
-                elif metadataKey == "marginbase":
-                    #  space to reserve as a margin
-                    if metadataValue == "default":
-                        marginbase = globals.processingOptions.getDefaultOption("marginbase")
-                    elif metadataValue == "pres":
-                        marginbase = globals.processingOptions.getPresentationOption(
-                            "marginbase"
-                        )
-                    else:
-                        marginbase = int(Inches(float(metadataValue)))
-
-                    globals.processingOptions.dynamicallySetOption(
-                        metadataKey, marginbase, "int"
-                    )
-
-                elif metadataKey == "tablemargin":
-                    #  space to reserve as a table margin
-                    if metadataValue == "default":
-                        tablemargin = globals.processingOptions.getDefaultOption("tablemargin")
-                    elif metadataValue == "pres":
-                        tablemargin = globals.processingOptions.getPresentationOption(
-                            "tablemargin"
-                        )
-                    else:
-                        tablemargin = int(Inches(float(metadataValue)))
-
-                    globals.processingOptions.dynamicallySetOption(
-                        metadataKey, tablemargin, "int"
-                    )
-
-                elif metadataKey == "spancells":
-                    #  whether table cells can span more than one column
-                    if metadataValue == "default":
-                        spancells = globals.processingOptions.getDefaultOption("spancells")
-                    elif metadataValue == "pres":
-                        spancells = globals.processingOptions.getPresentationOption("spancells")
-                    else:
-                        spancells = metadataValue
-
-                    globals.processingOptions.dynamicallySetOption(metadataKey, spancells, "")
-
-                # Note: Actual value handling prevents using dynamicallySetOption
-                elif metadataKey == "cardtitlealign":
-                    # Card title alignment
-                    globals.processingOptions.dynamicallySetOption(
-                        metadataKey, metadataValue.lower(), ""
-                    )
-
-                elif metadataKey == "cardtitleposition":
-                    # Card title position - above or inside
-                    globals.processingOptions.dynamicallySetOption(
-                        metadataKey, metadataValue, ""
-                    )
-
-                elif metadataKey == "cardGraphicPosition":
-                    # Card graphic position - before or after
-                    globals.processingOptions.dynamicallySetOption(
-                        metadataKey, metadataValue, ""
-                    )
-
-                elif metadataKey == "cardshape":
-                    # Card shape
-                    if metadataValue in ["squared", "rounded", "line"]:
-                        globals.processingOptions.dynamicallySetOption(
-                            metadataKey, metadataValue, ""
-                        )
-                    else:
-                        print(
-                            f'CardShape value \'{metadataValue}\' unsupported. "squared", "rounded", or "line" required.'
-                        )
-
-                elif metadataKey in [
-                    "cardcolour",
-                    "cardcolor",
-                    "cardcolours",
-                    "cardcolors",
-                ]:
-                    valueArray2 = [
-                        parseColour(c.strip()) for c in metadataValue.split(",")
-                    ]
-
-                    globals.processingOptions.dynamicallySetOption(
-                        "cardColour", valueArray2, ""
-                    )
-
-                elif metadataKey in [
-                    "cardtitlebackground",
-                    "cardtitlebackgrounds",
-                ]:
-                    valueArray2 = [
-                        parseColour(c.strip()) for c in metadataValue.split(",")
-                    ]
-
-                    globals.processingOptions.dynamicallySetOption(
-                        "cardTitleBackground", valueArray2, ""
-                    )
-
-                elif metadataKey in ["funnelcolours", "funnelcolors"]:
-                    valueArray2 = [
-                        parseColour(c.strip()) for c in metadataValue.split(",")
-                    ]
-
-                    globals.processingOptions.dynamicallySetOption(
-                        "funnelColours", valueArray2, ""
-                    )
-
-                elif metadataKey in [
-                    "funneltitlecolour",
-                    "funnelbordercolour",
-                    "funneltextcolour",
-                ]:
-                    # Funnel single colour options
-                    globals.processingOptions.dynamicallySetOption(
-                        metadataKey, metadataValue, ""
-                    )
-
-                elif metadataKey == "backgroundimage":
-                    # Slide background image
-                    globals.processingOptions.dynamicallySetOption(
-                        metadataKey, metadataValue, ""
-                    )
-
-
-                # Note: Actual value handling prevents using dynamicallySetOption
-                elif metadataKey == "contentsplit":
-                    # Proportions for each content element on a slide
-                    if metadataValue == "default":
-                        contentSplit = globals.processingOptions.getDefaultOption(
-                            "contentSplit"
-                        )
-                    elif metadataValue == "pres":
-                        contentSplit = globals.processingOptions.getPresentationOption(
-                            "contentSplit"
-                        )
-                    elif metadataValue in ["pop", "prev"]:
-                        globals.processingOptions.popCurrentOption("contentSplit")
-                        contentSplit = globals.processingOptions.getPresentationOption(
-                            "contentSplit"
-                        )
-                    else:
-                        splitValue = metadataValue.split()
-                        contentSplit = []
-                        for v in splitValue:
-                            contentSplit.append(int(v))
-
-                        # Extend to maximum allowed
-                        needMore = maxBlocks - len(contentSplit)
-                        for _ in range(needMore):
-                            contentSplit.append(1)
-                    globals.processingOptions.dynamicallySetOption(
-                        "contentSplit", contentSplit, ""
-                    )
-
-                elif metadataKey in ["contentsplitdirection", "contentsplitdirn"]:
-                    if metadataValue in [
-                        "vertical",
-                        "horizontal",
-                        "v",
-                        "h",
-                        "pres",
-                        "default",
-                        "pop",
-                        "prev",
-                    ]:
-                        if metadataValue == "v":
-                            adjustedValue = "vertical"
-                        elif metadataValue == "h":
-                            adjustedValue = "horizontal"
-                        else:
-                            adjustedValue = metadataValue
-
-                        globals.processingOptions.dynamicallySetOption(
-                            "contentSplitDirection",
-                            adjustedValue,
-                            "",
-                        )
-
-                    else:
-                        print(
-                            f'{metadataKey} value \'{metadataValue}\' unsupported. "vertical" or "horizontal" required.'
-                        )
-
-                elif metadataKey in ["codeforeground", "codebackground"]:
-                    globals.processingOptions.dynamicallySetOption(
-                        metadataKey,
-                        metadataValue,
-                        "",
-                    )
-
-                elif metadataKey == "fpratio":
-                    # Fixed Pitch font height to width ratio
-                    globals.processingOptions.dynamicallySetOption(
-                        "fixedPitchHeightWidthRatio",
-                        metadataValue,
-                        "float",
-                    )
-
-                elif metadataKey == "codecolumns":
-                    globals.processingOptions.dynamicallySetOption(
-                        metadataKey,
-                        metadataValue,
-                        "int",
-                    )
-
-                elif metadataKey == "indentspaces":
-                    # Spaces representing a single indentation level
-                    globals.processingOptions.dynamicallySetOption(
-                        metadataKey,
-                        metadataValue,
-                        "int",
-                    )
-
-                elif metadataKey in ["addtablecolumnlines", "addtablerowlines"]:
-                    globals.processingOptions.dynamicallySetOption(
-                        metadataKey,
-                        metadataValue,
-                        "sortednumericlist",
-                    )
-
-                elif metadataKey in ["addtablelinecount", "addtablelinewidth"]:
-                    globals.processingOptions.dynamicallySetOption(
-                        metadataKey,
-                        metadataValue,
-                        "int",
-                    )
-
-                elif metadataKey in ["addtablelines", "addtablelinecolour"]:
-                    globals.processingOptions.dynamicallySetOption(
-                        metadataKey,
-                        metadataValue,
-                        "",
-                    )
-
-                elif metadataKey == "transition":
-                    if metadataValue.lower() in [
-                        "none",
-                        "ripple",
-                        "reveal",
-                        "honeycomb",
-                        "shred",
-                        "wipe",
-                        "push",
-                        "vortex",
-                        "split",
-                        "fracture",
-                        "pres",
-                        "default",
-                        "pop",
-                        "prev",
-                    ]:
-                        globals.processingOptions.dynamicallySetOption(
-                            metadataKey,
-                            metadataValue,
-                            "",
-                        )
-                    else:
-                        print(
-                            f"Invalid value for {metadataKey}: {metadataValue} in '{line}"
-                        )
-
-                elif metadataKey == "funnellabelposition":
-                    if metadataValue.lower() in [
-                        "before",
-                        "after",
-                    ]:
-                        globals.processingOptions.dynamicallySetOption(
-                            metadataKey,
-                            metadataValue,
-                            "",
-                        )
-                    else:
-                        print(
-                            f"Invalid value for {metadataKey}: {metadataValue} in '{line}"
-                        )
-
-                elif metadataKey == "funnelwidest":
-                    if metadataValue.lower() in [
-                        "left",
-                        "right",
-                        "pipe",
-                        "hpipe",
-                        "vpipe",
-                        "top",
-                        "bottom",
-                    ]:
-                        globals.processingOptions.dynamicallySetOption(
-                            metadataKey,
-                            metadataValue,
-                            "",
-                        )
-                    else:
-                        print(
-                            f"Invalid value for {metadataKey}: {metadataValue} in '{line}"
-                        )
-
-                else:
-                    # Invalid dynamic metadata specification
-                    print(f"Invalid dynamic metadata key: '{metadataKey}' in '{line}'")
-
-    elif (line.startswith("#")) & (inCode == False):
-        if line[:cardLevel] == "#" * cardLevel:
-            # Card on an existing slide
-            inCard = True
-
-            # If there is an outstanding href then store it
-            if href != "":
-                slideHrefs[href] = slideNumber + 1
-
-            # Get card title text and any href
-            cardName, href = parseTitleText(line[cardLevel:])
-
-            # No bullets for the card yet
-            cardBullets = []
-
-            # No graphic for the card yet
-            cardGraphic = ""
-
-            # Create information about a card_title
-            card = Card()
-            card.title = cardName
-            card.bullets = cardBullets
-            card.graphic = cardGraphic
-            cards.append(card)
-
-            # Might have octothorpes but isn't a title
+            inHTMLCode = True
+            inTable = False
             inTitle = False
 
+        if startswithOneOf(line, ["</pre>", "</code>"]):
+            inCode = False
+            inHTMLCode = False
+            inTitle = False
 
-        else:
-            # One of Content, Section, or Title slide
-            if inBlock is True:
-                # Create the previous slide
-                slideInfo = SlideInfo(
-                    slideTitle,
-                    slideSubtitle,
-                    blockType,
-                    bullets,
-                    tableRows,
-                    cards,
-                    code,
-                    sequence,
-                )
-                slideNumber, slide, sequence = createSlide(prs, slideNumber, slideInfo)
-
-                # Register the previous slide's href - if there was one
-                if href != "":
-                    slideHrefs[href] = slideNumber
-
-            if line[:contentLevel] == "#" * contentLevel:
-                # Heading Level 3 - slide
-                thisLevel = contentLevel
-                blockType = "content"
-
-            elif line[:sectionLevel] == "#" * sectionLevel:
-                # Heading Level 2 - section
-                thisLevel = sectionLevel
-                blockType = "section"
-                inTitle = True
-
-            elif line[:titleLevel] == "#" * titleLevel:
-                # Heading Level 1 - slide title
-                thisLevel = titleLevel
-                blockType = "title"
-                inTitle = True
+        if line.startswith("```"):
+            inCode = not inCode
+            if inCode:
+                # Just entered code
+                code.append([])
+                blockType = "code"
+                inTable = False
             else:
+                # Just exited code - but add closing line
+                code[-1].append(line)
+            inFencedCode = not inFencedCode
+            inTitle = False
+
+        if inCode or inHTMLCode or inFencedCode:
+            if len(code) == 0:
+                code.append([])
+            code[-1].append(line)
+
+            # If first line of code then mark the current sequence entry as "code"
+            if len(code[-1]) == 1:
+                sequence.append("code")
+
+            inTitle = False
+        if (
+            (line == "")
+            & (inCode is True)
+            & (inHTMLCode is False)
+            & (inFencedCode is False)
+        ):
+            inCode = False
+            inTitle = False
+
+        if (line.startswith("    ")) & (inList is False):
+            # Only list items and code can be indented by 4 characters
+            if inCode is False:
+                code.append([])
+                blockType = "code"
+                code[-1].append(line[4:])
+                inCode = True
+            inTitle = False
+
+        # Rewrite horizontal rule as a heading 3 with non-breaking space
+        if startswithOneOf(line, ["<hr/>", "---", "***", "___"]):
+            line = "### &nbsp;"
+            inTitle = True
+
+        # Taskpaper task
+        if line[:1] == "-":
+            # Get start of attributes
+            attributesStart = line.find("@")
+
+            # Get text up to attributes
+            if attributesStart == -1:
+                text = line[2:]
+            else:
+                text = line[2 : attributesStart - 1]
+
+            # Attempt to extract @due information
+            startDue = line.find("@due(")
+            if startDue > -1:
+                startDue += 5
+                endDue = line.find(")", startDue)
+                if endDue > -1:
+                    dueDate = line[startDue:endDue]
+            else:
+                dueDate = ""
+
+            # Attempt to extract @tags information
+            startTags = line.find("@tags(")
+            if startTags > -1:
+                startTags += 6
+                endTags = line.find(")", startTags)
+                if endTags > -1:
+                    tags = line[startTags:endTags]
+            else:
+                tags = ""
+
+            # Attempt to extract @done information
+            startDone = line.find("@done(")
+            if startDone > -1:
+                startDone += 6
+                endDone = line.find(")", startDone)
+                if endDone > -1:
+                    done = line[startDone:endDone]
+            else:
+                done = ""
+
+            tasks.append([slideNumber + 1, text, dueDate, tags, done])
+            inTitle = False
+
+        elif line.startswith("<a id="):
+            # Anchor on whatever slide we're on
+            if hrefMatch := anchorRegex.match(line):
+                href = hrefMatch.group(1)
+                if (href != "") & (href in slideHrefs.keys()):
+                    print(f"Heading Reference redefined: '{href}' for slide {slideNumber}")
+            inTitle = False
+
+        elif line.startswith("<!-- md2pptx: "):
+            # Dynamic metadata line
+            inTitle = False
+            if DMMatch := dynamicMetadataRegex.match(line):
+                metadataKey = DMMatch.group(1).lower().strip()
+                metadataValue = DMMatch.group(2).lower()
+                if (metadataKey != "") & (metadataValue != ""):
+                    # Valid metadata pair so parse key / value - and apply if valid
+
+                    if (metadataKey == "pagesubtitlesize") & (metadataValue == "same"):
+                        # Cards' layout - horizontal or vertical
+                        md2pptx.globals.processingOptions.dynamicallySetOption(
+                            metadataKey, metadataValue, ""
+                        )
+
+                    # Floating point values where metadata key matches directly
+                    elif metadataKey in [
+                        # Font size for tables
+                        "compacttables",
+                        # Heading font size for tables
+                        "tableheadingsize",
+                        # Page Title Font size
+                        "pagetitlesize",
+                        # Page Subtitle Font size
+                        "pagesubtitlesize",
+                        # Cards' vertical percent of content area
+                        "cardpercent",
+                        # Card graphic's vertical or horizontal space
+                        "cardgraphicsize",
+                        # Base text size
+                        "basetextsize",
+                        # Base text decrement
+                        "basetextdecrement",
+                        # Horizontal card gap
+                        "horizontalcardgap",
+                        # Vertical card gap
+                        "verticalcardgap",
+                        # Funnel label percentage
+                        "funnellabelspercent",
+                    ]:
+                        md2pptx.globals.processingOptions.dynamicallySetOption(
+                            # Use the metadata key directly
+                            metadataKey,
+                            metadataValue.lower(),
+                            "float",
+                        )
+
+                    elif metadataKey == "cardlayout":
+                        # Cards' layout - horizontal or vertical
+                        md2pptx.globals.processingOptions.dynamicallySetOption(
+                            metadataKey, metadataValue, ""
+                        )
+                    elif metadataKey == "hidden":
+                        # Slides hidden in slideshow
+                        if metadataValue == "yes":
+                            metadataValue = True
+                        elif metadataValue == "no":
+                            metadataValue = False
+
+                        md2pptx.globals.processingOptions.dynamicallySetOption(
+                            metadataKey, metadataValue, ""
+                        )
+
+                    elif metadataKey == "numbersheight":
+                        # vertical space to reserve for slide number
+                        if metadataValue == "default":
+                            numbersheight = md2pptx.globals.processingOptions.getDefaultOption(
+                                "numbersHeight"
+                            )
+                        elif metadataValue == "pres":
+                            numbersheight = md2pptx.globals.processingOptions.getPresentationOption(
+                                "numbersHeight"
+                            )
+                        else:
+                            numbersheight = int(Inches(float(metadataValue)))
+
+                        md2pptx.globals.processingOptions.dynamicallySetOption(
+                            metadataKey, numbersheight, "int"
+                        )
+
+                    elif metadataKey == "marginbase":
+                        #  space to reserve as a margin
+                        if metadataValue == "default":
+                            marginbase = md2pptx.globals.processingOptions.getDefaultOption("marginbase")
+                        elif metadataValue == "pres":
+                            marginbase = md2pptx.globals.processingOptions.getPresentationOption(
+                                "marginbase"
+                            )
+                        else:
+                            marginbase = int(Inches(float(metadataValue)))
+
+                        md2pptx.globals.processingOptions.dynamicallySetOption(
+                            metadataKey, marginbase, "int"
+                        )
+
+                    elif metadataKey == "tablemargin":
+                        #  space to reserve as a table margin
+                        if metadataValue == "default":
+                            tablemargin = md2pptx.globals.processingOptions.getDefaultOption("tablemargin")
+                        elif metadataValue == "pres":
+                            tablemargin = md2pptx.globals.processingOptions.getPresentationOption(
+                                "tablemargin"
+                            )
+                        else:
+                            tablemargin = int(Inches(float(metadataValue)))
+
+                        md2pptx.globals.processingOptions.dynamicallySetOption(
+                            metadataKey, tablemargin, "int"
+                        )
+
+                    elif metadataKey == "spancells":
+                        #  whether table cells can span more than one column
+                        if metadataValue == "default":
+                            spancells = md2pptx.globals.processingOptions.getDefaultOption("spancells")
+                        elif metadataValue == "pres":
+                            spancells = md2pptx.globals.processingOptions.getPresentationOption("spancells")
+                        else:
+                            spancells = metadataValue
+
+                        md2pptx.globals.processingOptions.dynamicallySetOption(metadataKey, spancells, "")
+
+                    # Note: Actual value handling prevents using dynamicallySetOption
+                    elif metadataKey == "cardtitlealign":
+                        # Card title alignment
+                        md2pptx.globals.processingOptions.dynamicallySetOption(
+                            metadataKey, metadataValue.lower(), ""
+                        )
+
+                    elif metadataKey == "cardtitleposition":
+                        # Card title position - above or inside
+                        md2pptx.globals.processingOptions.dynamicallySetOption(
+                            metadataKey, metadataValue, ""
+                        )
+
+                    elif metadataKey == "cardGraphicPosition":
+                        # Card graphic position - before or after
+                        md2pptx.globals.processingOptions.dynamicallySetOption(
+                            metadataKey, metadataValue, ""
+                        )
+
+                    elif metadataKey == "cardshape":
+                        # Card shape
+                        if metadataValue in ["squared", "rounded", "line"]:
+                            md2pptx.globals.processingOptions.dynamicallySetOption(
+                                metadataKey, metadataValue, ""
+                            )
+                        else:
+                            print(
+                                f'CardShape value \'{metadataValue}\' unsupported. "squared", "rounded", or "line" required.'
+                            )
+
+                    elif metadataKey in [
+                        "cardcolour",
+                        "cardcolor",
+                        "cardcolours",
+                        "cardcolors",
+                    ]:
+                        valueArray2 = [
+                            parseColour(c.strip()) for c in metadataValue.split(",")
+                        ]
+
+                        md2pptx.globals.processingOptions.dynamicallySetOption(
+                            "cardColour", valueArray2, ""
+                        )
+
+                    elif metadataKey in [
+                        "cardtitlebackground",
+                        "cardtitlebackgrounds",
+                    ]:
+                        valueArray2 = [
+                            parseColour(c.strip()) for c in metadataValue.split(",")
+                        ]
+
+                        md2pptx.globals.processingOptions.dynamicallySetOption(
+                            "cardTitleBackground", valueArray2, ""
+                        )
+
+                    elif metadataKey in ["funnelcolours", "funnelcolors"]:
+                        valueArray2 = [
+                            parseColour(c.strip()) for c in metadataValue.split(",")
+                        ]
+
+                        md2pptx.globals.processingOptions.dynamicallySetOption(
+                            "funnelColours", valueArray2, ""
+                        )
+
+                    elif metadataKey in [
+                        "funneltitlecolour",
+                        "funnelbordercolour",
+                        "funneltextcolour",
+                    ]:
+                        # Funnel single colour options
+                        md2pptx.globals.processingOptions.dynamicallySetOption(
+                            metadataKey, metadataValue, ""
+                        )
+
+                    elif metadataKey == "backgroundimage":
+                        # Slide background image
+                        md2pptx.globals.processingOptions.dynamicallySetOption(
+                            metadataKey, metadataValue, ""
+                        )
+
+
+                    # Note: Actual value handling prevents using dynamicallySetOption
+                    elif metadataKey == "contentsplit":
+                        # Proportions for each content element on a slide
+                        if metadataValue == "default":
+                            contentSplit = md2pptx.globals.processingOptions.getDefaultOption(
+                                "contentSplit"
+                            )
+                        elif metadataValue == "pres":
+                            contentSplit = md2pptx.globals.processingOptions.getPresentationOption(
+                                "contentSplit"
+                            )
+                        elif metadataValue in ["pop", "prev"]:
+                            md2pptx.globals.processingOptions.popCurrentOption("contentSplit")
+                            contentSplit = md2pptx.globals.processingOptions.getPresentationOption(
+                                "contentSplit"
+                            )
+                        else:
+                            splitValue = metadataValue.split()
+                            contentSplit = []
+                            for v in splitValue:
+                                contentSplit.append(int(v))
+
+                            # Extend to maximum allowed
+                            needMore = maxBlocks - len(contentSplit)
+                            for _ in range(needMore):
+                                contentSplit.append(1)
+                        md2pptx.globals.processingOptions.dynamicallySetOption(
+                            "contentSplit", contentSplit, ""
+                        )
+
+                    elif metadataKey in ["contentsplitdirection", "contentsplitdirn"]:
+                        if metadataValue in [
+                            "vertical",
+                            "horizontal",
+                            "v",
+                            "h",
+                            "pres",
+                            "default",
+                            "pop",
+                            "prev",
+                        ]:
+                            if metadataValue == "v":
+                                adjustedValue = "vertical"
+                            elif metadataValue == "h":
+                                adjustedValue = "horizontal"
+                            else:
+                                adjustedValue = metadataValue
+
+                            md2pptx.globals.processingOptions.dynamicallySetOption(
+                                "contentSplitDirection",
+                                adjustedValue,
+                                "",
+                            )
+
+                        else:
+                            print(
+                                f'{metadataKey} value \'{metadataValue}\' unsupported. "vertical" or "horizontal" required.'
+                            )
+
+                    elif metadataKey in ["codeforeground", "codebackground"]:
+                        md2pptx.globals.processingOptions.dynamicallySetOption(
+                            metadataKey,
+                            metadataValue,
+                            "",
+                        )
+
+                    elif metadataKey == "fpratio":
+                        # Fixed Pitch font height to width ratio
+                        md2pptx.globals.processingOptions.dynamicallySetOption(
+                            "fixedPitchHeightWidthRatio",
+                            metadataValue,
+                            "float",
+                        )
+
+                    elif metadataKey == "codecolumns":
+                        md2pptx.globals.processingOptions.dynamicallySetOption(
+                            metadataKey,
+                            metadataValue,
+                            "int",
+                        )
+
+                    elif metadataKey == "indentspaces":
+                        # Spaces representing a single indentation level
+                        md2pptx.globals.processingOptions.dynamicallySetOption(
+                            metadataKey,
+                            metadataValue,
+                            "int",
+                        )
+
+                    elif metadataKey in ["addtablecolumnlines", "addtablerowlines"]:
+                        md2pptx.globals.processingOptions.dynamicallySetOption(
+                            metadataKey,
+                            metadataValue,
+                            "sortednumericlist",
+                        )
+
+                    elif metadataKey in ["addtablelinecount", "addtablelinewidth"]:
+                        md2pptx.globals.processingOptions.dynamicallySetOption(
+                            metadataKey,
+                            metadataValue,
+                            "int",
+                        )
+
+                    elif metadataKey in ["addtablelines", "addtablelinecolour"]:
+                        md2pptx.globals.processingOptions.dynamicallySetOption(
+                            metadataKey,
+                            metadataValue,
+                            "",
+                        )
+
+                    elif metadataKey == "transition":
+                        if metadataValue.lower() in [
+                            "none",
+                            "ripple",
+                            "reveal",
+                            "honeycomb",
+                            "shred",
+                            "wipe",
+                            "push",
+                            "vortex",
+                            "split",
+                            "fracture",
+                            "pres",
+                            "default",
+                            "pop",
+                            "prev",
+                        ]:
+                            md2pptx.globals.processingOptions.dynamicallySetOption(
+                                metadataKey,
+                                metadataValue,
+                                "",
+                            )
+                        else:
+                            print(
+                                f"Invalid value for {metadataKey}: {metadataValue} in '{line}"
+                            )
+
+                    elif metadataKey == "funnellabelposition":
+                        if metadataValue.lower() in [
+                            "before",
+                            "after",
+                        ]:
+                            md2pptx.globals.processingOptions.dynamicallySetOption(
+                                metadataKey,
+                                metadataValue,
+                                "",
+                            )
+                        else:
+                            print(
+                                f"Invalid value for {metadataKey}: {metadataValue} in '{line}"
+                            )
+
+                    elif metadataKey == "funnelwidest":
+                        if metadataValue.lower() in [
+                            "left",
+                            "right",
+                            "pipe",
+                            "hpipe",
+                            "vpipe",
+                            "top",
+                            "bottom",
+                        ]:
+                            md2pptx.globals.processingOptions.dynamicallySetOption(
+                                metadataKey,
+                                metadataValue,
+                                "",
+                            )
+                        else:
+                            print(
+                                f"Invalid value for {metadataKey}: {metadataValue} in '{line}"
+                            )
+
+                    else:
+                        # Invalid dynamic metadata specification
+                        print(f"Invalid dynamic metadata key: '{metadataKey}' in '{line}'")
+
+        elif (line.startswith("#")) & (inCode == False):
+            if line[:cardLevel] == "#" * cardLevel:
+                # Card on an existing slide
+                inCard = True
+
+                # If there is an outstanding href then store it
+                if href != "":
+                    slideHrefs[href] = slideNumber + 1
+
+                # Get card title text and any href
+                cardName, href = parseTitleText(line[cardLevel:])
+
+                # No bullets for the card yet
+                cardBullets = []
+
+                # No graphic for the card yet
+                cardGraphic = ""
+
+                # Create information about a card_title
+                card = Card()
+                card.title = cardName
+                card.bullets = cardBullets
+                card.graphic = cardGraphic
+                cards.append(card)
+
+                # Might have octothorpes but isn't a title
                 inTitle = False
 
-            # Get slide title text and any href
-            slideTitle, href = parseTitleText(line[thisLevel:])
 
-            inBlock = True
-            inList = False
+            else:
+                # One of Content, Section, or Title slide
+                if inBlock is True:
+                    # Create the previous slide
+                    slideInfo = SlideInfo(
+                        slideTitle,
+                        slideSubtitle,
+                        blockType,
+                        bullets,
+                        tableRows,
+                        cards,
+                        code,
+                        sequence,
+                    )
+                    slideNumber, slide, sequence = createSlide(prs, slideNumber, slideInfo)
+
+                    # Register the previous slide's href - if there was one
+                    if href != "":
+                        slideHrefs[href] = slideNumber
+
+                if line[:contentLevel] == "#" * contentLevel:
+                    # Heading Level 3 - slide
+                    thisLevel = contentLevel
+                    blockType = "content"
+
+                elif line[:sectionLevel] == "#" * sectionLevel:
+                    # Heading Level 2 - section
+                    thisLevel = sectionLevel
+                    blockType = "section"
+                    inTitle = True
+
+                elif line[:titleLevel] == "#" * titleLevel:
+                    # Heading Level 1 - slide title
+                    thisLevel = titleLevel
+                    blockType = "title"
+                    inTitle = True
+                else:
+                    inTitle = False
+
+                # Get slide title text and any href
+                slideTitle, href = parseTitleText(line[thisLevel:])
+
+                inBlock = True
+                inList = False
+                inTable = False
+                inCard = False
+                slideSubtitle = ""
+                bullets = []
+                tableRows = []
+                cards = []
+                code = []
+
+                if (notes_text != "") & (slide != None):
+                    createSlideNotes(slide, notes_text)
+
+                notes_text = ""
+
+            # Check whether any heading reference is a duplicate
+            if (href != "") & (href in slideHrefs.keys()):
+                print(f"Heading Reference redefined: '{href}' for slide {slideNumber}")
+
+        elif match := bulletRegex.match(line):
+            # Bulleted list
+            bulletLine = match.group(3).lstrip()
+
+            bulletLevel = calculateIndentationLevel(
+                match.start(2), md2pptx.globals.processingOptions.getCurrentOption("indentSpaces")
+            )
+
+            bulletType = "bulleted"
+
+            if inCard:
+                # Bullet is on a card
+                cardBullets.append([bulletLevel, bulletLine, bulletType])
+
+                # Update bullet list for the card
+                cards[-1].bullets = cardBullets
+            else:
+                # Bullet is not on a card
+                bullets.append([bulletLevel, bulletLine, bulletType])
+
+            if inList is False:
+                sequence.append("list")
+
+            inList = True
             inTable = False
-            inCard = False
-            slideSubtitle = ""
-            bullets = []
-            tableRows = []
-            cards = []
-            code = []
+            inTitle = False
 
-            if (notes_text != "") & (slide != None):
-                createSlideNotes(slide, notes_text)
+        elif match := numberRegex.match(line):
+            # Numbered list
+            bulletLine = match.group(3).lstrip()
 
-            notes_text = ""
+            bulletLevel = calculateIndentationLevel(
+                match.start(2), md2pptx.globals.processingOptions.getCurrentOption("indentSpaces")
+            )
 
-        # Check whether any heading reference is a duplicate
-        if (href != "") & (href in slideHrefs.keys()):
-            print(f"Heading Reference redefined: '{href}' for slide {slideNumber}")
+            bulletType = "numbered"
 
-    elif match := bulletRegex.match(line):
-        # Bulleted list
-        bulletLine = match.group(3).lstrip()
+            if inCard:
+                # Bullet is on a card
+                cardBullets.append([bulletLevel, bulletLine, bulletType])
 
-        bulletLevel = calculateIndentationLevel(
-            match.start(2), globals.processingOptions.getCurrentOption("indentSpaces")
-        )
+                # Update bullet list for the card
+                cards[-1].bullets = cardBullets
+            else:
+                # Bullet is not on a card
+                bullets.append([bulletLevel, bulletLine, bulletType])
 
-        bulletType = "bulleted"
+            if inList is False:
+                sequence.append("list")
 
-        if inCard:
-            # Bullet is on a card
-            cardBullets.append([bulletLevel, bulletLine, bulletType])
+            inList = True
+            inTable = False
+            inTitle = False
 
-            # Update bullet list for the card
-            cards[-1].bullets = cardBullets
-        else:
-            # Bullet is not on a card
-            bullets.append([bulletLevel, bulletLine, bulletType])
+        # Following marshals media into one or two table cells and adds the new row
+        # to either a new or existing table. It also says we're in a table
+        elif startswithOneOf(line, ["<video ", "<audio ", "[![", "!["]):
+            if inCard:
+                # Graphic in a card
+                if startswithOneOf(line, ["<video ", "<audio ", "[!["]):
+                    if clickableGraphicMatch := clickableGraphicRegex.match(line):
+                        # Line contains a clickable graphic
+                        cards[-1].graphicTitle = clickableGraphicMatch.group(1)
 
-        if inList is False:
-            sequence.append("list")
+                        (
+                            cards[-1].graphic,
+                            cards[-1].printableFilename,
+                        ) = handleWhateverGraphicType(clickableGraphicMatch.group(2))
 
-        inList = True
-        inTable = False
-        inTitle = False
+                        cards[-1].mediaURL = clickableGraphicMatch.group(3)
 
-    elif match := numberRegex.match(line):
-        # Numbered list
-        bulletLine = match.group(3).lstrip()
+                    elif videoRegexMatch := videoRegex.match(line):
+                        (
+                            _ ,
+                            _ ,
+                            cards[-1].printableFilename,
+                            _ ,
+                            _ ,
+                            cards[-1].mediaInfo,
+                            _ ,
+                        ) = parseMedia(videoRegexMatch.group(0), 0)
 
-        bulletLevel = calculateIndentationLevel(
-            match.start(2), globals.processingOptions.getCurrentOption("indentSpaces")
-        )
+                    else:
+                        audioRegexMatch = audioRegex.match(line)
+                        (
+                            _ ,
+                            _ ,
+                            cards[-1].printableFilename,
+                            _ ,
+                            _ ,
+                            cards[-1].mediaInfo,
+                            _ ,
+                        ) = parseMedia(audioRegexMatch.group(0), 0)
 
-        bulletType = "numbered"
+                else:
+                    # Cell contains a non-clickable graphic
+                    graphicMatch = graphicRegex.match(line)
 
-        if inCard:
-            # Bullet is on a card
-            cardBullets.append([bulletLevel, bulletLine, bulletType])
-
-            # Update bullet list for the card
-            cards[-1].bullets = cardBullets
-        else:
-            # Bullet is not on a card
-            bullets.append([bulletLevel, bulletLine, bulletType])
-
-        if inList is False:
-            sequence.append("list")
-
-        inList = True
-        inTable = False
-        inTitle = False
-
-    # Following marshals media into one or two table cells and adds the new row
-    # to either a new or existing table. It also says we're in a table
-    elif startswithOneOf(line, ["<video ", "<audio ", "[![", "!["]):
-        if inCard:
-            # Graphic in a card
-            if startswithOneOf(line, ["<video ", "<audio ", "[!["]):
-                if clickableGraphicMatch := clickableGraphicRegex.match(line):
-                    # Line contains a clickable graphic
-                    cards[-1].graphicTitle = clickableGraphicMatch.group(1)
+                    cards[-1].graphicTitle = graphicMatch.group(1)
 
                     (
                         cards[-1].graphic,
                         cards[-1].printableFilename,
-                    ) = handleWhateverGraphicType(clickableGraphicMatch.group(2))
-
-                    cards[-1].mediaURL = clickableGraphicMatch.group(3)
-
-                elif videoRegexMatch := videoRegex.match(line):
-                    (
-                        _ ,
-                        _ ,
-                        cards[-1].printableFilename,
-                        _ ,
-                        _ ,
-                        cards[-1].mediaInfo,
-                        _ ,
-                    ) = parseMedia(videoRegexMatch.group(0), 0)
-
-                else:
-                    audioRegexMatch = audioRegex.match(line)
-                    (
-                        _ ,
-                        _ ,
-                        cards[-1].printableFilename,
-                        _ ,
-                        _ ,
-                        cards[-1].mediaInfo,
-                        _ ,
-                    ) = parseMedia(audioRegexMatch.group(0), 0)
-
+                    ) = handleWhateverGraphicType(graphicMatch.group(2))
             else:
-                # Cell contains a non-clickable graphic
-                graphicMatch = graphicRegex.match(line)
+                # There is at least one media item in the line and not in a card
+                # - so set up table
+                if inTable is False:
+                    # Switch to being in a table
+                    blockType = "table"
+                    sequence.append("table")
+                    inTable = True
+                    inList = False
+                    inCard = False
 
-                cards[-1].graphicTitle = graphicMatch.group(1)
+                    # Create a new empty table
+                    # tableRows = []
 
-                (
-                    cards[-1].graphic,
-                    cards[-1].printableFilename,
-                ) = handleWhateverGraphicType(graphicMatch.group(2))
-        else:
-            # There is at least one media item in the line and not in a card
-            # - so set up table
+                # Start the creation of a new row
+                tableRow = []
+
+                # Collect the media items
+                mediaItems = []
+                for m in re.finditer(videoRegex, line):
+                    # A video
+                    mediaItem = [m.start(0), m.end(0), m.group(0)]
+                    mediaItems.append(mediaItem)
+
+                for m in re.finditer(audioRegex, line):
+                    # An audio file
+                    mediaItem = [m.start(0), m.end(0), m.group(0)]
+                    mediaItems.append(mediaItem)
+
+                for m in re.finditer(clickableGraphicRegex, line):
+                    # A clickable graphic
+                    mediaItem = [m.start(0), m.end(0), m.group(0)]
+                    mediaItems.append(mediaItem)
+
+                for m in re.finditer(graphicRegex, line):
+                    # A non-clickable graphic
+                    start = m.start(0)
+                    end = m.end(0)
+                    mediaItem = [start, end, m.group(0)]
+
+                    rematch = False
+                    for existingMediaItem in mediaItems:
+                        if (start >= existingMediaItem[0]) & (end <= existingMediaItem[1]):
+                            # This graphic already found as part of a clickable graphic link
+                            rematch = True
+                            break
+
+                    if rematch is False:
+                        # This graphic not already found as part of a clickable graphic link
+                        mediaItems.append(mediaItem)
+
+                # compose table row - based on start offset
+                tableRow = []
+                for mediaItem in sorted(mediaItems):
+                    tableRow.append(mediaItem[2])
+
+                # Add table row to saved table rows
+                if len(tableRows) == 0:
+                    tableRows.append([])
+                tableRows[-1].append(tableRow)
+
+                inTitle = False
+
+        elif line[:1] == "|":
+            # Table or side-by-side
+            lastTableLine = lineNumber
+
+            # As we're in a table we can't have a table caption yet
+            tableCaption = ""
+
             if inTable is False:
-                # Switch to being in a table
                 blockType = "table"
-                sequence.append("table")
+                tableRows.append([])
                 inTable = True
+                sequence.append("table")
                 inList = False
                 inCard = False
 
-                # Create a new empty table
-                # tableRows = []
-
-            # Start the creation of a new row
+            # Create a table row - but with (maybe empty) junk before and after
+            words = line.split("|")
             tableRow = []
+            for cell in words:
+                tableRow.append(cell)
 
-            # Collect the media items
-            mediaItems = []
-            for m in re.finditer(videoRegex, line):
-                # A video
-                mediaItem = [m.start(0), m.end(0), m.group(0)]
-                mediaItems.append(mediaItem)
+            # Remove first element
+            tableRow.pop(0)
 
-            for m in re.finditer(audioRegex, line):
-                # An audio file
-                mediaItem = [m.start(0), m.end(0), m.group(0)]
-                mediaItems.append(mediaItem)
+            # Remove last element - if blank
+            if cell == "":
+                tableRow.pop()
 
-            for m in re.finditer(clickableGraphicRegex, line):
-                # A clickable graphic
-                mediaItem = [m.start(0), m.end(0), m.group(0)]
-                mediaItems.append(mediaItem)
-
-            for m in re.finditer(graphicRegex, line):
-                # A non-clickable graphic
-                start = m.start(0)
-                end = m.end(0)
-                mediaItem = [start, end, m.group(0)]
-
-                rematch = False
-                for existingMediaItem in mediaItems:
-                    if (start >= existingMediaItem[0]) & (end <= existingMediaItem[1]):
-                        # This graphic already found as part of a clickable graphic link
-                        rematch = True
-                        break
-
-                if rematch is False:
-                    # This graphic not already found as part of a clickable graphic link
-                    mediaItems.append(mediaItem)
-
-            # compose table row - based on start offset
-            tableRow = []
-            for mediaItem in sorted(mediaItems):
-                tableRow.append(mediaItem[2])
-
-            # Add table row to saved table rows
-            if len(tableRows) == 0:
-                tableRows.append([])
+            # Add clean table row to saved table rows
             tableRows[-1].append(tableRow)
-
             inTitle = False
 
-    elif line[:1] == "|":
-        # Table or side-by-side
-        lastTableLine = lineNumber
+        elif (
+            (line.startswith("[")) & line.endswith("]") & (lineNumber == lastTableLine + 1)
+        ):
+            tableCaption = line[1:-1]
+            tableCaptions.append(tableCaption)
+        else:
+            # Not in a table
+            inTable = False
 
-        # As we're in a table we can't have a table caption yet
-        tableCaption = ""
+            if len(tableCaptions) < len(tableRows):
+                tableCaptions.append("")
 
-        if inTable is False:
-            blockType = "table"
-            tableRows.append([])
-            inTable = True
-            sequence.append("table")
-            inList = False
-            inCard = False
+            if not inCode:
+                # Must be a slide note line or a subtitle line
+                if line == "":
+                    inTitle = False
+                if inTitle:
+                    slideSubtitle = slideSubtitle + "\n" + line
+                elif startswithOneOf(line, ["</pre>", "</code>"]) is False:
+                    notes_text = notes_text + "\n" + line
 
-        # Create a table row - but with (maybe empty) junk before and after
-        words = line.split("|")
-        tableRow = []
-        for cell in words:
-            tableRow.append(cell)
-
-        # Remove first element
-        tableRow.pop(0)
-
-        # Remove last element - if blank
-        if cell == "":
-            tableRow.pop()
-
-        # Add clean table row to saved table rows
-        tableRows[-1].append(tableRow)
-        inTitle = False
-
-    elif (
-        (line.startswith("[")) & line.endswith("]") & (lineNumber == lastTableLine + 1)
-    ):
-        tableCaption = line[1:-1]
+    # Ensure there's a blank table caption - for the case the table ended in the final line
+    if len(tableCaptions) < len(tableRows):
         tableCaptions.append(tableCaption)
-    else:
-        # Not in a table
-        inTable = False
 
-        if len(tableCaptions) < len(tableRows):
-            tableCaptions.append("")
+    ######################################################################################
+    #                                                                                    #
+    # Finish off last slide                                                              #
+    #                                                                                    #
+    ######################################################################################
+    if (inBlock is True) | (inCode is True) | (inTable is True):
+        slideInfo = SlideInfo(
+            slideTitle, slideSubtitle, blockType, bullets, tableRows, cards, code, sequence
+        )
+        slideNumber, slide, sequence = createSlide(prs, slideNumber, slideInfo)
 
-        if not inCode:
-            # Must be a slide note line or a subtitle line
-            if line == "":
-                inTitle = False
-            if inTitle:
-                slideSubtitle = slideSubtitle + "\n" + line
-            elif startswithOneOf(line, ["</pre>", "</code>"]) is False:
-                notes_text = notes_text + "\n" + line
+        if href != "":
+            slideHrefs[href] = slideNumber
 
-# Ensure there's a blank table caption - for the case the table ended in the final line
-if len(tableCaptions) < len(tableRows):
-    tableCaptions.append(tableCaption)
+        if (notes_text != "") & (slide != None):
+            createSlideNotes(slide, notes_text)
 
-######################################################################################
-#                                                                                    #
-# Finish off last slide                                                              #
-#                                                                                    #
-######################################################################################
-if (inBlock is True) | (inCode is True) | (inTable is True):
-    slideInfo = SlideInfo(
-        slideTitle, slideSubtitle, blockType, bullets, tableRows, cards, code, sequence
-    )
-    slideNumber, slide, sequence = createSlide(prs, slideNumber, slideInfo)
+        notes_text = ""
 
-    if href != "":
-        slideHrefs[href] = slideNumber
+    ######################################################################################
+    #                                                                                    #
+    # Add a footnotes slide - if there were any footnote definitions                     #
+    #                                                                                    #
+    ######################################################################################
+    if len(footnoteDefinitions) > 0:
+        slideNumber, footnoteSlides = createFootnoteSlides(
+            prs, slideNumber, footnoteDefinitions
+        )
 
-    if (notes_text != "") & (slide != None):
-        createSlideNotes(slide, notes_text)
+        footnotesPerPage = md2pptx.globals.processingOptions.getCurrentOption("footnotesPerPage")
+        # Fix up any footnote slide hyperlinks
+        footnoteNumber = -1
+        for footnoteRun in footnoteRunsDictionary.keys():
+            footnoteNumber += 1
+            run = footnoteRunsDictionary[footnoteRun]
 
-    notes_text = ""
+            footnoteSlideNumber = int(footnoteNumber / footnotesPerPage)
+            createRunHyperlinkOrTooltip(run, footnoteSlides[footnoteSlideNumber], "")
 
-######################################################################################
-#                                                                                    #
-# Add a footnotes slide - if there were any footnote definitions                     #
-#                                                                                    #
-######################################################################################
-if len(footnoteDefinitions) > 0:
-    slideNumber, footnoteSlides = createFootnoteSlides(
-        prs, slideNumber, footnoteDefinitions
-    )
-
-    footnotesPerPage = globals.processingOptions.getCurrentOption("footnotesPerPage")
-    # Fix up any footnote slide hyperlinks
-    footnoteNumber = -1
-    for footnoteRun in footnoteRunsDictionary.keys():
-        footnoteNumber += 1
-        run = footnoteRunsDictionary[footnoteRun]
-
-        footnoteSlideNumber = int(footnoteNumber / footnotesPerPage)
-        createRunHyperlinkOrTooltip(run, footnoteSlides[footnoteSlideNumber], "")
-
-######################################################################################
-#                                                                                    #
-# Add a dictionary slide - if there were any abbr elements encountered               #
-#                                                                                    #
-######################################################################################
-if len(abbrevDictionary) > 0:
-    glossaryTermsPerPage = globals.processingOptions.getCurrentOption("glossaryTermsPerPage")
-    slideNumber, glossarySlides = createGlossarySlides(
-        prs, slideNumber, abbrevDictionary
-    )
-    # Fix up internal glossary hyperlinks
-    abbrevNumber = -1
-    for abbreviation in sorted(abbrevRunsDictionary.keys()):
-        abbrevNumber += 1
-        runs = abbrevRunsDictionary[abbreviation]
-        for run in runs:
-            # Add tooltip for glossary definition
-            glossarySlideNumber = int(abbrevNumber / glossaryTermsPerPage)
-            createRunHyperlinkOrTooltip(
-                run, glossarySlides[glossarySlideNumber], abbrevDictionary[abbreviation]
-            )
-
-######################################################################################
-#                                                                                    #
-# Add final slide - or more than one - with any Taskpaper tasks in                   #
-#                                                                                    #
-######################################################################################
-taskSlides = globals.processingOptions.getCurrentOption("taskSlides")
-
-if (len(tasks) > 0) & (taskSlides != "none"):
-    # Turn tasks into a table slide
-
-    # Might need to winnow slides
-    if taskSlides != "all":
-        complete = []
-        incomplete = []
-        for task in tasks:
-            sNum, taskText, dueDate, tags, done = task
-            if done == "":
-                incomplete.append(task)
-            else:
-                complete.append(task)
-
-        if (taskSlides == "separate") & (len(tasks) > 0):
-            want_task_slides = True
-        elif (taskSlides == "remaining") & (len(incomplete) > 0):
-            want_task_slides = True
-        elif (taskSlides == "done") & (len(complete) > 0):
-            want_task_slides = True
-        else:
-            want_task_slides = False
-    else:
-        want_task_slides = True
-
-    if want_task_slides:
-        if taskSlides != "separate":
-            createTaskSlides(prs, slideNumber, tasks, "Tasks")
-        else:
-            createTaskSlides(prs, slideNumber, complete, "Completed Tasks")
-            createTaskSlides(prs, slideNumber, incomplete, "Incomplete Tasks")
-
-######################################################################################
-#                                                                                    #
-# Make any TOC / Section-related links                                               #
-#                                                                                    #
-######################################################################################
-if globals.processingOptions.getCurrentOption("tocLinks"):
-    # Linkify section items
-    for run in TOCruns:
-        createRunHyperlinkOrTooltip(run, SectionSlides[run.text])
-
-if globals.processingOptions.getCurrentOption("sectionArrows"):
-    # Add navigation arrows between section slides
-    sectionArrowsColour = globals.processingOptions.getCurrentOption("sectionArrowsColour")
-
-    buttonTop = prs.slide_height - Inches(2 / 3)
-    forwShape = None
-
-    previousSection = None
-    for sectionNumber, sectionSlide in enumerate(SectionSlides):
-        slide = SectionSlides[sectionSlide]
-        if sectionNumber == 0:
-            TOCslide = slide
-
-        if forwShape != None:
-            createShapeHyperlinkAndTooltip(forwShape, slide, "Next Section")
-
-        buttonShapes = []
-        if sectionNumber > 1:
-            # Need backwards arrow
-            backShape = slide.shapes.add_shape(
-                MSO_SHAPE.ACTION_BUTTON_BACK_OR_PREVIOUS,
-                prs.slide_width / 2 - Inches(2 / 3),
-                buttonTop,
-                Inches(1 / 3),
-                Inches(1 / 3),
-            )
-
-            createShapeHyperlinkAndTooltip(backShape, previousSlide, "Previous Section")
-
-            buttonShapes.append(backShape)
-
-        # Always need home arrow - except for TOC
-        if sectionNumber > 0:
-            homeShape = slide.shapes.add_shape(
-                MSO_SHAPE.ACTION_BUTTON_HOME,
-                prs.slide_width / 2 - Inches(1 / 6),
-                buttonTop,
-                Inches(1 / 3),
-                Inches(1 / 3),
-            )
-
-            createShapeHyperlinkAndTooltip(homeShape, TOCslide, "Table Of Contents")
-
-            buttonShapes.append(homeShape)
-
-        if (sectionNumber < len(SectionSlides) - 1) & (sectionNumber > 0):
-            # Need forwards
-            forwShape = slide.shapes.add_shape(
-                MSO_SHAPE.ACTION_BUTTON_FORWARD_OR_NEXT,
-                prs.slide_width / 2 + Inches(1 / 3),
-                buttonTop,
-                Inches(1 / 3),
-                Inches(1 / 3),
-            )
-
-            buttonShapes.append(forwShape)
-
-        else:
-            forwShape = None
-
-        # Fix background colour of the buttons
-        if sectionArrowsColour != "":
-            for buttonShape in buttonShapes:
-                buttonShape.fill.solid()
-                buttonShape.fill.fore_color.rgb = RGBColor.from_string(
-                    sectionArrowsColour
+    ######################################################################################
+    #                                                                                    #
+    # Add a dictionary slide - if there were any abbr elements encountered               #
+    #                                                                                    #
+    ######################################################################################
+    if len(abbrevDictionary) > 0:
+        glossaryTermsPerPage = md2pptx.globals.processingOptions.getCurrentOption("glossaryTermsPerPage")
+        slideNumber, glossarySlides = createGlossarySlides(
+            prs, slideNumber, abbrevDictionary
+        )
+        # Fix up internal glossary hyperlinks
+        abbrevNumber = -1
+        for abbreviation in sorted(abbrevRunsDictionary.keys()):
+            abbrevNumber += 1
+            runs = abbrevRunsDictionary[abbreviation]
+            for run in runs:
+                # Add tooltip for glossary definition
+                glossarySlideNumber = int(abbrevNumber / glossaryTermsPerPage)
+                createRunHyperlinkOrTooltip(
+                    run, glossarySlides[glossarySlideNumber], abbrevDictionary[abbreviation]
                 )
 
-        previousSlide = slide
+    ######################################################################################
+    #                                                                                    #
+    # Add final slide - or more than one - with any Taskpaper tasks in                   #
+    #                                                                                    #
+    ######################################################################################
+    taskSlides = md2pptx.globals.processingOptions.getCurrentOption("taskSlides")
 
+    if (len(tasks) > 0) & (taskSlides != "none"):
+        # Turn tasks into a table slide
 
-######################################################################################
-#                                                                                    #
-# Fix up any internal links                                                          #
-#                                                                                    #
-######################################################################################
-xrefCheck_errors = False
-for href in globals.href_runs.keys():
-    run = globals.href_runs[href]
-    if href in slideHrefs.keys():
-        createRunHyperlinkOrTooltip(
-            run, prs.slides[slideHrefs[href] - 2 + templateSlideCount], ""
-        )
-    else:
-        # No id defined with that name
-        if not xrefCheck_errors:
-            # First time in this run a cross reference error occurred
-            xrefCheck_errors = True
-            print("\nHyperlink Reference Errors")
-            print("--------------------------")
+        # Might need to winnow slides
+        if taskSlides != "all":
+            complete = []
+            incomplete = []
+            for task in tasks:
+                sNum, taskText, dueDate, tags, done = task
+                if done == "":
+                    incomplete.append(task)
+                else:
+                    complete.append(task)
 
-        print(
-            "Slide "
-            + str(prs.slides.index(SlideFromRun(run)) + 1 - templateSlideCount)
-            + f": '{href}'"
-        )
-
-# Each picture appears in pictures
-# There's a corresponding entry in picture_Hrefs
-# There's a corresponding entry in picture_tooltips
-
-# fix up any clickable picture links
-for (picture, href, tooltip) in pictureInfos:
-    # Pick up link target - if any
-    if href == None:
-        target = None
-    else:
-        if href[1:] in slideHrefs.keys():
-            # Is an internal link
-            target = prs.slides[slideHrefs[href[1:]] - 2 + templateSlideCount]
+            if (taskSlides == "separate") & (len(tasks) > 0):
+                want_task_slides = True
+            elif (taskSlides == "remaining") & (len(incomplete) > 0):
+                want_task_slides = True
+            elif (taskSlides == "done") & (len(complete) > 0):
+                want_task_slides = True
+            else:
+                want_task_slides = False
         else:
-            # Is an external Link
-            target = href
+            want_task_slides = True
 
-    createPictureHyperlinkOrTooltip(picture, target, tooltip)
+        if want_task_slides:
+            if taskSlides != "separate":
+                createTaskSlides(prs, slideNumber, tasks, "Tasks")
+            else:
+                createTaskSlides(prs, slideNumber, complete, "Completed Tasks")
+                createTaskSlides(prs, slideNumber, incomplete, "Incomplete Tasks")
 
-if templateSlideCount > 0:
-    createProcessingSummarySlide(prs, metadata)
+    ######################################################################################
+    #                                                                                    #
+    # Make any TOC / Section-related links                                               #
+    #                                                                                    #
+    ######################################################################################
+    if md2pptx.globals.processingOptions.getCurrentOption("tocLinks"):
+        # Linkify section items
+        for run in TOCruns:
+            createRunHyperlinkOrTooltip(run, SectionSlides[run.text])
 
-try:
-    if globals.processingOptions.getCurrentOption("deletefirstslide"):
-        # Remove first slide
-        deleteSlide(prs, 0)
+    if md2pptx.globals.processingOptions.getCurrentOption("sectionArrows"):
+        # Add navigation arrows between section slides
+        sectionArrowsColour = md2pptx.globals.processingOptions.getCurrentOption("sectionArrowsColour")
 
-except:
-    pass
+        buttonTop = prs.slide_height - Inches(2 / 3)
+        forwShape = None
 
-if globals.processingOptions.getCurrentOption("SectionsExpand"):
-    createExpandingSections(prs)
+        previousSection = None
+        for sectionNumber, sectionSlide in enumerate(SectionSlides):
+            slide = SectionSlides[sectionSlide]
+            if sectionNumber == 0:
+                TOCslide = slide
 
-# Maybe call an exit before the presentation is saved
-onPresentationBeforeSave = globals.processingOptions.getCurrentOption("onPresentationBeforeSave")
-if onPresentationBeforeSave != "":
-    exec(open(onPresentationBeforeSave).read())
+            if forwShape != None:
+                createShapeHyperlinkAndTooltip(forwShape, slide, "Next Section")
 
-prs.save(output_filename)
+            buttonShapes = []
+            if sectionNumber > 1:
+                # Need backwards arrow
+                backShape = slide.shapes.add_shape(
+                    MSO_SHAPE.ACTION_BUTTON_BACK_OR_PREVIOUS,
+                    prs.slide_width / 2 - Inches(2 / 3),
+                    buttonTop,
+                    Inches(1 / 3),
+                    Inches(1 / 3),
+                )
 
-# Maybe call an exit after the presentation is saved
-onPresentationAfterSave = globals.processingOptions.getCurrentOption("onPresentationAfterSave")
-if onPresentationAfterSave != "":
-    exec(open(onPresentationAfterSave).read())
+                createShapeHyperlinkAndTooltip(backShape, previousSlide, "Previous Section")
+
+                buttonShapes.append(backShape)
+
+            # Always need home arrow - except for TOC
+            if sectionNumber > 0:
+                homeShape = slide.shapes.add_shape(
+                    MSO_SHAPE.ACTION_BUTTON_HOME,
+                    prs.slide_width / 2 - Inches(1 / 6),
+                    buttonTop,
+                    Inches(1 / 3),
+                    Inches(1 / 3),
+                )
+
+                createShapeHyperlinkAndTooltip(homeShape, TOCslide, "Table Of Contents")
+
+                buttonShapes.append(homeShape)
+
+            if (sectionNumber < len(SectionSlides) - 1) & (sectionNumber > 0):
+                # Need forwards
+                forwShape = slide.shapes.add_shape(
+                    MSO_SHAPE.ACTION_BUTTON_FORWARD_OR_NEXT,
+                    prs.slide_width / 2 + Inches(1 / 3),
+                    buttonTop,
+                    Inches(1 / 3),
+                    Inches(1 / 3),
+                )
+
+                buttonShapes.append(forwShape)
+
+            else:
+                forwShape = None
+
+            # Fix background colour of the buttons
+            if sectionArrowsColour != "":
+                for buttonShape in buttonShapes:
+                    buttonShape.fill.solid()
+                    buttonShape.fill.fore_color.rgb = RGBColor.from_string(
+                        sectionArrowsColour
+                    )
+
+            previousSlide = slide
 
 
-elapsed_time = time.time() - start_time
+    ######################################################################################
+    #                                                                                    #
+    # Fix up any internal links                                                          #
+    #                                                                                    #
+    ######################################################################################
+    xrefCheck_errors = False
+    for href in md2pptx.globals.href_runs.keys():
+        run = md2pptx.globals.href_runs[href]
+        if href in slideHrefs.keys():
+            createRunHyperlinkOrTooltip(
+                run, prs.slides[slideHrefs[href] - 2 + templateSlideCount], ""
+            )
+        else:
+            # No id defined with that name
+            if not xrefCheck_errors:
+                # First time in this run a cross reference error occurred
+                xrefCheck_errors = True
+                print("\nHyperlink Reference Errors")
+                print("--------------------------")
 
-print(
-    "\nProcessing complete.\nElapsed time: "
-    + str(int(1000 * elapsed_time) / 1000)
-    + "s"
-)
+            print(
+                "Slide "
+                + str(prs.slides.index(SlideFromRun(run)) + 1 - templateSlideCount)
+                + f": '{href}'"
+            )
 
-# Run a script against every slide
-script = "if slide.slideInfo is not None:\n  print(slide.slideInfo)"
-script = ""
-for slide in prs.slides:
-    exec(script)
+    # Each picture appears in pictures
+    # There's a corresponding entry in picture_Hrefs
+    # There's a corresponding entry in picture_tooltips
+
+    # fix up any clickable picture links
+    for (picture, href, tooltip) in pictureInfos:
+        # Pick up link target - if any
+        if href == None:
+            target = None
+        else:
+            if href[1:] in slideHrefs.keys():
+                # Is an internal link
+                target = prs.slides[slideHrefs[href[1:]] - 2 + templateSlideCount]
+            else:
+                # Is an external Link
+                target = href
+
+        createPictureHyperlinkOrTooltip(picture, target, tooltip)
+
+    if templateSlideCount > 0:
+        createProcessingSummarySlide(prs, metadata)
+
+    try:
+        if md2pptx.globals.processingOptions.getCurrentOption("deletefirstslide"):
+            # Remove first slide
+            deleteSlide(prs, 0)
+
+    except:
+        pass
+
+    if md2pptx.globals.processingOptions.getCurrentOption("SectionsExpand"):
+        createExpandingSections(prs)
+
+    # Maybe call an exit before the presentation is saved
+    onPresentationBeforeSave = md2pptx.globals.processingOptions.getCurrentOption("onPresentationBeforeSave")
+    if onPresentationBeforeSave != "":
+        exec(open(onPresentationBeforeSave).read())
+
+    prs.save(output_filename)
+
+    # Maybe call an exit after the presentation is saved
+    onPresentationAfterSave = md2pptx.globals.processingOptions.getCurrentOption("onPresentationAfterSave")
+    if onPresentationAfterSave != "":
+        exec(open(onPresentationAfterSave).read())
 
 
-sys.exit()
+    elapsed_time = time.time() - start_time
+
+    print(
+        "\nProcessing complete.\nElapsed time: "
+        + str(int(1000 * elapsed_time) / 1000)
+        + "s"
+    )
+
+    # Run a script against every slide
+    script = "if slide.slideInfo is not None:\n  print(slide.slideInfo)"
+    script = ""
+    for slide in prs.slides:
+        exec(script)
+
+
+    sys.exit()
