@@ -6364,5 +6364,8 @@ def cli():
     for slide in prs.slides:
         exec(script)
 
-
     sys.exit()
+
+
+if __name__ == "__main__":
+    cli()
