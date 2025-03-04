@@ -8,9 +8,9 @@ from lxml import etree
 import re
 from pptx.dml.color import RGBColor, MSO_THEME_COLOR
 
-import globals
-from processingOptions import *
-from symbols import resolveSymbols
+import md2pptx.globals
+from md2pptx.processingOptions import *
+from md2pptx.symbols import resolveSymbols
 
 def removeBullet(paragraph):
     pPr = paragraph._p.get_or_add_pPr()
@@ -33,7 +33,7 @@ def findTitleShape(slide):
     if slide.shapes.title == None:
         # Have to use first shape as title
         return slide.shapes[0]
-        
+
     else:
         return slide.shapes.title
 
@@ -43,7 +43,7 @@ def getParagraphs(slide, wantedParagraphs = []):
         if (theShape.shape_type == MSO_SHAPE_TYPE.TEXT_BOX) | (theShape.placeholder_format.type == PP_PLACEHOLDER.OBJECT):
             paragraphTree.append(theShape.text_frame.paragraphs)
     return[ paragraphTree[0][i] for i in wantedParagraphs]
-    
+
 def parseText(text):
     textArray = []
     state = "N"
@@ -69,10 +69,10 @@ def parseText(text):
     text2 = text2.replace("[^", u"\uFDD0")
 
     # Replace any span style starts with char "\uFDD1"
-    text2 = re.sub(globals.spanStyleRegex, u"\uFDD1", text2)
+    text2 = re.sub(md2pptx.globals.spanStyleRegex, u"\uFDD1", text2)
 
     # Replace any span class starts with char "\uFDD2"
-    text2 = re.sub(globals.spanClassRegex, u"\uFDD2", text2)
+    text2 = re.sub(md2pptx.globals.spanClassRegex, u"\uFDD2", text2)
 
     # Replace any span ends with char "\uFDD3"
     text2 = text2.replace("</span>", u"\uFDD3")
@@ -431,10 +431,10 @@ def parseText(text):
                 className = splitting[0].strip().strip("'").strip('"').lower()
                 styleText = ""
                 if (
-                    (className in globals.bgcolors)
-                    | (className in globals.fgcolors)
-                    | (className in globals.emphases)
-                    | (className in globals.fontsizes)
+                    (className in md2pptx.globals.bgcolors)
+                    | (className in md2pptx.globals.fgcolors)
+                    | (className in md2pptx.globals.emphases)
+                    | (className in md2pptx.globals.fontsizes)
                 ):
                     textArray.append(["SpanClass", [className, spanText]])
 
@@ -490,11 +490,11 @@ def parseText(text):
 
 # Calls the tokeniser and then handles the fragments it gets back
 def addFormattedText(p, text):
-    boldBold = globals.processingOptions.getCurrentOption("boldBold")
-    boldColour = globals.processingOptions.getCurrentOption("boldColour")
-    italicItalic = globals.processingOptions.getCurrentOption("italicItalic")
-    italicColour = globals.processingOptions.getCurrentOption("italicColour")
-    monoFont = globals.processingOptions.getCurrentOption("monoFont")
+    boldBold = md2pptx.globals.processingOptions.getCurrentOption("boldBold")
+    boldColour = md2pptx.globals.processingOptions.getCurrentOption("boldColour")
+    italicItalic = md2pptx.globals.processingOptions.getCurrentOption("italicItalic")
+    italicColour = md2pptx.globals.processingOptions.getCurrentOption("italicColour")
+    monoFont = md2pptx.globals.processingOptions.getCurrentOption("monoFont")
 
     # Get back parsed text fragments, along with control information on each
     # fragment
@@ -635,7 +635,7 @@ def addFormattedText(p, text):
                 if linkURL.startswith("#"):
                     # Is an internal Url
                     linkHref = linkURL[1:].strip()
-                    globals.href_runs[linkHref] = run
+                    md2pptx.globals.href_runs[linkHref] = run
                 else:
                     # Not an internal link so create it
                     hlink = run.hyperlink
@@ -655,31 +655,31 @@ def addFormattedText(p, text):
     return flattenedText
 
 def handleSpanClass(run, className):
-    if className in globals.bgcolors:
-        run = setHighlight(run, globals.bgcolors[className])
+    if className in md2pptx.globals.bgcolors:
+        run = setHighlight(run, md2pptx.globals.bgcolors[className])
 
-    if className in globals.fgcolors:
+    if className in md2pptx.globals.fgcolors:
         font = run.font
-        font.color.rgb = RGBColor.from_string(globals.fgcolors[className])
+        font.color.rgb = RGBColor.from_string(md2pptx.globals.fgcolors[className])
 
-    if className in globals.emphases:
+    if className in md2pptx.globals.emphases:
         font = run.font
-        if " bold " in " " + globals.emphases[className] + " ":
+        if " bold " in " " + md2pptx.globals.emphases[className] + " ":
             font.bold = True
         else:
             font.bold = False
-        if " italic " in " " + globals.emphases[className] + " ":
+        if " italic " in " " + md2pptx.globals.emphases[className] + " ":
             font.italic = True
         else:
             font.italic = False
-        if " underline " in " " + globals.emphases[className] + " ":
+        if " underline " in " " + md2pptx.globals.emphases[className] + " ":
             font.underline = True
         else:
             font.underline = False
 
-    if className in globals.fontsizes:
+    if className in md2pptx.globals.fontsizes:
         font = run.font
-        font.size = Pt(float(globals.fontsizes[className]))
+        font.size = Pt(float(md2pptx.globals.fontsizes[className]))
 
 
 def handleSpanStyle(run, styleText):
@@ -719,4 +719,3 @@ def handleSpanStyle(run, styleText):
 
         elif styleElementName == "font-size":
             run.font.size = Pt(float(styleElementValue[:-2]))
-

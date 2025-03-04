@@ -7,12 +7,13 @@ version = "0.1"
 
 import csv
 import io
-from rectangle import Rectangle
 from pptx.util import Inches, Pt
 from pptx.enum.text import PP_ALIGN
 from pptx.dml.color import RGBColor, MSO_THEME_COLOR
-from colour import setColour
-from symbols import resolveSymbols
+
+from md2pptx.rectangle import Rectangle
+from md2pptx.colour import setColour
+from md2pptx.symbols import resolveSymbols
 
 
 def massageFunnelText(text):
@@ -54,10 +55,10 @@ class Funnel:
             direction = "horizontal"
         else:
             direction = "vertical"
-        
+
         # Turn label percentage into decimal number to multiply by
         funnelLabelsProportion = funnelLabelsPercent / 100
-        
+
         # Proportion of the stage that the tip - narrowest / shortest
         # part is relative to widest / tallest
         tipProportion = 1 / 3
@@ -201,7 +202,7 @@ class Funnel:
         for b, body in enumerate(funnelBody):
             if direction == "horizontal":
                 # Horizontal stages
-                
+
                 # Left extremity of stage - both top and bottom
                 partLeft = funnelBodyRectangle.left + b * partWidth
 
@@ -218,7 +219,7 @@ class Funnel:
                     # Calculate space to be above and below rectangular stage
                     leftSpaceAboveBelow = (funnelBodyRectangle.height - tipHeight) / 2
                     rightSpaceAboveBelow = leftSpaceAboveBelow
-                    
+
                 elif funnelWidest == "left":
                     # Calculate space to be above and below left end of stage
                     leftSpaceAboveBelow = (
@@ -281,7 +282,7 @@ class Funnel:
                 ]
             else:
                 # Vertical stages
-                
+
                 # Top extremity of stage - both left and right
                 partTop = funnelBodyRectangle.top + b * partHeight
 
@@ -294,7 +295,7 @@ class Funnel:
                     | (funnelWidest == "vpipe")
                 ):
                     # Rectangular / pipe stage
-                    
+
                     # Calculate space to be left either side of rectangular stage
                     topSpaceLeftRight = (funnelBodyRectangle.width - tipWidth) / 2
                     bottomSpaceLeftRight = topSpaceLeftRight

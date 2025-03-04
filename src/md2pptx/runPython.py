@@ -13,14 +13,14 @@ from pptx.enum.chart import XL_CHART_TYPE
 from pptx.enum.chart import XL_LEGEND_POSITION
 from pptx.enum.text import PP_ALIGN
 from pptx.dml.color import RGBColor
-from colour import setColour, parseColour
 from pptx.enum.shapes import MSO_SHAPE_TYPE
 from pptx.enum.shapes import PP_PLACEHOLDER
-from paragraph import *
 from pptx.util import Inches, Pt
 from pptx.enum.shapes import MSO_CONNECTOR, MSO_SHAPE
 
-import globals
+import md2pptx.globals
+from md2pptx.colour import setColour, parseColour
+from md2pptx.paragraph import *
 
 class RunPython:
     def __init__(
@@ -35,7 +35,7 @@ class RunPython:
 
     def runFromFile(self, filename, prs, slide, renderingRectangle):
         exec(open(filename).read())
-    
+
 
     # Helper function for run-python
     def readCSV(filename):
@@ -46,30 +46,30 @@ class RunPython:
                 my_csv.append(row)
 
         return my_csv
-    
+
     def filterRows(my_array, filterFunction):
         my_array2 = []
         for rowNumber, row in enumerate(my_array):
             if filterFunction(rowNumber, row):
                 my_array2.append(row)
-        
+
         return my_array2
-        
+
 
     def transposeArray(chart_array):
         return list(map(list, zip(*chart_array)))
-    
+
     def makeChartData(chart_array, seriesIsColumn = True, columns = None):
 
         chart_data = CategoryChartData()
-        
+
         if columns is not None:
             chart_array2 = []
             for rowNumber, row in enumerate(chart_array):
                 chart_row = []
                 for column in columns:
                     chart_row.append(row[column])
-                
+
                 chart_array2.append(chart_row)
             chart_array = chart_array2
             print(pptx.enum.chart)
@@ -78,7 +78,7 @@ class RunPython:
         if seriesIsColumn:
             # Transpose input data
             chart_array = RunPython.transposeArray(chart_array)
-        
+
         # x values
         chart_data.categories = chart_array[0][1:]
 
@@ -87,29 +87,29 @@ class RunPython:
             chart_data.add_series(row[0],row[1:])
 
         return chart_data
-  
+
     # Helper function to make a chart. The result can be further manipulated
     def makeChart(slide,
         chart_type,
         renderingRectangle,
         chart_data,
         title = None,
-        legendPosition = None):    
+        legendPosition = None):
         c = slide.shapes.add_chart(
             chart_type,
             renderingRectangle.left,
             renderingRectangle.top,
-            renderingRectangle.width, 
+            renderingRectangle.width,
             renderingRectangle.height,
             chart_data
         )
-          
+
         chart = c.chart
-        
+
         if title is not None:
             chart.has_title = True
             chart.chart_title.text_frame.text = title
-          
+
         if legendPosition is not None:
             chart.has_legend = True
             chart.legend.position = legendPosition
@@ -133,7 +133,7 @@ class RunPython:
             renderingRectangle.height)
 
         table = t.table
-        
+
         for i in range(height):
             for j in range(width):
                c = table.cell(i, j)
@@ -149,7 +149,7 @@ class RunPython:
     def applyCellListFillRGB(table, cellList, red, green, blue):
         for row, column in cellList:
             RunPython.applyCellFillRGB(table, row, column, red, green, blue)
-            
+
     def alignTableCellText(tableFrame, rowNumber, columnNumber, alignment, paragraphNumber = None):
         # Get the cell's text_frame
         tableCellFrame = tableFrame.table.cell(rowNumber, columnNumber).text_frame
@@ -163,11 +163,11 @@ class RunPython:
 
     def makeDrawnShape(slide, vertices, fill = False, text = None, textColor = None, fillColor = None, closed = True):
         ffBuilder = slide.shapes.build_freeform(*vertices[0], True)
-    
+
         ffBuilder.add_line_segments(vertices[1:], close = closed)
-    
+
         s = ffBuilder.convert_to_shape()
-        
+
         if text is not None:
             s.text = text
             p = s.text_frame.paragraphs[0]
@@ -176,12 +176,12 @@ class RunPython:
                 setColour(p.font.color, parseColour('#000000'))
             else:
                 setColour(p.font.color, parseColour(textColor))
-    
+
         if fill:
             s.fill.solid()
             if fillColor is not None:
                 setColour(s.fill.fore_color, parseColour(fillColor))
-        
+
         return s
 
     def doChecklistChecks(placeholder, checklist, colourChecks = False):
@@ -191,15 +191,15 @@ class RunPython:
         for paraNumber, para in enumerate(paras):
             # Save original font size
             originalFontSize = para.font.size
-            
+
             # Save original indentation level
             level = para.level
-            
+
             # Remove the original pPr element
             para._element.remove(para._element.getchildren()[0])
-    
+
             xml = ''
-            
+
             # Note the level insertion
             xml += f'<a:pPr xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" marL="{Inches(0.25) * level}" indent="{Inches(0.33)}" lvl="{level}">'
 
@@ -230,20 +230,20 @@ class RunPython:
                     xml += '<a:buClr xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">'
                     xml += '<a:srgbClr val="FF0000" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" />'
                     xml += '</a:buClr>'
-                
+
                 # Set the bullet to a square with a cross
                 xml += '<a:buFont xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" typeface="Wingdings 2" pitchFamily="2" charset="2"/>'
                 xml += '<a:buChar xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" char="T"/>'
-                
-     
+
+
             xml += '</a:pPr>'
-    
+
             # Parse this XML
             parsed_xml = parse_xml(xml)
-    
+
             # Insert the parsed XML fragment as a child of the pPr element
             para._element.insert(0, parsed_xml)
-    
+
             # Restore original font size
             para.font.size = originalFontSize
 
@@ -251,7 +251,7 @@ class RunPython:
 
     def makeChecklist(placeholder, checklist, checkTextIndex = 0, checkMarkIndex = 1, levelIndex = 2, colourChecks = False):
         checkMarks = []
-        
+
         for paraNumber, checklistItem in enumerate(checklist):
             checkMarks.append(checklistItem[checkMarkIndex])
 
@@ -261,20 +261,20 @@ class RunPython:
                para = placeholder.text_frame.add_paragraph()
 
             addFormattedText(para, checklistItem[checkTextIndex])
-            
+
             # The actual level setting in the surviving XML is done by doChecklistChecks
             # The below sets the level as a hint for doChecklistChecks to work with
             if len(checklistItem) > levelIndex:
                 try:
                     level = int(checklistItem[levelIndex])
-                    
+
                     para.level = level - 1
                 except ValueError:
                     para.level = 0
             else: para.level = 0
 
         RunPython.doChecklistChecks(placeholder, checkMarks, colourChecks)
-        
+
         return placeholder
 
     def makeTruthy(table_array, columnNumber = 1, trueString = "Yes", falseString = "No", unsetString = ""):
@@ -320,7 +320,7 @@ class RunPython:
 
             # Return new shape
             return newShape
-        
+
         # Search for last text box
         for shapeIndex, theShape in reversed(list(enumerate(slide.shapes))):
             if (theShape.shape_type == MSO_SHAPE_TYPE.TEXT_BOX) | (theShape.placeholder_format.type == PP_PLACEHOLDER.OBJECT):
@@ -332,7 +332,7 @@ class RunPython:
 
         # Return new shape's index as presumed to be the text box we want
         return newShape
-        
+
     def checklistFromCSV(slide, renderingRectangle, filename, shapeIndex = None, colourChecks = False):
         # Read in CSV and turn second column into "truthy" values
         myChecklist = RunPython.makeTruthy(RunPython.readCSV(filename), 1)
@@ -342,14 +342,14 @@ class RunPython:
 
         # Make the checklist in this placeholder from the imported file
         RunPython.makeChecklist(textShape, myChecklist, 0, 1, 2, colourChecks)
-        
+
         return textShape
 
     def removeBullet(theShape, paragraphNumber):
         removeBullet(theShape.text_frame.paragraphs[paragraphNumber])
-        
+
         return theShape
-    
+
     def removeBullets(theShape):
         for p in theShape.text_frame.paragraphs:
             removeBullet(p)
@@ -363,16 +363,16 @@ class RunPython:
 
     def getParagraphs(slide, wantedParagraphs = []):
         return getParagraphs(slide, wantedParagraphs)
-        
+
     def doAnnotations(slide, annotationList, lineWidth = None, shapeWidth = None):
         for annotation in annotationList:
             x = Inches(float(annotation[0]))
             y = Inches(float(annotation[1]))
             w = Inches(float(annotation[2]))
             h = Inches(float(annotation[3]))
-            
+
             text = annotation[4]
-            
+
             if text in [
                 "-",
                 "<-",
@@ -385,10 +385,10 @@ class RunPython:
             ]:
                 # Draw an line from x, y to x+w, y+h
                 c = slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, x, y, x + w, y + h)
-                
+
                 if text != "-":
                     # Will need an a:ln element
-                    
+
                     # Find the spPr element to hang this off
                     for element in c._element.getchildren():
                         if element.tag == "{http://schemas.openxmlformats.org/presentationml/2006/main}spPr":
@@ -400,23 +400,23 @@ class RunPython:
                         cmpd = "sng"
 
                     xml = '<a:ln xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" cmpd="' + cmpd + '">'
-                        
+
                     if "<" in text:
                         xml += '  <a:headEnd type="triangle" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" />'
-                        
+
                     if ">" in text:
                         xml += '  <a:tailEnd type="triangle" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" />'
-                        
+
                     xml += '</a:ln>'
-                        
+
                     # Parse this XML
                     parsed_xml = parse_xml(xml)
-    
+
                     # Insert the parsed XML fragment as a child of the pPr element
                     spPr.append(parsed_xml)
                 if lineWidth is not None:
                     c.line.width = Pt(float(lineWidth))
-                        
+
                 if len(annotation) > 5:
                     toColour = c.line.color
                     setColour(toColour, parseColour(annotation[5]))
@@ -441,13 +441,13 @@ class RunPython:
                     "[=]",
                 ]:
                     b = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, x, y, w, h)
-                    
+
                 elif text in [
                     "o",
                     "O",
                 ]:
                     b = slide.shapes.add_shape(MSO_SHAPE.OVAL, x, y, w, h)
-                    
+
                 else:
                     b = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, x, y, w, h)
 
@@ -462,7 +462,7 @@ class RunPython:
                     if foreColour != "":
                         toColour = b.text_frame.paragraphs[0].runs[0].font.color
                         setColour(toColour, parseColour(foreColour))
-                    
+
                     if len(annotation) > 7:
                         # Background colour
                         backColour = annotation[7]
@@ -470,10 +470,10 @@ class RunPython:
                             b.fill.solid()
                             toColour = b.fill.fore_color
                             setColour(toColour, parseColour(annotation[7]))
-                    
+
                 if shapeWidth is not None:
                     b.line.width = Pt(float(shapeWidth))
-                
+
                 if ("=" in text) | (text == "O"):
                     be = b._element
                     ln= b.get_or_add_ln()
@@ -487,5 +487,5 @@ class RunPython:
 
     def annotationsFromCSV(slide, filename, lineWidth = None, shapeWidth = None):
         annotations = RunPython.readCSV(filename)
-        
+
         RunPython.doAnnotations(slide, annotations, lineWidth, shapeWidth)

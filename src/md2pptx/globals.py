@@ -6,7 +6,7 @@ globals.py
 
 import re
 
-from processingOptions import ProcessingOptions
+from md2pptx.processingOptions import ProcessingOptions
 
 global processingOptions
 processingOptions = ProcessingOptions()
