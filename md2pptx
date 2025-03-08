@@ -86,8 +86,8 @@ except:
     have_graphviz = False
 
 
-md2pptx_level = "5.4"
-md2pptx_date = "23 February, 2025"
+md2pptx_level = "5.4.1"
+md2pptx_date = "8 March, 2025"
 
 namespaceURL = {
     "mc":  "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -5264,14 +5264,13 @@ for line in linesAfterConcatenation:
 
 # Pass 4: Extract any indirect reference anchors
 metadataLinenumber = 0
-indirectAnchors = []
 for line in linesAfterConcatenation:
     line = line.rstrip()
     if m := indirectReferenceAnchorRegex.match(line):
         anchorName = m.group(1).strip()
         anchorURL = m.group(2).strip()
 
-        indirectAnchors.append([anchorName, anchorURL])
+        globals.indirectAnchors.append([anchorName, anchorURL])
 
         linesAfterConcatenation[metadataLinenumber] = "<ignoreme>"
     metadataLinenumber += 1
@@ -6093,7 +6092,7 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
 
 # Ensure there's a blank table caption - for the case the table ended in the final line
 if len(tableCaptions) < len(tableRows):
-    tableCaptions.append(tableCaption)
+    tableCaptions.append("")
 
 ######################################################################################
 #                                                                                    #

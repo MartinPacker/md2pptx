@@ -360,7 +360,7 @@ def parseText(text):
 
                 # Attempt to look up reference
                 foundReference = False
-                for indref, indURL in indirectAnchors:
+                for indref, indURL in globals.indirectAnchors:
                     if indref == reference:
                         foundReference = True
                         break

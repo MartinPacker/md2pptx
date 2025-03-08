@@ -17,10 +17,11 @@ spanClassRegex = re.compile("<span( )*class=")
 global spanStyleRegex
 spanStyleRegex = re.compile("<span( )*style=")
 
-
 global href_runs
 href_runs = {}
 
+global indirectAnchors
+indirectAnchors = []
 ######################################################################################
 #                                                                                    #
 #  Prime for style. metadata                                                         #
