@@ -460,6 +460,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|5.4.1|8&nbsp;March&nbsp;2025|Bugfix: indirectAnchors should've been a global|
 |5.4|23&nbsp;February&nbsp;2025|Added the ability to run Python code from named files in [`run-python`](#running-inline-python). Added [3 exit routine points](#python-exit-routines) where user Python code can run.|
 |5.3.1|16&nbsp;February&nbsp;2025|Added a double-headed arrow&comma; an oval&comma; double lines&comma; and line widths to [Annotations](#annotations-related-helper-routines). Added optional drop shadows for tables with [`tableShadow`](#controlling-whether-tables-have-drop-shadows-tableshadow).|
 |5.3|11&nbsp;February&nbsp;2025|Added [Annotations](#annotations-related-helper-routines) to [`run-python`](#running-inline-python).|
