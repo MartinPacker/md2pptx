@@ -2262,11 +2262,11 @@ Sometimes you will want to review the Processing Summary slide - which is the fi
 
 To remove it specify:
 
-    removeFirstSlide: yes
+    deleteFirstSlide: yes
 
 The default is `no`.
 
-**Note:** If you don't have a Processing Summary slide - perhaps because the slide master you used doesn't have a slide - the first slide would still be removed if you specified `removeFirstSlide: yes`. This is probably not what you want to have happen.
+**Note:** If you don't have a Processing Summary slide - perhaps because the slide master you used doesn't have a slide - the first slide would still be removed if you specified `deleteFirstSlide: yes`. This is probably not what you want to have happen.
 
 
 #### Specifying Slide Background Images With `backgroundImage`
