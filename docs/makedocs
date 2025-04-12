@@ -1,0 +1,16 @@
+#!/bin/zsh
+
+# makedocs
+# --------
+#
+# Builds the md2pptx user guide, creating the Markdown .md and log .log
+# file in the process. It doesn't convert the Markdown to HTML. I use
+# Sublime Text for that. There are no quirks in the HTML generated so you could
+# probably use anything - such as Marked.
+#
+# To do the build you will need mdpre - https://github.com/MartinPacker/mdpre
+#
+# If you are on Windows you should still be able to run the mdpre command, but the
+# syntax for specifying input and output files is probably a little different.
+
+mdpre -v < user-guide.mdp > user-guide.md 2> user-guide.log
