@@ -146,6 +146,8 @@ def parseText(text):
     # Replace any </sup> with char "\uFDE0"
     text2 = text2.replace("</sup>", u"\uFDE0")
 
+    # Note FDE1 - FDE3 used in resolveSymbols
+    
     # Handle escaped underscore
     text2 = text2.replace("\\_", "_")
 
@@ -396,10 +398,10 @@ def parseText(text):
             else:
                 fragment = fragment + c
 
-        elif ord(c) == 235:
+        elif c == u"\uFDE3":
             fragment = fragment + "`"
 
-        elif ord(c) == 236:
+        elif c == u"\uFDE1":
             fragment = fragment + "<"
 
         elif c == u"\uFDD6":
@@ -500,12 +502,12 @@ def addFormattedText(p, text):
     # fragment
     parsedText = parseText(text)
 
-    # Replace chr(237) with > in each Fragment
+    # Replace u"\uFDE2" with > in each Fragment
     for f in range(len(parsedText)):
         if parsedText[f][0] in ["SpanClass", "SpanStyle"]:
-            parsedText[f][1][1] = parsedText[f][1][1].replace(chr(237), ">")
+            parsedText[f][1][1] = parsedText[f][1][1].replace(u"\uFDE2", ">")
         else:
-            parsedText[f][-1] = parsedText[f][-1].replace(chr(237), ">")
+            parsedText[f][-1] = parsedText[f][-1].replace(u"\uFDE2", ">")
 
     # Prime flattened Text
     flattenedText = ""

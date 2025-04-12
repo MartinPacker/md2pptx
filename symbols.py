@@ -22,8 +22,8 @@ def resolveSymbols(text):
     # Replace certain entity references with actual characters
     replacementRules = [
         ("&equals;", "="),
-        ("&lt;", chr(236)),
-        ("&gt;", chr(237)),
+        ("&lt;", u"\uFDE1"),
+        ("&gt;", u"\uFDE2"),
         ("&le;", "≤"),
         ("&ge;", "≥"),
         ("&asymp;", "≈"),
@@ -69,8 +69,8 @@ def resolveSymbols(text):
         ("&pi;", "π"),
         ("&rho;", "ρ"),
         ("&dash;", "-"),
-        ("\`", chr(235)),
-        ("&grave;", chr(235)),
+        ("\`", u"\uFDE3"),
+        ("&grave;", u"\uFDE3"),
         ("&quot;", "\""),
         ("&ldquo;", u"\u201C"),
         ("&rdquo;", u"\u201D"),
