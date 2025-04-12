@@ -172,6 +172,7 @@ To quote from the python-pptx license statement:
 =colalign l r l
 =csv
 Level,Date,What
+5.4.2,12&nbsp;April&nbsp;2025,Bugfixes: Codepoint 236 was trashed. Editing error in footnote font size handling. Shell script for building documentation.
 5.4.1,8&nbsp;March&nbsp;2025,Bugfix: indirectAnchors should've been a global
 5.4,23&nbsp;February&nbsp;2025,Added the ability to run Python code from named files in [`run-python`](#running-inline-python). Added [3 exit routine points](#python-exit-routines) where user Python code can run.
 5.3.1,16&nbsp;February&nbsp;2025,Added a double-headed arrow&comma; an oval&comma; double lines&comma; and line widths to [Annotations](#annotations-related-helper-routines). Added optional drop shadows for tables with [`tableShadow`](#controlling-whether-tables-have-drop-shadows-tableshadow).
@@ -4730,3 +4731,4 @@ Obviously, it's user-guide.mdp you edit to make your changes.
 
 * For extensive blocks of text you might like to use mdpre's `=include` capability - to embed a file with your text.
 * If you are creating tables mdpre's `=csv` capability is what this user guide has used.
+* `makedocs` in the `/docs` subfolder is a shell script for issuing the above command.
