@@ -86,8 +86,8 @@ except:
     have_graphviz = False
 
 
-md2pptx_level = "5.4.1"
-md2pptx_date = "8 March, 2025"
+md2pptx_level = "5.4.1+"
+md2pptx_date = "12 April, 2025"
 
 namespaceURL = {
     "mc":  "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -1122,11 +1122,11 @@ def parseTitleText(titleLineString):
 def addFooter(presentation, slideNumber, slide):
     numbersHeight = globals.processingOptions.getCurrentOption("numbersHeight")
     
-    numbersglobals.fontsizespec = globals.processingOptions.getCurrentOption("numbersFontSize")
-    if numbersglobals.fontsizespec == "":
+    numbersfontsizespec = globals.processingOptions.getCurrentOption("numbersFontSize")
+    if numbersfontsizespec == "":
         numbersFontSize = Pt(12)
     else:
-        numbersFontSize = Pt(numbersglobals.fontsizespec)
+        numbersFontSize = Pt(numbersfontsizespec)
     
     shapes = slide.shapes
     footer = shapes.add_textbox(
