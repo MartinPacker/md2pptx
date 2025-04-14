@@ -5,12 +5,35 @@ paragraph
 from pptx.enum.shapes import MSO_SHAPE_TYPE
 from pptx.enum.shapes import PP_PLACEHOLDER
 from lxml import etree
+from pptx.oxml.xmlchemy import OxmlElement
 import re
 from pptx.dml.color import RGBColor, MSO_THEME_COLOR
+from pptx.util import Pt
 
 import globals
 from processingOptions import *
 from symbols import resolveSymbols
+from colour import parseRGB
+
+def setHighlight(run, color):
+    # get run properties
+    rPr = run._r.get_or_add_rPr()
+
+    # Create highlight element
+    hl = OxmlElement("a:highlight")
+
+    # Create specify RGB Colour element with color specified
+    srgbClr = OxmlElement("a:srgbClr")
+    setattr(srgbClr, "val", color)
+
+    # Add colour specification to highlight element
+    hl.append(srgbClr)
+
+    # Add highlight element to run properties
+    rPr.append(hl)
+
+    return run
+
 
 def removeBullet(paragraph):
     pPr = paragraph._p.get_or_add_pPr()
