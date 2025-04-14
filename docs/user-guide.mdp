@@ -172,6 +172,7 @@ To quote from the python-pptx license statement:
 =colalign l r l
 =csv
 Level,Date,What
+5.4.3,14&nbsp;April&nbsp;2025,Bugfixes: [span style](#using-html-%3Cspan%3E-elements-with-style) issues. Moved `setHighlight` into paragraph.py.
 5.4.2,12&nbsp;April&nbsp;2025,Bugfixes: Codepoint 236 was trashed. Editing error in footnote font size handling. Shell script for building documentation.
 5.4.1,8&nbsp;March&nbsp;2025,Bugfix: indirectAnchors should've been a global
 5.4,23&nbsp;February&nbsp;2025,Added the ability to run Python code from named files in [`run-python`](#running-inline-python). Added [3 exit routine points](#python-exit-routines) where user Python code can run.
