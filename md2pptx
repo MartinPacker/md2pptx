@@ -169,7 +169,7 @@ class AudioVideoInfo:
             self.poster = None
 
 def parseColorStyle(whichStyleType, name, value, colorList):
-    spanClass = name[len(whichStyleType) + 1 :]
+    spanClass = name[len("style." + whichStyleType) + 1 :]
 
     if value.startswith("#"):
         value2 = value
@@ -4981,13 +4981,13 @@ for line in metadata_lines:
     # Following relate to styling and don't use Processing Options class
     elif name.startswith("style."):
         if name.startswith("style.bgcolor."):
-            parseColorStyle("style.bgcolor", name, value, globals.bgcolors)
+            parseColorStyle("bgcolor", name, value, globals.bgcolors)
 
         elif name.startswith("style.fgcolor."):
-            parseColorStyle("style.fgcolor", name, value, globals.fgcolors)
+            parseColorStyle("fgcolor", name, value, globals.fgcolors)
 
         elif name.startswith("style.cellcolor."):
-            parseColorStyle("style.cellcolor", name, value, globals.cellcolors)
+            parseColorStyle("cellcolor", name, value, globals.cellcolors)
 
         elif name.startswith("style.emphasis."):
             spanClass = name[15:]
