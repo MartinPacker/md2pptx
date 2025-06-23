@@ -460,6 +460,7 @@ def parseText(text):
                     | (className in globals.fgcolors)
                     | (className in globals.emphases)
                     | (className in globals.fontsizes)
+                    | (className in globals.cellcolors)
                 ):
                     textArray.append(["SpanClass", [className, spanText]])
 

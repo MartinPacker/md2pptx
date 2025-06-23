@@ -86,8 +86,8 @@ except:
     have_graphviz = False
 
 
-md2pptx_level = "5.4.3"
-md2pptx_date = "14 April, 2025"
+md2pptx_level = "5.4.3+"
+md2pptx_date = "23 June, 2025"
 
 namespaceURL = {
     "mc":  "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -3283,7 +3283,30 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                 else:
                     p.alignment = PP_ALIGN.LEFT
 
+                # Add the cell text, respecting formatting
                 addFormattedText(p, cell)
+                
+                # Potentially colour cell background
+                firstSpanClassWithCellColor = None
+
+                for spanClassMatch in globals.spanClassRegex.finditer(cell):
+                    # There are span class that might feature in cellcolors
+                    afterSpanTag = cell[spanClassMatch.end(1) :]
+                    className = afterSpanTag[7 : afterSpanTag.index(">") - 1]
+                    if className in globals.cellcolors:
+                        # First <span> of cell text specifies cellcolor
+                        firstSpanClassWithCellColor = className
+                        
+                        # Don't search any further
+                        break
+
+                if firstSpanClassWithCellColor is not None:
+                    cellBackgroundColor = globals.cellcolors[firstSpanClassWithCellColor]
+
+                    cff = newCell.fill
+                    cff.solid()
+                    cff.fore_color.rgb = RGBColor.from_string(cellBackgroundColor)
+
 
         # Apply table border styling - whether there is any or not
         applyTableLineStyling(
@@ -4945,11 +4968,14 @@ for line in metadata_lines:
 
     elif name.startswith("style.bgcolor."):
         spanClass = name[14:]
+
         if value.startswith("#"):
             value2 = value
         else:
             value2 = "#" + value
+
         (check, colour) = parseRGB(value2)
+
         if check:
             # Valid RGB hex value
             globals.bgcolors[spanClass] = colour
@@ -4958,14 +4984,33 @@ for line in metadata_lines:
 
     elif name.startswith("style.fgcolor."):
         spanClass = name[14:]
+
         if value.startswith("#"):
             value2 = value
         else:
             value2 = "#" + value
+
         (check, colour) = parseRGB(value2)
+
         if check:
             # Valid RGB hex value
             globals.fgcolors[spanClass] = colour
+        else:
+            print(f"Invalid value for {name} - {value}. Ignoring.")
+
+    elif name.startswith("style.cellcolor."):
+        spanClass = name[16:]
+
+        if value.startswith("#"):
+            value2 = value
+        else:
+            value2 = "#" + value
+
+        (check, colour) = parseRGB(value2)
+
+        if check:
+            # Valid RGB hex value
+            globals.cellcolors[spanClass] = colour
         else:
             print(f"Invalid value for {name} - {value}. Ignoring.")
 
@@ -5385,9 +5430,11 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
     elif line.startswith("<!-- md2pptx: "):
         # Dynamic metadata line
         inTitle = False
+        
         if DMMatch := dynamicMetadataRegex.match(line):
             metadataKey = DMMatch.group(1).lower().strip()
             metadataValue = DMMatch.group(2).lower()
+
             if (metadataKey != "") & (metadataValue != ""):
                 # Valid metadata pair so parse key / value - and apply if valid
 

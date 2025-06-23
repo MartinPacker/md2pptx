@@ -43,3 +43,7 @@ emphases = {}
 # Font size class correspondence
 global fontsizes
 fontsizes = {}
+
+# Cell background class correspondence
+global cellcolors
+cellcolors = {}
