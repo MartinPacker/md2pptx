@@ -168,7 +168,21 @@ class AudioVideoInfo:
         else:
             self.poster = None
 
+def parseColorStyle(whichStyleType, name, value, colorList):
+    spanClass = name[len(whichStyleType) + 1 :]
 
+    if value.startswith("#"):
+        value2 = value
+    else:
+        value2 = "#" + value
+
+    (check, colour) = parseRGB(value2)
+
+    if check:
+        # Valid RGB hex value
+        colorList[spanClass] = colour
+    else:
+        print(f"Invalid value for {name} - {value}. Ignoring.")
 
 # Get a picture's rId
 def get_picture_rId(picture):
@@ -4965,65 +4979,26 @@ for line in metadata_lines:
         globals.processingOptions.setOptionValues(name, value)
 
     # Following relate to styling and don't use Processing Options class
+    elif name.startswith("style."):
+        if name.startswith("style.bgcolor."):
+            parseColorStyle("style.bgcolor", name, value, globals.bgcolors)
 
-    elif name.startswith("style.bgcolor."):
-        spanClass = name[14:]
+        elif name.startswith("style.fgcolor."):
+            parseColorStyle("style.fgcolor", name, value, globals.fgcolors)
 
-        if value.startswith("#"):
-            value2 = value
-        else:
-            value2 = "#" + value
+        elif name.startswith("style.cellcolor."):
+            parseColorStyle("style.cellcolor", name, value, globals.cellcolors)
 
-        (check, colour) = parseRGB(value2)
+        elif name.startswith("style.emphasis."):
+            spanClass = name[15:]
+            globals.emphases[spanClass] = value
 
-        if check:
-            # Valid RGB hex value
-            globals.bgcolors[spanClass] = colour
-        else:
-            print(f"Invalid value for {name} - {value}. Ignoring.")
-
-    elif name.startswith("style.fgcolor."):
-        spanClass = name[14:]
-
-        if value.startswith("#"):
-            value2 = value
-        else:
-            value2 = "#" + value
-
-        (check, colour) = parseRGB(value2)
-
-        if check:
-            # Valid RGB hex value
-            globals.fgcolors[spanClass] = colour
-        else:
-            print(f"Invalid value for {name} - {value}. Ignoring.")
-
-    elif name.startswith("style.cellcolor."):
-        spanClass = name[16:]
-
-        if value.startswith("#"):
-            value2 = value
-        else:
-            value2 = "#" + value
-
-        (check, colour) = parseRGB(value2)
-
-        if check:
-            # Valid RGB hex value
-            globals.cellcolors[spanClass] = colour
-        else:
-            print(f"Invalid value for {name} - {value}. Ignoring.")
-
-    elif name.startswith("style.emphasis."):
-        spanClass = name[15:]
-        globals.emphases[spanClass] = value
-
-    elif name.startswith("style.fontsize."):
-        spanClass = name[15:]
+        elif name.startswith("style.fontsize."):
+            spanClass = name[15:]
         
-        # Assumed "px" on the end
-        value2 = value[:-2]
-        globals.fontsizes[spanClass] = value2
+            # Assumed "px" on the end
+            value2 = value[:-2]
+            globals.fontsizes[spanClass] = value2
 
     elif name in ["codeforeground", "codebackground"]:
         globals.processingOptions.setOptionValues(name, value)
