@@ -18,15 +18,15 @@ As was previously mentioned, Python 3 is required.
 
 Specifically python-pptx
 
-* requires 3.8 or later - to use the "Walrus Operator"
+* requires 3.8 or later - to use the "Walrus Operator". From 1 April, 2025 md2pptx only supports 3.10 or later
 * has been tested with 3.12 and alphas of 3.13 - with some changes made to handle issues
 
 #### Future Python Release Support
 
 Please note, and plan accordingly:
 
-* From 1 April, 2025 expect releases to only support 3.10 or later
 * From 1 April, 2026 expect releases to only support 3.11 or later
+* From 1 April, 2027 expect releases to only support 3.12 or later
 
 md2pptx moves forward on Python every so often to:
 
