@@ -1,345 +1,106 @@
 
-mdpre Markdown Preprocessor v0.6.9 (17 September, 2024)
-=======================================================
+mdpre Markdown Preprocessor v1.1.1+ (12 June, 2025)
+===================================================
+
 - opened <stdout> for writing
-Def mdpre_date = 17 September, 2024
-Def mdpre_level = 0.6.9
+Def makefile = file-3
+
+Def logfile = stderr
+
+Def output = stdout
+
+Def input = stdin
+
+Def node = MacBookPro.domain_not_set.invalid
+
+Def version = Darwin Kernel Version 24.5.0: Tue Apr 22 19:54:49 PDT 2025; root:xnu-11417.121.6~2/RELEASE_ARM64_T6000
+
+Def architecture = 64bit
+
+Def machine = arm64
+
+Def system = Darwin
+
+Def release = 24.5.0
+
+Def python_version = 3.12.3
+
+Def python_implementation = CPython
+
+Def processor = arm
+
+Def mdpre_date = 12 June, 2025
+
+Def mdpre_level = 1.1.1+
+
 Def userid = martinpacker
-Def time = 11&colon;18
-Def date = 14 April&comma; 2025
+
+Def day = 13
+
+Def month = July
+
+Def year = 2025
+
+Def time = 14&colon;35
+
+Def date = 13 July&comma; 2025
+
 Def TOC = Table Of Contents
+
 Def md = Markdown
+
 Def pp = Powerpoint
+
 Markdown To Powerpoint User Guide
+
 Table Of Contents - spec '2 * Table Of Contents'
+
 2 6 Table Of Contents
 .....  Why md2pptx?
-..... .....  A Real World Use Case
-..... .....  Using md2pptx With mdpre
-.....  How Do You Use md2pptx?
-..... .....  Installation
-..... .....  Updating
-..... .....  Use
-.....  python-pptx license
-.....  Change Log
-Column Alignment - spec 'l r l'
-CSV Start
-CSV Stop
-.....  Creating Slides
-..... .....  Presentation Title Slides
-..... .....  Presentation Section Slides
-..... .....  Bullet Slides
-..... ..... .....  Numbered List Items
-..... .....  Graphics, Video And Audio slides
-..... ..... .....  Graphics Slides
-..... ..... ..... .....  Clickable Pictures
-..... ..... ..... .....  Graphics File References
-..... ..... .....  Video And Audio Slides
-..... ..... ..... .....  Video Slides
-..... ..... ..... .....  Audio Slides
-..... .....  Table Slides
-..... ..... .....  Special Case: Two Graphics Side By Side
-..... ..... .....  Special Case: Two By Two Grid Of Graphics
-..... ..... .....  Special Case: Three Graphics On A Slide
-..... ..... .....  Special Case: One Graphic Above Another
-..... ..... .....  Multi-Column Table Cells
-..... .....  Card Slides
-..... ..... .....  Card Titles
-..... ..... .....  Card Graphics, Video, &amp; Audio
-..... .....  Code Slides
-..... ..... .....  `<code>`
-..... ..... .....  Triple Backticks (```)
-..... ..... ..... .....  Special Processing Of Code Within Triple Backticks
-..... ..... ..... ..... .....  GraphViz
-..... ..... .....  Indented Text
-..... ..... .....  `<pre>`
-..... .....  Funnels
-..... .....  Task List Slides
-..... .....  Slides With More Than One Content Block
-..... .....  Adding Slide Notes
-.....  Slides Without Titles
-..... .....  Using A Horizontal Rule
-..... .....  Using A Level 3 Heading With `&nbsp;`
-.....  Hyperlinks And VBA Macros
-..... .....  Coding A URL Reference
-..... .....  Coding A Heading Reference On A Target Slide
-..... .....  Coding A Hyperlink To Another Slide
-..... .....  Invoking A VBA  Macro
-..... ..... .....  Sample Macro To Remove The First Slide
-..... ..... .....  Sample Macro To Remove The First Slide And Save As A .pptx File
-.....  HTML Comments
-.....  Special Text Formatting
-CSV Start
-CSV Stop
-..... .....  Using HTML `<span>` Elements To Specify Text Effects
-..... ..... .....   Using HTML `<span>` Elements with `class`
-..... ..... .....   Using HTML `<span>` Elements with `style`
-..... .....  HTML Entity References
-Column Alignment - spec 'l c l c l c l c '
-CSV Start
-CSV Stop
-..... .....  Numeric Character References
-..... .....   Escaped Characters
-..... .....  CriticMarkup
-.....  Creating A Glossary Of Terms
-.....  Creating Footnotes
-..... .....  Creating A Footnote
-..... .....  Referring To A Footnote
-.....  Controlling The Presentation With Metadata
-..... .....  Specifying Metadata
-..... ..... .....  Processing Summary
-..... ..... .....  Specifying Colours
-..... ..... ..... .....  Theme Colours
-..... ..... ..... .....  RGB Colours
-..... .....  Metadata Keys
-..... ..... .....  Title And Subtitle Font Sizes And Alignment
-..... ..... ..... .....  Page Title Size - `pageTitleSize`
-..... ..... ..... .....  Page Subtitle Size - `pageSubtitleSize`
-..... ..... ..... .....  Section Title Size - `sectionTitleSize`
-..... ..... ..... .....  Section Subtitle Size - `sectionSubtitleSize`
-..... ..... ..... .....  Presentation Title Size - `presTitleSize`
-..... ..... ..... .....  Presentation Subtitle Size - `presSubtitleSize`
-..... ..... ..... .....  Page Title Alignment `pagetitlealign`
-..... ..... .....  Monospace Font - `monoFont`
-..... ..... .....  Margin size - `marginBase` and `tableMargin`
-..... ..... .....  Controlling Adjusting Title Positions And Sizes - `AdjustTitles`
-..... ..... .....  Associating A Class Name with A Background Colour With `style.bgcolor`
-..... ..... .....  Associating A Class Name with A Foreground Colour With `style.fgcolor`
-..... ..... .....  Associating A Class Name With Text Emphasis With `style.emphasis`
-..... ..... .....  Associating A Class Name With Font Size with `style.fontsize`
-..... ..... .....  Template Presentation - `template`
-..... ..... .....  Hiding Slides - `hidden`
-..... ..... .....  Specifying An Abstract Slide With `abstractTitle`
-..... ..... .....  Specifying Text Size With `baseTextSize` And `baseTextDecrement`
-..... ..... .....  Specifying Bold And Italic Text Colour With `BoldColour` And `ItalicColour`
-..... ..... .....  Specifying Bold And Italic Text Effects With `BoldBold` And `ItalicItalic`
-..... ..... .....  Controlling Task Slide Production With `taskSlides` and `tasksPerSlide`
-..... ..... .....  Controlling Glossary Slide Production With `glossaryTitle`, `glossaryTerm`, `glossaryMeaning`,`glossaryMeaningWidth`, and `glossaryTermsPerPage`
-..... ..... .....  Specifying How Many Spaces Represent An Indentation Level With `IndentSpaces`
-..... ..... .....   Specifying Where Temporary Files Are Stored With `tempDir`
-..... ..... .....  Deleting The First (Processing Summary) Slide - with `DeleteFirstSlide`
-..... ..... .....  Specifying Slide Background Images With `backgroundImage`
-..... ..... .....  Table Metadata
-..... ..... ..... .....  Shrinking Tables With `compactTables`
-..... ..... ..... .....  Adjusting Table Heading Font Size With `tableHeadingSize`
-..... ..... ..... .....  Adding Lines Round Tables And Cells With `addTableLines`
-..... ..... ..... .....  Adding Lines After Table Rows And Columns With `addTableRowLines` And `addTableColumnLines`
-..... ..... ..... .....  Specifying What The Added Table Lines Look Like With `addTableLineColour`, `addTableLineCount` and `addTableLineWidth`
-..... ..... ..... .....  Controlling Whether Empty Table Cells Cause Column Spanning - `SpanCells`
-..... ..... ..... .....  Controlling Whether Tables Have Drop Shadows - `tableShadow`
-..... ..... .....  Card Metadata
-..... ..... ..... .....  Card Background Colour - `CardColour`
-..... ..... ..... .....  Card Border Colour - `CardBorderColour`
-..... ..... ..... .....  Card Border Width - `CardBorderWidth`
-..... ..... ..... .....  Card Title Size - `CardTitleSize`
-..... ..... ..... .....  Card Title Colour - `cardTitleColour`
-..... ..... ..... .....  Card Title Background Colours - `CardTitleBackground`
-..... ..... ..... .....  Card Divider Colour - `cardDividerColour`
-..... ..... ..... .....   Card Shadow - `CardShadow`
-..... ..... ..... .....  Card Size - `CardPercent`
-..... ..... ..... .....  Card Layout Direction - `CardLayout`
-..... ..... ..... .....  Card Title Alignment - `CardTitleAlign`
-..... ..... ..... .....  Card Title Position - `CardTitlePosition`
-..... ..... ..... .....  Card Shape - `CardShape`
-..... ..... ..... .....  Card Horizontal Gap - `CardHorizontalGap`
-..... ..... ..... .....  Card Vertical Gap - `CardVerticalGap`
-..... ..... ..... .....  Card Graphic Position - `CardGraphicPosition`
-..... ..... ..... .....  Card Graphic Size - `CardGraphicSize`
-..... ..... ..... .....  Card Graphic Padding - `CardGraphicPadding`
-..... ..... .....  Code Metadata
-..... ..... ..... .....  Code Column Count - `CodeColumns`
-..... ..... ..... .....  Fixed Pitch Height To Width Ratio - `FPRatio`
-..... ..... ..... .....  Foreground Colour - `CodeForeground`
-..... ..... ..... .....  Background Colour - `CodeBackground`
-..... ..... .....  Funnel Metadata
-..... ..... ..... .....  Funnel Fill Colours - `funnelColours`
-..... ..... ..... .....  Funnel Border Colour - `funnelBorderColour`
-..... ..... ..... .....  Funnel Title Colour - `funnelTitleColour`
-..... ..... ..... .....  Funnel Text Colour - `funnelTextColour`
-..... ..... ..... .....  Funnel Labels Space - `funnelLabelsPercent`
-..... ..... ..... .....  Funnel Labels Position - `funnelLabelsPosition`
-..... ..... ..... .....  Funnel Orientation - `funnelWidest`
-..... ..... .....  Footer And Slide Number Metadata
-..... ..... ..... .....  Slide Numbers - `numbers`
-..... ..... ..... .....  Specifying Slide Number Font Size With `numbersFontSize`
-..... ..... ..... .....  Specifying How Much Space To Reserve For Slide Numbers With `NumbersHeight`
-..... ..... ..... .....  Specifying Footer Text
-..... ..... ..... ..... .....  Footer Flexibility
-..... ..... ..... .....  Specifying Footer Font Size With `footerFontSize`
-..... ..... .....  Slide Heading Levels - `TopHeadingLevel`
-Column Alignment - spec 'r l'
-CSV Start
-CSV Stop
-Column Alignment - spec 'r l'
-CSV Start
-CSV Stop
-..... ..... .....  Slides With Multiple Content Blocks
-..... ..... ..... .....  Horizontal Or Vertical Split - `ContentSplitDirection`
-..... ..... ..... .....  Split Proportions - `ContentSplit`
-..... ..... .....  Graphics Metadata
-..... ..... ..... .....  Exporting Converted SVG And PNG Files - `exportGraphics`
-..... ..... .....  Table Of Contents And Section Slide Metadata
-..... ..... ..... .....  "Chevron Style" Table Of Contents
-..... ..... ..... .....  "Circle Style" Table Of Contents
-..... ..... ..... .....  "Plain Style" Table Of Contents
-..... ..... ..... .....  Table Of Contents Style - `tocStyle`
-..... ..... ..... .....  Table Of Contents Title - `tocTitle`
-..... ..... ..... .....  Table Of Contents Live Links - `tocLinks`
-..... ..... ..... .....  Table Of Contents Item Height - `TOCItemHeight`
-..... ..... ..... .....  Table Of Contents Item Colour - `TOCItemColour`
-..... ..... ..... .....  Table Of Contents Row Gap - `TOCRowGap`
-..... ..... ..... .....  Table Of Contents Font Size - `TOCFontSize`
-..... ..... ..... .....  Section Navigation Buttons - `SectionArrows`
-..... ..... ..... .....  Section Navigation Button Colour - `SectionArrowsColour`
-..... ..... ..... .....  Make Expandable Sections - `SectionsExpand`
-..... ..... .....  Slide Transitions - `Transition`
-..... ..... .....  Python Exit Routines
-..... ..... ..... .....  After Loading - `onPresentationInitialisation`
-..... ..... ..... .....  Before Saving - `onPresentationBeforeSave`
-..... ..... ..... .....  After Saving - `onPresentationAfterSave`
-..... .....  Dynamic Metadata
-..... ..... .....  `hidden`
-..... ..... .....  Tables
-..... ..... ..... .....  `CompactTables`
-..... ..... ..... .....  `TableHeadingSize`
-..... ..... ..... .....  `addTableLines`
-..... ..... ..... .....  `addTableColumnLines` And `addTableRowLines`
-..... ..... ..... .....  Added Table Line Attributes
-..... ..... ..... .....  `SpanCells`
-..... ..... .....  Cards
-..... ..... ..... .....  `CardPercent`
-..... ..... ..... .....  `CardLayout`
-..... ..... ..... .....  `CardColour`
-..... ..... ..... .....  `CardTitleAlign`
-..... ..... ..... .....  `CardTitlePosition`
-..... ..... ..... .....  `CardTitleBackground`
-..... ..... ..... .....  `CardShape`
-..... ..... ..... .....  `CardHorizontalGap`
-..... ..... ..... .....  `CardVerticalGap`
-..... ..... .....  Code
-..... ..... ..... .....  `CodeColumns`
-..... ..... ..... .....  `FPRatio`
-..... ..... ..... .....  `CodeForeground`
-..... ..... ..... .....  `CodeBackground`
-..... ..... .....  Funnel
-..... ..... ..... .....  `FunnelColours`
-..... ..... ..... .....  `FunnelBorderColour`
-..... ..... ..... .....  `FunnelTitleColour`
-..... ..... ..... .....  `FunnelTextColour`
-..... ..... ..... .....  `FunnelLabelsPercent`
-..... ..... ..... .....  `FunnelLabelsPosition`
-..... ..... ..... .....  `FunnelWidest`
-..... ..... .....  `PageTitleSize`
-..... ..... .....  `PageSubtitleSize`
-..... ..... .....  `BaseTextSize`
-..... ..... .....  `BaseTextDecrement`
-..... ..... .....  `ContentSplitDirection`
-..... ..... .....  `ContentSplit`
-..... ..... .....  `IndentSpaces`
-..... ..... .....   `MarginBase`
-..... ..... .....   `NumbersHeight`
-..... ..... .....  `TableMargin`
-..... ..... .....  `Transition`
-..... ..... .....  `BackgroundImage`
-.....  Modifying The Slide Template
-..... .....  Basics
-..... .....  Slide Template Sequence
-Column Alignment - spec 'l l l l'
-CSV Start
-CSV Stop
-..... .....  Template Slide Types
-..... ..... .....  Title Slide - `TitleSlideLayout`
-..... ..... .....  Section Slide - `SectionSlideLayout`
-..... ..... .....  Title Only Slide - `TitleOnlyLayout`
-..... ..... .....   Blank Slide - `BlankLayout`
-..... ..... .....  Content Slide - `ContentSlideLayout`
-.....  Deviations From Standard Markdown
-.....  Running Inline Python
-..... .....  An Important Caution
-..... .....  How To Invoke Python In md2pptx
-..... ..... .....  Coding Inline Python
-..... ..... .....  Importing Python From A File
-..... .....  Variables You Can Rely On
-..... .....  Python Helper Routines
-..... ..... .....  General Helper Routines
-..... ..... ..... .....  RunPython.readCSV
-..... ..... ..... ..... .....  Input
-..... ..... ..... ..... .....  Output
-..... ..... ..... .....  RunPython.filterRows
-..... ..... ..... ..... .....  Input
-..... ..... ..... ..... .....  Output
-..... ..... ..... .....  RunPython.transposeArray
-..... ..... ..... ..... .....  Input
-..... ..... ..... ..... .....  Output
-..... ..... ..... .....  RunPython.ensureTextbox
-..... ..... ..... ..... .....  Input
-..... ..... ..... ..... .....  Output
-..... ..... ..... .....  RunPython.runFromFile
-..... ..... ..... ..... .....  Input
-..... ..... ..... ..... .....  Output
-..... ..... .....  Chart-Related Helper Routines
-..... ..... ..... .....  RunPython.makeChartData
-..... ..... ..... ..... .....  Input
-..... ..... ..... ..... .....  Output
-..... ..... ..... .....  RunPython.makeChart
-..... ..... ..... ..... .....  Input
-..... ..... ..... ..... .....  Output
-..... ..... .....  Table-Related Helper Routines
-..... ..... ..... .....  RunPython.makeTable
-..... ..... ..... ..... .....  Input
-..... ..... ..... ..... .....  Output
-..... ..... ..... .....  RunPython.applyCellFillRGB
-..... ..... ..... ..... .....  Input
-..... ..... ..... ..... .....  Output
-..... ..... ..... .....  RunPython.applyCellListFillRGB
-..... ..... ..... ..... .....  Input
-..... ..... ..... ..... .....  Output
-..... ..... ..... .....  RunPython.alignTableCellText
-..... ..... ..... ..... .....  Input
-..... ..... ..... ..... .....  Output
-..... ..... .....  Drawing-Related Helper Routines
-..... ..... ..... .....  RunPython.makeDrawnShape
-..... ..... ..... ..... .....  Input
-..... ..... ..... ..... .....  Output
-..... ..... .....  Checklist-Related Helper routines
-..... ..... ..... .....  RunPython.makeTruthy
-..... ..... ..... ..... .....  Input
-..... ..... ..... ..... .....  Output
-..... ..... ..... .....  RunPython.checklistFromCSV
-..... ..... ..... ..... .....  Input
-..... ..... ..... ..... .....  Output
-..... ..... ..... .....  RunPython.makeChecklist
-..... ..... ..... ..... .....  Input
-..... ..... ..... ..... .....  Output
-..... ..... ..... .....  RunPython.doChecklistChecks
-..... ..... ..... ..... .....  Input
-..... ..... ..... ..... .....  Output
-..... ..... .....  Text Paragraph Helper Routines
-..... ..... ..... .....  RunPython.removeBullet
-..... ..... ..... ..... .....  Input
-..... ..... ..... ..... .....  Output
-..... ..... ..... .....  RunPython.removeBullets
-..... ..... ..... ..... .....  Input
-..... ..... ..... ..... .....  Output
-..... ..... ..... .....  RunPython.removeSelectedBullets
-..... ..... ..... ..... .....  Input
-..... ..... ..... ..... .....  Output
-..... ..... .....  Annotations-Related Helper routines
-..... ..... ..... .....  RunPython.doAnnotations
-..... ..... ..... ..... .....  Input
-..... ..... ..... ..... .....  Output
-..... ..... ..... .....  RunPython.annotationsFromCSV
-..... ..... ..... ..... .....  Input
-..... ..... ..... ..... .....  Output
-..... .....  Inline Python Examples
-..... ..... .....  Graphing Example
-..... ..... .....  Table Manipulation Example
-..... ..... .....  Slide With A Shape Example
-..... ..... .....  Slide With A Checklist Examples
-..... ..... .....  Slide With Some Bullets Removed Example
-..... ..... .....  Annotations Example
-.....  Building This User Guide
--------------------------------------------------------
-- Processing completed.
--------------------------------------------------------
 
+..... .....  A Real World Use Case
+
+..... .....  Using md2pptx With mdpre
+
+.....  How Do You Use md2pptx?
+
+..... .....  Installation
+
+..... .....  Updating
+
+..... .....  Use
+
+.....  python-pptx license
+
+.....  Change Log
+
+Column Alignment - spec 'l r l'
+
+CSV Start
+
+CSV Stop
+
+.....  Creating Slides
+
+..... .....  Presentation Title Slides
+
+..... .....  Presentation Section Slides
+
+..... .....  Bullet Slides
+
+..... ..... .....  Numbered List Items
+
+..... .....  Graphics, Video And Audio slides
+
+..... ..... .....  Graphics Slides
+
+..... ..... ..... .....  Clickable Pictures
+
+Traceback (most recent call last):
+  File "/Users/martinpacker/mdpre/mdpre", line 2159, in <module>
+    dependencies += getResourceNames(line)
+                    ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/martinpacker/mdpre/mdpre", line 92, in getResourceNames
+    for (_, name) in re.findall(clickableGraphicRegex, line):
+        ^^^^^^^^^
+ValueError: too many values to unpack (expected 2)
