@@ -755,32 +755,6 @@ def addClonedShape(slide, shape1):
     return slide.shapes[-1]
 
 
-# Following functions are workarounds for python-pptx not having these functions for the font object
-def set_subscript(font):
-    if font.size is None:
-        font._element.set("baseline", "-50000")
-        return
-    
-    if font.size < Pt(24):
-        font._element.set("baseline", "-50000")
-    else:
-        font._element.set("baseline", "-25000")
-
-
-def set_superscript(font):
-    if font.size is None:
-        font._element.set("baseline", "60000")
-        return
-    
-    if font.size < Pt(24):
-        font._element.set("baseline", "60000")
-    else:
-        font._element.set("baseline", "30000")
-
-
-def setStrikethrough(font):
-    font._element.set("strike", "sngStrike")
-
 
 
 # Get the slide object the run is in
@@ -4301,7 +4275,7 @@ abbrevDictionary = {}
 abbrevRunsDictionary = {}
 
 # Footnote runs Dictionary
-footnoteRunsDictionary = {}
+globals.footnoteRunsDictionary = {}
 
 # Extract metadata
 metadata_lines = []
@@ -4631,8 +4605,8 @@ globals.processingOptions.setOptionValuesArray(
 
 # List of footnote definitions. Each is a (ref, text) pair.
 # Also array of names - for quick searching
-footnoteDefinitions = []
-footnoteReferences = []
+globals.footnoteDefinitions = []
+globals.footnoteReferences = []
 
 maxBlocks = 10
 
@@ -5296,8 +5270,8 @@ for line in linesAfterConcatenation:
     if m := footnoteDefinitionRegex.match(line):
         fnRef = m.group(1).strip()
         fnText = m.group(2).strip()
-        footnoteDefinitions.append([fnRef, fnText])
-        footnoteReferences.append(fnRef)
+        globals.footnoteDefinitions.append([fnRef, fnText])
+        globals.footnoteReferences.append(fnRef)
 
         linesAfterConcatenation[metadataLinenumber] = "<ignoreme>"
     metadataLinenumber += 1
@@ -6160,17 +6134,17 @@ if (inBlock is True) | (inCode is True) | (inTable is True):
 # Add a footnotes slide - if there were any footnote definitions                     #
 #                                                                                    #
 ######################################################################################
-if len(footnoteDefinitions) > 0:
+if len(globals.footnoteDefinitions) > 0:
     slideNumber, footnoteSlides = createFootnoteSlides(
-        prs, slideNumber, footnoteDefinitions
+        prs, slideNumber, globals.footnoteDefinitions
     )
 
     footnotesPerPage = globals.processingOptions.getCurrentOption("footnotesPerPage")
     # Fix up any footnote slide hyperlinks
     footnoteNumber = -1
-    for footnoteRun in footnoteRunsDictionary.keys():
+    for footnoteRun in globals.footnoteRunsDictionary.keys():
         footnoteNumber += 1
-        run = footnoteRunsDictionary[footnoteRun]
+        run = globals.footnoteRunsDictionary[footnoteRun]
 
         footnoteSlideNumber = int(footnoteNumber / footnotesPerPage)
         createRunHyperlinkOrTooltip(run, footnoteSlides[footnoteSlideNumber], "")

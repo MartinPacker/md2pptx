@@ -513,6 +513,32 @@ def parseText(text):
         textArray.append([state, fragment])
     return textArray
 
+# Following functions are workarounds for python-pptx not having these functions for the font object
+def set_subscript(font):
+    if font.size is None:
+        font._element.set("baseline", "-50000")
+        return
+    
+    if font.size < Pt(24):
+        font._element.set("baseline", "-50000")
+    else:
+        font._element.set("baseline", "-25000")
+
+
+def set_superscript(font):
+    if font.size is None:
+        font._element.set("baseline", "60000")
+        return
+    
+    if font.size < Pt(24):
+        font._element.set("baseline", "60000")
+    else:
+        font._element.set("baseline", "30000")
+
+
+def setStrikethrough(font):
+    font._element.set("strike", "sngStrike")
+
 
 # Calls the tokeniser and then handles the fragments it gets back
 def addFormattedText(p, text):
@@ -593,10 +619,10 @@ def addFormattedText(p, text):
                 font.size = Pt(16)
                 set_superscript(font)
                 fnref = fragment[1]
-                if fnref in footnoteReferences:
-                    footnoteNumber = footnoteReferences.index(fnref)
+                if fnref in globals.footnoteReferences:
+                    footnoteNumber = globals.footnoteReferences.index(fnref)
                     run.text = str(footnoteNumber + 1)
-                    footnoteRunsDictionary[footnoteNumber] = run
+                    globals.footnoteRunsDictionary[footnoteNumber] = run
                 else:
                     run.text = "[?]"
                     print("Error: Footnote reference '" + fnref + "' unresolved.")

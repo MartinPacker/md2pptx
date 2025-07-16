@@ -47,3 +47,11 @@ fontsizes = {}
 # Cell background class correspondence
 global cellcolors
 cellcolors = {}
+
+
+global footnoteDefinitions 
+footnoteDefinitions = []
+global footnoteReferences
+footnoteReferences = []
+global footnoteRunsDictionary
+footnoteRunsDictionary = {} 
