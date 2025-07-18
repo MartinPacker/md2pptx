@@ -9,4 +9,7 @@ class Rectangle:
         self.left = left
         self.height = height
         self.width = width
+        
+        self.right = left + width
+        self.bottom = top + height
 

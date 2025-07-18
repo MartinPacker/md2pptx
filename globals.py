@@ -22,6 +22,22 @@ href_runs = {}
 
 global indirectAnchors
 indirectAnchors = []
+
+global footnoteDefinitions
+footnoteDefinitions = []
+
+global footnoteReferences
+footnoteReferences = []
+
+global footnoteRunsDictionary
+footnoteRunsDictionary = {}
+
+global abbrevDictionary
+abbrevDictionary = {}
+
+global abbrevRunsDictionary
+abbrevRunsDictionary = {}
+
 ######################################################################################
 #                                                                                    #
 #  Prime for style. metadata                                                         #
@@ -47,3 +63,16 @@ fontsizes = {}
 # Cell background class correspondence
 global cellcolors
 cellcolors = {}
+
+# Cell box class correspondences
+global cellBorderStyling
+cellBorderStyling = {}
+
+global cellLineWidthMultiplier
+cellLineWidthMultiplier = {}
+
+global cellLineCount
+cellLineCount = {}
+
+global cellLineColour
+cellLineColour = {}

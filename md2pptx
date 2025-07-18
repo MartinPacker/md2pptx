@@ -86,8 +86,8 @@ except:
     have_graphviz = False
 
 
-md2pptx_level = "5.4.4"
-md2pptx_date = "13 July, 2025"
+md2pptx_level = "5.4.4+"
+md2pptx_date = "18 July, 2025"
 
 namespaceURL = {
     "mc":  "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -167,6 +167,30 @@ class AudioVideoInfo:
             self.poster = audioVideoElement.attrib["poster"]
         else:
             self.poster = None
+
+def addMissingMediaPlaceholder(slide, mediaFilename, left, top, width, height):
+    # adjust position and size of rectangle
+    borderFactor = 0.1
+    adjustedLeft = int(left + borderFactor * width)
+    adjustedTop = int(top +borderFactor * height)
+    adjustedWidth = int(width - 2 * borderFactor * width)
+    adjustedHeight = int(height - 2 * borderFactor * height)    
+
+    # Create the rectangle the same size as the media would've fitted into - minus a border
+    missingRectangle = slide.shapes.add_shape (MSO_SHAPE.RECTANGLE,adjustedLeft, adjustedTop, adjustedWidth, adjustedHeight)
+    
+    # Label the rectangle with a suitable message, centred
+    missingRectangle.text = "Missing Media: " + mediaFilename
+    missingRectangle.text_frame.paragraphs[0].alignment = PP_ALIGN.CENTER
+    
+    print(mediaFilename)
+    print(left)
+    print(top)
+    print(width)
+    print(height)
+    print("")
+
+    return missingRectangle
 
 def parseColorStyle(whichStyleType, name, value, colorList):
     spanClass = name[len("style." + whichStyleType) + 1 :]
@@ -753,35 +777,6 @@ def addClonedShape(slide, shape1):
 
     # Return the shape associated with this new element
     return slide.shapes[-1]
-
-
-# Following functions are workarounds for python-pptx not having these functions for the font object
-def set_subscript(font):
-    if font.size is None:
-        font._element.set("baseline", "-50000")
-        return
-    
-    if font.size < Pt(24):
-        font._element.set("baseline", "-50000")
-    else:
-        font._element.set("baseline", "-25000")
-
-
-def set_superscript(font):
-    if font.size is None:
-        font._element.set("baseline", "60000")
-        return
-    
-    if font.size < Pt(24):
-        font._element.set("baseline", "60000")
-    else:
-        font._element.set("baseline", "30000")
-
-
-def setStrikethrough(font):
-    font._element.set("strike", "sngStrike")
-
-
 
 # Get the slide object the run is in
 def SlideFromRun(run):
@@ -2510,8 +2505,10 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
         # This is a table with 1 or 2 rows and 1 or 2 columns
         isGraphicsGrid = True
         gridRows = len(tableRows)
+        
         if gridRows == 1:
             gridColumns = len(tableRows[0])
+        
         else:
             gridColumns = max(len(tableRows[0]), len(tableRows[1]))
 
@@ -2532,6 +2529,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
         # Attempt to retrieve filename for right side - top row
         if len(tableRows[0]) == 2:
             topRightCellString = tableRows[0][1]
+
         else:
             topRightCellString = ""
 
@@ -2571,8 +2569,10 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                 if len(tableRows[1]) == 1:
                     # There is one cell in bottom row so this is centred "3-up"
                     bottomRightCellString = ""
+
                 else:
                     bottomRightCellString = tableRows[1][1]
+
             else:
                 bottomRightCellString = ""
 
@@ -2604,6 +2604,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
             reportGraphicFilenames(
                 printableTopLeftGraphicFilename, printableTopRightGraphicFilename
             )
+
         else:
             # Doing 2 row, single column graphics slide
             reportGraphicFilenames(printableTopLeftGraphicFilename)
@@ -2621,20 +2622,33 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
         ####################################################################
         # Get the media dimensions                                         #
         ####################################################################
+        topLeftMediaMissing = False
+        topRightMediaMissing = False
+        bottomLeftMediaMissing = False
+        bottomRightMediaMissing = False
+        leftMediaMissing = False
+        rightMediaMissing = False
+        
         if topLeftGraphicFilename != "":
             topLeftMediaWidth, topLeftMediaHeight = getGraphicDimensions(
                 topLeftGraphicFilename
             )
+            
             if topLeftMediaWidth == -1:
                 if gridRows == 2:
                     print(
                         "Missing top left image file: "
                         + printableTopLeftGraphicFilename
                     )
+                    
+                    topLeftMediaMissing = True
+                
                 else:
                     print("Missing left image file: " + printableTopLeftGraphicFilename)
+                    
+                    leftMediaMissing = True
 
-                return slide
+                #return slide
 
         elif topLeftVideo is not None:
             (
@@ -2650,10 +2664,13 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                         "Missing top left video file: "
                         + printableTopLeftGraphicFilename
                     )
+                    
+                    topLeftMediaMissing = True
+                
                 else:
                     print("Missing left video file: " + printableTopLeftGraphicFilename)
-
-                return slide
+                    
+                    leftMediaMissing = True
 
         if gridColumns == 2:
             # Get top right image dimensions
@@ -2661,19 +2678,23 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                 topRightMediaWidth, topRightMediaHeight = getGraphicDimensions(
                     topRightGraphicFilename
                 )
+                
                 if topRightMediaWidth == -1:
                     if gridRows == 2:
                         print(
                             "Missing top right image file: "
                             + printableTopRightGraphicFilename
                         )
+                        
+                        topRightMediaMissing = True
+                        
                     else:
                         print(
                             "Missing right image file: "
                             + printableTopRightGraphicFilename
                         )
-
-                    return slide
+                        
+                        rightMediaMissing = True
 
             elif topRightVideo is not None:
                 (
@@ -2689,13 +2710,16 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                             "Missing top right video file: "
                             + printableTopRightGraphicFilename
                         )
+
+                        topRightMediaMissing = True
+
                     else:
                         print(
                             "Missing right video file: "
                             + printableTopRightGraphicFilename
                         )
 
-                    return slide
+                        rightMediaMissing = True
 
         if gridRows == 2:
             # Get bottom left image dimensions
@@ -2703,12 +2727,14 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                 bottomLeftMediaWidth, bottomLeftMediaHeight = getGraphicDimensions(
                     bottomLeftGraphicFilename
                 )
+
                 if bottomLeftMediaWidth == -1:
                     print(
                         "Missing bottom left image file: "
                         + printableBottomLeftGraphicFilename
                     )
-                    return slide
+                    
+                    bottomLeftMediaMissing = True
 
             elif bottomLeftVideo is not None:
                 (
@@ -2724,13 +2750,17 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                             "Missing bottom left video file: "
                             + printableBottomLeftGraphicFilename
                         )
+
+                        bottomLeftMediaMissing = True
+
                     else:
                         print(
                             "Missing left video file: "
                             + printableBottomLeftGraphicFilename
                         )
 
-                    return slide
+                        leftMediaMissing = True
+
 
             if gridColumns == 2:
                 # Get bottom right image dimensions
@@ -2746,7 +2776,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                             + printableBottomRightGraphicFilename
                         )
 
-                        return slide
+                        bottomRightMediaMissing = True
 
                 elif bottomRightVideo is not None:
                     (
@@ -2762,13 +2792,17 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                                 "Missing bottom right video file: "
                                 + printableBottomRightGraphicFilename
                             )
+
+                            bottomRightMediaMissing = True
+
+
                         else:
                             print(
                                 "Missing right video file: "
                                 + printableBottomRightGraphicFilename
                             )
 
-                        return slide
+                            rightMediaMissing = True
 
         # Calculate maximum picture height on slide
         maxPicHeight = renderingRectangle.height
@@ -2779,6 +2813,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
 
         # Calculate maximum picture width on slide
         maxPicWidth = renderingRectangle.width
+
         if gridColumns == 2:
             # Adjusted if two columns
             maxPicWidth = maxPicWidth / 2 - marginBase
@@ -2830,48 +2865,72 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                 topLeftPicY -= Inches(0.2)
 
         if topLeftGraphicFilename != "":
-            topLeftPicture = slide.shapes.add_picture(
-                topLeftGraphicFilename,
-                topLeftPicX,
-                topLeftPicY,
-                topLeftPicWidth,
-                topLeftPicHeight,
-            )
-
-            if topLeftGraphicHref == "":
-                topLeftGraphicHref = None
-
-            pictureInfos.append(
-                (topLeftPicture, topLeftGraphicHref, topLeftGraphicTitle)
-            )
-        elif topLeftVideo is not None:
-            if topLeftVideoType == "Local":
-                # Can use local file directly
-                topLeftVideoShape = slide.shapes.add_movie(
-                    topLeftVideo.source,
-                    topLeftPicX,
-                    topLeftPicY,
-                    topLeftPicWidth,
-                    topLeftPicHeight,
-                    topLeftVideo.poster,
+            if leftMediaMissing or topLeftMediaMissing:
+                addMissingMediaPlaceholder(
+                    slide,
+                    printableTopLeftGraphicFilename,
+                    renderingRectangle.left,
+                    renderingRectangle.top,
+                    maxPicWidth,
+                    maxPicHeight - Inches(0.2)
                 )
+                    
             else:
-                # First copy video data to temporary file
-                tempVideoFile = tempfile.NamedTemporaryFile(
-                    delete=False, suffix="mp4", dir=tempDir
-                )
-                tempVideoFile.write(topLeftVideoData)
-                convertibleFilename = tempVideoFile.name
-                tempVideoFile.close()
-
-                # Use temporary file to make video
-                topLeftVideo = slide.shapes.add_movie(
-                    convertibleFilename,
+                topLeftPicture = slide.shapes.add_picture(
+                    topLeftGraphicFilename,
                     topLeftPicX,
                     topLeftPicY,
                     topLeftPicWidth,
                     topLeftPicHeight,
-                    topLeftVideo.poster,
+                )
+
+                if topLeftGraphicHref == "":
+                    topLeftGraphicHref = None
+
+                pictureInfos.append(
+                    (topLeftPicture, topLeftGraphicHref, topLeftGraphicTitle)
+            )
+
+        elif topLeftVideo is not None:
+            if leftMediaMissing or topLeftMediaMissing:
+                addMissingMediaPlaceholder(
+                    slide,
+                    printableTopLeftGraphicFilename,
+                    renderingRectangle.left,
+                    renderingRectangle.top,
+                    maxPicWidth,
+                    maxPicHeight - Inches(0.2)
+                )
+                    
+            else:
+                if topLeftVideoType == "Local":
+                    # Can use local file directly
+                    topLeftVideoShape = slide.shapes.add_movie(
+                        topLeftVideo.source,
+                        topLeftPicX,
+                        topLeftPicY,
+                        topLeftPicWidth,
+                        topLeftPicHeight,
+                        topLeftVideo.poster,
+                    )
+
+                else:
+                    # First copy video data to temporary file
+                    tempVideoFile = tempfile.NamedTemporaryFile(
+                        delete=False, suffix="mp4", dir=tempDir
+                    )
+                    tempVideoFile.write(topLeftVideoData)
+                    convertibleFilename = tempVideoFile.name
+                    tempVideoFile.close()
+
+                    # Use temporary file to make video
+                    topLeftVideo = slide.shapes.add_movie(
+                        convertibleFilename,
+                        topLeftPicX,
+                        topLeftPicY,
+                        topLeftPicWidth,
+                        topLeftPicHeight,
+                        topLeftVideo.poster,
                 )
 
         if gridColumns == 2:
@@ -2905,50 +2964,73 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                     topRightPicY -= Inches(0.2)
 
             if topRightGraphicFilename != "":
-                topRightPicture = slide.shapes.add_picture(
-                    topRightGraphicFilename,
-                    topRightPicX,
-                    topRightPicY,
-                    topRightPicWidth,
-                    topRightPicHeight,
-                )
+                if rightMediaMissing or topRightMediaMissing:
+                    addMissingMediaPlaceholder(
+                        slide,
+                        printableTopRightGraphicFilename,
+                        midGraphicsSpaceX,
+                        renderingRectangle.top,
+                        maxPicWidth,
+                        maxPicHeight - Inches(0.2)
+                    )
+                    
+                else:
+                    topRightPicture = slide.shapes.add_picture(
+                        topRightGraphicFilename,
+                        topRightPicX,
+                        topRightPicY,
+                        topRightPicWidth,
+                        topRightPicHeight,
+                    )
 
-                if topRightGraphicHref == "":
-                    topRightGraphicHref = None
+                    if topRightGraphicHref == "":
+                        topRightGraphicHref = None
 
-                pictureInfos.append(
-                    (topRightPicture, topRightGraphicHref, topRightGraphicTitle)
-                )
+                    pictureInfos.append(
+                        (topRightPicture, topRightGraphicHref, topRightGraphicTitle)
+                    )
 
             elif topRightVideo is not None:
-                if topRightVideoType == "Local":
-                    # Can use local file directly
-                    topRightVideoShape = slide.shapes.add_movie(
-                        topRightVideo.source,
-                        topRightPicX,
-                        topRightPicY,
-                        topRightPicWidth,
-                        topRightPicHeight,
-                        topRightVideo.poster,
+                if rightMediaMissing or topRightMediaMissing:
+                    addMissingMediaPlaceholder(
+                        slide,
+                        printableTopRightGraphicFilename,
+                        midGraphicsSpaceX,
+                        renderingRectangle.top,
+                        maxPicWidth,
+                        maxPicHeight - Inches(0.2)
                     )
+                    
                 else:
-                    # First copy video data to temporary file
-                    tempVideoFile = tempfile.NamedTemporaryFile(
-                        delete=False, suffix="mp4", dir=tempDir
-                    )
-                    tempVideoFile.write(topRightVideoData)
-                    convertibleFilename = tempVideoFile.name
-                    tempVideoFile.close()
+                    if topRightVideoType == "Local":
+                        # Can use local file directly
+                        topRightVideoShape = slide.shapes.add_movie(
+                            topRightVideo.source,
+                            topRightPicX,
+                            topRightPicY,
+                            topRightPicWidth,
+                            topRightPicHeight,
+                            topRightVideo.poster,
+                        )
 
-                    # Use temporary file to make video
-                    topRightVideo = slide.shapes.add_movie(
-                        convertibleFilename,
-                        topRightPicX,
-                        topRightPicY,
-                        topRightPicWidth,
-                        topRightPicHeight,
-                        topRightVideo.poster,
-                    )
+                    else:
+                        # First copy video data to temporary file
+                        tempVideoFile = tempfile.NamedTemporaryFile(
+                            delete=False, suffix="mp4", dir=tempDir
+                        )
+                        tempVideoFile.write(topRightVideoData)
+                        convertibleFilename = tempVideoFile.name
+                        tempVideoFile.close()
+
+                        # Use temporary file to make video
+                        topRightVideo = slide.shapes.add_movie(
+                            convertibleFilename,
+                            topRightPicX,
+                            topRightPicY,
+                            topRightPicWidth,
+                            topRightPicHeight,
+                            topRightVideo.poster,
+                        )
 
         if gridRows == 2:
             # Need second row of media items
@@ -2995,20 +3077,31 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                     bottomLeftPicY -= Inches(0.2)
 
             if bottomLeftGraphicFilename != "":
-                bottomLeftPicture = slide.shapes.add_picture(
-                    bottomLeftGraphicFilename,
-                    bottomLeftPicX,
-                    bottomLeftPicY,
-                    bottomLeftPicWidth,
-                    bottomLeftPicHeight,
-                )
+                if bottomLeftMediaMissing:
+                    addMissingMediaPlaceholder(
+                        slide,
+                        printableBottomLeftGraphicFilename,
+                        renderingRectangle.left,
+                        renderingRectangle.top + renderingRectangle.height - maxPicHeight + Inches(0.2),
+                        maxPicWidth,
+                        maxPicHeight - Inches(0.2)
+                    )
+                
+                else:
+                    bottomLeftPicture = slide.shapes.add_picture(
+                        bottomLeftGraphicFilename,
+                        bottomLeftPicX,
+                        bottomLeftPicY,
+                        bottomLeftPicWidth,
+                        bottomLeftPicHeight,
+                    )
 
-                if bottomLeftGraphicHref == "":
-                    bottomLeftGraphicHref = None
+                    if bottomLeftGraphicHref == "":
+                        bottomLeftGraphicHref = None
 
-                pictureInfos.append(
-                    (bottomLeftPicture, bottomLeftGraphicHref, bottomLeftGraphicTitle)
-                )
+                    pictureInfos.append(
+                       (bottomLeftPicture, bottomLeftGraphicHref, bottomLeftGraphicTitle)
+                    )
 
             elif bottomLeftVideo is not None:
                 if bottomLeftVideoType == "Local":
@@ -3081,7 +3174,17 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                         bottomRightPicY -= Inches(0.2)
 
                 if bottomRightGraphicFilename != "":
-                    if bottomRightGraphicFilename != "":
+                    if bottomRightMediaMissing:
+                        addMissingMediaPlaceholder(
+                            slide,
+                            printableBottomRightGraphicFilename,
+                            midGraphicsSpaceX,
+                            renderingRectangle.top + renderingRectangle.height - maxPicHeight + Inches(0.2),
+                            maxPicWidth,
+                            maxPicHeight - Inches(0.2)
+                        )
+                
+                    else:
                         bottomRightPicture = slide.shapes.add_picture(
                             bottomRightGraphicFilename,
                             bottomRightPicX,
@@ -4295,13 +4398,13 @@ globals.processingOptions.setOptionValuesArray(
 )
 
 # Abbreviation Dictionary
-abbrevDictionary = {}
+globals.abbrevDictionary = {}
 
 # Abbreviation Runs Dictionary
-abbrevRunsDictionary = {}
+globals.abbrevRunsDictionary = {}
 
 # Footnote runs Dictionary
-footnoteRunsDictionary = {}
+globals.footnoteRunsDictionary = {}
 
 # Extract metadata
 metadata_lines = []
@@ -4631,8 +4734,8 @@ globals.processingOptions.setOptionValuesArray(
 
 # List of footnote definitions. Each is a (ref, text) pair.
 # Also array of names - for quick searching
-footnoteDefinitions = []
-footnoteReferences = []
+globals.footnoteDefinitions = []
+globals.footnoteReferences = []
 
 maxBlocks = 10
 
@@ -5296,8 +5399,8 @@ for line in linesAfterConcatenation:
     if m := footnoteDefinitionRegex.match(line):
         fnRef = m.group(1).strip()
         fnText = m.group(2).strip()
-        footnoteDefinitions.append([fnRef, fnText])
-        footnoteReferences.append(fnRef)
+        globals.footnoteDefinitions.append([fnRef, fnText])
+        globals.footnoteReferences.append(fnRef)
 
         linesAfterConcatenation[metadataLinenumber] = "<ignoreme>"
     metadataLinenumber += 1
@@ -6160,17 +6263,17 @@ if (inBlock is True) | (inCode is True) | (inTable is True):
 # Add a footnotes slide - if there were any footnote definitions                     #
 #                                                                                    #
 ######################################################################################
-if len(footnoteDefinitions) > 0:
+if len(globals.footnoteDefinitions) > 0:
     slideNumber, footnoteSlides = createFootnoteSlides(
-        prs, slideNumber, footnoteDefinitions
+        prs, slideNumber, globals.footnoteDefinitions
     )
 
     footnotesPerPage = globals.processingOptions.getCurrentOption("footnotesPerPage")
     # Fix up any footnote slide hyperlinks
     footnoteNumber = -1
-    for footnoteRun in footnoteRunsDictionary.keys():
+    for footnoteRun in globals.footnoteRunsDictionary.keys():
         footnoteNumber += 1
-        run = footnoteRunsDictionary[footnoteRun]
+        run = globals.footnoteRunsDictionary[footnoteRun]
 
         footnoteSlideNumber = int(footnoteNumber / footnotesPerPage)
         createRunHyperlinkOrTooltip(run, footnoteSlides[footnoteSlideNumber], "")
@@ -6180,21 +6283,21 @@ if len(footnoteDefinitions) > 0:
 # Add a dictionary slide - if there were any abbr elements encountered               #
 #                                                                                    #
 ######################################################################################
-if len(abbrevDictionary) > 0:
+if len(globals.abbrevDictionary) > 0:
     glossaryTermsPerPage = globals.processingOptions.getCurrentOption("glossaryTermsPerPage")
     slideNumber, glossarySlides = createGlossarySlides(
-        prs, slideNumber, abbrevDictionary
+        prs, slideNumber, globals.abbrevDictionary
     )
     # Fix up internal glossary hyperlinks
     abbrevNumber = -1
-    for abbreviation in sorted(abbrevRunsDictionary.keys()):
+    for abbreviation in sorted(globals.abbrevRunsDictionary.keys()):
         abbrevNumber += 1
-        runs = abbrevRunsDictionary[abbreviation]
+        runs = globals.abbrevRunsDictionary[abbreviation]
         for run in runs:
             # Add tooltip for glossary definition
             glossarySlideNumber = int(abbrevNumber / glossaryTermsPerPage)
             createRunHyperlinkOrTooltip(
-                run, glossarySlides[glossarySlideNumber], abbrevDictionary[abbreviation]
+                run, glossarySlides[glossarySlideNumber], globals.abbrevDictionary[abbreviation]
             )
 
 ######################################################################################

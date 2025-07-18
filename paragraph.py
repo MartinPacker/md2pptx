@@ -15,6 +15,33 @@ from processingOptions import *
 from symbols import resolveSymbols
 from colour import parseRGB
 
+# Following functions are workarounds for python-pptx not having these functions for the font object
+def setSubscript(font):
+    if font.size is None:
+        font._element.set("baseline", "-50000")
+        return
+    
+    if font.size < Pt(24):
+        font._element.set("baseline", "-50000")
+    else:
+        font._element.set("baseline", "-25000")
+
+
+def setSuperscript(font):
+    if font.size is None:
+        font._element.set("baseline", "60000")
+        return
+    
+    if font.size < Pt(24):
+        font._element.set("baseline", "60000")
+    else:
+        font._element.set("baseline", "30000")
+
+
+def setStrikethrough(font):
+    font._element.set("strike", "sngStrike")
+
+
 def setHighlight(run, color):
     # get run properties
     rPr = run._r.get_or_add_rPr()
@@ -437,7 +464,7 @@ def parseText(text):
             dictEntry = fragment.split(">")
             dictAbbrev = dictEntry[1]
             dictFull = dictEntry[0].strip().strip("'").strip('"')
-            abbrevDictionary[dictAbbrev] = dictFull
+            globals.abbrevDictionary[dictAbbrev] = dictFull
             textArray.append(["Gloss", dictAbbrev, dictAbbrev, dictFull])
             fragment = ""
 
@@ -461,6 +488,7 @@ def parseText(text):
                     | (className in globals.emphases)
                     | (className in globals.fontsizes)
                     | (className in globals.cellcolors)
+                    | (className in globals.cellBorderStyling)
                 ):
                     textArray.append(["SpanClass", [className, spanText]])
 
@@ -585,21 +613,25 @@ def addFormattedText(p, text):
 
             elif fragType == "Gloss":
                 # Add this run to abbrevRunsDictionary - for Glossary fix ups later
-                if fragTerm not in abbrevRunsDictionary:
-                    abbrevRunsDictionary[fragTerm] = []
-                abbrevRunsDictionary[fragTerm].append(run)
+                if fragTerm not in globals.abbrevRunsDictionary:
+                    globals.abbrevRunsDictionary[fragTerm] = []
+
+                globals.abbrevRunsDictionary[fragTerm].append(run)
+
             elif fragType == "fnref":
                 font = run.font
                 font.size = Pt(16)
-                set_superscript(font)
+                setSuperscript(font)
                 fnref = fragment[1]
-                if fnref in footnoteReferences:
-                    footnoteNumber = footnoteReferences.index(fnref)
+                if fnref in globals.footnoteReferences:
+                    footnoteNumber = globals.footnoteReferences.index(fnref)
                     run.text = str(footnoteNumber + 1)
-                    footnoteRunsDictionary[footnoteNumber] = run
+                    globals.footnoteRunsDictionary[footnoteNumber] = run
+
                 else:
                     run.text = "[?]"
                     print("Error: Footnote reference '" + fnref + "' unresolved.")
+
                 linkText = "!"
                 fragment = ""
 
@@ -649,10 +681,10 @@ def addFormattedText(p, text):
                 setStrikethrough(font)
             elif fragType == "Sub":
                 font = run.font
-                set_subscript(font)
+                setSubscript(font)
             elif fragType == "Sup":
                 font = run.font
-                set_superscript(font)
+                setSuperscript(font)
             elif fragType == "Link":
                 linkArray = subfragment.split(u"\uFDD8")
                 linkText = linkArray[0]
