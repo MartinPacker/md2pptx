@@ -183,14 +183,7 @@ def addMissingMediaPlaceholder(slide, mediaFilename, left, top, width, height):
     missingRectangle.text = "Missing Media: " + mediaFilename
     missingRectangle.text_frame.paragraphs[0].alignment = PP_ALIGN.CENTER
     
-    print(mediaFilename)
-    print(left)
-    print(top)
-    print(width)
-    print(height)
-    print("")
-
-    return missingRectangle
+    print(mediaFilename)    return missingRectangle
 
 def parseColorStyle(whichStyleType, name, value, colorList):
     spanClass = name[len("style." + whichStyleType) + 1 :]
