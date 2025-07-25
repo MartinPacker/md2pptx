@@ -87,7 +87,7 @@ except:
 
 
 md2pptx_level = "5.4.4+"
-md2pptx_date = "18 July, 2025"
+md2pptx_date = "25 July, 2025"
 
 namespaceURL = {
     "mc":  "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -182,6 +182,7 @@ def addMissingMediaPlaceholder(slide, mediaFilename, left, top, width, height):
     # Label the rectangle with a suitable message, centred
     missingRectangle.text = "Missing Media: " + mediaFilename
     missingRectangle.text_frame.paragraphs[0].alignment = PP_ALIGN.CENTER
+    missingRectangle.text_frame.paragraphs[0].font.size = Pt(10)
     
     return missingRectangle
 
@@ -2134,48 +2135,75 @@ def createListBlock(slideInfo, slide, renderingRectangle):
 
             card.titleShape = cardTitleShape
 
+            card.missingCardGraphic = False
+            card.missingCardMedia = False
+
             if card.graphic != "":
                 # This card has a graphic so get its name
-                card.graphicDimensions = getGraphicDimensions(card.graphic)
-
-                # Create card graphic shape - to be resized later
-                card.graphicShape = slide.shapes.add_picture(
-                    card.graphic,
-                    Inches(0),
-                    Inches(0),
-                )
-            
                 reportGraphicFilenames(card.printableFilename)
-                
-                if (card.mediaURL is not None) | (card.graphicTitle is not None):
-                    mediaURL = card.mediaURL
-                     
-                    graphicTitle = "" if card.graphicTitle == None else card.graphicTitle
 
-                    pictureInfos.append(
-                        (card.graphicShape, mediaURL, graphicTitle)
+                try:
+                    card.graphicDimensions = getGraphicDimensions(card.graphic)
+
+                    # try to create card graphic shape - to be resized later
+                    card.graphicShape = slide.shapes.add_picture(
+                        card.graphic,
+                        Inches(0),
+                        Inches(0),
+                    )
+            
+                
+                    if (card.mediaURL is not None) | (card.graphicTitle is not None):
+                        mediaURL = card.mediaURL
+                     
+                        graphicTitle = "" if card.graphicTitle == None else card.graphicTitle
+
+                        pictureInfos.append(
+                            (card.graphicShape, mediaURL, graphicTitle)
+                        )
+
+                except:
+                    card.missingCardGraphic = True
+                    
+                    card.graphicShape = addMissingMediaPlaceholder(slide,card.printableFilename, 0, 0, 0, 0)
+
+                    print(
+                        "Missing card image file: "
+                        + card.printableFilename
                     )
 
             elif card.mediaInfo is not None:
                 # This card has a video so get its dimensions etc
-                card.mediaDimensions = getVideoInfo(card.mediaInfo)
-
-                # Create card video shape - to be resized later
-                card.mediaShape = slide.shapes.add_movie(
-                    card.mediaInfo.source,
-                    Inches(0),
-                    Inches(0),
-                    Inches(0),
-                    Inches(0),
-                    card.mediaInfo.poster
-                )
-            
                 reportGraphicFilenames(card.printableFilename)
+
+                try:
+                    card.mediaDimensions = getVideoInfo(card.mediaInfo)
+
+                    # Try to create card video shape - to be resized later
+                    card.mediaShape = slide.shapes.add_movie(
+                        card.mediaInfo.source,
+                        Inches(0),
+                        Inches(0),
+                        Inches(0),
+                        Inches(0),
+                        card.mediaInfo.poster
+                    )
+
+                except:
+                    card.missingCardMedia = True
+
+                    card.mediaShape = addMissingMediaPlaceholder(slide,card.printableFilename,0, 0, 0, 0)
+
+                    print(
+                        "Missing card media file: "
+                        + card.printableFilename
+                    )
                 
             else:
                 # Some of this is probably not needed
                 card.graphicDimensions = None
                 card.mediaDimensions = None
+                card.missingCardMedia = False
 
             # Clear text from cloned title and add in the title text
             cardTitleShape.text_frame.paragraphs[0].text = ""
@@ -2283,7 +2311,7 @@ def createListBlock(slideInfo, slide, renderingRectangle):
 
     # Second go on each card
     for c, card in enumerate(slideInfo.cards):
-        # Get the shapes for this card - including any graphic
+        # Get the shapes for this card - including any graphic or other media
         cardBackgroundShape = card.backgroundShape
         cardTitleShape = card.titleShape
         cardBodyShape = card.bodyShape
@@ -2293,6 +2321,7 @@ def createListBlock(slideInfo, slide, renderingRectangle):
         # Get dimensions of any graphic
         if cardGraphicShape is not None :
             cardMediaNativeWidth, cardMediaNativeHeight = card.graphicDimensions
+
 
         elif cardMediaShape is not None:
             cardMediaNativeWidth, cardMediaNativeHeight, _, _ = card.mediaDimensions
@@ -2377,6 +2406,7 @@ def createListBlock(slideInfo, slide, renderingRectangle):
             cardBodyShape.height = cardBodyHeight
             cardBodyShape.left = card.left
             cardBodyShape.width = cardWidth
+
         else:
             # Make room for graphic, audio, or video
             if cardGraphicPosition == "before":
@@ -2407,51 +2437,94 @@ def createListBlock(slideInfo, slide, renderingRectangle):
             else:
                 cardBodyShape.height = cardBodyHeight
 
-            # Scale graphic, audio, or video
-            (cardMediaWidth, cardMediaHeight, scaledByHeight) = scalePicture(
-                cardGraphicSizeRaw,
-                cardGraphicSizeRaw,
-                cardMediaNativeWidth,
-                cardMediaNativeHeight,
-            )
-            
-            if cardGraphicShape is not None:
-                cardMediaShape = cardGraphicShape
+            if card.missingCardMedia | card.missingCardGraphic:
+                cardMediaWidth = cardGraphicSizeRaw
+                cardMediaHeight = cardGraphicSizeRaw
+
             else:
-                cardMediaShape = cardMediaShape
+                # Scale graphic, audio, or video
+                (cardMediaWidth, cardMediaHeight, scaledByHeight) = scalePicture(
+                    cardGraphicSizeRaw,
+                    cardGraphicSizeRaw,
+                    cardMediaNativeWidth,
+                    cardMediaNativeHeight,
+                )
+            
+                if cardGraphicShape is not None:
+                    cardMediaShape = cardGraphicShape
+                else:
+                    cardMediaShape = cardMediaShape
 
             # Vertically position graphic shape
             if cardGraphicPosition == "before":
                 # Graphic before card text
                 if cardLayout == "horizontal":
-                    cardMediaShape.top = cardTitleShape.top + cardGraphicPadding + \
-                        cardTitleShape.height + int((cardGraphicSizeRaw - cardMediaHeight) / 2)
+                    if cardMediaShape is not None:
+                        cardMediaShape.top = cardTitleShape.top + cardGraphicPadding + \
+                            cardTitleShape.height + int((cardGraphicSizeRaw - cardMediaHeight) / 2)
+
+                    else:
+                        cardGraphicShape.top = cardTitleShape.top + cardGraphicPadding + \
+                            cardTitleShape.height + int((cardGraphicSizeRaw - cardMediaHeight) / 2)
+
                 else:
-                    cardMediaShape.top = cardBodyShape.top + \
-                        int((cardBodyHeight - cardMediaHeight) / 2)
+                    if cardMediaShape is not None:
+                        cardMediaShape.top = cardBodyShape.top + \
+                            int((cardBodyHeight - cardMediaHeight) / 2)
+
+                    else:
+                        cardGraphicShape.top = cardBodyShape.top + \
+                            int((cardBodyHeight - cardMediaHeight) / 2)
+
             else:
                 # Graphic after card text
                 if cardLayout == "horizontal":
-                    cardMediaShape.top = cardBodyShape.height + cardBodyShape.top + \
-                        cardGraphicPadding
+                    if cardMediaShape is not None:
+                        cardMediaShape.top = cardBodyShape.height + cardBodyShape.top + \
+                            cardGraphicPadding
+
+                    else:
+                        cardGraphicShape.top = cardBodyShape.height + cardBodyShape.top + \
+                            cardGraphicPadding
+
                 else:
-                    cardMediaShape.top = cardBodyShape.top + \
+                    cardGraphicShape.top = cardBodyShape.top + \
                         int((cardBodyHeight - cardGraphicSizeRaw) / 2)
 
             # Horizontally position card graphic shape
             if cardLayout == "horizontal":
-                cardMediaShape.left = cardTitleShape.left + \
-                    int((cardTitleShape.width - cardMediaWidth) / 2)
+                if cardMediaShape is not None:
+                    cardMediaShape.left = cardTitleShape.left + \
+                        int((cardTitleShape.width - cardMediaWidth) / 2)
+                else:
+                    cardGraphicShape.left = cardTitleShape.left + \
+                        int((cardTitleShape.width - cardMediaWidth) / 2)
+
             else:
                 if cardGraphicPosition == "before":
-                    cardMediaShape.left = card.left + cardGraphicPadding
-                else:
-                    cardMediaShape.left = card.left + cardBodyShape.width + \
-                        cardGraphicPadding
+                    if cardMediaShape is not None:
+                        cardMediaShape.left = card.left + cardGraphicPadding
 
-            # Set dimensions of card graphic shape
-            cardMediaShape.width = int(cardMediaWidth)
-            cardMediaShape.height = int(cardMediaHeight)
+                    else:
+                        cardGraphicShape.left = card.left + cardGraphicPadding
+
+                else:
+                    if cardMediaShape is not None:
+                        cardMediaShape.left = card.left + cardBodyShape.width + \
+                            cardGraphicPadding
+
+                    else:
+                        cardGraphicShape.left = card.left + cardBodyShape.width + \
+                            cardGraphicPadding
+
+            # Set dimensions of card graphic or media shape
+            if cardMediaShape is not None:
+                cardMediaShape.width = int(cardMediaWidth)
+                cardMediaShape.height = int(cardMediaHeight)
+
+            else:
+                cardGraphicShape.width = int(cardMediaWidth)
+                cardGraphicShape.height = int(cardMediaHeight)
 
         # Render any card body text
         if card.bullets != "":
@@ -2477,7 +2550,7 @@ def createListBlock(slideInfo, slide, renderingRectangle):
         # Create any card shadow
         if cardShadow:
             createShadow(cardBackgroundShape)
-
+        
     return slide
 
 

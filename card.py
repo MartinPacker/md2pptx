@@ -37,4 +37,7 @@ class Card:
         
         self.top = None
         self.left = None
+        
+        self.missingCardMedia = None
+        self.missingCardGraphic = None
 
