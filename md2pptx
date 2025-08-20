@@ -86,8 +86,8 @@ except:
     have_graphviz = False
 
 
-md2pptx_level = "5.4.4+"
-md2pptx_date = "25 July, 2025"
+md2pptx_level = "5.4.5"
+md2pptx_date = "20 August, 2025"
 
 namespaceURL = {
     "mc":  "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -504,7 +504,6 @@ def applyCellBorderStyling(
         _applyCellBorderStyling(tcPr, "t", lineWidthMultiplier, lineCount, lineColour)
     if cellBorderStyling.find("b") > -1:
         _applyCellBorderStyling(tcPr, "b", lineWidthMultiplier, lineCount, lineColour)
-
 
 # Apply table line styling
 def applyTableLineStyling(
@@ -5193,8 +5192,8 @@ for line in metadata_lines:
             cellboxArray = value.split(" ")
             if len(cellboxArray) > 0:
                 parseColorStyle("cellbox", name, cellboxArray[0], globals.cellLineColour)
-                globals.cellLineWidthMultiplier[spanClass] = 4
-                globals.cellLineCount[spanClass] = 2
+                globals.cellLineWidthMultiplier[spanClass] = 1
+                globals.cellLineCount[spanClass] = 1
                 globals.cellBorderStyling[spanClass] = "lrtb"
 
         elif name.startswith("style.emphasis."):

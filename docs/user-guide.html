@@ -1216,6 +1216,8 @@ img {
 <li><a href="#associating-a-class-name-with-a-foreground-colour-with-stylefgcolor">Associating A Class Name with A Foreground Colour With <code>style.fgcolor</code></a></li>
 <li><a href="#associating-a-class-name-with-text-emphasis-with-styleemphasis">Associating A Class Name With Text Emphasis With <code>style.emphasis</code></a></li>
 <li><a href="#associating-a-class-name-with-font-size-with-stylefontsize">Associating A Class Name With Font Size with <code>style.fontsize</code></a></li>
+<li><a href="#associating-a-class-name-with-table-cell-shading-with-&lt;code&gt;stylecellcolor&lt;/code&gt;&lt;/a&gt;">Associating A Class Name With Table Cell Shading With <code>style.cellcolor</code></a></a></li>
+<li><a href="#associating-a-class-name-with-table-cell-border-colour-with-&lt;code&gt;stylecellbox&lt;/code&gt;&lt;/a&gt;">Associating A Class Name With Table Cell Border Colour With <code>style.cellbox</code></a></a></li>
 <li><a href="#template-presentation-template">Template Presentation - <code>template</code></a></li>
 <li><a href="#hiding-slides-hidden">Hiding Slides - <code>hidden</code></a></li>
 <li><a href="#specifying-an-abstract-slide-with-abstracttitle">Specifying An Abstract Slide With <code>abstractTitle</code></a></li>
@@ -1658,6 +1660,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">5.4.5</td>
+<td align="right">20&nbsp;August&nbsp;2025</td>
+<td align="left">Added the ability to shade a table cell with <a href="#associating-a-class-name-with-table-cell-shading-with-style-cellcolor"><code>style.cellcolor</code></a>.</td>
+</tr>
 <tr>
 <td align="left">5.4.4</td>
 <td align="right">13&nbsp;July&nbsp;2025</td>
@@ -3024,6 +3031,7 @@ End Sub
 <li><code>style.fgcolor</code> - described in <a href="#associating-a-class-name-with-a-foreground-colour-with-stylefgcolor">Associating A Class Name With A Foreground Colour With <code>style.fgcolor</code></a>.</li>
 <li><code>style.emphasis</code> - described in <a href="#associating-a-class-name-with-text-emphasis-with-styleemphasis">Associating A Class Name With Text Emphasis With <code>style.emphasis</code></a>.</li>
 <li><code>style.fontsize</code> - described in <a href="#associating-a-class-name-with-font-size-with-style-fontsize">Associating A Class Name With Font Size With <code>style.fontsize</code></a>. </li>
+<li><code>style.cellcolor</code> - described in <a href="#associating-a-class-name-with-table-cell-shading-with-style-cellcolor">Associating A Class Name With Table Cell Shading With <code>style.cellcolor</code></a>. </li>
 </ul>
 <p>If you coded metadata</p>
 <pre><code>style.fgcolor.yellow: FFFF00
@@ -3537,6 +3545,28 @@ For everything else use <code>marginBase</code>.</p>
 </code></pre>
 <p>In this example the class &ldquo;christopher&rdquo; is associated with setting the text&rsquo;s font size to 40 pixels.</p>
 <p><strong>Note:</strong> You must specify font size in pixels, with &ldquo;px&rdquo; directly after the numeric part - which can be integer or floating point.</p>
+<p><a id="associating-a-class-name-with-table-cell-shading-with-style-cellcolor"></a></p>
+<h4 id="associating-a-class-name-with-table-cell-shading-with-stylecellcolor">Associating A Class Name With Table Cell Shading With <code>style.cellcolor</code></a><a class="headerlink" href="#associating-a-class-name-with-table-cell-shading-with-stylecellcolor" title="Permanent link"></a></h4>
+<p>You can use HTML <code>&lt;span&gt;</code> elements to specify the background colour of a table cell with <code>style.cellcolor</code>.
+For a cell the first matching <code>&lt;span&gt;</code> class is used.</p>
+<p>Here is an example:</p>
+<pre><code>style.cellcolor.toohigh: #FFC0C0
+</code></pre>
+<p>In this example a cell where the first <code>&lt;span&gt;</code> element has the class <code>toohigh</code> will be shaded pink.</p>
+<p><a id="associating-a-class-name-with-table-cell-border-colour-with-style-cellbox"></a></p>
+<h4 id="associating-a-class-name-with-table-cell-border-colour-with-stylecellbox">Associating A Class Name With Table Cell Border Colour With <code>style.cellbox</code></a><a class="headerlink" href="#associating-a-class-name-with-table-cell-border-colour-with-stylecellbox" title="Permanent link"></a></h4>
+<p><strong>Note:</strong> This is an experimental capability that has real issues.
+It&rsquo;s included here for completeness.
+The known issues are:</p>
+<ol>
+<li>It incorrectly draws lines round all but the first cell of the first row in the table.</li>
+<li>It doesn&rsquo;t work at all if <a href="#associating-a-class-name-with-table-cell-border-colour-with-style-cellbox"><code>style.cellcolor</code></a> is used.</li>
+</ol>
+<p>The XML is correct but Powerpoint doesn&rsquo;t render it correctly. LibreOffice does better than Powerpoint but isn&rsquo;t 100% correct.</p>
+<p>Here is an example:</p>
+<pre><code>style.cellbox.toohigh: #FF0000
+</code></pre>
+<p>In this example a cell where the first <code>&lt;span&gt;</code> element has the class <code>toohigh</code> will be outlined in red.</p>
 <h4 id="template-presentation-template">Template Presentation - <code>template</code><a class="headerlink" href="#template-presentation-template" title="Permanent link"></a></h4>
 <p><a id="template-presentation-template"></a></p>
 <p>You can specify a different template file to create the presentation from than the one supplied with python-pptx. The one supplied with md2pptx is a very good one to work from:</p>

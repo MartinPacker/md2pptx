@@ -1,6 +1,6 @@
 
-mdpre Markdown Preprocessor v1.1.1+ (18 August, 2025)
-=====================================================
+mdpre Markdown Preprocessor v1.1.2 (19 August, 2025)
+====================================================
 
 - opened <stdout> for writing
 Def makefile = file-3
@@ -11,9 +11,9 @@ Def output = stdout
 
 Def input = stdin
 
-Def node = Mac.domain_not_set.invalid
+Def node = Mac-Studio-Max.local
 
-Def version = Darwin Kernel Version 25.0.0: Tue Aug  5 22:46:55 PDT 2025; root:xnu-12377.1.6~5/RELEASE_ARM64_T6000
+Def version = Darwin Kernel Version 25.0.0: Thu Aug 14 21:59:19 PDT 2025; root:xnu-12377.1.8~5/RELEASE_ARM64_T6000
 
 Def architecture = 64bit
 
@@ -29,21 +29,21 @@ Def python_implementation = CPython
 
 Def processor = arm
 
-Def mdpre_date = 18 August, 2025
+Def mdpre_date = 19 August, 2025
 
-Def mdpre_level = 1.1.1+
+Def mdpre_level = 1.1.2
 
 Def userid = martinpacker
 
-Def day = 18
+Def day = 20
 
 Def month = August
 
 Def year = 2025
 
-Def time = 10&colon;32
+Def time = 11&colon;17
 
-Def date = 18 August&comma; 2025
+Def date = 20 August&comma; 2025
 
 Def TOC = Table Of Contents
 
@@ -243,6 +243,10 @@ CSV Stop
 ..... ..... .....  Associating A Class Name With Text Emphasis With `style.emphasis`
 
 ..... ..... .....  Associating A Class Name With Font Size with `style.fontsize`
+
+..... ..... .....  Associating A Class Name With Table Cell Shading With <code>style.cellcolor</code></a>
+
+..... ..... .....  Associating A Class Name With Table Cell Border Colour With <code>style.cellbox</code></a>
 
 ..... ..... .....  Template Presentation - `template`
 
@@ -708,7 +712,7 @@ CSV Stop
 
 .....  Building This User Guide
 
------------------------------------------------------
+----------------------------------------------------
 - Processing completed.
------------------------------------------------------
+----------------------------------------------------
 

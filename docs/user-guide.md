@@ -101,6 +101,8 @@ As you can see in the [change log](#change-log), md2pptx is frequently updated -
 		* [Associating A Class Name with A Foreground Colour With `style.fgcolor`](#associating-a-class-name-with-a-foreground-colour-with-stylefgcolor)
 		* [Associating A Class Name With Text Emphasis With `style.emphasis`](#associating-a-class-name-with-text-emphasis-with-styleemphasis)
 		* [Associating A Class Name With Font Size with `style.fontsize`](#associating-a-class-name-with-font-size-with-stylefontsize)
+		* [Associating A Class Name With Table Cell Shading With <code>style.cellcolor</code></a>](#associating-a-class-name-with-table-cell-shading-with-<code>stylecellcolor</code></a>)
+		* [Associating A Class Name With Table Cell Border Colour With <code>style.cellbox</code></a>](#associating-a-class-name-with-table-cell-border-colour-with-<code>stylecellbox</code></a>)
 		* [Template Presentation - `template`](#template-presentation-template)
 		* [Hiding Slides - `hidden`](#hiding-slides-hidden)
 		* [Specifying An Abstract Slide With `abstractTitle`](#specifying-an-abstract-slide-with-abstracttitle)
@@ -460,6 +462,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|5.4.5|20&nbsp;August&nbsp;2025|Added the ability to shade a table cell with [`style.cellcolor`](#associating-a-class-name-with-table-cell-shading-with-style-cellcolor).|
 |5.4.4|13&nbsp;July&nbsp;2025|Bugfix: Image loaded without JPEG file extension wasn't recognise as a JPEG|
 |5.4.3|14&nbsp;April&nbsp;2025|Bugfixes: [span style](#using-html-%3Cspan%3E-elements-with-style) issues. Moved `setHighlight` into paragraph.py.|
 |5.4.2|12&nbsp;April&nbsp;2025|Bugfixes: Codepoint 236 was trashed. Editing error in footnote font size handling. Shell script for building documentation.|
@@ -1591,6 +1594,7 @@ In this example the `span` element specifies a `class` attribute. The class name
 * `style.fgcolor` - described in <a href="#associating-a-class-name-with-a-foreground-colour-with-stylefgcolor">Associating A Class Name With A Foreground Colour With <code>style.fgcolor</code></a>.
 * `style.emphasis` - described in <a href="#associating-a-class-name-with-text-emphasis-with-styleemphasis">Associating A Class Name With Text Emphasis With <code>style.emphasis</code></a>.
 * `style.fontsize` - described in <a href="#associating-a-class-name-with-font-size-with-style-fontsize">Associating A Class Name With Font Size With <code>style.fontsize</code></a>. 
+* `style.cellcolor` - described in <a href="#associating-a-class-name-with-table-cell-shading-with-style-cellcolor">Associating A Class Name With Table Cell Shading With <code>style.cellcolor</code></a>. 
 
 If you coded metadata
 
@@ -2075,6 +2079,36 @@ Here is an example:
 In this example the class "christopher" is associated with setting the text's font size to 40 pixels.
 
 **Note:** You must specify font size in pixels, with "px" directly after the numeric part - which can be integer or floating point.
+
+<a id="associating-a-class-name-with-table-cell-shading-with-style-cellcolor"></a>
+#### Associating A Class Name With Table Cell Shading With <code>style.cellcolor</code></a>
+
+You can use HTML `<span>` elements to specify the background colour of a table cell with `style.cellcolor`.
+For a cell the first matching `<span>` class is used.
+
+Here is an example:
+
+    style.cellcolor.toohigh: #FFC0C0
+
+In this example a cell where the first `<span>` element has the class `toohigh` will be shaded pink.
+
+<a id="associating-a-class-name-with-table-cell-border-colour-with-style-cellbox"></a>
+#### Associating A Class Name With Table Cell Border Colour With <code>style.cellbox</code></a>
+
+**Note:** This is an experimental capability that has real issues.
+It's included here for completeness.
+The known issues are:
+
+1. It incorrectly draws lines round all but the first cell of the first row in the table.
+2. It doesn't work at all if [`style.cellcolor`](#associating-a-class-name-with-table-cell-border-colour-with-style-cellbox) is used.
+
+The XML is correct but Powerpoint doesn't render it correctly. LibreOffice does better than Powerpoint but isn't 100% correct.
+
+Here is an example:
+
+    style.cellbox.toohigh: #FF0000
+
+In this example a cell where the first `<span>` element has the class `toohigh` will be outlined in red.
 
 #### Template Presentation - `template`
 <a id="template-presentation-template"></a>
