@@ -1542,6 +1542,24 @@ img {
 </li>
 </ul>
 </li>
+<li><a href="#postprocessing-the-presentation-with-scripting">Post-Processing The Presentation With Scripting</a><ul>
+<li><a href="#generating-applescript">Generating AppleScript</a></li>
+<li><a href="#controlling-applescript-generation-and-running">Controlling AppleScript Generation And Running</a><ul>
+<li><a href="#automatically-running-the-generated-applescript">Automatically Running The Generated AppleScript</a></li>
+<li><a href="#automatically-reloading-the-generated-presentation">Automatically Reloading The Generated Presentation</a></li>
+</ul>
+</li>
+<li><a href="#reopening-at-a-nominated-page">Reopening At A Nominated Page</a><ul>
+<li><a href="#bookmarking-at-the-top">Bookmarking At The top</a></li>
+<li><a href="#bookmarking-in-the-page">Bookmarking In The Page</a></li>
+</ul>
+</li>
+<li><a href="#page-seven">Page Seven</a></li>
+<li><a href="#page-eight">Page Eight</a></li>
+<li><a href="#page-seven">Page Seven</a></li>
+<li><a href="#page-eight">Page Eight</a></li>
+</ul>
+</li>
 <li><a href="#building-this-user-guide">Building This User Guide</a></li>
 </ul>
 <h2 id="why-md2pptx">Why md2pptx?<a class="headerlink" href="#why-md2pptx" title="Permanent link"></a></h2>
@@ -1660,6 +1678,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">6.0</td>
+<td align="right">29&nbsp;August&nbsp;2025</td>
+<td align="left">Added the ability to <a href="#postprocessing-the-presentation-with-scripting">generate and run AppleScript</a>.</td>
+</tr>
 <tr>
 <td align="left">5.4.5</td>
 <td align="right">20&nbsp;August&nbsp;2025</td>
@@ -5588,6 +5611,107 @@ It calls <code>RunPython.annotationsFromCSV</code> with two parameters:</p>
 <li>The seventh is a rectangle with text in it. Its foreground colour is defaulted and its background is set to a theme colour.</li>
 <li>The eighth is a rectangle with rounded corners, with text in it. Both the foreground and background are set to RGB colours.</li>
 </ul>
+<p><a id="postprocessing-the-presentation-with-scripting"></a></p>
+<h2 id="post-processing-the-presentation-with-scripting">Post-Processing The Presentation With Scripting<a class="headerlink" href="#post-processing-the-presentation-with-scripting" title="Permanent link"></a></h2>
+<p>If you are running Mac OS you can run an AppleScript script md2pptx generated.</p>
+<p>For example md2pptx can close and reopen the presentation in Powerpoint, moving to a slide you bookmarked.</p>
+<p>The current restriction to Mac OS is because the prime author of this package doesn&rsquo;t know how to write scripts for eg Powershell.
+Assistance in this regard would be welcomed.</p>
+<p>Here is an example of the AppleScript md2pptx can generate:</p>
+<style>.hljs-number{color:#057CB0;}.hljs-selector-class{color:#C41A16;}.hljs-strong{font-weight:bold;}.hljs-selector-tag{color:#AA0D91;}.hljs-template-variable{color:#057CB0;}.hljs-function{color:#5C2699;}.hljs-template-tag{color:#C41A16;}.hljs-selector-id{color:#C41A16;}.hljs-code{color:#AA0D91;}.hljs{overflow-x:auto;padding:0.5em;display:block;color:#000000;}.hljs-name{color:#AA0D91;}.hljs-quote{color:#C41A16;}.hljs-meta{color:#5C2699;}.hljs-addition{color:#AA0D91;}.hljs-emphasis{font-style:italic;}.hljs-attr{color:#5C2699;}.hljs-link{color:#057CB0;}.hljs-keyword{color:#AA0D91;}.hljs-bullet{color:#AA0D91;}.hljs-string{color:#C41A16;}.hljs-type{color:#5C2699;}.hljs-variable{color:#057CB0;}.hljs-built_in{color:#AA0D91;}.hljs-selector-pseudo{color:#057CB0;}.hljs-selector-attr{color:#057CB0;}.hljs-attribute{color:#5C2699;}.hljs-meta-keyword{color:#057CB0;}.hljs-comment{color:#707F8C;}.hljs-title{color:#057CB0;font-weight:bold;}.hljs-section{color:#057CB0;font-weight:bold;}.hljs-literal{color:#AA0D91;}.hljs-regexp{color:#057CB0;}.hljs-symbol{color:#057CB0;}.hljs-doctag{color:#AA0D91;}.hljs-deletion{color:#C41A16;}.hljs-subst{color:#000000;}</style>
+
+<pre><code class="hljs" style="background:#FFFFFF;border-radius:8px"><span class="hljs-keyword">tell</span> <span class="hljs-built_in">application</span> <span class="hljs-string">"Microsoft PowerPoint"</span>
+    <span class="hljs-keyword">set</span> activePresentation <span class="hljs-keyword">to</span> full <span class="hljs-built_in">name</span> <span class="hljs-keyword">of</span> active presentation
+    <span class="hljs-keyword">if</span> activePresentation <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">missing value</span>
+        <span class="hljs-keyword">tell</span> active presentation
+            close <span class="hljs-keyword">front</span> document window
+        <span class="hljs-keyword">end</span> <span class="hljs-keyword">tell</span>
+    <span class="hljs-keyword">end</span> <span class="hljs-keyword">if</span>
+    open <span class="hljs-string">"/Users/martinpacker/md2pptx/test/animation.pptx"</span>
+    <span class="hljs-keyword">tell</span> active presentation
+        <span class="hljs-keyword">set</span> FDWView <span class="hljs-keyword">to</span> view <span class="hljs-keyword">of</span> <span class="hljs-keyword">front</span> document window
+        go <span class="hljs-keyword">to</span> slide FDWView <span class="hljs-built_in">number</span> <span class="hljs-number">2</span>
+    <span class="hljs-keyword">end</span> <span class="hljs-keyword">tell</span>
+<span class="hljs-keyword">end</span> <span class="hljs-keyword">tell</span>
+</code></pre>
+
+<p><strong>Notes</strong></p>
+<ol>
+<li>md2pptx is not sensitive to what platform a presentation and script file is generated on. You could, for example, create and AppleScript file on a Raspberry Pi and run it on a Mac.
+Of course, trying to automatically run the script on the wrong platform would be unsucccessful.</li>
+</ol>
+<h3 id="generating-applescript">Generating AppleScript<a class="headerlink" href="#generating-applescript" title="Permanent link"></a></h3>
+<p>To generate AppleScript md2pptx needs a file name.
+Specify this in metadata towards the beginning of the input file.</p>
+<p>For example</p>
+<pre><code>Applescript: test.scpt
+</code></pre>
+<p><strong>Notes</strong></p>
+<ol>
+<li>By convention AppleScript source files use the <code>.scpt</code> extension.</li>
+<li>Once saved you can edit and run the file with e.g. <code>osascript test.scpt</code>. For basic uses you might let md2pptx run it for you. See <a href="#automatically-running-the-generated-applescript">Automatically Running The Generated AppleScript</a>.</li>
+</ol>
+<h3 id="controlling-applescript-generation-and-running">Controlling AppleScript Generation And Running<a class="headerlink" href="#controlling-applescript-generation-and-running" title="Permanent link"></a></h3>
+<p>You can cause md2pptx to create AppleScript to reload the presentation if it is in the frontmost open window.
+You can also cause md2pptx to immediately run the script it has generated.</p>
+<p>These options can be combined in one <code>ApplescriptOptions</code> metadata statement, separated by white space.
+Together they can speed up the &ldquo;code / generate / reload&rdquo; cycle.</p>
+<h4 id="automatically-running-the-generated-applescript">Automatically Running The Generated AppleScript<a class="headerlink" href="#automatically-running-the-generated-applescript" title="Permanent link"></a></h4>
+<p>You can have md2pptx run the just-generated script with the following metadata:</p>
+<pre><code>ApplescriptOptions: run
+</code></pre>
+<p>Obviously md2pptx would have to be running on a Mac OS system for this to be successful.</p>
+<h4 id="automatically-reloading-the-generated-presentation">Automatically Reloading The Generated Presentation<a class="headerlink" href="#automatically-reloading-the-generated-presentation" title="Permanent link"></a></h4>
+<p>You can have md2pptx generate AppleScript to reload the just-generated presentation with the following metadata:</p>
+<pre><code>ApplescriptOptions: reload
+</code></pre>
+<p>If there is a presentation open and it is in the frontmost window the generated AppleScript will close the presentation.</p>
+<p>Whether there is or isn&rsquo;t the script will then open the presentation, picking up any changes made to it by the md2pptx run.</p>
+<h3 id="reopening-at-a-nominated-page">Reopening At A Nominated Page<a class="headerlink" href="#reopening-at-a-nominated-page" title="Permanent link"></a></h3>
+<p>The generated AppleScript can turn to a specified page, known as &ldquo;bookmarking&rdquo;.</p>
+<p>You can specify the page number in one of two ways:</p>
+<ul>
+<li>In metadata at the beginning of the input data.</li>
+<li>In dynamic metadata in the page you want the bookmark placed.</li>
+</ul>
+<p><strong>Notes</strong>*</p>
+<ol>
+<li>The bookmark is not stored with the presentation.
+It is only used when the script is run and the presentation is open in the frontmost window.
+(The presentation could be (re)opened by the script or you might already have it open.)</li>
+<li>Any bookmark specified with dynamic metadata overrides any prior bookmark, including at the beginning of the source file.</li>
+</ol>
+<h4 id="bookmarking-at-the-top">Bookmarking At The top<a class="headerlink" href="#bookmarking-at-the-top" title="Permanent link"></a></h4>
+<p>If you want to bookmark page 5 code </p>
+<pre><code>bookmark: 5
+</code></pre>
+<p>When the script is run and the presentation is open page 5 will be displayed.</p>
+<h4 id="bookmarking-in-the-page">Bookmarking In The Page<a class="headerlink" href="#bookmarking-in-the-page" title="Permanent link"></a></h4>
+<p>If you want to bookmark page 5 in the page itself code</p>
+<pre><code>&lt;!-- md2pptx: bookmark --&gt;
+</code></pre>
+<p>The advantage of this method is you can move the bookmark as you develop your presentation by moving the line:</p>
+<div class="highlight"><pre>### Page Seven
+&lt;!-- md2pptx: bookmark --&gt;
+
+...
+
+### Page Eight
+...
+</pre></div>
+
+<p>Move the line to bookmark the next page:</p>
+<div class="highlight"><pre>### Page Seven
+
+...
+
+### Page Eight
+&lt;!-- md2pptx: bookmark --&gt;
+
+...
+</pre></div>
+
+<p>When the script is run and the presentation is open the appropriate page will be displayed.</p>
 <h2 id="building-this-user-guide">Building This User Guide<a class="headerlink" href="#building-this-user-guide" title="Permanent link"></a></h2>
 <p>This user guide is written in Markdown - but with a few extensions.
 To build it correctly you need to use <a href="https://github.com/MartinPacker/mdpre">mdpre</a>.</p>

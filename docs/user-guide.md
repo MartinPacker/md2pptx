@@ -325,6 +325,18 @@ As you can see in the [change log](#change-log), md2pptx is frequently updated -
 		* [Slide With A Checklist Examples](#slide-with-a-checklist-examples)
 		* [Slide With Some Bullets Removed Example](#slide-with-some-bullets-removed-example)
 		* [Annotations Example](#annotations-example)
+* [Post-Processing The Presentation With Scripting](#postprocessing-the-presentation-with-scripting)
+	* [Generating AppleScript](#generating-applescript)
+	* [Controlling AppleScript Generation And Running](#controlling-applescript-generation-and-running)
+		* [Automatically Running The Generated AppleScript](#automatically-running-the-generated-applescript)
+		* [Automatically Reloading The Generated Presentation](#automatically-reloading-the-generated-presentation)
+	* [Reopening At A Nominated Page](#reopening-at-a-nominated-page)
+		* [Bookmarking At The top](#bookmarking-at-the-top)
+		* [Bookmarking In The Page](#bookmarking-in-the-page)
+	* [Page Seven](#page-seven)
+	* [Page Eight](#page-eight)
+	* [Page Seven](#page-seven)
+	* [Page Eight](#page-eight)
 * [Building This User Guide](#building-this-user-guide)
 
 ## Why md2pptx?
@@ -462,6 +474,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|6.0|29&nbsp;August&nbsp;2025|Added the ability to [generate and run AppleScript](#postprocessing-the-presentation-with-scripting).|
 |5.4.5|20&nbsp;August&nbsp;2025|Added the ability to shade a table cell with [`style.cellcolor`](#associating-a-class-name-with-table-cell-shading-with-style-cellcolor).|
 |5.4.4|13&nbsp;July&nbsp;2025|Bugfix: Image loaded without JPEG file extension wasn't recognise as a JPEG|
 |5.4.3|14&nbsp;April&nbsp;2025|Bugfixes: [span style](#using-html-%3Cspan%3E-elements-with-style) issues. Moved `setHighlight` into paragraph.py.|
@@ -4685,6 +4698,134 @@ You can see the first four cells are dimensions and the fifth an "annotation cod
 * The sixth is a line with no arrow heads. It uses theme colouring.
 * The seventh is a rectangle with text in it. Its foreground colour is defaulted and its background is set to a theme colour.
 * The eighth is a rectangle with rounded corners, with text in it. Both the foreground and background are set to RGB colours.
+
+<a id="postprocessing-the-presentation-with-scripting"></a>
+## Post-Processing The Presentation With Scripting
+
+If you are running Mac OS you can run an AppleScript script md2pptx generated.
+
+For example md2pptx can close and reopen the presentation in Powerpoint, moving to a slide you bookmarked.
+
+The current restriction to Mac OS is because the prime author of this package doesn't know how to write scripts for eg Powershell.
+Assistance in this regard would be welcomed.
+
+Here is an example of the AppleScript md2pptx can generate:
+
+<style>.hljs-number{color:#057CB0;}.hljs-selector-class{color:#C41A16;}.hljs-strong{font-weight:bold;}.hljs-selector-tag{color:#AA0D91;}.hljs-template-variable{color:#057CB0;}.hljs-function{color:#5C2699;}.hljs-template-tag{color:#C41A16;}.hljs-selector-id{color:#C41A16;}.hljs-code{color:#AA0D91;}.hljs{overflow-x:auto;padding:0.5em;display:block;color:#000000;}.hljs-name{color:#AA0D91;}.hljs-quote{color:#C41A16;}.hljs-meta{color:#5C2699;}.hljs-addition{color:#AA0D91;}.hljs-emphasis{font-style:italic;}.hljs-attr{color:#5C2699;}.hljs-link{color:#057CB0;}.hljs-keyword{color:#AA0D91;}.hljs-bullet{color:#AA0D91;}.hljs-string{color:#C41A16;}.hljs-type{color:#5C2699;}.hljs-variable{color:#057CB0;}.hljs-built_in{color:#AA0D91;}.hljs-selector-pseudo{color:#057CB0;}.hljs-selector-attr{color:#057CB0;}.hljs-attribute{color:#5C2699;}.hljs-meta-keyword{color:#057CB0;}.hljs-comment{color:#707F8C;}.hljs-title{color:#057CB0;font-weight:bold;}.hljs-section{color:#057CB0;font-weight:bold;}.hljs-literal{color:#AA0D91;}.hljs-regexp{color:#057CB0;}.hljs-symbol{color:#057CB0;}.hljs-doctag{color:#AA0D91;}.hljs-deletion{color:#C41A16;}.hljs-subst{color:#000000;}</style><pre><code class="hljs" style="background:#FFFFFF;border-radius:8px"><span class="hljs-keyword">tell</span> <span class="hljs-built_in">application</span> <span class="hljs-string">"Microsoft PowerPoint"</span>
+    <span class="hljs-keyword">set</span> activePresentation <span class="hljs-keyword">to</span> full <span class="hljs-built_in">name</span> <span class="hljs-keyword">of</span> active presentation
+    <span class="hljs-keyword">if</span> activePresentation <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">missing value</span>
+        <span class="hljs-keyword">tell</span> active presentation
+            close <span class="hljs-keyword">front</span> document window
+        <span class="hljs-keyword">end</span> <span class="hljs-keyword">tell</span>
+    <span class="hljs-keyword">end</span> <span class="hljs-keyword">if</span>
+    open <span class="hljs-string">"/Users/martinpacker/md2pptx/test/animation.pptx"</span>
+    <span class="hljs-keyword">tell</span> active presentation
+        <span class="hljs-keyword">set</span> FDWView <span class="hljs-keyword">to</span> view <span class="hljs-keyword">of</span> <span class="hljs-keyword">front</span> document window
+        go <span class="hljs-keyword">to</span> slide FDWView <span class="hljs-built_in">number</span> <span class="hljs-number">2</span>
+    <span class="hljs-keyword">end</span> <span class="hljs-keyword">tell</span>
+<span class="hljs-keyword">end</span> <span class="hljs-keyword">tell</span>
+</code></pre>
+
+**Notes**
+
+1. md2pptx is not sensitive to what platform a presentation and script file is generated on. You could, for example, create and AppleScript file on a Raspberry Pi and run it on a Mac.
+Of course, trying to automatically run the script on the wrong platform would be unsucccessful.
+
+### Generating AppleScript
+
+To generate AppleScript md2pptx needs a file name.
+Specify this in metadata towards the beginning of the input file.
+
+For example
+
+    Applescript: test.scpt
+
+**Notes**
+
+1. By convention AppleScript source files use the `.scpt` extension.
+1. Once saved you can edit and run the file with e.g. `osascript test.scpt`. For basic uses you might let md2pptx run it for you. See [Automatically Running The Generated AppleScript](#automatically-running-the-generated-applescript).
+
+### Controlling AppleScript Generation And Running
+
+You can cause md2pptx to create AppleScript to reload the presentation if it is in the frontmost open window.
+You can also cause md2pptx to immediately run the script it has generated.
+
+These options can be combined in one `ApplescriptOptions` metadata statement, separated by white space.
+Together they can speed up the "code / generate / reload" cycle.
+
+#### Automatically Running The Generated AppleScript
+
+You can have md2pptx run the just-generated script with the following metadata:
+
+    ApplescriptOptions: run
+
+Obviously md2pptx would have to be running on a Mac OS system for this to be successful.
+
+#### Automatically Reloading The Generated Presentation
+
+You can have md2pptx generate AppleScript to reload the just-generated presentation with the following metadata:
+
+    ApplescriptOptions: reload
+
+If there is a presentation open and it is in the frontmost window the generated AppleScript will close the presentation.
+
+Whether there is or isn't the script will then open the presentation, picking up any changes made to it by the md2pptx run.
+
+### Reopening At A Nominated Page
+
+The generated AppleScript can turn to a specified page, known as "bookmarking".
+
+You can specify the page number in one of two ways:
+
+* In metadata at the beginning of the input data.
+* In dynamic metadata in the page you want the bookmark placed.
+
+**Notes***
+
+1. The bookmark is not stored with the presentation.
+It is only used when the script is run and the presentation is open in the frontmost window.
+(The presentation could be (re)opened by the script or you might already have it open.)
+2. Any bookmark specified with dynamic metadata overrides any prior bookmark, including at the beginning of the source file.
+#### Bookmarking At The top
+
+If you want to bookmark page 5 code 
+
+    bookmark: 5
+
+When the script is run and the presentation is open page 5 will be displayed.
+
+#### Bookmarking In The Page
+
+If you want to bookmark page 5 in the page itself code
+
+    <!-- md2pptx: bookmark -->
+
+The advantage of this method is you can move the bookmark as you develop your presentation by moving the line:
+
+```
+### Page Seven
+<!-- md2pptx: bookmark -->
+
+...
+
+### Page Eight
+...
+```
+
+Move the line to bookmark the next page:
+
+```
+### Page Seven
+
+...
+
+### Page Eight
+<!-- md2pptx: bookmark -->
+
+...
+```
+
+When the script is run and the presentation is open the appropriate page will be displayed.
 
 ## Building This User Guide
 

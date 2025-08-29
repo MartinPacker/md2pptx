@@ -35,15 +35,15 @@ Def mdpre_level = 1.1.2
 
 Def userid = martinpacker
 
-Def day = 20
+Def day = 29
 
 Def month = August
 
 Def year = 2025
 
-Def time = 11&colon;17
+Def time = 16&colon;39
 
-Def date = 20 August&comma; 2025
+Def date = 29 August&comma; 2025
 
 Def TOC = Table Of Contents
 
@@ -709,6 +709,30 @@ CSV Stop
 ..... ..... .....  Slide With Some Bullets Removed Example
 
 ..... ..... .....  Annotations Example
+
+.....  Post-Processing The Presentation With Scripting
+
+..... .....  Generating AppleScript
+
+..... .....  Controlling AppleScript Generation And Running
+
+..... ..... .....  Automatically Running The Generated AppleScript
+
+..... ..... .....  Automatically Reloading The Generated Presentation
+
+..... .....  Reopening At A Nominated Page
+
+..... ..... .....  Bookmarking At The top
+
+..... ..... .....  Bookmarking In The Page
+
+..... .....  Page Seven
+
+..... .....  Page Eight
+
+..... .....  Page Seven
+
+..... .....  Page Eight
 
 .....  Building This User Guide
 

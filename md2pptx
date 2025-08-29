@@ -86,8 +86,8 @@ except:
     have_graphviz = False
 
 
-md2pptx_level = "5.4.5"
-md2pptx_date = "20 August, 2025"
+md2pptx_level = "6.0"
+md2pptx_date = "29 August, 2025"
 
 namespaceURL = {
     "mc":  "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -4447,7 +4447,8 @@ linkRegex = re.compile(r"^\[(.+)\]\((.+)\)")
 footnoteDefinitionRegex = re.compile(r"^\[\^(.+?)\]: (.+)")
 slideHrefRegex = re.compile(r"(.+)\[(.+)\]$")
 anchorRegex = re.compile("^<a id=[\"'](.+)[\"']></a>")
-dynamicMetadataRegex = re.compile("^<!-- md2pptx: (.+): (.+) -->")
+dynamicMetadata2Regex = re.compile("^<!-- md2pptx: (.+): (.+) -->")
+dynamicMetadata1Regex = re.compile("^<!-- md2pptx: (.+) -->")
 indirectReferenceAnchorRegex = re.compile(r"^\[(.+?)\]: (.+)")
 indirectReferenceUsageRegex = re.compile(r"[(.+?)]\[(.+?)]")
 
@@ -4733,6 +4734,16 @@ globals.processingOptions.setOptionValuesArray(
     ]
 )
 
+# Scripting emitter options
+globals.processingOptions.setOptionValuesArray(
+    [
+        ["applescript", ""],
+        ["applescriptReload", False],
+        ["applescriptRun", False],
+        ["bookmark", 0]
+    ]
+)
+
 TOCEntries = []
 
 
@@ -4896,7 +4907,6 @@ for line in metadata_lines:
         "onpresentationaftersave",
     ]:
         globals.processingOptions.setOptionValues(name, value)
-        print(value, "<===")
 
     elif name in [
         "sectiontitlesize",
@@ -5309,6 +5319,28 @@ for line in metadata_lines:
                 f'funnelLabelPosition value \'{value}\' unsupported. "left", "right", "pipe", or "hpipe" required.'
             )
 
+    elif name == "applescript":
+        globals.processingOptions.setOptionValues(name, value)
+        
+    elif name == "applescriptoptions":
+        for option in value.split():
+            if option == "reload":
+                globals.processingOptions.setOptionValues("applescriptReload", True)
+        
+            if option == "run":
+                globals.processingOptions.setOptionValues("applescriptRun", True)
+        
+    elif name == "bookmark":
+        globals.processingOptions.setOptionValues(name, int(value))
+        
+if (applescriptFilename := globals.processingOptions.getCurrentOption("applescript")) != "":
+    globals.applescriptLines += [
+        "tell application \"Microsoft PowerPoint\"",
+        "    set activePresentation to full name of active presentation",
+        "    if activePresentation is not missing value",
+        "        tell active presentation",
+    ]
+
 slideTemplateFile = globals.processingOptions.getCurrentOption("slideTemplateFile")
 if slideTemplateFile != "":
     originalSlideTemplateFile = slideTemplateFile
@@ -5613,8 +5645,10 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
         # Dynamic metadata line
         inTitle = False
         
-        if DMMatch := dynamicMetadataRegex.match(line):
+        if DMMatch := dynamicMetadata2Regex.match(line):
             metadataKey = DMMatch.group(1).lower().strip()
+            if metadataKey == "bookmark":
+                print("hekko")
             metadataValue = DMMatch.group(2).lower()
 
             if (metadataKey != "") & (metadataValue != ""):
@@ -5989,6 +6023,12 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
                 else:
                     # Invalid dynamic metadata specification
                     print(f"Invalid dynamic metadata key: '{metadataKey}' in '{line}'")
+
+        elif DMMatch := dynamicMetadata1Regex.match(line):
+            metadataKey = DMMatch.group(1).lower().strip()
+
+            if metadataKey == "bookmark":
+                globals.processingOptions.setOptionValues(metadataKey, slideNumber + 1)
 
     elif (line.startswith("#")) & (inCode == False):
         if line[:cardLevel] == "#" * cardLevel:
@@ -6556,6 +6596,52 @@ onPresentationAfterSave = globals.processingOptions.getCurrentOption("onPresenta
 if onPresentationAfterSave != "":
     exec(open(onPresentationAfterSave).read())
 
+# Create any AppleScript
+if applescriptFilename != "":
+    
+    want_save = False
+    
+    want_reload = globals.processingOptions.getCurrentOption("applescriptReload")
+    want_run = globals.processingOptions.getCurrentOption("applescriptRun")
+
+    # Maybe add "save presentation" code
+    if want_save:
+        globals.applescriptLines.append("        save")
+    
+    if want_reload:
+        globals.applescriptLines.append("            close front document window")
+
+    # Close off "active presentation" tell
+    globals.applescriptLines += [
+        "        end tell",
+        "    end if",
+    ]
+
+    if want_reload:
+        full_filename = os.path.abspath(output_filename)
+        globals.applescriptLines.append(f"    open \"{full_filename}\"")
+
+
+    # Maybe add "go to slide" code
+    if (bookmark := globals.processingOptions.getCurrentOption("bookmark")) > 0:
+        globals.applescriptLines += [
+            "    tell active presentation",
+            "        set FDWView to view of front document window",
+            "        go to slide FDWView number " + str(bookmark),
+            "    end tell"
+    ]
+
+    # Close off applescript
+    globals.applescriptLines.append("end tell")
+
+
+    # Write the applescript out
+    with open(applescriptFilename, "w") as a:
+        for l in globals.applescriptLines:
+            a.write(l + "\n")
+
+    if want_run:
+        os.system(f"osascript {applescriptFilename}")
 
 elapsed_time = time.time() - start_time
 
@@ -6564,12 +6650,5 @@ print(
     + str(int(1000 * elapsed_time) / 1000)
     + "s"
 )
-
-# Run a script against every slide
-script = "if slide.slideInfo is not None:\n  print(slide.slideInfo)"
-script = ""
-for slide in prs.slides:
-    exec(script)
-
 
 sys.exit()

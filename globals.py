@@ -76,3 +76,12 @@ cellLineCount = {}
 
 global cellLineColour
 cellLineColour = {}
+
+######################################################################################
+#                                                                                    #
+#  Prime for command files                                                           #
+#                                                                                    #
+######################################################################################
+
+global applescriptLines
+applescriptLines = []
