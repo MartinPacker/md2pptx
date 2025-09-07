@@ -2,7 +2,7 @@
 runPython
 """
 
-version = "0.9"
+version = "0.10"
 
 import csv
 from pptx.chart.data import CategoryChartData
@@ -187,7 +187,6 @@ class RunPython:
     def doChecklistChecks(placeholder, checklist, colourChecks = False):
         tf = placeholder.text_frame
         paras = tf.paragraphs
-
         for paraNumber, para in enumerate(paras):
             # Save original font size
             originalFontSize = para.font.size
@@ -204,16 +203,17 @@ class RunPython:
             xml += f'<a:pPr xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" marL="{Inches(0.25) * level}" indent="{Inches(0.33)}" lvl="{level}">'
 
 
-            if checklist[paraNumber] == None:
-                # Checkbox unchecked
-
+            if checklist[paraNumber] == "Unset":
+                # Bullet unchecked
+                
                 # Set the bullet to an empty square - and don't colour it
-                xml += '<a:buFont xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" typeface="Wingdings" pitchFamily="2" charset="2"/>'
-                xml += '<a:buChar xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" char="o"/>'
-            elif checklist[paraNumber] == True:
-                # Checkbox ticked
+               xml += '<a:buFont xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" typeface="Wingdings" pitchFamily="2" charset="2"/>'
+               xml += '<a:buChar xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" char="o"/>'
 
-                # Maybe colour the mark
+            elif checklist[paraNumber] == "Yes":
+                # Bullet checked
+
+                # Maybe colour the bullet
                 if colourChecks:
                     xml += '<a:buClr xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">'
                     xml += '<a:srgbClr val="00FF00" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" />'
@@ -222,19 +222,43 @@ class RunPython:
                 # Set the bullet to a square with a tick
                 xml += '<a:buFont xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" typeface="Wingdings 2" pitchFamily="2" charset="2"/>'
                 xml += '<a:buChar xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" char="R"/>'
+
+            elif checklist[paraNumber] == "Maybe":
+                # Bullet set to maybe
+
+                # Maybe colour the bullet
+                if colourChecks:
+                    xml += '<a:buClr xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">'
+                    xml += '<a:srgbClr val="FFA500" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" />'
+                    xml += '</a:buClr>'
+
+                xml += '<a:buFont xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" typeface="Wingdings" pitchFamily="2" charset="2"/>'
+                xml += '<a:buChar xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" char="⍰"/>'
+
+            elif checklist[paraNumber] == "Partial":
+                # Bullet set to partial
+
+                # Maybe colour the bullet
+                if colourChecks:
+                    xml += '<a:buClr xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">'
+                    xml += '<a:srgbClr val="0000FF" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" />'
+                    xml += '</a:buClr>'
+
+                xml += '<a:buFont xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" typeface="Courier" pitchFamily="2" charset="2"/>'
+                xml += '<a:buChar xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" char="▃"/>'
+
             else:
                 # Checkbox crossed
 
-                # Maybe colour the mark
+                # Maybe colour the bullet
                 if colourChecks:
                     xml += '<a:buClr xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">'
                     xml += '<a:srgbClr val="FF0000" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" />'
                     xml += '</a:buClr>'
-                
+
                 # Set the bullet to a square with a cross
                 xml += '<a:buFont xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" typeface="Wingdings 2" pitchFamily="2" charset="2"/>'
                 xml += '<a:buChar xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" char="T"/>'
-                
      
             xml += '</a:pPr>'
     
@@ -277,14 +301,37 @@ class RunPython:
         
         return placeholder
 
-    def makeTruthy(table_array, columnNumber = 1, trueString = "Yes", falseString = "No", unsetString = ""):
+    def testForValues(cellValue, testValues):
+        if isinstance(testValues, list):
+            # Work through list of possible values
+            for testValue in testValues:
+                if cellValue == testValue:
+                    return True
+
+            return False
+        else:
+            # Single string value to check for
+            return cellValue == testValues
+
+    def makeTruthy(table_array, columnNumber = 1, trueValues = "yes", falseValues = "no", unsetValues = "", maybeValues = "maybe", partialValues = "partial"):
         for row in table_array:
-            if row[columnNumber] == unsetString:
-                row[columnNumber] = None
-            elif row[columnNumber] == trueString:
-                row[columnNumber] = True
-            else:
-                row[columnNumber] = False
+            # Test is case insensitive
+            cellValue = row[columnNumber].lower()
+
+            if RunPython.testForValues(cellValue, unsetValues):
+                row[columnNumber] = "Unset"
+
+            elif RunPython.testForValues(cellValue, trueValues):
+                row[columnNumber] = "Yes"
+
+            elif RunPython.testForValues(cellValue, maybeValues):
+                row[columnNumber] = "Maybe"
+
+            elif RunPython.testForValues(cellValue, partialValues):
+                row[columnNumber] = "Partial"
+
+            elif RunPython.testForValues(cellValue, falseValues):
+                row[columnNumber] = "No"
 
         return table_array
 
@@ -335,7 +382,14 @@ class RunPython:
         
     def checklistFromCSV(slide, renderingRectangle, filename, shapeIndex = None, colourChecks = False):
         # Read in CSV and turn second column into "truthy" values
-        myChecklist = RunPython.makeTruthy(RunPython.readCSV(filename), 1)
+        myChecklist = RunPython.makeTruthy(RunPython.readCSV(filename),
+            1,
+            trueValues = ["yes", "x", "y"],
+            falseValues = ["no", "n"],
+            unsetValues = ["", " "],
+            maybeValues = ["maybe", "m", "?", "partial"],
+            partialValues = ["partial", "p"],
+        )
 
         # Ensure we have a placeholder - whether first or second or specified
         textShape = RunPython.ensureTextbox(slide, renderingRectangle, shapeIndex)

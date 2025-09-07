@@ -86,8 +86,8 @@ except:
     have_graphviz = False
 
 
-md2pptx_level = "6.0"
-md2pptx_date = "29 August, 2025"
+md2pptx_level = "6.0+"
+md2pptx_date = "7 September, 2025"
 
 namespaceURL = {
     "mc":  "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -6615,11 +6615,15 @@ if applescriptFilename != "":
     globals.applescriptLines += [
         "        end tell",
         "    end if",
+        "",
     ]
 
     if want_reload:
         full_filename = os.path.abspath(output_filename)
-        globals.applescriptLines.append(f"    open \"{full_filename}\"")
+        globals.applescriptLines+=[
+            f"    open \"{full_filename}\"",
+            "",
+        ]
 
 
     # Maybe add "go to slide" code
@@ -6629,10 +6633,17 @@ if applescriptFilename != "":
             "        set FDWView to view of front document window",
             "        go to slide FDWView number " + str(bookmark),
             "    end tell"
+            "",
     ]
 
     # Close off applescript
-    globals.applescriptLines.append("end tell")
+    globals.applescriptLines+= [
+        "end tell",
+        "",
+        "tell application \"Microsoft PowerPoint\"",
+        "    activate",
+        "end tell",
+    ]
 
 
     # Write the applescript out
