@@ -11,9 +11,9 @@ Def output = stdout
 
 Def input = stdin
 
-Def node = Mac-Studio-Max.local
+Def node = Mac.domain_not_set.invalid
 
-Def version = Darwin Kernel Version 25.0.0: Thu Aug 14 21:59:19 PDT 2025; root:xnu-12377.1.8~5/RELEASE_ARM64_T6000
+Def version = Darwin Kernel Version 25.0.0: Mon Aug 25 21:17:51 PDT 2025; root:xnu-12377.1.9~3/RELEASE_ARM64_T6000
 
 Def architecture = 64bit
 
@@ -35,15 +35,15 @@ Def mdpre_level = 1.1.2
 
 Def userid = martinpacker
 
-Def day = 29
+Def day = 13
 
-Def month = August
+Def month = September
 
 Def year = 2025
 
-Def time = 16&colon;39
+Def time = 10&colon;33
 
-Def date = 29 August&comma; 2025
+Def date = 13 September&comma; 2025
 
 Def TOC = Table Of Contents
 

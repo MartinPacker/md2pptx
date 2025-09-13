@@ -1679,6 +1679,11 @@ THE SOFTWARE.
 </thead>
 <tbody>
 <tr>
+<td align="left">6.0.1</td>
+<td align="right">13&nbsp;September&nbsp;2025</td>
+<td align="left">Tweaked the ability to <a href="#postprocessing-the-presentation-with-scripting">generate and run AppleScript</a> to add an additional <code>activate</code> step and added some blank lines in the generated script.<br/>Added &ldquo;Maybe&rdquo; and &ldquo;Partial&rdquo; to checklists&comma; plus some synonyms.</td>
+</tr>
+<tr>
 <td align="left">6.0</td>
 <td align="right">29&nbsp;August&nbsp;2025</td>
 <td align="left">Added the ability to <a href="#postprocessing-the-presentation-with-scripting">generate and run AppleScript</a>.</td>
@@ -5116,24 +5121,34 @@ This shape is added to the slide identified by the variable <code>slide</code>.<
 <a id="checklist-related-helper-routines"></a></p>
 <h4 id="checklist-related-helper-routines">Checklist-Related Helper routines<a class="headerlink" href="#checklist-related-helper-routines" title="Permanent link"></a></h4>
 <p>There are a number of functions that can help you make checklists, including pulling in a CSV file with status in.
-These checklists can have ticked, crossed, or empty boxes - depending on the input data.</p>
+These checklists can have ticked, crossed, question mark, partially filled, or empty boxes - depending on the input data.</p>
 <p><a id="runpythonmaketruthy"></a></p>
 <h5 id="runpythonmaketruthy">RunPython.makeTruthy<a class="headerlink" href="#runpythonmaketruthy" title="Permanent link"></a></h5>
 <p>This function massages the output from <a href="#runpythonreadcsv"><code>RunPython.readCSV</code></a> to prepare it for input to <a href="#runpythonmakechecklist">RunPython.makeChecklist</a>.</p>
 <p>By default it operates on the second column and</p>
 <ul>
-<li>sets cells with text value <code>"Yes"</code> to <code>True</code>.</li>
-<li>sets cells with text value <code>"No"</code> to <code>False</code>.</li>
-<li>sets cells with text value <code>""</code> to <code>None</code>.</li>
+<li>sets cells with text value <code>"yes"</code> to `&rdquo;Yes&rdquo;``.</li>
+<li>sets cells with text value <code>"no"</code> to <code>"No"</code>.</li>
+<li>sets cells with text value <code>""</code> to <code>"Unset"</code>.</li>
+<li>sets cells with text value <code>"maybe"</code> to <code>"Maybe"</code></li>
+<li>sets cells with text value <code>"partial"</code> to <code>"Partial"</code></li>
 </ul>
-<p>The column number and text string values can be changed from the defaults.</p>
+<p>These tests are case insensitive.</p>
+<p>The column number and text string values can be changed from the defaults:</p>
+<ul>
+<li>If you pass in a single string the match is against that string.</li>
+<li>If you pass in an array of strings the match is against any one of those strings.</li>
+</ul>
+<p><a href="#runpythonchecklistfromcsv"><code>RunPython.checklistFromCSV</code></a> changes these values substantially from the defaults.</p>
 <h6 id="input_12">Input<a class="headerlink" href="#input_12" title="Permanent link"></a></h6>
 <ul>
 <li>Data in the form created by <a href="#runpythonreadcsv">RunPython.readCSV</a>.</li>
 <li>Column number to massage, zero-indexed. Defaults to &ldquo;1&rdquo;.</li>
-<li>String to be set to <code>True</code>. Defaults to <code>"Yes"</code>.</li>
-<li>String to be set to <code>False</code>. Defaults to <code>"No"</code>.</li>
-<li>String to be set to <code>None</code>. Defaults to <code>""</code>.</li>
+<li>String (or array of strings) to be set to <code>"Yes"</code>. Defaults to <code>"Yes"</code>.</li>
+<li>String (or array of strings) to be set to <code>"No"</code>. Defaults to <code>"No"</code>.</li>
+<li>String (or array of strings) to be set to <code>"Unset"</code>. Defaults to <code>""</code>.</li>
+<li>String (or array of strings) to be set to <code>"Maybe"</code>. Defaults to <code>"maybe"</code>.</li>
+<li>String (or array of strings) to be set to <code>"Partial"</code>. Defaults to <code>"partial"</code>.</li>
 </ul>
 <h6 id="output_12">Output<a class="headerlink" href="#output_12" title="Permanent link"></a></h6>
 <ul>
@@ -5157,6 +5172,15 @@ The checklist items can be indented and can, optionally, be coloured to reflect 
 <ul>
 <li>The textbox shape containing the rendered checklist.</li>
 </ul>
+<p><code>RunPython.checklistFromCSV</code> overrides the default status strings when calling <a href="#runpythonmaketruthy">RunPython.makeTruthy</a>:</p>
+<ul>
+<li><code>"Yes"</code> can be coded as <code>"yes"</code>, <code>"x"</code>, or <code>"y"</code>.</li>
+<li><code>"No"</code> can be coded as <code>"no"</code>, or <code>"n"</code>.</li>
+<li><code>"Unset"</code> can be coded as <code>""</code>, or <code>" "</code>.</li>
+<li><code>"Maybe"</code> can be coded as <code>"maybe"</code>, <code>"m"</code>, or <code>"?"</code>.</li>
+<li><code>"Partial"</code> can be coded as <code>"partial"</code>, or <code>"p"</code>.</li>
+</ul>
+<p>In the above case is not important.</p>
 <p>This function uses the following lower level routines</p>
 <ul>
 <li><a href="#runpythonreadcsv"><code>RunPython.readCSV</code></a> to read in a CSV file.</li>
@@ -5187,18 +5211,18 @@ The checklist items can be indented and can, optionally, be coloured to reflect 
 In turn it calls <a href="#runpythondochecklistchecks"><code>RunPython.doChecklistChecks</code></a> to do the actually placement of checkmarks.</p>
 <p>Here is an example of a checklist array:</p>
 <div class="highlight"><pre>[
-  [&#39;Retrieved data&#39;, True, 1],
-  [&#39;Built databases&#39;, False, 1],
-  [&#39;Analysis&#39;, None, 1],
-  [&#39;Architectural Introduction&#39;, None, 2],
-  [&#39;CPU&#39;, None, 2],
-  [&#39;Memory and I/O&#39;, None, 2],
-  [&#39;WLM&#39;, None, 2],
-  [&#39;Parallel Sysplex&#39;, None, 2],
-  [&#39;DDF&#39;, None, 2],
-  [&#39;Batch&#39;, None, 2],
-  [&#39;Workshop&#39;, None, 1],
-  [&#39;Executive Summary&#39;, None]
+  [&#39;Retrieved data&#39;, &quot;Yes&quot;, 1],
+  [&#39;Built databases&#39;, &quot;No&quot;, 1],
+  [&#39;Analysis&#39;, &quot;Unset&quot;, 1],
+  [&#39;Architectural Introduction&#39;, &quot;Unset&quot;, 2],
+  [&#39;CPU&#39;, &quot;Unset&quot;, 2],
+  [&#39;Memory and I/O&#39;, &quot;Unset&quot;, 2],
+  [&#39;WLM&#39;, &quot;Unset&quot;, 2],
+  [&#39;Parallel Sysplex&#39;, &quot;Unset&quot;, 2],
+  [&#39;DDF&#39;, &quot;Unset&quot;, 2],
+  [&#39;Batch&#39;, &quot;Unset&quot;, 2],
+  [&#39;Workshop&#39;, &quot;Unset&quot;, 1],
+  [&#39;Executive Summary&#39;, &quot;Unset&quot;, 1]
 ]
 </pre></div>
 
@@ -5207,18 +5231,18 @@ They can be more complex than that, perhaps with some words bolded or wrapped in
 To do this simply ensure the first element of each item has the appropriate markup.
 For example:
 <div class="highlight"><pre>[
-  [&#39;Retrieved data&#39;, True, 1],
-  [&#39;Built databases&#39;, False, 1],
-  [&#39;Analysis&#39;, None, 1],
-  [&#39;Architectural Introduction&#39;, None, 2],
-  [&#39;CPU&#39;, None, 2],
-  [&#39;Memory and I/O&#39;, None, 2],
-  [&#39;WLM&#39;, None, 2],
-  [&#39;Parallel Sysplex&#39;, None, 2],
-  [&#39;&lt;span class=&quot;optional&quot;&gt;DDF&lt;/span&gt;&#39;, None, 2],
-  [&#39;Batch&#39;, None, 2],
-  [&#39;Workshop&#39;, None, 1],
-  [&#39;&lt;span class=&quot;Important&quot;&gt;Executive Summary&lt;/span&gt;&#39;, None]
+  [&#39;Retrieved data&#39;, &quot;Yes&quot;, 1],
+  [&#39;Built databases&#39;, &quot;No&quot;, 1],
+  [&#39;Analysis&#39;, &quot;Unset&quot;, 1],
+  [&#39;Architectural Introduction&#39;, &quot;Unset&quot;, 2],
+  [&#39;CPU&#39;, &quot;Unset&quot;, 2],
+  [&#39;Memory and I/O&#39;, &quot;Unset&quot;, 2],
+  [&#39;WLM&#39;, &quot;Unset&quot;, 2],
+  [&#39;Parallel Sysplex&#39;, &quot;Unset&quot;, 2],
+  [&#39;&lt;span class=&quot;optional&quot;&gt;DDF&lt;/span&gt;&#39;, &quot;Unset&quot;, 2],
+  [&#39;Batch&#39;, &quot;Unset&quot;, 2],
+  [&#39;Workshop&#39;, &quot;Unset&quot;, 1],
+  [&#39;&lt;span class=&quot;Important&quot;&gt;Executive Summary&lt;/span&gt;&#39;, &quot;Unset&quot;, 1]
 ]
 </pre></div></p>
 <p><a id="runpythondochecklistchecks"></a></p>
@@ -5236,9 +5260,11 @@ For example:
 </ul>
 <p>The checkmark indicators are:</p>
 <ul>
-<li><code>None</code> - leave the paragraph unchecked.</li>
-<li><code>True</code> - give the paragraph a tick.</li>
-<li><code>False</code> - give the paragraph a cross.</li>
+<li><code>"Yes"</code> - leave the paragraph unchecked.</li>
+<li><code>"No"</code> - give the paragraph a tick.</li>
+<li><code>"Unset"</code> - give the paragraph a cross.</li>
+<li><code>"Maybe"</code> - give the paragraph a question mark.</li>
+<li><code>"Partial"</code> - give the paragraph a partially filled box.</li>
 </ul>
 <h4 id="text-paragraph-helper-routines">Text Paragraph Helper Routines<a class="headerlink" href="#text-paragraph-helper-routines" title="Permanent link"></a></h4>
 <p>There are a number of routines to enable you to manipulate paragraphs in text boxes.
@@ -5499,15 +5525,19 @@ Let&rsquo;s start with a CSV file with three lines in it.
 Each represents a task.
 The first has an empty completion cell, the second has a positive completion cell, and the third has a negative one.</p>
 <p>Let&rsquo;s call this &ldquo;tasks.csv&rdquo;:</p>
-<pre><code>"One task",""
-"Another task","Yes"
-"A task that won't get done","No"
+<pre><code>"One task"," "
+"Another task","X"
+"Yet Another task","y"
+"A task that won't get done","no"
+"A possibility","?"
+"Partially Done","p"
 </code></pre>
-<p>This is the kind of file you could create and maintain by hand, or with a tool.</p>
+<p>This is the kind of file you could create and maintain by hand, or with a tool.
+Note the inconsistent capitalisation of the status cells - as this is case insensitive.</p>
 <p>If you run the following through md2pptx you get a slide with a title and a three-item checklist.</p>
 <pre><code>template: Martin Template.pptx
 
-### Here Is A Slide With A Checklist
+### Bulleted List
 
 ``` run-python
 RunPython.checklistFromCSV(slide, renderingRectangle, "tasks.csv")
@@ -5618,7 +5648,7 @@ It calls <code>RunPython.annotationsFromCSV</code> with two parameters:</p>
 <p>The current restriction to Mac OS is because the prime author of this package doesn&rsquo;t know how to write scripts for eg Powershell.
 Assistance in this regard would be welcomed.</p>
 <p>Here is an example of the AppleScript md2pptx can generate:</p>
-<style>.hljs-number{color:#057CB0;}.hljs-selector-class{color:#C41A16;}.hljs-strong{font-weight:bold;}.hljs-selector-tag{color:#AA0D91;}.hljs-template-variable{color:#057CB0;}.hljs-function{color:#5C2699;}.hljs-template-tag{color:#C41A16;}.hljs-selector-id{color:#C41A16;}.hljs-code{color:#AA0D91;}.hljs{overflow-x:auto;padding:0.5em;display:block;color:#000000;}.hljs-name{color:#AA0D91;}.hljs-quote{color:#C41A16;}.hljs-meta{color:#5C2699;}.hljs-addition{color:#AA0D91;}.hljs-emphasis{font-style:italic;}.hljs-attr{color:#5C2699;}.hljs-link{color:#057CB0;}.hljs-keyword{color:#AA0D91;}.hljs-bullet{color:#AA0D91;}.hljs-string{color:#C41A16;}.hljs-type{color:#5C2699;}.hljs-variable{color:#057CB0;}.hljs-built_in{color:#AA0D91;}.hljs-selector-pseudo{color:#057CB0;}.hljs-selector-attr{color:#057CB0;}.hljs-attribute{color:#5C2699;}.hljs-meta-keyword{color:#057CB0;}.hljs-comment{color:#707F8C;}.hljs-title{color:#057CB0;font-weight:bold;}.hljs-section{color:#057CB0;font-weight:bold;}.hljs-literal{color:#AA0D91;}.hljs-regexp{color:#057CB0;}.hljs-symbol{color:#057CB0;}.hljs-doctag{color:#AA0D91;}.hljs-deletion{color:#C41A16;}.hljs-subst{color:#000000;}</style>
+<style>.hljs-meta{color:#5C2699;}.hljs-doctag{color:#AA0D91;}.hljs-quote{color:#C41A16;}.hljs{padding:0.5em;overflow-x:auto;color:#000000;display:block;}.hljs-strong{font-weight:bold;}.hljs-selector-id{color:#C41A16;}.hljs-subst{color:#000000;}.hljs-template-tag{color:#C41A16;}.hljs-function{color:#5C2699;}.hljs-bullet{color:#AA0D91;}.hljs-type{color:#5C2699;}.hljs-name{color:#AA0D91;}.hljs-meta-keyword{color:#057CB0;}.hljs-title{color:#057CB0;font-weight:bold;}.hljs-section{font-weight:bold;color:#057CB0;}.hljs-string{color:#C41A16;}.hljs-link{color:#057CB0;}.hljs-code{color:#AA0D91;}.hljs-attribute{color:#5C2699;}.hljs-variable{color:#057CB0;}.hljs-selector-attr{color:#057CB0;}.hljs-number{color:#057CB0;}.hljs-keyword{color:#AA0D91;}.hljs-built_in{color:#AA0D91;}.hljs-selector-pseudo{color:#057CB0;}.hljs-deletion{color:#C41A16;}.hljs-selector-class{color:#C41A16;}.hljs-symbol{color:#057CB0;}.hljs-attr{color:#5C2699;}.hljs-literal{color:#AA0D91;}.hljs-addition{color:#AA0D91;}.hljs-emphasis{font-style:italic;}.hljs-regexp{color:#057CB0;}.hljs-template-variable{color:#057CB0;}.hljs-selector-tag{color:#AA0D91;}.hljs-comment{color:#707F8C;}</style>
 
 <pre><code class="hljs" style="background:#FFFFFF;border-radius:8px"><span class="hljs-keyword">tell</span> <span class="hljs-built_in">application</span> <span class="hljs-string">"Microsoft PowerPoint"</span>
     <span class="hljs-keyword">set</span> activePresentation <span class="hljs-keyword">to</span> full <span class="hljs-built_in">name</span> <span class="hljs-keyword">of</span> active presentation
@@ -5627,11 +5657,17 @@ Assistance in this regard would be welcomed.</p>
             close <span class="hljs-keyword">front</span> document window
         <span class="hljs-keyword">end</span> <span class="hljs-keyword">tell</span>
     <span class="hljs-keyword">end</span> <span class="hljs-keyword">if</span>
-    open <span class="hljs-string">"/Users/martinpacker/md2pptx/test/animation.pptx"</span>
+
+    open <span class="hljs-string">"/Users/martinpacker/md2pptx/test/checklist.pptx"</span>
+
     <span class="hljs-keyword">tell</span> active presentation
         <span class="hljs-keyword">set</span> FDWView <span class="hljs-keyword">to</span> view <span class="hljs-keyword">of</span> <span class="hljs-keyword">front</span> document window
         go <span class="hljs-keyword">to</span> slide FDWView <span class="hljs-built_in">number</span> <span class="hljs-number">2</span>
     <span class="hljs-keyword">end</span> <span class="hljs-keyword">tell</span>
+<span class="hljs-keyword">end</span> <span class="hljs-keyword">tell</span>
+
+<span class="hljs-keyword">tell</span> <span class="hljs-built_in">application</span> <span class="hljs-string">"Microsoft PowerPoint"</span>
+    <span class="hljs-built_in">activate</span>
 <span class="hljs-keyword">end</span> <span class="hljs-keyword">tell</span>
 </code></pre>
 

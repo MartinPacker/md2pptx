@@ -86,8 +86,8 @@ except:
     have_graphviz = False
 
 
-md2pptx_level = "6.0+"
-md2pptx_date = "7 September, 2025"
+md2pptx_level = "6.0.1"
+md2pptx_date = "13 September, 2025"
 
 namespaceURL = {
     "mc":  "http://schemas.openxmlformats.org/markup-compatibility/2006",

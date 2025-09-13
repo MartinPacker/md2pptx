@@ -387,7 +387,7 @@ class RunPython:
             trueValues = ["yes", "x", "y"],
             falseValues = ["no", "n"],
             unsetValues = ["", " "],
-            maybeValues = ["maybe", "m", "?", "partial"],
+            maybeValues = ["maybe", "m", "?"],
             partialValues = ["partial", "p"],
         )
 

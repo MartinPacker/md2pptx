@@ -172,6 +172,7 @@ To quote from the python-pptx license statement:
 =colalign l r l
 =csv
 Level,Date,What
+6.0.1,13&nbsp;September&nbsp;2025,Tweaked the ability to [generate and run AppleScript](#postprocessing-the-presentation-with-scripting) to add an additional `activate` step and added some blank lines in the generated script.<br/>Added "Maybe" and "Partial" to checklists&comma; plus some synonyms.
 6.0,29&nbsp;August&nbsp;2025,Added the ability to [generate and run AppleScript](#postprocessing-the-presentation-with-scripting).
 5.4.5,20&nbsp;August&nbsp;2025,Added the ability to shade a table cell with [`style.cellcolor`](#associating-a-class-name-with-table-cell-shading-with-style-cellcolor).
 5.4.4,13&nbsp;July&nbsp;2025,Bugfix: Image loaded without JPEG file extension wasn't recognise as a JPEG
@@ -4168,7 +4169,7 @@ This function draws a shape from a set of vertices, optionally filling it and ad
 #### Checklist-Related Helper routines
 
 There are a number of functions that can help you make checklists, including pulling in a CSV file with status in.
-These checklists can have ticked, crossed, or empty boxes - depending on the input data.
+These checklists can have ticked, crossed, question mark, partially filled, or empty boxes - depending on the input data.
 
 <a id="runpythonmaketruthy"></a>
 ##### RunPython.makeTruthy
@@ -4177,19 +4178,30 @@ This function massages the output from [`RunPython.readCSV`](#runpythonreadcsv) 
 
 By default it operates on the second column and
 
-* sets cells with text value `"Yes"` to `True`.
-* sets cells with text value `"No"` to `False`.
-* sets cells with text value `""` to `None`.
+* sets cells with text value `"yes"` to `"Yes"``.
+* sets cells with text value `"no"` to `"No"`.
+* sets cells with text value `""` to `"Unset"`.
+* sets cells with text value `"maybe"` to `"Maybe"`
+* sets cells with text value `"partial"` to `"Partial"`
 
-The column number and text string values can be changed from the defaults.
+These tests are case insensitive.
+
+The column number and text string values can be changed from the defaults:
+
+* If you pass in a single string the match is against that string.
+* If you pass in an array of strings the match is against any one of those strings.
+
+[`RunPython.checklistFromCSV`](#runpythonchecklistfromcsv) changes these values substantially from the defaults.
 
 ###### Input
 
 * Data in the form created by [RunPython.readCSV](#runpythonreadcsv).
 * Column number to massage, zero-indexed. Defaults to "1".
-* String to be set to `True`. Defaults to `"Yes"`.
-* String to be set to `False`. Defaults to `"No"`.
-* String to be set to `None`. Defaults to `""`.
+* String (or array of strings) to be set to `"Yes"`. Defaults to `"Yes"`.
+* String (or array of strings) to be set to `"No"`. Defaults to `"No"`.
+* String (or array of strings) to be set to `"Unset"`. Defaults to `""`.
+* String (or array of strings) to be set to `"Maybe"`. Defaults to `"maybe"`.
+* String (or array of strings) to be set to `"Partial"`. Defaults to `"partial"`.
 
 ###### Output
 
@@ -4215,6 +4227,17 @@ The checklist items can be indented and can, optionally, be coloured to reflect 
 ###### Output
 
 * The textbox shape containing the rendered checklist.
+
+
+`RunPython.checklistFromCSV` overrides the default status strings when calling [RunPython.makeTruthy](#runpythonmaketruthy):
+
+* `"Yes"` can be coded as `"yes"`, `"x"`, or `"y"`.
+* `"No"` can be coded as `"no"`, or `"n"`.
+* `"Unset"` can be coded as `""`, or `" "`.
+* `"Maybe"` can be coded as `"maybe"`, `"m"`, or `"?"`.
+* `"Partial"` can be coded as `"partial"`, or `"p"`.
+
+In the above case is not important.
 
 This function uses the following lower level routines
 
@@ -4253,18 +4276,18 @@ Here is an example of a checklist array:
 
 ```
 [
-  ['Retrieved data', True, 1],
-  ['Built databases', False, 1],
-  ['Analysis', None, 1],
-  ['Architectural Introduction', None, 2],
-  ['CPU', None, 2],
-  ['Memory and I/O', None, 2],
-  ['WLM', None, 2],
-  ['Parallel Sysplex', None, 2],
-  ['DDF', None, 2],
-  ['Batch', None, 2],
-  ['Workshop', None, 1],
-  ['Executive Summary', None]
+  ['Retrieved data', "Yes", 1],
+  ['Built databases', "No", 1],
+  ['Analysis', "Unset", 1],
+  ['Architectural Introduction', "Unset", 2],
+  ['CPU', "Unset", 2],
+  ['Memory and I/O', "Unset", 2],
+  ['WLM', "Unset", 2],
+  ['Parallel Sysplex', "Unset", 2],
+  ['DDF', "Unset", 2],
+  ['Batch', "Unset", 2],
+  ['Workshop', "Unset", 1],
+  ['Executive Summary', "Unset", 1]
 ]
 ```
 
@@ -4274,18 +4297,18 @@ To do this simply ensure the first element of each item has the appropriate mark
 For example:
 ```
 [
-  ['Retrieved data', True, 1],
-  ['Built databases', False, 1],
-  ['Analysis', None, 1],
-  ['Architectural Introduction', None, 2],
-  ['CPU', None, 2],
-  ['Memory and I/O', None, 2],
-  ['WLM', None, 2],
-  ['Parallel Sysplex', None, 2],
-  ['<span class="optional">DDF</span>', None, 2],
-  ['Batch', None, 2],
-  ['Workshop', None, 1],
-  ['<span class="Important">Executive Summary</span>', None]
+  ['Retrieved data', "Yes", 1],
+  ['Built databases', "No", 1],
+  ['Analysis', "Unset", 1],
+  ['Architectural Introduction', "Unset", 2],
+  ['CPU', "Unset", 2],
+  ['Memory and I/O', "Unset", 2],
+  ['WLM', "Unset", 2],
+  ['Parallel Sysplex', "Unset", 2],
+  ['<span class="optional">DDF</span>', "Unset", 2],
+  ['Batch', "Unset", 2],
+  ['Workshop', "Unset", 1],
+  ['<span class="Important">Executive Summary</span>', "Unset", 1]
 ]
 ```
 
@@ -4306,9 +4329,11 @@ This function adds check marks to the checklist items and, optionally, colours t
 
 The checkmark indicators are:
 
-* `None` - leave the paragraph unchecked.
-* `True` - give the paragraph a tick.
-* `False` - give the paragraph a cross.
+* `"Yes"` - leave the paragraph unchecked.
+* `"No"` - give the paragraph a tick.
+* `"Unset"` - give the paragraph a cross.
+* `"Maybe"` - give the paragraph a question mark.
+* `"Partial"` - give the paragraph a partially filled box.
 
 #### Text Paragraph Helper Routines
 
@@ -4609,17 +4634,21 @@ The first has an empty completion cell, the second has a positive completion cel
 
 Let's call this "tasks.csv":
 
-    "One task",""
-    "Another task","Yes"
-    "A task that won't get done","No"
+    "One task"," "
+    "Another task","X"
+    "Yet Another task","y"
+    "A task that won't get done","no"
+    "A possibility","?"
+    "Partially Done","p"
 
 This is the kind of file you could create and maintain by hand, or with a tool.
+Note the inconsistent capitalisation of the status cells - as this is case insensitive.
 
 If you run the following through md2pptx you get a slide with a title and a three-item checklist.
 
     template: Martin Template.pptx
     
-    ### Here Is A Slide With A Checklist
+    ### Bulleted List
     
     ``` run-python
     RunPython.checklistFromCSV(slide, renderingRectangle, "tasks.csv")
@@ -4758,21 +4787,26 @@ Assistance in this regard would be welcomed.
 
 Here is an example of the AppleScript md2pptx can generate:
 
-<style>.hljs-number{color:#057CB0;}.hljs-selector-class{color:#C41A16;}.hljs-strong{font-weight:bold;}.hljs-selector-tag{color:#AA0D91;}.hljs-template-variable{color:#057CB0;}.hljs-function{color:#5C2699;}.hljs-template-tag{color:#C41A16;}.hljs-selector-id{color:#C41A16;}.hljs-code{color:#AA0D91;}.hljs{overflow-x:auto;padding:0.5em;display:block;color:#000000;}.hljs-name{color:#AA0D91;}.hljs-quote{color:#C41A16;}.hljs-meta{color:#5C2699;}.hljs-addition{color:#AA0D91;}.hljs-emphasis{font-style:italic;}.hljs-attr{color:#5C2699;}.hljs-link{color:#057CB0;}.hljs-keyword{color:#AA0D91;}.hljs-bullet{color:#AA0D91;}.hljs-string{color:#C41A16;}.hljs-type{color:#5C2699;}.hljs-variable{color:#057CB0;}.hljs-built_in{color:#AA0D91;}.hljs-selector-pseudo{color:#057CB0;}.hljs-selector-attr{color:#057CB0;}.hljs-attribute{color:#5C2699;}.hljs-meta-keyword{color:#057CB0;}.hljs-comment{color:#707F8C;}.hljs-title{color:#057CB0;font-weight:bold;}.hljs-section{color:#057CB0;font-weight:bold;}.hljs-literal{color:#AA0D91;}.hljs-regexp{color:#057CB0;}.hljs-symbol{color:#057CB0;}.hljs-doctag{color:#AA0D91;}.hljs-deletion{color:#C41A16;}.hljs-subst{color:#000000;}</style><pre><code class="hljs" style="background:#FFFFFF;border-radius:8px"><span class="hljs-keyword">tell</span> <span class="hljs-built_in">application</span> <span class="hljs-string">"Microsoft PowerPoint"</span>
+<style>.hljs-meta{color:#5C2699;}.hljs-doctag{color:#AA0D91;}.hljs-quote{color:#C41A16;}.hljs{padding:0.5em;overflow-x:auto;color:#000000;display:block;}.hljs-strong{font-weight:bold;}.hljs-selector-id{color:#C41A16;}.hljs-subst{color:#000000;}.hljs-template-tag{color:#C41A16;}.hljs-function{color:#5C2699;}.hljs-bullet{color:#AA0D91;}.hljs-type{color:#5C2699;}.hljs-name{color:#AA0D91;}.hljs-meta-keyword{color:#057CB0;}.hljs-title{color:#057CB0;font-weight:bold;}.hljs-section{font-weight:bold;color:#057CB0;}.hljs-string{color:#C41A16;}.hljs-link{color:#057CB0;}.hljs-code{color:#AA0D91;}.hljs-attribute{color:#5C2699;}.hljs-variable{color:#057CB0;}.hljs-selector-attr{color:#057CB0;}.hljs-number{color:#057CB0;}.hljs-keyword{color:#AA0D91;}.hljs-built_in{color:#AA0D91;}.hljs-selector-pseudo{color:#057CB0;}.hljs-deletion{color:#C41A16;}.hljs-selector-class{color:#C41A16;}.hljs-symbol{color:#057CB0;}.hljs-attr{color:#5C2699;}.hljs-literal{color:#AA0D91;}.hljs-addition{color:#AA0D91;}.hljs-emphasis{font-style:italic;}.hljs-regexp{color:#057CB0;}.hljs-template-variable{color:#057CB0;}.hljs-selector-tag{color:#AA0D91;}.hljs-comment{color:#707F8C;}</style><pre><code class="hljs" style="background:#FFFFFF;border-radius:8px"><span class="hljs-keyword">tell</span> <span class="hljs-built_in">application</span> <span class="hljs-string">"Microsoft PowerPoint"</span>
     <span class="hljs-keyword">set</span> activePresentation <span class="hljs-keyword">to</span> full <span class="hljs-built_in">name</span> <span class="hljs-keyword">of</span> active presentation
     <span class="hljs-keyword">if</span> activePresentation <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">missing value</span>
         <span class="hljs-keyword">tell</span> active presentation
             close <span class="hljs-keyword">front</span> document window
         <span class="hljs-keyword">end</span> <span class="hljs-keyword">tell</span>
     <span class="hljs-keyword">end</span> <span class="hljs-keyword">if</span>
-    open <span class="hljs-string">"/Users/martinpacker/md2pptx/test/animation.pptx"</span>
+
+    open <span class="hljs-string">"/Users/martinpacker/md2pptx/test/checklist.pptx"</span>
+
     <span class="hljs-keyword">tell</span> active presentation
         <span class="hljs-keyword">set</span> FDWView <span class="hljs-keyword">to</span> view <span class="hljs-keyword">of</span> <span class="hljs-keyword">front</span> document window
         go <span class="hljs-keyword">to</span> slide FDWView <span class="hljs-built_in">number</span> <span class="hljs-number">2</span>
     <span class="hljs-keyword">end</span> <span class="hljs-keyword">tell</span>
 <span class="hljs-keyword">end</span> <span class="hljs-keyword">tell</span>
-</code></pre>
 
+<span class="hljs-keyword">tell</span> <span class="hljs-built_in">application</span> <span class="hljs-string">"Microsoft PowerPoint"</span>
+    <span class="hljs-built_in">activate</span>
+<span class="hljs-keyword">end</span> <span class="hljs-keyword">tell</span>
+</code></pre>
 **Notes**
 
 1. md2pptx is not sensitive to what platform a presentation and script file is generated on. You could, for example, create and AppleScript file on a Raspberry Pi and run it on a Mac.
