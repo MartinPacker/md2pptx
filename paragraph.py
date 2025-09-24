@@ -13,7 +13,7 @@ from pptx.util import Pt
 import globals
 from processingOptions import *
 from symbols import resolveSymbols
-from colour import parseRGB
+from colour import *
 
 # Following functions are workarounds for python-pptx not having these functions for the font object
 def setSubscript(font):
