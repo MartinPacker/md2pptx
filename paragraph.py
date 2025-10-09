@@ -626,7 +626,10 @@ def addFormattedText(p, text):
                 if fnref in globals.footnoteReferences:
                     footnoteNumber = globals.footnoteReferences.index(fnref)
                     run.text = str(footnoteNumber + 1)
-                    globals.footnoteRunsDictionary[footnoteNumber] = run
+                    # Support multiple runs per footnote reference
+                    if footnoteNumber not in globals.footnoteRunsDictionary:
+                        globals.footnoteRunsDictionary[footnoteNumber] = []
+                    globals.footnoteRunsDictionary[footnoteNumber].append(run)
 
                 else:
                     run.text = "[?]"
@@ -693,7 +696,10 @@ def addFormattedText(p, text):
                 if linkURL.startswith("#"):
                     # Is an internal Url
                     linkHref = linkURL[1:].strip()
-                    globals.href_runs[linkHref] = run
+                    # Support multiple runs per href target
+                    if linkHref not in globals.href_runs:
+                        globals.href_runs[linkHref] = []
+                    globals.href_runs[linkHref].append(run)
                 else:
                     # Not an internal link so create it
                     hlink = run.hyperlink
