@@ -6378,10 +6378,17 @@ if len(globals.footnoteDefinitions) > 0:
     footnoteNumber = -1
     for footnoteRun in globals.footnoteRunsDictionary.keys():
         footnoteNumber += 1
-        run = globals.footnoteRunsDictionary[footnoteRun]
-
+        runs = globals.footnoteRunsDictionary[footnoteRun]
+        
+        # Handle both single run (old format) and multiple runs (new format)
+        if isinstance(runs, list):
+            run_list = runs
+        else:
+            run_list = [runs]
+        
         footnoteSlideNumber = int(footnoteNumber / footnotesPerPage)
-        createRunHyperlinkOrTooltip(run, footnoteSlides[footnoteSlideNumber], "")
+        for run in run_list:
+            createRunHyperlinkOrTooltip(run, footnoteSlides[footnoteSlideNumber], "")
 
 ######################################################################################
 #                                                                                    #
@@ -6532,11 +6539,19 @@ if globals.processingOptions.getCurrentOption("sectionArrows"):
 ######################################################################################
 xrefCheck_errors = False
 for href in globals.href_runs.keys():
-    run = globals.href_runs[href]
+    runs = globals.href_runs[href]
+    
+    # Handle both single run (old format) and multiple runs (new format)
+    if isinstance(runs, list):
+        run_list = runs
+    else:
+        run_list = [runs]
+    
     if href in slideHrefs.keys():
-        createRunHyperlinkOrTooltip(
-            run, prs.slides[slideHrefs[href] - 2 + templateSlideCount], ""
-        )
+        for run in run_list:
+            createRunHyperlinkOrTooltip(
+                run, prs.slides[slideHrefs[href] - 2 + templateSlideCount], ""
+            )
     else:
         # No id defined with that name
         if not xrefCheck_errors:
@@ -6545,11 +6560,12 @@ for href in globals.href_runs.keys():
             print("\nHyperlink Reference Errors")
             print("--------------------------")
 
-        print(
-            "Slide "
-            + str(prs.slides.index(SlideFromRun(run)) + 1 - templateSlideCount)
-            + f": '{href}'"
-        )
+        for run in run_list:
+            print(
+                "Slide "
+                + str(prs.slides.index(SlideFromRun(run)) + 1 - templateSlideCount)
+                + f": '{href}'"
+            )
 
 # Each picture appears in pictures
 # There's a corresponding entry in picture_Hrefs
