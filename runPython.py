@@ -2,7 +2,7 @@
 runPython
 """
 
-version = "0.10"
+version = "0.11"
 
 import csv
 from pptx.chart.data import CategoryChartData
@@ -19,6 +19,8 @@ from pptx.enum.shapes import PP_PLACEHOLDER
 from paragraph import *
 from pptx.util import Inches, Pt
 from pptx.enum.shapes import MSO_CONNECTOR, MSO_SHAPE
+
+from media import *
 
 import globals
 
@@ -185,6 +187,7 @@ class RunPython:
         return s
 
     def doChecklistChecks(placeholder, checklist, colourChecks = False):
+        slide = placeholder._parent._parent
         tf = placeholder.text_frame
         paras = tf.paragraphs
         for paraNumber, para in enumerate(paras):
@@ -204,62 +207,83 @@ class RunPython:
 
 
             if checklist[paraNumber] == "Unset":
-                # Bullet unchecked
+                # Set the bullet to an empty square
+                image_part, rId = createMediaRel(slide, "unset-black.png")
                 
-                # Set the bullet to an empty square - and don't colour it
-               xml += '<a:buFont xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" typeface="Wingdings" pitchFamily="2" charset="2"/>'
-               xml += '<a:buChar xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" char="o"/>'
+                # Following is non-graphic bullet
+                # xml += '<a:buFont xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" typeface="Wingdings" pitchFamily="2" charset="2"/>'
+                # xml += '<a:buChar xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" char="o"/>'
 
             elif checklist[paraNumber] == "Yes":
-                # Bullet checked
-
-                # Maybe colour the bullet
-                if colourChecks:
-                    xml += '<a:buClr xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">'
-                    xml += '<a:srgbClr val="00FF00" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" />'
-                    xml += '</a:buClr>'
-
                 # Set the bullet to a square with a tick
-                xml += '<a:buFont xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" typeface="Wingdings 2" pitchFamily="2" charset="2"/>'
-                xml += '<a:buChar xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" char="R"/>'
+                if colourChecks:
+                    image_part, rId = createMediaRel(slide, "tick-colour.png")
+                else:
+                    image_part, rId = createMediaRel(slide, "tick-black.png")
+                
+                # Following is non-graphic colouring
+                # xml += '<a:buClr xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">'
+                # xml += '<a:srgbClr val="00FF00" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" />'
+                # xml += '</a:buClr>'
+
+                # Following is non-graphic bullet
+                # xml += '<a:buFont xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" typeface="Wingdings 2" pitchFamily="2" charset="2"/>'
+                # xml += '<a:buChar xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" char="R"/>'
 
             elif checklist[paraNumber] == "Maybe":
                 # Bullet set to maybe
-
-                # Maybe colour the bullet
                 if colourChecks:
-                    xml += '<a:buClr xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">'
-                    xml += '<a:srgbClr val="FFA500" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" />'
-                    xml += '</a:buClr>'
+                    image_part, rId = createMediaRel(slide, "query-colour.png")
+                else:
+                    image_part, rId = createMediaRel(slide, "query-black.png")
+                
+                # Following is non-graphic colouring
+                # xml += '<a:buClr xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">'
+                # xml += '<a:srgbClr val="FFA500" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" />'
+                # xml += '</a:buClr>'
 
-                xml += '<a:buFont xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" typeface="Wingdings" pitchFamily="2" charset="2"/>'
-                xml += '<a:buChar xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" char="⍰"/>'
+                # Following is non-graphic bullet
+                # xml += '<a:buFont xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" typeface="Wingdings" pitchFamily="2" charset="2"/>'
+                # xml += '<a:buChar xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" char="⍰"/>'
 
             elif checklist[paraNumber] == "Partial":
                 # Bullet set to partial
-
-                # Maybe colour the bullet
                 if colourChecks:
-                    xml += '<a:buClr xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">'
-                    xml += '<a:srgbClr val="0000FF" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" />'
-                    xml += '</a:buClr>'
+                    image_part, rId = createMediaRel(slide, "partial-colour.png")
+                else:
+                    image_part, rId = createMediaRel(slide, "partial-black.png")
+                
+                # Following is non-graphic colouring
+                # xml += '<a:buClr xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">'
+                # xml += '<a:srgbClr val="0000FF" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" />'
+                # xml += '</a:buClr>'
 
-                xml += '<a:buFont xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" typeface="Courier" pitchFamily="2" charset="2"/>'
-                xml += '<a:buChar xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" char="▃"/>'
+                # Following is non-graphic bullet
+                # xml += '<a:buFont xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" typeface="Courier" pitchFamily="2" charset="2"/>'
+                # xml += '<a:buChar xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" char="▃"/>'
 
             else:
-                # Checkbox crossed
-
-                # Maybe colour the bullet
-                if colourChecks:
-                    xml += '<a:buClr xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">'
-                    xml += '<a:srgbClr val="FF0000" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" />'
-                    xml += '</a:buClr>'
-
                 # Set the bullet to a square with a cross
-                xml += '<a:buFont xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" typeface="Wingdings 2" pitchFamily="2" charset="2"/>'
-                xml += '<a:buChar xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" char="T"/>'
+                if colourChecks:
+                    image_part, rId = createMediaRel(slide, "cross-colour.png")
+                else:
+                    image_part, rId = createMediaRel(slide, "cross-black.png")
+                
+                
+                # Following is non-graphic colouring
+                # xml += '<a:buClr xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">'
+                # xml += '<a:srgbClr val="FF0000" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" />'
+                # xml += '</a:buClr>'
+
+                # Following is non-graphic bullet
+                # xml += '<a:buFont xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" typeface="Wingdings 2" pitchFamily="2" charset="2"/>'
+                # xml += '<a:buChar xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" char="T"/>'
      
+            xml += '<a:buBlip xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">'
+            xml += f'    <a:blip xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" r:embed="{rId}"/>'
+            xml += '</a:buBlip>'
+
+
             xml += '</a:pPr>'
     
             # Parse this XML
