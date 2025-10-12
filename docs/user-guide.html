@@ -1571,7 +1571,7 @@ img {
 <p>For example, the author uses iThoughtsX on Mac, with its counterpart (iThoughts) on iOS, to generate presentations from outlines.</p>
 </li>
 <li>
-<p>Text editing tools are far quicker and more flexible that the Powerpoint presentation editor.</p>
+<p>Text editing tools are far quicker and more flexible than the Powerpoint presentation editor.</p>
 </li>
 <li>Versioning and collaboration tools - such as git - are much easier to use with a text file than a Powerpoint presentation file.</li>
 <li>
@@ -1589,9 +1589,10 @@ img {
 <li>Markdown is used in popular sites, such as <a href="https://github.com">Github</a>.</li>
 </ul>
 <p>Every piece of text you use to create a Powerpoint presentation with md2pptx is valid Markdown - <a href="#deviations-from-standard-markdown">with very few exceptions</a>. While it might not render exactly the same way put through another Markdown processor, it is generally equivalent. This is one of the key aims of md2pptx.</p>
-<p>One final advantage of the md2pptx approach is you can generate presentations without using PowerPoint itself. Indeed you can create presentations on machines where PowerPoint won&rsquo;t even run. All you need is to be able to run Python 3 and install <a href="http://python-pptx.readthedocs.io/en/latest/">python-pptx</a>.</p>
+<p>One final advantage of the md2pptx approach is you can generate presentations without using PowerPoint itself. Indeed you can create presentations on machines where PowerPoint won&rsquo;t even run. All you need is to be able to run Python 3 and install <a href="http://python-pptx.readthedocs.io/en/latest/">python-pptx</a>.
+The lead author of this package has tested on a number of generations of Raspberry Pi machines.</p>
 <h3 id="a-real-world-use-case">A Real World Use Case<a class="headerlink" href="#a-real-world-use-case" title="Permanent link"></a></h3>
-<p>The author developed a presentation over 10 years in Powerpoint and OpenOffice and LibreOffice. It became very inconsistent in formatting - fonts, colours, indentations, bullets, etc.. It was a horrible mess.</p>
+<p>The author developed a presentation over a period of 10 years in Powerpoint and OpenOffice and LibreOffice. It became very inconsistent in formatting - fonts, colours, indentations, bullets, etc.. It was a horrible mess.</p>
 <p>He took the trouble to convert it to Markdown and regenerated it with a very early version of md2pptx. The presentation looks nice again, with consistent formatting.</p>
 <p>It was relatively little trouble to convert to Markdown. In fact it took about an hour to convert the 40 slide presentation. The consistency gain was automatic.</p>
 <h3 id="using-md2pptx-with-mdpre">Using md2pptx With mdpre<a class="headerlink" href="#using-md2pptx-with-mdpre" title="Permanent link"></a></h3>
@@ -1678,6 +1679,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">6.0.2</td>
+<td align="right">12&nbsp;October&nbsp;2025</td>
+<td align="left"><a class="magiclink magiclink-github magiclink-mention" href="https://github.com/troutrot" title="GitHub User: troutrot">@troutrot</a> fixed <a href="file:///Users/martinpacker/md2pptx/docs/user-guide.html#creating-footnotes">footnotes</a>. Also <a href="#specifying-bold-and-italic-text-colour-with-boldcolour-and-italiccolour"><code>italiccolour</code></a> fixed. <a href="#checklist-related-helper-routines">Checklists</a> now use graphics instead of weird characters.</td>
+</tr>
 <tr>
 <td align="left">6.0.1</td>
 <td align="right">13&nbsp;September&nbsp;2025</td>
@@ -2041,7 +2047,7 @@ THE SOFTWARE.
 <tr>
 <td align="left">2.1</td>
 <td align="right">21&nbsp;May&nbsp;2021</td>
-<td align="left">Added <code>&amp;lambda;</code>&comma; <code>&amp;mu;</code>&comma; <code>&amp;nu;</code>&comma; <code>&amp;pi</code>&comma; <code>&amp;rho</code>. Allow more than one table or code block on a slide.</td>
+<td align="left">Added <code>&amp;lambda;</code>&comma; <code>&amp;mu;</code>&comma; <code>&amp;nu;</code>&comma; <code>&amp;pi</code>&comma; <code>&amp;rho</code>.; Allow more than one table or code block on a slide.</td>
 </tr>
 <tr>
 <td align="left">2.0.2</td>
@@ -2965,7 +2971,7 @@ Sub savePresentationAsPPTX()
   pptmName = ActivePresentation.FullName
 
   Dim pptxName As String
-  pptxName = Left(pptmName, InStr(pptmName, &quot;.&quot;)) &amp; &quot;pptx&quot;
+  pptxName = Left(pptmName, InStr(pptmName, &quot;.&quot;)) &amp;; &quot;pptx&quot;
 
   ActivePresentation.SaveAs pptxName, ppSaveAsOpenXMLPresentation
 End Sub
@@ -3356,6 +3362,12 @@ You can change these colours under &ldquo;Themes&rdquo; in the Slide Master edit
 <h3 id="creating-a-footnote">Creating A Footnote<a class="headerlink" href="#creating-a-footnote" title="Permanent link"></a></h3>
 <p><a id="creating-a-footnote"></a></p>
 <p>To define a footnote code <code>[^name]:</code> on a new line. The remainder of the line will be the footnote text.</p>
+<p>A footnote can contain multiple &ldquo;runs&rdquo;.
+For example, it might contain a fragment of italic text.
+For example:</p>
+<pre><code>[^test1]: This is the actual footnote - with *multiple* runs.
+</code></pre>
+<p>In this example the word &ldquo;multiple&rdquo; is italicised.</p>
 <p>If you have defined footnotes one or more Footnotes slides will be added to the end of the presentation.</p>
 <p>Footnotes are automatically numbered, starting with 1.</p>
 <h3 id="referring-to-a-footnote">Referring To A Footnote<a class="headerlink" href="#referring-to-a-footnote" title="Permanent link"></a></h3>
@@ -4419,7 +4431,7 @@ The default value is <code>no</code>.</p>
 <ol>
 <li>The section name is derived from the section slide&rsquo;s title. The following characters are passed through to the section name:<ul>
 <li>Alphanumerics</li>
-<li><code>&amp;-+!/</code></li>
+<li><code>&amp;-+!/</code>;</li>
 <li>Spaces</li>
 <li>Asterisks (coded as <code>&amp;lowast;</code>)</li>
 </ul>

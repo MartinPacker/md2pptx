@@ -348,7 +348,7 @@ There are advantages in creating presentations using a flat file format. Some of
 	
 	For example, the author uses iThoughtsX on Mac, with its counterpart (iThoughts) on iOS, to generate presentations from outlines.
 
-* Text editing tools are far quicker and more flexible that the Powerpoint presentation editor.
+* Text editing tools are far quicker and more flexible than the Powerpoint presentation editor.
 * Versioning and collaboration tools - such as git - are much easier to use with a text file than a Powerpoint presentation file.
 * Other flat file formats can be embedded.
 
@@ -367,10 +367,11 @@ The flat file format that md2pptx uses is Markdown. Using Markdown has further a
 Every piece of text you use to create a Powerpoint presentation with md2pptx is valid Markdown - [with very few exceptions](#deviations-from-standard-markdown). While it might not render exactly the same way put through another Markdown processor, it is generally equivalent. This is one of the key aims of md2pptx.
 
 One final advantage of the md2pptx approach is you can generate presentations without using PowerPoint itself. Indeed you can create presentations on machines where PowerPoint won't even run. All you need is to be able to run Python 3 and install [python-pptx](http://python-pptx.readthedocs.io/en/latest/).
+The lead author of this package has tested on a number of generations of Raspberry Pi machines.
 
 ### A Real World Use Case
 
-The author developed a presentation over 10 years in Powerpoint and OpenOffice and LibreOffice. It became very inconsistent in formatting - fonts, colours, indentations, bullets, etc.. It was a horrible mess.
+The author developed a presentation over a period of 10 years in Powerpoint and OpenOffice and LibreOffice. It became very inconsistent in formatting - fonts, colours, indentations, bullets, etc.. It was a horrible mess.
 
 He took the trouble to convert it to Markdown and regenerated it with a very early version of md2pptx. The presentation looks nice again, with consistent formatting.
 
@@ -474,6 +475,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|6.0.2|12&nbsp;October&nbsp;2025|@troutrot fixed [footnotes](file:///Users/martinpacker/md2pptx/docs/user-guide.html#creating-footnotes). Also [`italiccolour`](#specifying-bold-and-italic-text-colour-with-boldcolour-and-italiccolour) fixed. [Checklists](#checklist-related-helper-routines) now use graphics instead of weird characters.|
 |6.0.1|13&nbsp;September&nbsp;2025|Tweaked the ability to [generate and run AppleScript](#postprocessing-the-presentation-with-scripting) to add an additional `activate` step and added some blank lines in the generated script.<br/>Added "Maybe" and "Partial" to checklists&comma; plus some synonyms.|
 |6.0|29&nbsp;August&nbsp;2025|Added the ability to [generate and run AppleScript](#postprocessing-the-presentation-with-scripting).|
 |5.4.5|20&nbsp;August&nbsp;2025|Added the ability to shade a table cell with [`style.cellcolor`](#associating-a-class-name-with-table-cell-shading-with-style-cellcolor).|
@@ -546,7 +548,7 @@ To quote from the python-pptx license statement:
 |2.2.2|22&nbsp;July&nbsp;2021|Fixed bug where code blocks not initialised to none on starting a new slide|
 |2.2.1|19&nbsp;July&nbsp;2021|Added `AdjustTitles` - to control whether md2pptx adjusts slide title positions and sizes. Made slide notes work again.|
 |2.2|20&nbsp;June&nbsp;2021|Added `IndentSpaces` - to control&comma; including dynamically&comma; how many spaces represent a single level of list indentation.|
-|2.1|21&nbsp;May&nbsp;2021|Added `&lambda;`&comma; `&mu;`&comma; `&nu;`&comma; `&pi`&comma; `&rho`. Allow more than one table or code block on a slide.|
+|2.1|21&nbsp;May&nbsp;2021|Added `&lambda;`&comma; `&mu;`&comma; `&nu;`&comma; `&pi`&comma; `&rho`.; Allow more than one table or code block on a slide.|
 |2.0.2|3&nbsp;May&nbsp;2021|A single code block can share a slide with a list block or a table / graphics block|
 |2.0.1|1&nbsp;May&nbsp;2021|Added `&times;`&comma; `&percnt;`&comma; `&divide;`&comma; `&forall;`&comma; `&exist;`. Fixed 'three up graphic' layout bug.|
 |2.0|11&nbsp;April&nbsp;2021|Two slide content elements on a slide&comma; involving a major restructuring of the slide layout engine.|
@@ -1520,7 +1522,7 @@ Sub savePresentationAsPPTX()
   pptmName = ActivePresentation.FullName
 
   Dim pptxName As String
-  pptxName = Left(pptmName, InStr(pptmName, ".")) & "pptx"
+  pptxName = Left(pptmName, InStr(pptmName, ".")) &; "pptx"
 
   ActivePresentation.SaveAs pptxName, ppSaveAsOpenXMLPresentation
 End Sub
@@ -1776,6 +1778,14 @@ You can create and reference footnotes.
 <a id="creating-a-footnote"></a>
 
 To define a footnote code `[^name]: ` on a new line. The remainder of the line will be the footnote text.
+
+A footnote can contain multiple "runs".
+For example, it might contain a fragment of italic text.
+For example:
+
+    [^test1]: This is the actual footnote - with *multiple* runs.
+
+In this example the word "multiple" is italicised.
 
 If you have defined footnotes one or more Footnotes slides will be added to the end of the presentation.
 
@@ -3274,7 +3284,7 @@ The default is `no`.
 
 1. The section name is derived from the section slide's title. The following characters are passed through to the section name:
     * Alphanumerics
-    * `&-+!/`
+    * `&-+!/`;
     * Spaces
     * Asterisks (coded as `&lowast;`)
 2. In testing only PowerPoint has demonstrated the ability to display collapsible sections. Neither LibreOffice nor Keynote showed any understanding of collapsible sections, though both otherwise loaded the test presentation fine.

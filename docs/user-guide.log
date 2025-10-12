@@ -1,6 +1,6 @@
 
-mdpre Markdown Preprocessor v1.1.2 (19 August, 2025)
-====================================================
+mdpre Markdown Preprocessor v1.1.3 (28 September, 2025)
+=======================================================
 
 - opened <stdout> for writing
 Def makefile = file-3
@@ -13,7 +13,7 @@ Def input = stdin
 
 Def node = Mac.domain_not_set.invalid
 
-Def version = Darwin Kernel Version 25.0.0: Mon Aug 25 21:17:51 PDT 2025; root:xnu-12377.1.9~3/RELEASE_ARM64_T6000
+Def version = Darwin Kernel Version 25.1.0: Wed Oct  1 21:08:15 PDT 2025; root:xnu-12377.40.103.505.3~2/RELEASE_ARM64_T6000
 
 Def architecture = 64bit
 
@@ -21,7 +21,7 @@ Def machine = arm64
 
 Def system = Darwin
 
-Def release = 25.0.0
+Def release = 25.1.0
 
 Def python_version = 3.12.3
 
@@ -29,21 +29,21 @@ Def python_implementation = CPython
 
 Def processor = arm
 
-Def mdpre_date = 19 August, 2025
+Def mdpre_date = 28 September, 2025
 
-Def mdpre_level = 1.1.2
+Def mdpre_level = 1.1.3
 
 Def userid = martinpacker
 
-Def day = 13
+Def day = 12
 
-Def month = September
+Def month = October
 
 Def year = 2025
 
-Def time = 10&colon;33
+Def time = 16&colon;26
 
-Def date = 13 September&comma; 2025
+Def date = 12 October&comma; 2025
 
 Def TOC = Table Of Contents
 
@@ -736,7 +736,7 @@ CSV Stop
 
 .....  Building This User Guide
 
-----------------------------------------------------
+-------------------------------------------------------
 - Processing completed.
-----------------------------------------------------
+-------------------------------------------------------
 
