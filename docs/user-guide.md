@@ -548,7 +548,7 @@ To quote from the python-pptx license statement:
 |2.2.2|22&nbsp;July&nbsp;2021|Fixed bug where code blocks not initialised to none on starting a new slide|
 |2.2.1|19&nbsp;July&nbsp;2021|Added `AdjustTitles` - to control whether md2pptx adjusts slide title positions and sizes. Made slide notes work again.|
 |2.2|20&nbsp;June&nbsp;2021|Added `IndentSpaces` - to control&comma; including dynamically&comma; how many spaces represent a single level of list indentation.|
-|2.1|21&nbsp;May&nbsp;2021|Added `&lambda;`&comma; `&mu;`&comma; `&nu;`&comma; `&pi`&comma; `&rho`.; Allow more than one table or code block on a slide.|
+|2.1|21&nbsp;May&nbsp;2021|Added `&lambda;`&comma; `&mu;`&comma; `&nu;`&comma; `&pi`&comma; `&rho`. Allow more than one table or code block on a slide.|
 |2.0.2|3&nbsp;May&nbsp;2021|A single code block can share a slide with a list block or a table / graphics block|
 |2.0.1|1&nbsp;May&nbsp;2021|Added `&times;`&comma; `&percnt;`&comma; `&divide;`&comma; `&forall;`&comma; `&exist;`. Fixed 'three up graphic' layout bug.|
 |2.0|11&nbsp;April&nbsp;2021|Two slide content elements on a slide&comma; involving a major restructuring of the slide layout engine.|
@@ -1522,7 +1522,7 @@ Sub savePresentationAsPPTX()
   pptmName = ActivePresentation.FullName
 
   Dim pptxName As String
-  pptxName = Left(pptmName, InStr(pptmName, ".")) &; "pptx"
+  pptxName = Left(pptmName, InStr(pptmName, ".")) & "pptx"
 
   ActivePresentation.SaveAs pptxName, ppSaveAsOpenXMLPresentation
 End Sub
@@ -2220,6 +2220,7 @@ For example:
 
 Will cause text marked like so `**I am bold**` to be rendered in the presentation's smartmaster's "Accent 1" colour.
 
+You can use either theme colours or RGB values, as described in [Specifying Colours](#specifying-colours).
 
 #### Specifying Bold And Italic Text Effects With `BoldBold` And `ItalicItalic`
 <a id="specifying-bold-and-italic-text-effects-with-boldbold-and-italicitalic"></a>
@@ -3284,7 +3285,7 @@ The default is `no`.
 
 1. The section name is derived from the section slide's title. The following characters are passed through to the section name:
     * Alphanumerics
-    * `&-+!/`;
+    * `&-+!/`
     * Spaces
     * Asterisks (coded as `&lowast;`)
 2. In testing only PowerPoint has demonstrated the ability to display collapsible sections. Neither LibreOffice nor Keynote showed any understanding of collapsible sections, though both otherwise loaded the test presentation fine.

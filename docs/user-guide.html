@@ -2047,7 +2047,7 @@ THE SOFTWARE.
 <tr>
 <td align="left">2.1</td>
 <td align="right">21&nbsp;May&nbsp;2021</td>
-<td align="left">Added <code>&amp;lambda;</code>&comma; <code>&amp;mu;</code>&comma; <code>&amp;nu;</code>&comma; <code>&amp;pi</code>&comma; <code>&amp;rho</code>.; Allow more than one table or code block on a slide.</td>
+<td align="left">Added <code>&amp;lambda;</code>&comma; <code>&amp;mu;</code>&comma; <code>&amp;nu;</code>&comma; <code>&amp;pi</code>&comma; <code>&amp;rho</code>. Allow more than one table or code block on a slide.</td>
 </tr>
 <tr>
 <td align="left">2.0.2</td>
@@ -2971,7 +2971,7 @@ Sub savePresentationAsPPTX()
   pptmName = ActivePresentation.FullName
 
   Dim pptxName As String
-  pptxName = Left(pptmName, InStr(pptmName, &quot;.&quot;)) &amp;; &quot;pptx&quot;
+  pptxName = Left(pptmName, InStr(pptmName, &quot;.&quot;)) &amp; &quot;pptx&quot;
 
   ActivePresentation.SaveAs pptxName, ppSaveAsOpenXMLPresentation
 End Sub
@@ -3667,6 +3667,7 @@ baseTextDecrement: 1
 <pre><code>BoldColour: ACCENT 1
 </code></pre>
 <p>Will cause text marked like so <code>**I am bold**</code> to be rendered in the presentation&rsquo;s smartmaster&rsquo;s &ldquo;Accent 1&rdquo; colour.</p>
+<p>You can use either theme colours or RGB values, as described in <a href="#specifying-colours">Specifying Colours</a>.</p>
 <h4 id="specifying-bold-and-italic-text-effects-with-boldbold-and-italicitalic">Specifying Bold And Italic Text Effects With <code>BoldBold</code> And <code>ItalicItalic</code><a class="headerlink" href="#specifying-bold-and-italic-text-effects-with-boldbold-and-italicitalic" title="Permanent link"></a></h4>
 <p><a id="specifying-bold-and-italic-text-effects-with-boldbold-and-italicitalic"></a></p>
 <p>You can modify how md2pptx formats bold and italic text.</p>
@@ -4431,7 +4432,7 @@ The default value is <code>no</code>.</p>
 <ol>
 <li>The section name is derived from the section slide&rsquo;s title. The following characters are passed through to the section name:<ul>
 <li>Alphanumerics</li>
-<li><code>&amp;-+!/</code>;</li>
+<li><code>&amp;-+!/</code></li>
 <li>Spaces</li>
 <li>Asterisks (coded as <code>&amp;lowast;</code>)</li>
 </ul>

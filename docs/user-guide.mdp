@@ -2120,6 +2120,7 @@ For example:
 
 Will cause text marked like so `**I am bold**` to be rendered in the presentation's smartmaster's "Accent 1" colour.
 
+You can use either theme colours or RGB values, as described in [Specifying Colours](#specifying-colours).
 
 #### Specifying Bold And Italic Text Effects With `BoldBold` And `ItalicItalic`
 <a id="specifying-bold-and-italic-text-effects-with-boldbold-and-italicitalic"></a>
