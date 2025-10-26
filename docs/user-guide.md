@@ -37,6 +37,7 @@ As you can see in the [change log](#change-log), md2pptx is frequently updated -
 			* [Video Slides](#video-slides)
 			* [Audio Slides](#audio-slides)
 	* [Table Slides](#table-slides)
+		* [Table Captions](#table-captions)
 		* [Special Case: Two Graphics Side By Side](#special-case-two-graphics-side-by-side)
 		* [Special Case: Two By Two Grid Of Graphics](#special-case-two-by-two-grid-of-graphics)
 		* [Special Case: Three Graphics On A Slide](#special-case-three-graphics-on-a-slide)
@@ -123,6 +124,7 @@ As you can see in the [change log](#change-log), md2pptx is frequently updated -
 			* [Specifying What The Added Table Lines Look Like With `addTableLineColour`, `addTableLineCount` and `addTableLineWidth`](#specifying-what-the-added-table-lines-look-like-with-addtablelinecolour-addtablelinecount-and-addtablelinewidth)
 			* [Controlling Whether Empty Table Cells Cause Column Spanning - `SpanCells`](#controlling-whether-empty-table-cells-cause-column-spanning-spancells)
 			* [Controlling Whether Tables Have Drop Shadows - `tableShadow`](#controlling-whether-tables-have-drop-shadows-tableshadow)
+			* [Controlling Whether Table Captions Have Table Numbers - `numberedTableCaptions`](#controlling-whether-table-captions-have-table-numbers-numberedtablecaptions)
 		* [Card Metadata](#card-metadata)
 			* [Card Background Colour - `CardColour`](#card-background-colour-cardcolour)
 			* [Card Border Colour - `CardBorderColour`](#card-border-colour-cardbordercolour)
@@ -475,6 +477,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|6.0.3|26&nbsp;October&nbsp;2025|Added support for [table captions](#table-captions).|
 |6.0.2|12&nbsp;October&nbsp;2025|@troutrot fixed [footnotes](file:///Users/martinpacker/md2pptx/docs/user-guide.html#creating-footnotes). Also [`italiccolour`](#specifying-bold-and-italic-text-colour-with-boldcolour-and-italiccolour) fixed. [Checklists](#checklist-related-helper-routines) now use graphics instead of weird characters.|
 |6.0.1|13&nbsp;September&nbsp;2025|Tweaked the ability to [generate and run AppleScript](#postprocessing-the-presentation-with-scripting) to add an additional `activate` step and added some blank lines in the generated script.<br/>Added "Maybe" and "Partial" to checklists&comma; plus some synonyms.|
 |6.0|29&nbsp;August&nbsp;2025|Added the ability to [generate and run AppleScript](#postprocessing-the-presentation-with-scripting).|
@@ -548,7 +551,7 @@ To quote from the python-pptx license statement:
 |2.2.2|22&nbsp;July&nbsp;2021|Fixed bug where code blocks not initialised to none on starting a new slide|
 |2.2.1|19&nbsp;July&nbsp;2021|Added `AdjustTitles` - to control whether md2pptx adjusts slide title positions and sizes. Made slide notes work again.|
 |2.2|20&nbsp;June&nbsp;2021|Added `IndentSpaces` - to control&comma; including dynamically&comma; how many spaces represent a single level of list indentation.|
-|2.1|21&nbsp;May&nbsp;2021|Added `&lambda;`&comma; `&mu;`&comma; `&nu;`&comma; `&pi`&comma; `&rho`. Allow more than one table or code block on a slide.|
+|2.1|21&nbsp;May&nbsp;2021|Added `&lambda;`&comma; `&mu;`&comma; `&nu;`&comma; `&pi`&comma; `&rho`.; Allow more than one table or code block on a slide.|
 |2.0.2|3&nbsp;May&nbsp;2021|A single code block can share a slide with a list block or a table / graphics block|
 |2.0.1|1&nbsp;May&nbsp;2021|Added `&times;`&comma; `&percnt;`&comma; `&divide;`&comma; `&forall;`&comma; `&exist;`. Fixed 'three up graphic' layout bug.|
 |2.0|11&nbsp;April&nbsp;2021|Two slide content elements on a slide&comma; involving a major restructuring of the slide layout engine.|
@@ -577,7 +580,7 @@ To quote from the python-pptx license statement:
 |0.8|14&nbsp;June&nbsp;2020|`bgcolor` is now `style.bgcolor`. Added `style.fgcolor` and `style.emphasis`.|
 |0.7.3|24&nbsp;May&nbsp;2020|Allow background colouring via `span` elements|
 |0.7.2|14&nbsp;April&nbsp;2020| Support three graphics on a slide. Added `&equals;` entity reference. Added `tableMargin`.|
-|0.7.1|14&nbsp;November&nbsp;2019| Make slide titles longer. Fixed formatting issue with one-graphic-above-another table slide.|
+|0.7.1|14&nbsp;November&nbsp;2019| Make slide titles longer. Fixed formatting issue with one-graphic-above-another [table slide](#table-slides).|
 |0.7|3&nbsp;November&nbsp;2019|Support `abbr` element as a glossary item. Each distinct term leads to a glossary slide entry at the back of the presentation.|
 |0.6|8&nbsp;October&nbsp;2019|Support vertical pair of graphics in a table<br/>Fixed some issues with Markdown-syntax hyperlinks<br/>Support escaped square brackets `\[` and `\]`&comma;`&lsqb;` and `&rsqb;` being newly-supported alternatives|
 |0.5|12&nbsp;May&nbsp;2019|CriticMarkup support|
@@ -585,7 +588,7 @@ To quote from the python-pptx license statement:
 |0.4.4|6&nbsp;March&nbsp;2019|Processing summary slide shows build date and time|
 |0.4.3|20&nbsp;January&nbsp;2019|Support a few HTML entity references - punctuation and arrows.<br/>Support split task slide sets - completed and incomplete.<br/>Task tags are sorted.|
 |0.4.2|13&nbsp;January&nbsp;2019|Tasks slide set controllable with metadata `taskSlides` and `tasksPerSlide`|
-|0.4.1|9&nbsp;January&nbsp;2019|Enhanced Taskpaper support with `@due`&comma; `@tags`&comma; and `@done`&comma; and reworked as a series of table slides.|
+|0.4.1|9&nbsp;January&nbsp;2019|Enhanced Taskpaper support with `@due`&comma; `@tags`&comma; and `@done`&comma; and reworked as a series of [table slides](#table-slides).|
 |0.4|7&nbsp;January&nbsp;2019|Support shrinking of table cell font and margins.<br/>Added two-to-by-two grid of graphics on a slide.|
 |0.3.2|3 January 2019|Support `\#` as a literal octothorpe/hash/pound.<br/>Tidied up reporting.<br/>Added superscript, subscript, strikethrough, and underline text effects.|
 |0.3.1|3 November 2018|Fixed support for `<br/>` so it won't create a bullet on the new line.|
@@ -889,6 +892,25 @@ In other Markdown processors the widths of the columns can't be specified in thi
 Each cell can consist of text, which will wrap as necessary. You can't embed images in a table slide. But see [here](#special-case-two-graphics-side-by-side) and [here](#special-case-two-by-two-grid-of-graphics).
 
 As a convenience, you can omit the final `|` on a line. While this isn't strictly Markdown compliant this might be helpful.
+
+Table cells can contain more than just plain text. For example, you could use emphasis or `<span>` elements - just as in bulleted text.
+
+#### Table Captions
+
+You can code a table caption, which will appear as a table-wide cell.
+This will be within the space of the table as the last row.
+
+To do this code, for example
+
+    [My table caption text]
+
+This syntax is borrowed from MultiMarkdown; Other processors probably wouldn't honour it.
+
+It is not possible to place the caption at the top of the table as Powerpoint tends to treat the first row as special, with a different appearance.
+
+Place the caption line immediately after the last table row - while md2pptx thinks it's still parsing a table.
+
+If you specify `yes` to [metadata item `numberedTableCaptions`](#controlling-whether-table-captions-have-table-numbers-numberedtablecaptions) the table caption will be prefixed with a table number of the form "Table 1.".
 
 #### Special Case: Two Graphics Side By Side
 <a id="special-case-two-graphics-side-by-side"></a>
@@ -1522,7 +1544,7 @@ Sub savePresentationAsPPTX()
   pptmName = ActivePresentation.FullName
 
   Dim pptxName As String
-  pptxName = Left(pptmName, InStr(pptmName, ".")) & "pptx"
+  pptxName = Left(pptmName, InStr(pptmName, ".")) &; "pptx"
 
   ActivePresentation.SaveAs pptxName, ppSaveAsOpenXMLPresentation
 End Sub
@@ -2456,6 +2478,19 @@ You can control whether tables have drop shadows:
     
 The default is `no`.
 
+##### Controlling Whether Table Captions Have Table Numbers - `numberedTableCaptions`
+<a id="controlling-whether-table-captions-have-table-numbers-numberedtablecaptions"></a>
+
+You can control whether table captions have table numbers:
+
+    numberedTableCaptions: yes
+    
+The default is `no` - as most presentations don't want them.
+
+With this option the first table with a caption is numbered "1".
+The table number is incremented by 1 for every table with a caption.
+It would be odd for it to be incremented for a table without a caption - as it would leave a gap in the visible numbering.
+
 #### Card Metadata
 
 ##### Card Background Colour - `CardColour`
@@ -3285,7 +3320,7 @@ The default is `no`.
 
 1. The section name is derived from the section slide's title. The following characters are passed through to the section name:
     * Alphanumerics
-    * `&-+!/`
+    * `&-+!/`;
     * Spaces
     * Asterisks (coded as `&lowast;`)
 2. In testing only PowerPoint has demonstrated the ability to display collapsible sections. Neither LibreOffice nor Keynote showed any understanding of collapsible sections, though both otherwise loaded the test presentation fine.
@@ -3835,7 +3870,7 @@ For more information see [ContentSplit](#split-proportions-contentsplit).
 ### An Important Caution
 
 The support described in [Running Inline Python](#running-inline-python) allows you to run **arbitary python code**. It would be unwise to embed python code of unknown provenance.
-Use only code you directly write (or, of known provenance, embedded with [mdpre](https://github.com/MartinPacker/mdpre)'s `=include` capability, or as an optional parameter to the invocation).
+Use only code you directly write (or, of known provenance, embedded with [mdpre's](https://github.com/MartinPacker/mdpre) `=include` capability, or as an optional parameter to the invocation).
 
 In general, though, this function is worth exploring - if it enables you turn flat files into presentations that you otherwise couldn't make that way.
 

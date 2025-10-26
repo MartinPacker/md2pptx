@@ -1,6 +1,6 @@
 
-mdpre Markdown Preprocessor v1.1.2 (19 August, 2025)
-====================================================
+mdpre Markdown Preprocessor v1.1.3 (28 September, 2025)
+=======================================================
 
 - opened <stdout> for writing
 Def makefile = file-3
@@ -11,39 +11,39 @@ Def output = stdout
 
 Def input = stdin
 
-Def node = bluemac.local
+Def node = Mac.domain_not_set.invalid
 
-Def version = Darwin Kernel Version 25.0.0: Wed Sep 17 21:41:45 PDT 2025; root:xnu-12377.1.9~141/RELEASE_ARM64_T6000
+Def version = Darwin Kernel Version 25.1.0: Tue Oct 14 21:31:58 PDT 2025; root:xnu-12377.41.5~4/RELEASE_ARM64_T6000
 
-Def architecture = 64bit Mach-O
+Def architecture = 64bit
 
 Def machine = arm64
 
 Def system = Darwin
 
-Def release = 25.0.0
+Def release = 25.1.0
 
-Def python_version = 3.14.0
+Def python_version = 3.12.3
 
 Def python_implementation = CPython
 
 Def processor = arm
 
-Def mdpre_date = 19 August, 2025
+Def mdpre_date = 28 September, 2025
 
-Def mdpre_level = 1.1.2
+Def mdpre_level = 1.1.3
 
 Def userid = martinpacker
 
-Def day = 15
+Def day = 26
 
 Def month = October
 
 Def year = 2025
 
-Def time = 15&colon;39
+Def time = 15&colon;50
 
-Def date = 15 October&comma; 2025
+Def date = 26 October&comma; 2025
 
 Def TOC = Table Of Contents
 
@@ -105,6 +105,8 @@ CSV Stop
 ..... ..... ..... .....  Audio Slides
 
 ..... .....  Table Slides
+
+..... ..... .....  Table Captions
 
 ..... ..... .....  Special Case: Two Graphics Side By Side
 
@@ -287,6 +289,8 @@ CSV Stop
 ..... ..... ..... .....  Controlling Whether Empty Table Cells Cause Column Spanning - `SpanCells`
 
 ..... ..... ..... .....  Controlling Whether Tables Have Drop Shadows - `tableShadow`
+
+..... ..... ..... .....  Controlling Whether Table Captions Have Table Numbers - `numberedTableCaptions`
 
 ..... ..... .....  Card Metadata
 
@@ -736,7 +740,7 @@ CSV Stop
 
 .....  Building This User Guide
 
-----------------------------------------------------
+-------------------------------------------------------
 - Processing completed.
-----------------------------------------------------
+-------------------------------------------------------
 

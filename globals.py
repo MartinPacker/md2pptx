@@ -85,3 +85,13 @@ cellLineColour = {}
 
 global applescriptLines
 applescriptLines = []
+
+######################################################################################
+#                                                                                    #
+# Table and figure numbers                                                           #
+#                                                                                    #
+######################################################################################
+
+global tableNumber
+tableNumber = 1
+

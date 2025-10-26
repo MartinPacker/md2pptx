@@ -86,8 +86,8 @@ except:
     have_graphviz = False
 
 
-md2pptx_level = "6.0.2"
-md2pptx_date = "12 October, 2025"
+md2pptx_level = "6.0.3"
+md2pptx_date = "26 October, 2025"
 
 namespaceURL = {
     "mc":  "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -116,6 +116,7 @@ class SlideInfo:
         cards,
         code,
         sequence,
+        tableCaptions,
     ):
         self.titleText = titleText
         self.subtitleText = subtitleText
@@ -125,13 +126,17 @@ class SlideInfo:
         self.cards = cards
         self.code = code
         self.sequence = sequence
+        self.tableCaptions = tableCaptions
 
 
 # Information about a single table. (A slide might have more than one - or none.)
 class TableInfo:
     def __init__(self, tableRows, tableCaption):
-        self.tableRows = []
-        self.tableCaption = ""
+        self.rows = []
+        self.caption = ""
+        
+    def addRow(row):
+        self.rows.append(row)
 
 
 # Information about a video
@@ -3369,8 +3374,24 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
         rows = len(tableRows)
         alignments_count = len(alignments)
 
+        # Potentially add a caption row
+        if tableCaptions[tableBlockNumber] == "":
+            captionRowCount = 0
+        else:
+            captionRowCount = 1
+            
+            tableRows.append([tableCaptions[tableBlockNumber]])
+            rows += 1
+
         # Create the table with the above number of rows and columns
-        newTableShape = slide.shapes.add_table(rows, columns, 0, 0, 0, 0)
+        newTableShape = slide.shapes.add_table(
+            rows,
+            columns,
+            0,
+            0,
+            0,
+            0
+        )
         
         newTable = newTableShape.table
 
@@ -3386,14 +3407,24 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
 
         # Set whether first row is not special
         newTable.first_row = haveTableHeading
+        if captionRowCount == 0:
+            tableCaptionBlurb = ""
+        else:
+            if tableHeadingBlurb == "without heading":
+                tableCaptionBlurb = "with caption"
+            else:
+               tableCaptionBlurb = " and caption"
 
+        rowCountBlurb =str(rows - captionRowCount)
+        
         print(
             "           --> "
-            + str(rows)
+            + rowCountBlurb
             + " x "
             + str(columns)
             + " table"
             + tableHeadingBlurb
+            + tableCaptionBlurb
         )
 
         # Set column widths
@@ -3405,6 +3436,9 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
         compactTables = globals.processingOptions.getCurrentOption("compactTables")
         spanCells = globals.processingOptions.getCurrentOption("spanCells")
         tableHeadingSize = globals.processingOptions.getCurrentOption("tableHeadingSize")
+
+        # Get options table captions
+        numberedTableCaptions = globals.processingOptions.getCurrentOption("numberedTableCaptions")
 
         # Fill in the cells
         cellsWithExplicitBoxStyle = []
@@ -3467,6 +3501,15 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                 else:
                     p.alignment = PP_ALIGN.LEFT
 
+                # Massage any table caption cell
+                if (captionRowCount == 1) & (rowNumber == rows -1) & (columnNumber == 0):
+                    if numberedTableCaptions:
+                        cell = f"*Table {globals.tableNumber}. {cell}*"
+
+                        globals.tableNumber += 1
+                    else:
+                        cell = f"*{cell}*"
+                
                 # Add the cell text, respecting formatting
                 addFormattedText(p, cell)
                 
@@ -3490,7 +3533,6 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                     cff = newCell.fill
                     cff.solid()
                     cff.fore_color.rgb = RGBColor.from_string(cellBackgroundColor)
-
 
         # Apply table border styling - whether there is any or not
         applyTableLineStyling(
@@ -4157,7 +4199,7 @@ def createTaskSlides(prs, slideNumber, tasks, titleStem):
                 taskBlock = [taskRows]
 
                 slideInfo = SlideInfo(
-                    title, "", "table", [], taskBlock, [], [], ["table"]
+                    title, "", "table", [], taskBlock, [], [], ["table"], []
                 )
                 slide = createContentSlide(prs, slideNumber, slideInfo)
 
@@ -4201,7 +4243,7 @@ def createTaskSlides(prs, slideNumber, tasks, titleStem):
         title = titleStem
 
     taskBlock = [taskRows]
-    slideInfo = SlideInfo(title, "", "table", [], taskBlock, [], [], ["table"])
+    slideInfo = SlideInfo(title, "", "table", [], taskBlock, [], [], ["table"],[])
     slide = createContentSlide(prs, slideNumber, slideInfo)
 
     # Fix up references to be active links to the slide where the task
@@ -4246,7 +4288,7 @@ def createGlossarySlides(prs, slideNumber, abbrevDictionary):
 
                 glossaryBlock = [glossaryRows]
                 slideInfo = SlideInfo(
-                    title, "", "table", [], glossaryBlock, [], [], ["table"]
+                    title, "", "table", [], glossaryBlock, [], [], ["table"],[]
                 )
                 slide = createContentSlide(prs, slideNumber, slideInfo)
 
@@ -4271,7 +4313,8 @@ def createGlossarySlides(prs, slideNumber, abbrevDictionary):
         title = glossaryTitle
 
     glossaryBlock = [glossaryRows]
-    slideInfo = SlideInfo(title, "", "table", [], glossaryBlock, [], [], ["table"])
+    slideInfo = SlideInfo(title, "", "table", [], glossaryBlock, [], [], ["table"],[]
+    )
     slide = createContentSlide(prs, slideNumber, slideInfo)
     glossarySlides.append(slide)
     slideNumber += 1
@@ -4319,7 +4362,7 @@ def createFootnoteSlides(prs, slideNumber, footnoteDefinitions):
                     title = footnotesTitle
 
                 slideInfo = SlideInfo(
-                    title, "", "content", bullets, [], cards, [], ["list"]
+                    title, "", "content", bullets, [], cards, [], ["list", []]
                 )
                 slideNumber, slide, sequence = createSlide(prs, slideNumber, slideInfo)
 
@@ -4349,7 +4392,8 @@ def createFootnoteSlides(prs, slideNumber, footnoteDefinitions):
         # Only one footnotes page
         title = footnotesTitle
 
-    slideInfo = SlideInfo(title, "", "content", bullets, [], cards, [], ["list"])
+    slideInfo = SlideInfo(title, "", "content", bullets, [], cards, [], ["list"], []
+    )
     slideNumber, slide, sequence = createSlide(prs, slideNumber, slideInfo)
 
     footnoteSlides.append(slide)
@@ -4623,6 +4667,7 @@ globals.processingOptions.setOptionValuesArray(
         ["spanCells", "yes"],
         ["tableHeadingSize", 0],
         ["tableShadow", False],
+        ["numberedTableCaptions", False],
     ]
 )
 
@@ -4991,6 +5036,10 @@ for line in metadata_lines:
         globals.processingOptions.setOptionValues(name, float(value))
 
     elif name == "tableshadow":
+        if value.lower() == "yes":
+            globals.processingOptions.setOptionValues(name, True)
+
+    elif name == "numberedtablecaptions":
         if value.lower() == "yes":
             globals.processingOptions.setOptionValues(name, True)
 
@@ -6072,6 +6121,7 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
                     cards,
                     code,
                     sequence,
+                    tableCaptions,
                 )
                 slideNumber, slide, sequence = createSlide(prs, slideNumber, slideInfo)
 
@@ -6110,6 +6160,7 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
             tableRows = []
             cards = []
             code = []
+            tableCaptions = []
 
             if (notes_text != "") & (slide != None):
                 createSlideNotes(slide, notes_text)
@@ -6235,9 +6286,6 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
                 inList = False
                 inCard = False
 
-                # Create a new empty table
-                # tableRows = []
-
             # Start the creation of a new row
             tableRow = []
 
@@ -6351,7 +6399,7 @@ if len(tableCaptions) < len(tableRows):
 ######################################################################################
 if (inBlock is True) | (inCode is True) | (inTable is True):
     slideInfo = SlideInfo(
-        slideTitle, slideSubtitle, blockType, bullets, tableRows, cards, code, sequence
+        slideTitle, slideSubtitle, blockType, bullets, tableRows, cards, code, sequence, tableCaptions
     )
     slideNumber, slide, sequence = createSlide(prs, slideNumber, slideInfo)
 

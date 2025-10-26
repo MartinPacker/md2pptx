@@ -173,6 +173,7 @@ To quote from the python-pptx license statement:
 =colalign l r l
 =csv
 Level,Date,What
+6.0.3,26&nbsp;October&nbsp;2025,Added support for [table captions](#table-captions).
 6.0.2,12&nbsp;October&nbsp;2025,@troutrot fixed [footnotes](file:///Users/martinpacker/md2pptx/docs/user-guide.html#creating-footnotes). Also [`italiccolour`](#specifying-bold-and-italic-text-colour-with-boldcolour-and-italiccolour) fixed. [Checklists](#checklist-related-helper-routines) now use graphics instead of weird characters.
 6.0.1,13&nbsp;September&nbsp;2025,Tweaked the ability to [generate and run AppleScript](#postprocessing-the-presentation-with-scripting) to add an additional `activate` step and added some blank lines in the generated script.<br/>Added "Maybe" and "Partial" to checklists&comma; plus some synonyms.
 6.0,29&nbsp;August&nbsp;2025,Added the ability to [generate and run AppleScript](#postprocessing-the-presentation-with-scripting).
@@ -275,7 +276,7 @@ Level,Date,What
 0.8,14&nbsp;June&nbsp;2020,`bgcolor` is now `style.bgcolor`. Added `style.fgcolor` and `style.emphasis`.
 0.7.3,24&nbsp;May&nbsp;2020,Allow background colouring via `span` elements
 0.7.2,14&nbsp;April&nbsp;2020, Support three graphics on a slide. Added `&equals;` entity reference. Added `tableMargin`.
-0.7.1,14&nbsp;November&nbsp;2019, Make slide titles longer. Fixed formatting issue with one-graphic-above-another table slide.
+0.7.1,14&nbsp;November&nbsp;2019, Make slide titles longer. Fixed formatting issue with one-graphic-above-another [table slide](#table-slides).
 0.7,3&nbsp;November&nbsp;2019,Support `abbr` element as a glossary item. Each distinct term leads to a glossary slide entry at the back of the presentation.
 0.6,8&nbsp;October&nbsp;2019,Support vertical pair of graphics in a table<br/>Fixed some issues with Markdown-syntax hyperlinks<br/>Support escaped square brackets `\[` and `\]`&comma;`&lsqb;` and `&rsqb;` being newly-supported alternatives
 0.5,12&nbsp;May&nbsp;2019,CriticMarkup support
@@ -283,7 +284,7 @@ Level,Date,What
 0.4.4,6&nbsp;March&nbsp;2019,Processing summary slide shows build date and time
 0.4.3,20&nbsp;January&nbsp;2019,Support a few HTML entity references - punctuation and arrows.<br/>Support split task slide sets - completed and incomplete.<br/>Task tags are sorted.
 0.4.2,13&nbsp;January&nbsp;2019,Tasks slide set controllable with metadata `taskSlides` and `tasksPerSlide`
-0.4.1,9&nbsp;January&nbsp;2019,Enhanced Taskpaper support with `@due`&comma; `@tags`&comma; and `@done`&comma; and reworked as a series of table slides.
+0.4.1,9&nbsp;January&nbsp;2019,Enhanced Taskpaper support with `@due`&comma; `@tags`&comma; and `@done`&comma; and reworked as a series of [table slides](#table-slides).
 0.4,7&nbsp;January&nbsp;2019,Support shrinking of table cell font and margins.<br/>Added two-to-by-two grid of graphics on a slide.
 0.3.2,3 January 2019,"Support `\#` as a literal octothorpe/hash/pound.<br/>Tidied up reporting.<br/>Added superscript, subscript, strikethrough, and underline text effects."
 0.3.1,3 November 2018,Fixed support for `<br/>` so it won't create a bullet on the new line.
@@ -641,6 +642,28 @@ But see [here](#special-case-two-graphics-side-by-side) and [here](#special-case
 
 As a convenience, you can omit the final `|` on a line. \
 While this isn't strictly Markdown compliant this might be helpful.
+
+Table cells can contain more than just plain text. \
+For example, you could use emphasis or `<span>` elements - just as in bulleted text.
+
+#### Table Captions
+
+You can code a table caption, which will appear as a table-wide cell.
+This will be within the space of the table as the last row.
+
+To do this code, for example
+
+    [My table caption text]
+
+This syntax is borrowed from MultiMarkdown; Other processors probably wouldn't honour it.
+
+It is not possible to place the caption at the top of the table as Powerpoint tends to treat the first row as special, \
+with a different appearance.
+
+Place the caption line immediately after the last table row \
+- while md2pptx thinks it's still parsing a table.
+
+If you specify `yes` to [metadata item `numberedTableCaptions`](#controlling-whether-table-captions-have-table-numbers-numberedtablecaptions) the table caption will be prefixed with a table number of the form "Table 1.".
 
 #### Special Case: Two Graphics Side By Side
 <a id="special-case-two-graphics-side-by-side"></a>
@@ -2371,6 +2394,19 @@ You can control whether tables have drop shadows:
     
 The default is `no`.
 
+##### Controlling Whether Table Captions Have Table Numbers - `numberedTableCaptions`
+<a id="controlling-whether-table-captions-have-table-numbers-numberedtablecaptions"></a>
+
+You can control whether table captions have table numbers:
+
+    numberedTableCaptions: yes
+    
+The default is `no` - as most presentations don't want them.
+
+With this option the first table with a caption is numbered "1".
+The table number is incremented by 1 for every table with a caption.
+It would be odd for it to be incremented for a table without a caption - as it would leave a gap in the visible numbering.
+
 #### Card Metadata
 
 ##### Card Background Colour - `CardColour`
@@ -3876,7 +3912,7 @@ For more information see [ContentSplit](#split-proportions-contentsplit).
 
 The support described in [Running Inline Python](#running-inline-python) allows you to run **arbitary python code**. \
 It would be unwise to embed python code of unknown provenance.
-Use only code you directly write (or, of known provenance, embedded with [mdpre](https://github.com/MartinPacker/mdpre)'s `=include` capability, or as an optional parameter to the invocation).
+Use only code you directly write (or, of known provenance, embedded with [mdpre's](https://github.com/MartinPacker/mdpre) `=include` capability, or as an optional parameter to the invocation).
 
 In general, though, this function is worth exploring - if it enables you turn flat files into presentations that you otherwise couldn't make that way.
 
