@@ -1122,6 +1122,7 @@ img {
 </ul>
 </li>
 <li><a href="#table-slides">Table Slides</a><ul>
+<li><a href="#table-captions">Table Captions</a></li>
 <li><a href="#special-case-two-graphics-side-by-side">Special Case: Two Graphics Side By Side</a></li>
 <li><a href="#special-case-two-by-two-grid-of-graphics">Special Case: Two By Two Grid Of Graphics</a></li>
 <li><a href="#special-case-three-graphics-on-a-slide">Special Case: Three Graphics On A Slide</a></li>
@@ -1238,6 +1239,7 @@ img {
 <li><a href="#specifying-what-the-added-table-lines-look-like-with-addtablelinecolour-addtablelinecount-and-addtablelinewidth">Specifying What The Added Table Lines Look Like With <code>addTableLineColour</code>, <code>addTableLineCount</code> and <code>addTableLineWidth</code></a></li>
 <li><a href="#controlling-whether-empty-table-cells-cause-column-spanning-spancells">Controlling Whether Empty Table Cells Cause Column Spanning - <code>SpanCells</code></a></li>
 <li><a href="#controlling-whether-tables-have-drop-shadows-tableshadow">Controlling Whether Tables Have Drop Shadows - <code>tableShadow</code></a></li>
+<li><a href="#controlling-whether-table-captions-have-table-numbers-numberedtablecaptions">Controlling Whether Table Captions Have Table Numbers - <code>numberedTableCaptions</code></a></li>
 </ul>
 </li>
 <li><a href="#card-metadata">Card Metadata</a><ul>
@@ -1680,6 +1682,11 @@ THE SOFTWARE.
 </thead>
 <tbody>
 <tr>
+<td align="left">6.0.3</td>
+<td align="right">26&nbsp;October&nbsp;2025</td>
+<td align="left">Added support for <a href="#table-captions">table captions</a>.</td>
+</tr>
+<tr>
 <td align="left">6.0.2</td>
 <td align="right">12&nbsp;October&nbsp;2025</td>
 <td align="left"><a class="magiclink magiclink-github magiclink-mention" href="https://github.com/troutrot" title="GitHub User: troutrot">@troutrot</a> fixed <a href="file:///Users/martinpacker/md2pptx/docs/user-guide.html#creating-footnotes">footnotes</a>. Also <a href="#specifying-bold-and-italic-text-colour-with-boldcolour-and-italiccolour"><code>italiccolour</code></a> fixed. <a href="#checklist-related-helper-routines">Checklists</a> now use graphics instead of weird characters.</td>
@@ -2047,7 +2054,7 @@ THE SOFTWARE.
 <tr>
 <td align="left">2.1</td>
 <td align="right">21&nbsp;May&nbsp;2021</td>
-<td align="left">Added <code>&amp;lambda;</code>&comma; <code>&amp;mu;</code>&comma; <code>&amp;nu;</code>&comma; <code>&amp;pi</code>&comma; <code>&amp;rho</code>. Allow more than one table or code block on a slide.</td>
+<td align="left">Added <code>&amp;lambda;</code>&comma; <code>&amp;mu;</code>&comma; <code>&amp;nu;</code>&comma; <code>&amp;pi</code>&comma; <code>&amp;rho</code>.; Allow more than one table or code block on a slide.</td>
 </tr>
 <tr>
 <td align="left">2.0.2</td>
@@ -2192,7 +2199,7 @@ THE SOFTWARE.
 <tr>
 <td align="left">0.7.1</td>
 <td align="right">14&nbsp;November&nbsp;2019</td>
-<td align="left">Make slide titles longer. Fixed formatting issue with one-graphic-above-another table slide.</td>
+<td align="left">Make slide titles longer. Fixed formatting issue with one-graphic-above-another <a href="#table-slides">table slide</a>.</td>
 </tr>
 <tr>
 <td align="left">0.7</td>
@@ -2232,7 +2239,7 @@ THE SOFTWARE.
 <tr>
 <td align="left">0.4.1</td>
 <td align="right">9&nbsp;January&nbsp;2019</td>
-<td align="left">Enhanced Taskpaper support with <code>@due</code>&comma; <code>@tags</code>&comma; and <code>@done</code>&comma; and reworked as a series of table slides.</td>
+<td align="left">Enhanced Taskpaper support with <code>@due</code>&comma; <code>@tags</code>&comma; and <code>@done</code>&comma; and reworked as a series of <a href="#table-slides">table slides</a>.</td>
 </tr>
 <tr>
 <td align="left">0.4</td>
@@ -2489,6 +2496,17 @@ sectionTitleSize: 30
 <p>In other Markdown processors the widths of the columns can&rsquo;t be specified in this way; The relative width specifications will be ignored.</p>
 <p>Each cell can consist of text, which will wrap as necessary. You can&rsquo;t embed images in a table slide. But see <a href="#special-case-two-graphics-side-by-side">here</a> and <a href="#special-case-two-by-two-grid-of-graphics">here</a>.</p>
 <p>As a convenience, you can omit the final <code>|</code> on a line. While this isn&rsquo;t strictly Markdown compliant this might be helpful.</p>
+<p>Table cells can contain more than just plain text. For example, you could use emphasis or <code>&lt;span&gt;</code> elements - just as in bulleted text.</p>
+<h4 id="table-captions">Table Captions<a class="headerlink" href="#table-captions" title="Permanent link"></a></h4>
+<p>You can code a table caption, which will appear as a table-wide cell.
+This will be within the space of the table as the last row.</p>
+<p>To do this code, for example</p>
+<pre><code>[My table caption text]
+</code></pre>
+<p>This syntax is borrowed from MultiMarkdown; Other processors probably wouldn&rsquo;t honour it.</p>
+<p>It is not possible to place the caption at the top of the table as Powerpoint tends to treat the first row as special, with a different appearance.</p>
+<p>Place the caption line immediately after the last table row - while md2pptx thinks it&rsquo;s still parsing a table.</p>
+<p>If you specify <code>yes</code> to <a href="#controlling-whether-table-captions-have-table-numbers-numberedtablecaptions">metadata item <code>numberedTableCaptions</code></a> the table caption will be prefixed with a table number of the form &ldquo;Table 1.&rdquo;.</p>
 <h4 id="special-case-two-graphics-side-by-side">Special Case: Two Graphics Side By Side<a class="headerlink" href="#special-case-two-graphics-side-by-side" title="Permanent link"></a></h4>
 <p><a id="special-case-two-graphics-side-by-side"></a></p>
 <p>The best Markdown fit for two graphics side by side is a single row table with two cells. md2pptx will &ldquo;special case&rdquo; such a table.</p>
@@ -2971,7 +2989,7 @@ Sub savePresentationAsPPTX()
   pptmName = ActivePresentation.FullName
 
   Dim pptxName As String
-  pptxName = Left(pptmName, InStr(pptmName, &quot;.&quot;)) &amp; &quot;pptx&quot;
+  pptxName = Left(pptmName, InStr(pptmName, &quot;.&quot;)) &amp;; &quot;pptx&quot;
 
   ActivePresentation.SaveAs pptxName, ppSaveAsOpenXMLPresentation
 End Sub
@@ -3825,6 +3843,15 @@ For example</p>
 <pre><code>tableShadow: yes
 </code></pre>
 <p>The default is <code>no</code>.</p>
+<h5 id="controlling-whether-table-captions-have-table-numbers-numberedtablecaptions">Controlling Whether Table Captions Have Table Numbers - <code>numberedTableCaptions</code><a class="headerlink" href="#controlling-whether-table-captions-have-table-numbers-numberedtablecaptions" title="Permanent link"></a></h5>
+<p><a id="controlling-whether-table-captions-have-table-numbers-numberedtablecaptions"></a></p>
+<p>You can control whether table captions have table numbers:</p>
+<pre><code>numberedTableCaptions: yes
+</code></pre>
+<p>The default is <code>no</code> - as most presentations don&rsquo;t want them.</p>
+<p>With this option the first table with a caption is numbered &ldquo;1&rdquo;.
+The table number is incremented by 1 for every table with a caption.
+It would be odd for it to be incremented for a table without a caption - as it would leave a gap in the visible numbering.</p>
 <h4 id="card-metadata">Card Metadata<a class="headerlink" href="#card-metadata" title="Permanent link"></a></h4>
 <h5 id="card-background-colour-cardcolour">Card Background Colour - <code>CardColour</code><a class="headerlink" href="#card-background-colour-cardcolour" title="Permanent link"></a></h5>
 <p><a id="card-background-colour-cardcolour"></a></p>
@@ -4432,7 +4459,7 @@ The default value is <code>no</code>.</p>
 <ol>
 <li>The section name is derived from the section slide&rsquo;s title. The following characters are passed through to the section name:<ul>
 <li>Alphanumerics</li>
-<li><code>&amp;-+!/</code></li>
+<li><code>&amp;-+!/</code>;</li>
 <li>Spaces</li>
 <li>Asterisks (coded as <code>&amp;lowast;</code>)</li>
 </ul>
@@ -4878,7 +4905,7 @@ For more information see <a href="#split-proportions-contentsplit">ContentSplit<
 <p><a id="an-important-caution"></a></p>
 <h3 id="an-important-caution">An Important Caution<a class="headerlink" href="#an-important-caution" title="Permanent link"></a></h3>
 <p>The support described in <a href="#running-inline-python">Running Inline Python</a> allows you to run <strong>arbitary python code</strong>. It would be unwise to embed python code of unknown provenance.
-Use only code you directly write (or, of known provenance, embedded with <a href="https://github.com/MartinPacker/mdpre">mdpre</a>&lsquo;s <code>=include</code> capability, or as an optional parameter to the invocation).</p>
+Use only code you directly write (or, of known provenance, embedded with <a href="https://github.com/MartinPacker/mdpre">mdpre&rsquo;s</a> <code>=include</code> capability, or as an optional parameter to the invocation).</p>
 <p>In general, though, this function is worth exploring - if it enables you turn flat files into presentations that you otherwise couldn&rsquo;t make that way.</p>
 <p><a id="how-to-invoke-python-in-md2pptx"></a></p>
 <h3 id="how-to-invoke-python-in-md2pptx">How To Invoke Python In md2pptx<a class="headerlink" href="#how-to-invoke-python-in-md2pptx" title="Permanent link"></a></h3>
