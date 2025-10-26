@@ -87,7 +87,7 @@ except:
 
 
 md2pptx_level = "6.0.2+"
-md2pptx_date = "16 October, 2025"
+md2pptx_date = "26 October, 2025"
 
 namespaceURL = {
     "mc":  "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -132,8 +132,11 @@ class SlideInfo:
 # Information about a single table. (A slide might have more than one - or none.)
 class TableInfo:
     def __init__(self, tableRows, tableCaption):
-        self.tableRows = []
-        self.tableCaption = ""
+        self.rows = []
+        self.caption = ""
+        
+    def addRow(row):
+        self.rows.append(row)
 
 
 # Information about a video
@@ -3372,12 +3375,12 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
         alignments_count = len(alignments)
 
         # Potentially add a caption row
-        if tableCaptions == []:
+        if tableCaptions[tableBlockNumber] == "":
             captionRowCount = 0
         else:
             captionRowCount = 1
             
-            tableRows.append(tableCaptions)
+            tableRows.append([tableCaptions[tableBlockNumber]])
             rows += 1
 
         # Create the table with the above number of rows and columns
@@ -3433,6 +3436,9 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
         compactTables = globals.processingOptions.getCurrentOption("compactTables")
         spanCells = globals.processingOptions.getCurrentOption("spanCells")
         tableHeadingSize = globals.processingOptions.getCurrentOption("tableHeadingSize")
+
+        # Get options table captions
+        numberedTableCaptions = globals.processingOptions.getCurrentOption("numberedTableCaptions")
 
         # Fill in the cells
         cellsWithExplicitBoxStyle = []
@@ -3497,7 +3503,12 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
 
                 # Massage any table caption cell
                 if (captionRowCount == 1) & (rowNumber == rows -1) & (columnNumber == 0):
-                    cell =f"*{cell}*"
+                    if numberedTableCaptions:
+                        cell = f"*Table {globals.tableNumber}. {cell}*"
+
+                        globals.tableNumber += 1
+                    else:
+                        cell = f"*{cell}*"
                 
                 # Add the cell text, respecting formatting
                 addFormattedText(p, cell)
@@ -4656,6 +4667,7 @@ globals.processingOptions.setOptionValuesArray(
         ["spanCells", "yes"],
         ["tableHeadingSize", 0],
         ["tableShadow", False],
+        ["numberedTableCaptions", False],
     ]
 )
 
@@ -5024,6 +5036,10 @@ for line in metadata_lines:
         globals.processingOptions.setOptionValues(name, float(value))
 
     elif name == "tableshadow":
+        if value.lower() == "yes":
+            globals.processingOptions.setOptionValues(name, True)
+
+    elif name == "numberedtablecaptions":
         if value.lower() == "yes":
             globals.processingOptions.setOptionValues(name, True)
 
