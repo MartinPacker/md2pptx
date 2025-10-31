@@ -1,0 +1,29 @@
+template: Martin Template.pptx
+
+### Data Processing Unit (DPU) &amp; I/O Subsystem
+<!-- md2pptx: contentsplitdirn: h -->
+<!-- md2pptx: contentsplit: 3 2 3 -->
+
+* A new way to manage I/O
+  * Reduces circuitry needed in relevant I/O cards
+    * More ports per card
+      * 4-port FICON
+      * Network Express
+    * Power consumption &amp; space saving feasible
+* All DCM's can access all DPU's
+  * Though they are spread across chips
+* Each channel is managed by a single DPU
+  * Configure channels with the usual resilient topology
+
+
+![](telum_II_pu_chip.png)
+
+=colwidth 1 1 1 1
+=colalign l l l l
+=csv
+Function,APAR,z/OS 2.5 PTF,z/OS 3.1 PTF
+IOS,[OA63265](https://www.ibm.com/support/pages/apar/OA63265),UJ97012,UJ97013
+WLM,[OA66054](https://www.ibm.com/support/pages/apar/OA66054),UJ97028,UJ97002
+Data Gatherer,[OA66014](https://www.ibm.com/support/pages/apar/OA66014),UJ96916,UJ96917
+RMF,[OA67327](https://www.ibm.com/support/pages/apar/OA67327),UJ97140,UJ97142
+=endcsv
