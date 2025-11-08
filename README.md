@@ -1,6 +1,8 @@
 # md2pptx
 Markdown to Powerpoint Converter
 
+Issues can be raised here. Discussion probably belongs in [this Subreddit](https://www.reddit.com/r/md2pptx_mdpre/).
+
 **Note:** md2pptx only supports Python 3. So the installation instructions are for that.
 
 **Usage:**
