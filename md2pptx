@@ -1369,14 +1369,14 @@ def handleWhateverGraphicType(GraphicFilename):
                 # Note: It's been translated to lower case above
                 if content_type in ["image/jpeg", "image/jpg"]:
                     # Note: only the first of these two is legitimate
-                    fileExt = "jpg"
+                    fileExt = ".jpg"
                 elif content_type == "image/png":
-                    fileExt = "png"
+                    fileExt = ".png"
                 elif content_type in ["image/svg+xml", "image/svg"]:
                     # Note: only the first of these two is legitimate
-                    fileExt = "svg"
+                    fileExt = ".svg"
                 elif content_type == "application/postscript":
-                    fileExt = "eps"
+                    fileExt = ".eps"
                 else:
                     fileExt = None
         else:
