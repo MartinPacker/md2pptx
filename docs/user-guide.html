@@ -1556,12 +1556,15 @@ img {
 <li><a href="#bookmarking-in-the-page">Bookmarking In The Page</a></li>
 </ul>
 </li>
-<li><a href="#page-seven">Page Seven</a></li>
-<li><a href="#page-eight">Page Eight</a></li>
-<li><a href="#page-seven">Page Seven</a></li>
-<li><a href="#page-eight">Page Eight</a></li>
+<li><a href="#inserting-slides-from-other-presentations">Inserting Slides From Other presentations</a></li>
+<li><a href="#prologue-&amp;-epilogue-files">Prologue &amp; Epilogue Files</a><ul>
+<li><a href="#prologue-files">Prologue Files</a></li>
+<li><a href="#epilogue-files">Epilogue Files</a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li><a href="#directory-structure">Directory structure</a></li>
 <li><a href="#building-this-user-guide">Building This User Guide</a></li>
 </ul>
 <h2 id="why-md2pptx">Why md2pptx?<a class="headerlink" href="#why-md2pptx" title="Permanent link"></a></h2>
@@ -1628,12 +1631,12 @@ Of\ Names\ And\ Numbers.md: Of\ Names\ And\ Numbers.mdp
 <li>Install md2pptx by copying a version and unzipping it or using <code>git clone</code>. md2pptx can be found <a href="https://github.com/MartinPacker/md2pptx">here</a>.</li>
 </ol>
 <h3 id="updating">Updating<a class="headerlink" href="#updating" title="Permanent link"></a></h3>
-<p>If you examine <a href="#change-log">the change log</a> You&rsquo;ll see md2pptx is updated on a frequent-but-irregular basis.
+<p>If you examine <a href="#change-log">the change log</a> you&rsquo;ll notice md2pptx is updated on a frequent-but-irregular basis.
 Reviewing the changes you&rsquo;ll see they are a mixture of fixes and enhancements.</p>
 <p>There are two approaches to updating:</p>
 <ul>
 <li>Obtaining the latest commit. Usually this is safe but is often missing documentation for enhancements. Those tend to be written just before release. You might do this with <code>git pull origin master</code>.</li>
-<li>You might prefer the latest version. These are usually announced on socia media and can be downloaded as zip file.</li>
+<li>You might prefer the latest version. These are usually announced on social media and can be downloaded as a zip file.</li>
 </ul>
 <h3 id="use">Use<a class="headerlink" href="#use" title="Permanent link"></a></h3>
 <p>The following instructions are for Unix-like systems. (It&rsquo;s developed and used by the developer on Mac OS but should also have identical syntax on Linux.) Windows users will need a slightly different form, but the principle is the same.</p>
@@ -1681,6 +1684,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">6.1</td>
+<td align="right">28&nbsp;November&nbsp;2025</td>
+<td align="left">Added support for <a href="#inserting-slides-from-other-presentations">inserting slides from other presentations</a> - using AppleScript. Added support for <a href="#prologue-epilogue-files">ApplesScipt prologue and epilogue files</a>. Incorporated a fix from <a class="magiclink magiclink-github magiclink-mention" href="https://github.com/misaka4e21" title="GitHub User: misaka4e21">@misaka4e21</a>.</td>
+</tr>
 <tr>
 <td align="left">6.0.3</td>
 <td align="right">26&nbsp;October&nbsp;2025</td>
@@ -5763,31 +5771,78 @@ It is only used when the script is run and the presentation is open in the front
 </code></pre>
 <p>When the script is run and the presentation is open page 5 will be displayed.</p>
 <h4 id="bookmarking-in-the-page">Bookmarking In The Page<a class="headerlink" href="#bookmarking-in-the-page" title="Permanent link"></a></h4>
-<p>If you want to bookmark page 5 in the page itself code</p>
+<p>If you want to bookmark page 5 in the page itself add the following line just after the page title</p>
 <pre><code>&lt;!-- md2pptx: bookmark --&gt;
 </code></pre>
 <p>The advantage of this method is you can move the bookmark as you develop your presentation by moving the line:</p>
-<div class="highlight"><pre>### Page Seven
-&lt;!-- md2pptx: bookmark --&gt;
+<div class="highlight"><pre> ### Page Seven
+ &lt;!-- md2pptx: bookmark --&gt;
 
-...
+ ...
 
-### Page Eight
-...
+ ### Page Eight
+ ...
 </pre></div>
 
 <p>Move the line to bookmark the next page:</p>
-<div class="highlight"><pre>### Page Seven
+<div class="highlight"><pre> ### Page Seven
 
-...
+ ...
 
-### Page Eight
-&lt;!-- md2pptx: bookmark --&gt;
+ ### Page Eight
+ &lt;!-- md2pptx: bookmark --&gt;
 
-...
+ ...
 </pre></div>
 
 <p>When the script is run and the presentation is open the appropriate page will be displayed.</p>
+<h3 id="inserting-slides-from-other-presentations">Inserting Slides From Other presentations<a class="headerlink" href="#inserting-slides-from-other-presentations" title="Permanent link"></a></h3>
+<p>md2pptx can insert slides from other presentations - as an AppleScript postprocessing step.</p>
+<p>md2pptx installs a helper script - <code>copyPresentation.applescript</code> - in the <code>applescript</code> subdirectory.
+When directed to md2pptx plants calls to the <code>copySlides</code> routine in this file and adds the code from this file to the generated AppleScript.</p>
+<p>Consider the slide</p>
+<p><div class="highlight"><pre> ### A Heading
+ &lt;!-- md2pptx: asinsertpresentation: source.pptx --&gt;
+
+ * Some bullet
+ * Some other bullet
+</pre></div>
+The <code>asinsertpresentation</code> dynamic metadata item directs md2pptx to plant a call to <code>copySlides</code> with appropriate arguments to insert the slides in <code>source.pptx</code> in the right place.</p>
+<h3 id="prologue-epilogue-files">Prologue &amp; Epilogue Files<a class="headerlink" href="#prologue-epilogue-files" title="Permanent link"></a></h3>
+<p>You can specify that md2pptx copy in AppleScript before the generated code and also after it.</p>
+<h4 id="prologue-files">Prologue Files<a class="headerlink" href="#prologue-files" title="Permanent link"></a></h4>
+<p>To copy in a prologue file code in the metadata, for example</p>
+<pre><code>applescriptprologue: myPrologue.AppleScript
+</code></pre>
+<p>This will embed the contents of myPrologue.AppleScript at the beginning of the generated AppleScript.</p>
+<p><strong>Notes:</strong></p>
+<ul>
+<li>You can use <code>applescriptprolog</code> if you prefer.</li>
+<li>Prefixing the name with <code>!</code> will pull the file from md2pptx&rsquo;s <code>applescript</code> subdirectory.</li>
+<li>You can code as many <code>applescriptprologue</code> metadata statements as you like.</li>
+</ul>
+<h4 id="epilogue-files">Epilogue Files<a class="headerlink" href="#epilogue-files" title="Permanent link"></a></h4>
+<p>To copy in an epilogue file code in the metadata, for example</p>
+<pre><code>applescriptepilogue: myEpilogue.AppleScript
+</code></pre>
+<p>This will embed the contents of myEpilogue.AppleScript at the end of the generated AppleScript.</p>
+<p><strong>Notes:</strong></p>
+<ul>
+<li>You can use <code>applescriptepilog</code> if you prefer.</li>
+<li>Prefixing the name with <code>!</code> will pull the file from md2pptx&rsquo;s <code>applescript</code> subdirectory.</li>
+<li>You can code as many <code>applescriptepilogue</code> metadata statements as you like.</li>
+</ul>
+<h2 id="directory-structure">Directory structure<a class="headerlink" href="#directory-structure" title="Permanent link"></a></h2>
+<p>md2pptx installs its files in one directory and a number of its subdirectories:</p>
+<ul>
+<li>md2pptx&rsquo;s root directory contains the python code and <code>Martin Template.pptx</code>. (The latter is a &ldquo;get you started&rdquo; template presentation. See <a href="#modifying-the-slide-template">Modifiying The Slide Template</a> for how you can build your own.)</li>
+<li>AppleScript scripts shipped with md2pptx are in the <code>applescript</code> subdirectory.</li>
+<li>Items such as icons are in the <code>media</code> subdirectory.</li>
+<li>Documentation is in the <code>docs</code> subdirectory.</li>
+<li>Examples are in the <code>examples</code> subdirectory.</li>
+<li>Drafts actions are in the <code>Drafts Actions</code> subdirectory.</li>
+</ul>
+<p>If you add your own files into the directory structure be careful when installing - whether by unzipping a release or using <code>git clone</code>.</p>
 <h2 id="building-this-user-guide">Building This User Guide<a class="headerlink" href="#building-this-user-guide" title="Permanent link"></a></h2>
 <p>This user guide is written in Markdown - but with a few extensions.
 To build it correctly you need to use <a href="https://github.com/MartinPacker/mdpre">mdpre</a>.</p>

@@ -110,13 +110,13 @@ To install md2pptx and its prerequisites
 
 ### Updating
 
-If you examine [the change log](#change-log) You'll see md2pptx is updated on a frequent-but-irregular basis.
+If you examine [the change log](#change-log) you'll notice md2pptx is updated on a frequent-but-irregular basis.
 Reviewing the changes you'll see they are a mixture of fixes and enhancements.
 
 There are two approaches to updating:
 
 * Obtaining the latest commit. Usually this is safe but is often missing documentation for enhancements. Those tend to be written just before release. You might do this with `git pull origin master`.
-* You might prefer the latest version. These are usually announced on socia media and can be downloaded as zip file.
+* You might prefer the latest version. These are usually announced on social media and can be downloaded as a zip file.
 
 ### Use
 
@@ -173,6 +173,7 @@ To quote from the python-pptx license statement:
 =colalign l r l
 =csv
 Level,Date,What
+6.1,28&nbsp;November&nbsp;2025,Added support for [inserting slides from other presentations](#inserting-slides-from-other-presentations) - using AppleScript. Added support for [ApplesScipt prologue and epilogue files](#prologue-epilogue-files). Incorporated a fix from @misaka4e21.
 6.0.3,26&nbsp;October&nbsp;2025,Added support for [table captions](#table-captions).
 6.0.2,12&nbsp;October&nbsp;2025,@troutrot fixed [footnotes](file:///Users/martinpacker/md2pptx/docs/user-guide.html#creating-footnotes). Also [`italiccolour`](#specifying-bold-and-italic-text-colour-with-boldcolour-and-italiccolour) fixed. [Checklists](#checklist-related-helper-routines) now use graphics instead of weird characters.
 6.0.1,13&nbsp;September&nbsp;2025,Tweaked the ability to [generate and run AppleScript](#postprocessing-the-presentation-with-scripting) to add an additional `activate` step and added some blank lines in the generated script.<br/>Added "Maybe" and "Partial" to checklists&comma; plus some synonyms.
@@ -4925,36 +4926,102 @@ When the script is run and the presentation is open page 5 will be displayed.
 
 #### Bookmarking In The Page
 
-If you want to bookmark page 5 in the page itself code
+If you want to bookmark page 5 in the page itself add the following line just after the page title
 
     <!-- md2pptx: bookmark -->
 
 The advantage of this method is you can move the bookmark as you develop your presentation by moving the line:
 
 ```
-### Page Seven
-<!-- md2pptx: bookmark -->
+ ### Page Seven
+ <!-- md2pptx: bookmark -->
 
-...
+ ...
 
-### Page Eight
-...
+ ### Page Eight
+ ...
 ```
 
 Move the line to bookmark the next page:
 
 ```
-### Page Seven
+ ### Page Seven
 
-...
+ ...
 
-### Page Eight
-<!-- md2pptx: bookmark -->
+ ### Page Eight
+ <!-- md2pptx: bookmark -->
 
-...
+ ...
 ```
 
 When the script is run and the presentation is open the appropriate page will be displayed.
+
+### Inserting Slides From Other presentations
+
+md2pptx can insert slides from other presentations - as an AppleScript postprocessing step.
+
+md2pptx installs a helper script - `copyPresentation.applescript` - in the `applescript` subdirectory.
+When directed to md2pptx plants calls to the `copySlides` routine in this file and adds the code from this file to the generated AppleScript.
+
+Consider the slide
+
+```
+ ### A Heading
+ <!-- md2pptx: asinsertpresentation: source.pptx -->
+
+ * Some bullet
+ * Some other bullet
+```
+The `asinsertpresentation` dynamic metadata item directs md2pptx to plant a call to `copySlides` with appropriate arguments to insert the slides in `source.pptx` in the right place.
+
+### Prologue &amp; Epilogue Files
+
+You can specify that md2pptx copy in AppleScript before the generated code and also after it.
+
+#### Prologue Files
+
+To copy in a prologue file code in the metadata, for example
+
+    applescriptprologue: myPrologue.AppleScript
+
+This will embed the contents of myPrologue.AppleScript at the beginning of the generated AppleScript.
+
+**Notes:**
+
+* You can use `applescriptprolog` if you prefer.
+* Prefixing the name with `!` will pull the file from md2pptx's `applescript` subdirectory.
+* You can code as many `applescriptprologue` metadata statements as you like.
+
+#### Epilogue Files
+
+To copy in an epilogue file code in the metadata, for example
+
+    applescriptepilogue: myEpilogue.AppleScript
+
+This will embed the contents of myEpilogue.AppleScript at the end of the generated AppleScript.
+
+**Notes:**
+
+* You can use `applescriptepilog` if you prefer.
+* Prefixing the name with `!` will pull the file from md2pptx's `applescript` subdirectory.
+* You can code as many `applescriptepilogue` metadata statements as you like.
+
+## Directory structure
+
+md2pptx installs its files in one directory and a number of its subdirectories:
+
+* md2pptx's root directory contains the python code and `Martin Template.pptx`. \
+(The latter is a "get you started" template presentation. \
+See [Modifiying The Slide Template](#modifying-the-slide-template) for how you can build your own.)
+* AppleScript scripts shipped with md2pptx are in the `applescript` subdirectory.
+* Items such as icons are in the `media` subdirectory.
+* Documentation is in the `docs` subdirectory.
+* Examples are in the `examples` subdirectory.
+* Drafts actions are in the `Drafts Actions` subdirectory.
+
+If you add your own files into the directory structure be careful when installing - whether by unzipping a release or using `git clone`.
+
 
 ## Building This User Guide
 

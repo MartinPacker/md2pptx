@@ -86,8 +86,8 @@ except:
     have_graphviz = False
 
 
-md2pptx_level = "6.0.3"
-md2pptx_date = "26 October, 2025"
+md2pptx_level = "6.1"
+md2pptx_date = "28 November, 2025"
 
 namespaceURL = {
     "mc":  "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -4408,6 +4408,8 @@ def createFootnoteSlides(prs, slideNumber, footnoteDefinitions):
 
 start_time = time.time()
 
+md2pptx_path = os.path.dirname(__file__)
+
 banner = (
     "md2pptx Markdown To Powerpoint Converter " + md2pptx_level + " " + md2pptx_date
 )
@@ -4418,6 +4420,8 @@ for i in range(len(banner)):
 
 print("\n" + banner + "\n" + bannerUnderline)
 print("\nOpen source project: https://github.com/MartinPacker/md2pptx")
+
+print(f"\nmd2pptx is found in {md2pptx_path}")
 
 print("\nExternal Dependencies:")
 print("\n  Python: " + platform.python_version())
@@ -4785,7 +4789,9 @@ globals.processingOptions.setOptionValuesArray(
         ["applescript", ""],
         ["applescriptReload", False],
         ["applescriptRun", False],
-        ["bookmark", 0]
+        ["bookmark", 0],
+        ["applescriptPrologue", []],
+        ["applescriptEpilogue", []],
     ]
 )
 
@@ -5382,6 +5388,41 @@ for line in metadata_lines:
     elif name == "bookmark":
         globals.processingOptions.setOptionValues(name, int(value))
         
+    elif name in ["applescriptprolog", "applescriptprologue"]:
+        if value[:1] == "!":
+            prologFile = md2pptx_path + os.sep + "applescript" + os.sep + value[1:]
+        else:
+            prologFile = value
+
+        applescriptPrologueFiles = globals.processingOptions.getCurrentOption("applescriptprologue")
+        applescriptPrologueFiles.append(prologFile)
+        globals.processingOptions.setOptionValues("applescriptprologue", applescriptPrologueFiles)
+        
+    elif name in ["applescriptepilog", "applescriptepilogue"]:
+        if value[:1] == "!":
+            epilogFile = md2pptx_path + os.sep + "applescript" + os.sep + value[1:]
+        else:
+            epilogFile = value
+
+        applescriptEpilogueFiles = globals.processingOptions.getCurrentOption("applescriptepilogue")
+        applescriptEpilogueFiles.append(epilogFile)
+        globals.processingOptions.setOptionValues("applescriptepilogue", applescriptEpilogueFiles)
+        
+# Add any prologue file contents to the AppleScript that will be generated
+if (applescriptPrologueFiles := globals.processingOptions.getCurrentOption("applescriptprologue")) is not []:
+    for prologueFile in applescriptPrologueFiles:
+        try:
+            with open(prologueFile, 'r') as pf:
+                pfLines = pf.readlines()
+                
+                for pfLine in pfLines:
+                    if pfLine.rstrip("\n") != "":
+                        pfLine = pfLine.rstrip("\n")
+                    globals.applescriptLines.append(pfLine)
+        except IOError:
+            print(f"Could not open AppleScript Prologue file {prologueFile}. Ignoring.")
+    globals.applescriptLines.append("")
+
 if (applescriptFilename := globals.processingOptions.getCurrentOption("applescript")) != "":
     globals.applescriptLines += [
         "tell application \"Microsoft PowerPoint\"",
@@ -5389,6 +5430,9 @@ if (applescriptFilename := globals.processingOptions.getCurrentOption("applescri
         "    if activePresentation is not missing value",
         "        tell active presentation",
     ]
+
+# Prime AppleScript presentation insert list
+ASpresentationInserts = []
 
 slideTemplateFile = globals.processingOptions.getCurrentOption("slideTemplateFile")
 if slideTemplateFile != "":
@@ -5398,8 +5442,7 @@ if slideTemplateFile != "":
         slideTemplateFile = os.path.expanduser(slideTemplateFile)
     else:
         # Slide template file is not present if we expand path
-        script_path = os.path.dirname(__file__)
-        slideTemplateFile = script_path + os.sep + slideTemplateFile
+        slideTemplateFile = md2pptx_path + os.sep + slideTemplateFile
         if not Path(slideTemplateFile).exists():
             print(
                 f"\nTemplate file {originalSlideTemplateFile} does not exist. Terminating."
@@ -6069,6 +6112,11 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
                             f"Invalid value for {metadataKey}: {metadataValue} in '{line}"
                         )
 
+                elif metadataKey == "asinsertpresentation":
+                    ASinsertAfterSlide = slideNumber
+
+                    ASpresentationInserts.append((ASinsertAfterSlide, metadataValue))
+
                 else:
                     # Invalid dynamic metadata specification
                     print(f"Invalid dynamic metadata key: '{metadataKey}' in '{line}'")
@@ -6685,7 +6733,8 @@ if applescriptFilename != "":
     if want_reload:
         full_filename = os.path.abspath(output_filename)
         globals.applescriptLines+=[
-            f"    open \"{full_filename}\"",
+            f"    set targetPresentation to \"{full_filename}\"",
+            "    open targetPresentation",
             "",
         ]
 
@@ -6709,6 +6758,49 @@ if applescriptFilename != "":
         "end tell",
     ]
 
+    applescriptEpilogueFiles = globals.processingOptions.getCurrentOption("applescriptepilogue")
+
+    
+    # Handle any instructions to insert slides from other presentations
+    if ASpresentationInserts is not []:
+        if templateSlideCount > 0:
+            slideNumberAdjustment = 1
+        else:
+            slideNumberAdjustment = 0
+
+        target_path = os.path.dirname(os.path.abspath(output_filename))
+
+        # Plant calls to copySlides() - in reverse order to maintain slide numbers in the target presentation
+        for copyInstruction in reversed(ASpresentationInserts):
+            slideAfter, sourcePresentation = copyInstruction
+            
+            slideAfter += slideNumberAdjustment
+            
+            if sourcePresentation[:1] != os.sep:
+                sourcePresentation = target_path + os.sep + sourcePresentation
+
+            globals.applescriptLines.append(f"\ncopySlides(\"{sourcePresentation}\", targetPresentation,  {slideAfter}, \"yes\")")
+    
+        # Ensure applescript to copy slides from one presentation to another is present
+        copyPresentationAS = md2pptx_path + os.sep + "applescript" + os.sep + "copyPresentation.applescript"
+        
+        applescriptEpilogueFiles.append(copyPresentationAS)
+
+    # Add any epilogue file contents to the AppleScript that will be generated
+    if applescriptEpilogueFiles is not []:
+        globals.applescriptLines.append("")
+
+        for epilogueFile in applescriptEpilogueFiles:
+            try:
+                with open(epilogueFile, 'r') as ef:
+                    efLines = ef.readlines()
+                    
+                    for efLine in efLines:
+                        if efLine.rstrip("\n") != "":
+                            efLine = efLine.rstrip("\n")
+                        globals.applescriptLines.append(efLine)
+            except IOError:
+                print(f"Could not open AppleScript Epilogue file {epilogueFile}. Ignoring.")
 
     # Write the applescript out
     with open(applescriptFilename, "w") as a:
