@@ -86,8 +86,8 @@ except:
     have_graphviz = False
 
 
-md2pptx_level = "6.1"
-md2pptx_date = "28 November, 2025"
+md2pptx_level = "6.1+"
+md2pptx_date = "9 December, 2025"
 
 namespaceURL = {
     "mc":  "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -3374,15 +3374,21 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
         rows = len(tableRows)
         alignments_count = len(alignments)
 
-        # Potentially add a caption row
-        if tableCaptions[tableBlockNumber] == "":
-            captionRowCount = 0
-        else:
-            captionRowCount = 1
-            
-            tableRows.append([tableCaptions[tableBlockNumber]])
-            rows += 1
+        # Potentially add a caption
+        tableHasCaption = (tableCaptions[tableBlockNumber] != "")            
 
+        tableCaptionAtTop = globals.processingOptions.getCurrentOption("tableCaptionAtTop")
+        tableCaptionHeight = Inches(globals.processingOptions.getCurrentOption("tableCaptionHeight"))
+        tableCaptionAlignment = globals.processingOptions.getCurrentOption("tableCaptionAlignment")
+
+        if tableHasCaption:
+            tableCaptionAtBottom = not tableCaptionAtTop
+            
+            if tableCaptionAtBottom:
+                # Add another row for the caption
+                rows += 1
+        
+            
         # Create the table with the above number of rows and columns
         newTableShape = slide.shapes.add_table(
             rows,
@@ -3395,11 +3401,49 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
         
         newTable = newTableShape.table
 
-        newTableShape.top = renderingRectangle.top
-        newTableShape.left = renderingRectangle.left + tableMargin - marginBase
-        newTableShape.height = min(renderingRectangle.height, Inches(0.25) * rows)
-        newTableShape.width = renderingRectangle.width - 2 * (tableMargin - marginBase)
+        if tableHasCaption & tableCaptionAtTop:
+            newTableShape.top = renderingRectangle.top + tableCaptionHeight
+            newTableShape.left = renderingRectangle.left + tableMargin - marginBase
+            newTableShape.width = renderingRectangle.width - 2 * (tableMargin - marginBase)
+            newTableShape.height = min(renderingRectangle.height - tableCaptionHeight, Inches(0.25) * rows)
+
+        else:
+            newTableShape.top = renderingRectangle.top
+            newTableShape.left = renderingRectangle.left + tableMargin - marginBase
+            newTableShape.width = renderingRectangle.width - 2 * (tableMargin - marginBase)
+            newTableShape.height = min(renderingRectangle.height, Inches(0.25) * rows)
+
         shapeWidth = newTableShape.width
+
+        if tableHasCaption:
+            # Get options table captions
+            numberedTableCaptions = globals.processingOptions.getCurrentOption("numberedTableCaptions")
+
+            if numberedTableCaptions:
+                captionMarkdown = f"*Table {globals.tableNumber}. {tableCaptions[tableBlockNumber]}*"
+
+                globals.tableNumber += 1
+            else:
+                captionMarkdown = f"*{tableCaptions[tableBlockNumber]}*"
+            
+            if tableCaptionAtTop:
+                captionShape = slide.shapes.add_textbox(
+                    renderingRectangle.left,
+                    renderingRectangle.top,
+                    renderingRectangle.width,
+                    tableCaptionHeight
+                )
+
+                p = captionShape.text_frame.paragraphs[0]
+
+                if tableCaptionAlignment == "r":
+                    p.alignment = PP_ALIGN.RIGHT
+                elif tableCaptionAlignment == "c":
+                    p.alignment = PP_ALIGN.CENTER
+                else:
+                    p.alignment = PP_ALIGN.LEFT
+
+                addFormattedText(p, captionMarkdown)
 
         # Perhaps create a drop shadow for a table
         if tableShadow:
@@ -3407,7 +3451,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
 
         # Set whether first row is not special
         newTable.first_row = haveTableHeading
-        if captionRowCount == 0:
+        if tableHasCaption == 0:
             tableCaptionBlurb = ""
         else:
             if tableHeadingBlurb == "without heading":
@@ -3415,7 +3459,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
             else:
                tableCaptionBlurb = " and caption"
 
-        rowCountBlurb =str(rows - captionRowCount)
+        rowCountBlurb =str(rows - tableHasCaption)
         
         print(
             "           --> "
@@ -3436,9 +3480,6 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
         compactTables = globals.processingOptions.getCurrentOption("compactTables")
         spanCells = globals.processingOptions.getCurrentOption("spanCells")
         tableHeadingSize = globals.processingOptions.getCurrentOption("tableHeadingSize")
-
-        # Get options table captions
-        numberedTableCaptions = globals.processingOptions.getCurrentOption("numberedTableCaptions")
 
         # Fill in the cells
         cellsWithExplicitBoxStyle = []
@@ -3501,15 +3542,6 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                 else:
                     p.alignment = PP_ALIGN.LEFT
 
-                # Massage any table caption cell
-                if (captionRowCount == 1) & (rowNumber == rows -1) & (columnNumber == 0):
-                    if numberedTableCaptions:
-                        cell = f"*Table {globals.tableNumber}. {cell}*"
-
-                        globals.tableNumber += 1
-                    else:
-                        cell = f"*{cell}*"
-                
                 # Add the cell text, respecting formatting
                 addFormattedText(p, cell)
                 
@@ -3565,7 +3597,30 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                         globals.cellLineColour[firstSpanClassWithCellBorderStyling],
                     )
 
+        if tableHasCaption:
+            if tableCaptionAtBottom:
+                captionRow = newTable.rows[len(newTable.rows)-1]
+                
+                # Following has no effect - so commented out
+                # captionRow.height = tableCaptionHeight
+                
+                captionCell = captionRow.cells[0]
+                p = captionCell.text_frame.paragraphs[0]
+                
+                if tableCaptionAlignment == "r":
+                    p.alignment = PP_ALIGN.RIGHT
+                elif tableCaptionAlignment == "c":
+                    p.alignment = PP_ALIGN.CENTER
+                else:
+                    p.alignment = PP_ALIGN.LEFT
 
+                addFormattedText(p, captionMarkdown)
+                
+                lastCell = captionRow.cells[len(captionRow.cells) - 1]
+                lastCell.merge(captionCell)
+                
+                captionCellFill = captionCell   .fill
+                captionCellFill.background()
 
 
     return slide
@@ -4672,6 +4727,9 @@ globals.processingOptions.setOptionValuesArray(
         ["tableHeadingSize", 0],
         ["tableShadow", False],
         ["numberedTableCaptions", False],
+        ["tableCaptionAtTop", False],
+        ["tableCaptionHeight", 0.4],
+        ["tableCaptionAlignment", "l"],
     ]
 )
 
@@ -5048,6 +5106,16 @@ for line in metadata_lines:
     elif name == "numberedtablecaptions":
         if value.lower() == "yes":
             globals.processingOptions.setOptionValues(name, True)
+
+    elif name == "tablecaptionattop":
+        if value.lower() == "yes":
+            globals.processingOptions.setOptionValues(name, True)
+
+    elif name == "tablecaptionheight":
+        globals.processingOptions.setOptionValues(name, float(value))
+
+    elif name == "tablecaptionalignment":
+        globals.processingOptions.setOptionValues(name, value[:1])
 
     elif name == "abstracttitle":
         globals.processingOptions.setOptionValues(name, value)
