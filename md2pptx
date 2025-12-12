@@ -8,6 +8,9 @@ First argument is file to write to
 Reads from stdin
 """
 
+md2pptx_level = "6.1+"
+md2pptx_date = "12 December, 2025"
+
 import re
 import sys
 import os
@@ -86,8 +89,6 @@ except:
     have_graphviz = False
 
 
-md2pptx_level = "6.1+"
-md2pptx_date = "9 December, 2025"
 
 namespaceURL = {
     "mc":  "http://schemas.openxmlformats.org/markup-compatibility/2006",
@@ -3375,7 +3376,10 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
         alignments_count = len(alignments)
 
         # Potentially add a caption
-        tableHasCaption = (tableCaptions[tableBlockNumber] != "")            
+        try:
+            tableHasCaption = (tableCaptions[tableBlockNumber] != "")
+        except:
+            tableHasCaption = False
 
         tableCaptionAtTop = globals.processingOptions.getCurrentOption("tableCaptionAtTop")
         tableCaptionHeight = Inches(globals.processingOptions.getCurrentOption("tableCaptionHeight"))
@@ -4254,8 +4258,17 @@ def createTaskSlides(prs, slideNumber, tasks, titleStem):
                 taskBlock = [taskRows]
 
                 slideInfo = SlideInfo(
-                    title, "", "table", [], taskBlock, [], [], ["table"], []
+                    title,
+                    "",
+                    "table",
+                    [],
+                    taskBlock,
+                    [],
+                    [],
+                    ["table"],
+                    ['']
                 )
+                
                 slide = createContentSlide(prs, slideNumber, slideInfo)
 
                 # Fix up references to be active links to the slide where the task
@@ -4298,7 +4311,18 @@ def createTaskSlides(prs, slideNumber, tasks, titleStem):
         title = titleStem
 
     taskBlock = [taskRows]
-    slideInfo = SlideInfo(title, "", "table", [], taskBlock, [], [], ["table"],[])
+    slideInfo = SlideInfo(
+        title,
+        "",
+        "table",
+        [],
+        taskBlock,
+        [],
+        [],
+        ["table"],
+        ['']
+    )
+        
     slide = createContentSlide(prs, slideNumber, slideInfo)
 
     # Fix up references to be active links to the slide where the task
@@ -4343,7 +4367,15 @@ def createGlossarySlides(prs, slideNumber, abbrevDictionary):
 
                 glossaryBlock = [glossaryRows]
                 slideInfo = SlideInfo(
-                    title, "", "table", [], glossaryBlock, [], [], ["table"],[]
+                    title,
+                    "",
+                    "table",
+                    [],
+                    glossaryBlock,
+                    [],
+                    [],
+                    ["table"]
+                    ['']
                 )
                 slide = createContentSlide(prs, slideNumber, slideInfo)
 
