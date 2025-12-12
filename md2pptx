@@ -4374,7 +4374,7 @@ def createGlossarySlides(prs, slideNumber, abbrevDictionary):
                     glossaryBlock,
                     [],
                     [],
-                    ["table"]
+                    ["table"],
                     ['']
                 )
                 slide = createContentSlide(prs, slideNumber, slideInfo)
