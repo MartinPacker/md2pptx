@@ -1240,6 +1240,7 @@ img {
 <li><a href="#controlling-whether-empty-table-cells-cause-column-spanning-spancells">Controlling Whether Empty Table Cells Cause Column Spanning - <code>SpanCells</code></a></li>
 <li><a href="#controlling-whether-tables-have-drop-shadows-tableshadow">Controlling Whether Tables Have Drop Shadows - <code>tableShadow</code></a></li>
 <li><a href="#controlling-whether-table-captions-have-table-numbers-numberedtablecaptions">Controlling Whether Table Captions Have Table Numbers - <code>numberedTableCaptions</code></a></li>
+<li><a href="#controlling-whether-table-captions-are-above-or-below-the-table-tablecaptionattop">Controlling Whether Table Captions Are Above Or Below The Table - tableCaptionAtTop</a></li>
 </ul>
 </li>
 <li><a href="#card-metadata">Card Metadata</a><ul>
@@ -1684,6 +1685,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">6.1+</td>
+<td align="right">13&nbsp;December&nbsp;2025</td>
+<td align="left">Enhanced table caption support with <a href="#controlling-whether-table-captions-are-above-or-below-the-table-tablecaptionattop">TableCaptionAtTop</a>&comma;</td>
+</tr>
 <tr>
 <td align="left">6.1</td>
 <td align="right">28&nbsp;November&nbsp;2025</td>
@@ -2506,15 +2512,21 @@ sectionTitleSize: 30
 <p>As a convenience, you can omit the final <code>|</code> on a line. While this isn&rsquo;t strictly Markdown compliant this might be helpful.</p>
 <p>Table cells can contain more than just plain text. For example, you could use emphasis or <code>&lt;span&gt;</code> elements - just as in bulleted text.</p>
 <h4 id="table-captions">Table Captions<a class="headerlink" href="#table-captions" title="Permanent link"></a></h4>
-<p>You can code a table caption, which will appear as a table-wide cell.
-This will be within the space of the table as the last row.</p>
+<p>You can code a table caption, which will appear either </p>
+<ul>
+<li>As a table-wide cell, as the last row of the table</li>
+</ul>
+<p>or</p>
+<ul>
+<li>Just above the table, as a text box.</li>
+</ul>
 <p>To do this code, for example</p>
 <pre><code>[My table caption text]
 </code></pre>
 <p>This syntax is borrowed from MultiMarkdown; Other processors probably wouldn&rsquo;t honour it.</p>
-<p>It is not possible to place the caption at the top of the table as Powerpoint tends to treat the first row as special, with a different appearance.</p>
 <p>Place the caption line immediately after the last table row - while md2pptx thinks it&rsquo;s still parsing a table.</p>
 <p>If you specify <code>yes</code> to <a href="#controlling-whether-table-captions-have-table-numbers-numberedtablecaptions">metadata item <code>numberedTableCaptions</code></a> the table caption will be prefixed with a table number of the form &ldquo;Table 1.&rdquo;.</p>
+<p>If you specify <code>yes</code> to <a href="#controlling-whether-table-captions-are-above-or-below-the-table-tablecaptionattop">metadata item <code>TableCaptionAtTop</code></a> table captions will be above the tables they refer to.</p>
 <h4 id="special-case-two-graphics-side-by-side">Special Case: Two Graphics Side By Side<a class="headerlink" href="#special-case-two-graphics-side-by-side" title="Permanent link"></a></h4>
 <p><a id="special-case-two-graphics-side-by-side"></a></p>
 <p>The best Markdown fit for two graphics side by side is a single row table with two cells. md2pptx will &ldquo;special case&rdquo; such a table.</p>
@@ -3860,6 +3872,14 @@ For example</p>
 <p>With this option the first table with a caption is numbered &ldquo;1&rdquo;.
 The table number is incremented by 1 for every table with a caption.
 It would be odd for it to be incremented for a table without a caption - as it would leave a gap in the visible numbering.</p>
+<h5 id="controlling-whether-table-captions-are-above-or-below-the-table-tablecaptionattop">Controlling Whether Table Captions Are Above Or Below The Table - tableCaptionAtTop<a class="headerlink" href="#controlling-whether-table-captions-are-above-or-below-the-table-tablecaptionattop" title="Permanent link"></a></h5>
+<p><a-id="controlling-whether-table-captions-are-above-or-below-the-table-tablecaptionattop"></a></p>
+<p>You can specify whether a table&rsquo;s caption is just above the table or just below it.
+For example:</p>
+<pre><code>TableCaptionAtTop: yes
+</code></pre>
+<p>places all tables&rsquo; captions just above the tables.</p>
+<p>The default is <code>no</code>.</p>
 <h4 id="card-metadata">Card Metadata<a class="headerlink" href="#card-metadata" title="Permanent link"></a></h4>
 <h5 id="card-background-colour-cardcolour">Card Background Colour - <code>CardColour</code><a class="headerlink" href="#card-background-colour-cardcolour" title="Permanent link"></a></h5>
 <p><a id="card-background-colour-cardcolour"></a></p>

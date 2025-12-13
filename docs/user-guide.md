@@ -125,6 +125,7 @@ As you can see in the [change log](#change-log), md2pptx is frequently updated -
 			* [Controlling Whether Empty Table Cells Cause Column Spanning - `SpanCells`](#controlling-whether-empty-table-cells-cause-column-spanning-spancells)
 			* [Controlling Whether Tables Have Drop Shadows - `tableShadow`](#controlling-whether-tables-have-drop-shadows-tableshadow)
 			* [Controlling Whether Table Captions Have Table Numbers - `numberedTableCaptions`](#controlling-whether-table-captions-have-table-numbers-numberedtablecaptions)
+			* [Controlling Whether Table Captions Are Above Or Below The Table - tableCaptionAtTop](#controlling-whether-table-captions-are-above-or-below-the-table-tablecaptionattop)
 		* [Card Metadata](#card-metadata)
 			* [Card Background Colour - `CardColour`](#card-background-colour-cardcolour)
 			* [Card Border Colour - `CardBorderColour`](#card-border-colour-cardbordercolour)
@@ -478,6 +479,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|6.1+|13&nbsp;December&nbsp;2025|Enhanced table caption support with [TableCaptionAtTop](#controlling-whether-table-captions-are-above-or-below-the-table-tablecaptionattop)&comma;|
 |6.1|28&nbsp;November&nbsp;2025|Added support for [inserting slides from other presentations](#inserting-slides-from-other-presentations) - using AppleScript. Added support for [ApplesScipt prologue and epilogue files](#prologue-epilogue-files). Incorporated a fix from @misaka4e21.|
 |6.0.3|26&nbsp;October&nbsp;2025|Added support for [table captions](#table-captions).|
 |6.0.2|12&nbsp;October&nbsp;2025|@troutrot fixed [footnotes](file:///Users/martinpacker/md2pptx/docs/user-guide.html#creating-footnotes). Also [`italiccolour`](#specifying-bold-and-italic-text-colour-with-boldcolour-and-italiccolour) fixed. [Checklists](#checklist-related-helper-routines) now use graphics instead of weird characters.|
@@ -899,8 +901,13 @@ Table cells can contain more than just plain text. For example, you could use em
 
 #### Table Captions
 
-You can code a table caption, which will appear as a table-wide cell.
-This will be within the space of the table as the last row.
+You can code a table caption, which will appear either 
+
+* As a table-wide cell, as the last row of the table
+
+or
+
+* Just above the table, as a text box.
 
 To do this code, for example
 
@@ -908,11 +915,11 @@ To do this code, for example
 
 This syntax is borrowed from MultiMarkdown; Other processors probably wouldn't honour it.
 
-It is not possible to place the caption at the top of the table as Powerpoint tends to treat the first row as special, with a different appearance.
-
 Place the caption line immediately after the last table row - while md2pptx thinks it's still parsing a table.
 
 If you specify `yes` to [metadata item `numberedTableCaptions`](#controlling-whether-table-captions-have-table-numbers-numberedtablecaptions) the table caption will be prefixed with a table number of the form "Table 1.".
+
+If you specify `yes` to [metadata item `TableCaptionAtTop`](#controlling-whether-table-captions-are-above-or-below-the-table-tablecaptionattop) table captions will be above the tables they refer to.
 
 #### Special Case: Two Graphics Side By Side
 <a id="special-case-two-graphics-side-by-side"></a>
@@ -2492,6 +2499,18 @@ The default is `no` - as most presentations don't want them.
 With this option the first table with a caption is numbered "1".
 The table number is incremented by 1 for every table with a caption.
 It would be odd for it to be incremented for a table without a caption - as it would leave a gap in the visible numbering.
+
+##### Controlling Whether Table Captions Are Above Or Below The Table - tableCaptionAtTop
+<a-id="controlling-whether-table-captions-are-above-or-below-the-table-tablecaptionattop"></a>
+
+You can specify whether a table's caption is just above the table or just below it.
+For example:
+
+    TableCaptionAtTop: yes
+
+places all tables' captions just above the tables.
+
+The default is `no`.
 
 #### Card Metadata
 
