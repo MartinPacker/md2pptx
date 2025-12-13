@@ -9,7 +9,7 @@ Reads from stdin
 """
 
 md2pptx_level = "6.1+"
-md2pptx_date = "12 December, 2025"
+md2pptx_date = "13 December, 2025"
 
 import re
 import sys

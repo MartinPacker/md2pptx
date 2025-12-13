@@ -691,7 +691,10 @@ def addFormattedText(p, text):
             elif fragType == "Link":
                 linkArray = subfragment.split(u"\uFDD8")
                 linkText = linkArray[0]
-                linkURL = linkArray[1]
+                if len(linkArray) > 1:
+                    linkURL = linkArray[1]
+                else:
+                    linkURL = ""
                 run.text = linkText
                 if linkURL.startswith("#"):
                     # Is an internal Url
