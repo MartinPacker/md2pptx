@@ -11,19 +11,19 @@ Def output = stdout
 
 Def input = stdin
 
-Def node = Mac.domain_not_set.invalid
+Def node = bluemac.local
 
-Def version = Darwin Kernel Version 25.2.0: Tue Nov 18 21:09:40 PST 2025; root:xnu-12377.61.12~1/RELEASE_ARM64_T6000
+Def version = Darwin Kernel Version 25.1.0: Mon Oct 20 19:32:41 PDT 2025; root:xnu-12377.41.6~2/RELEASE_ARM64_T6000
 
-Def architecture = 64bit
+Def architecture = 64bit Mach-O
 
 Def machine = arm64
 
 Def system = Darwin
 
-Def release = 25.2.0
+Def release = 25.1.0
 
-Def python_version = 3.12.3
+Def python_version = 3.14.0
 
 Def python_implementation = CPython
 
@@ -35,15 +35,15 @@ Def mdpre_level = 1.1.3
 
 Def userid = martinpacker
 
-Def day = 13
+Def day = 15
 
 Def month = December
 
 Def year = 2025
 
-Def time = 16&colon;04
+Def time = 19&colon;48
 
-Def date = 13 December&comma; 2025
+Def date = 15 December&comma; 2025
 
 Def TOC = Table Of Contents
 
@@ -292,7 +292,11 @@ CSV Stop
 
 ..... ..... ..... .....  Controlling Whether Table Captions Have Table Numbers - `numberedTableCaptions`
 
-..... ..... ..... .....  Controlling Whether Table Captions Are Above Or Below The Table - tableCaptionAtTop
+..... ..... ..... .....  Controlling Whether Table Captions Are Above Or Below The Table - `tableCaptionAtTop`
+
+..... ..... ..... .....  Controlling A Table Caption's Height - `tableCaptionHeight`
+
+..... ..... ..... .....  Controlling Table Captions' Alignment - `tableCaptionAlignment`
 
 ..... ..... .....  Card Metadata
 

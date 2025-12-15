@@ -1240,7 +1240,9 @@ img {
 <li><a href="#controlling-whether-empty-table-cells-cause-column-spanning-spancells">Controlling Whether Empty Table Cells Cause Column Spanning - <code>SpanCells</code></a></li>
 <li><a href="#controlling-whether-tables-have-drop-shadows-tableshadow">Controlling Whether Tables Have Drop Shadows - <code>tableShadow</code></a></li>
 <li><a href="#controlling-whether-table-captions-have-table-numbers-numberedtablecaptions">Controlling Whether Table Captions Have Table Numbers - <code>numberedTableCaptions</code></a></li>
-<li><a href="#controlling-whether-table-captions-are-above-or-below-the-table-tablecaptionattop">Controlling Whether Table Captions Are Above Or Below The Table - tableCaptionAtTop</a></li>
+<li><a href="#controlling-whether-table-captions-are-above-or-below-the-table-tablecaptionattop">Controlling Whether Table Captions Are Above Or Below The Table - <code>tableCaptionAtTop</code></a></li>
+<li><a href="#controlling-a-table-captions-height-tablecaptionheight">Controlling A Table Caption&rsquo;s Height - <code>tableCaptionHeight</code></a></li>
+<li><a href="#controlling-table-captions-alignment-tablecaptionalignment">Controlling Table Captions&rsquo; Alignment - <code>tableCaptionAlignment</code></a></li>
 </ul>
 </li>
 <li><a href="#card-metadata">Card Metadata</a><ul>
@@ -1686,9 +1688,9 @@ THE SOFTWARE.
 </thead>
 <tbody>
 <tr>
-<td align="left">6.1+</td>
-<td align="right">13&nbsp;December&nbsp;2025</td>
-<td align="left">Enhanced table caption support with <a href="#controlling-whether-table-captions-are-above-or-below-the-table-tablecaptionattop">TableCaptionAtTop</a>&comma;</td>
+<td align="left">6.1.1</td>
+<td align="right">15&nbsp;December&nbsp;2025</td>
+<td align="left">Enhanced table caption support with <a href="#controlling-whether-table-captions-are-above-or-below-the-table-tablecaptionattop">TableCaptionAtTop</a>&comma; <a href="#controlling-a-table-captions-height-tablecaptionheight">Specifying Table Captions&rsquo; Heights</a>&comma; <a href="#controlling-table-captions-alignment-tablecaptionalignment">Specifying Table Captions&rsquo; Alignment</a>.</td>
 </tr>
 <tr>
 <td align="left">6.1</td>
@@ -3872,14 +3874,31 @@ For example</p>
 <p>With this option the first table with a caption is numbered &ldquo;1&rdquo;.
 The table number is incremented by 1 for every table with a caption.
 It would be odd for it to be incremented for a table without a caption - as it would leave a gap in the visible numbering.</p>
-<h5 id="controlling-whether-table-captions-are-above-or-below-the-table-tablecaptionattop">Controlling Whether Table Captions Are Above Or Below The Table - tableCaptionAtTop<a class="headerlink" href="#controlling-whether-table-captions-are-above-or-below-the-table-tablecaptionattop" title="Permanent link"></a></h5>
+<h5 id="controlling-whether-table-captions-are-above-or-below-the-table-tablecaptionattop">Controlling Whether Table Captions Are Above Or Below The Table - <code>tableCaptionAtTop</code><a class="headerlink" href="#controlling-whether-table-captions-are-above-or-below-the-table-tablecaptionattop" title="Permanent link"></a></h5>
 <p><a-id="controlling-whether-table-captions-are-above-or-below-the-table-tablecaptionattop"></a></p>
 <p>You can specify whether a table&rsquo;s caption is just above the table or just below it.
-For example:</p>
+For example: </p>
 <pre><code>TableCaptionAtTop: yes
 </code></pre>
 <p>places all tables&rsquo; captions just above the tables.</p>
 <p>The default is <code>no</code>.</p>
+<h5 id="controlling-a-table-captions-height-tablecaptionheight">Controlling A Table Caption&rsquo;s Height - <code>tableCaptionHeight</code><a class="headerlink" href="#controlling-a-table-captions-height-tablecaptionheight" title="Permanent link"></a></h5>
+<p><a id="controlling-a-table-captions-height-tablecaptionheight"></a></p>
+<p>You might want to control the height of the presentation&rsquo;s table captions.
+For example: </p>
+<pre><code>tableCaptionHeight: 0.5
+</code></pre>
+<p>This specifies the space allotted to the caption to be 0.5 inches high.</p>
+<p>The default is 0.4 inches.</p>
+<h5 id="controlling-table-captions-alignment-tablecaptionalignment">Controlling Table Captions&rsquo; Alignment - <code>tableCaptionAlignment</code><a class="headerlink" href="#controlling-table-captions-alignment-tablecaptionalignment" title="Permanent link"></a></h5>
+<p><a id="controlling-table-captions-alignment-tablecaptionalignment"></a></p>
+<p>You can control whether table captions are left-, right-, or centre-aligned.
+For example:</p>
+<pre><code>tableCaptionAlignment: right
+</code></pre>
+<p>This specifies table captions be right-aligned.</p>
+<p>The default is to left align all table captions.</p>
+<p>You can use the abbreviations <code>l</code>, <code>r</code>, and <code>c</code>.</p>
 <h4 id="card-metadata">Card Metadata<a class="headerlink" href="#card-metadata" title="Permanent link"></a></h4>
 <h5 id="card-background-colour-cardcolour">Card Background Colour - <code>CardColour</code><a class="headerlink" href="#card-background-colour-cardcolour" title="Permanent link"></a></h5>
 <p><a id="card-background-colour-cardcolour"></a></p>

@@ -173,7 +173,7 @@ To quote from the python-pptx license statement:
 =colalign l r l
 =csv
 Level,Date,What
-6.1+,13&nbsp;December&nbsp;2025,Enhanced table caption support with [TableCaptionAtTop](#controlling-whether-table-captions-are-above-or-below-the-table-tablecaptionattop)&comma;
+6.1.1,15&nbsp;December&nbsp;2025,Enhanced table caption support with [TableCaptionAtTop](#controlling-whether-table-captions-are-above-or-below-the-table-tablecaptionattop)&comma; [Specifying Table Captions' Heights](#controlling-a-table-captions-height-tablecaptionheight)&comma; [Specifying Table Captions' Alignment](#controlling-table-captions-alignment-tablecaptionalignment).
 6.1,28&nbsp;November&nbsp;2025,Added support for [inserting slides from other presentations](#inserting-slides-from-other-presentations) - using AppleScript. Added support for [ApplesScipt prologue and epilogue files](#prologue-epilogue-files). Incorporated a fix from @misaka4e21.
 6.0.3,26&nbsp;October&nbsp;2025,Added support for [table captions](#table-captions).
 6.0.2,12&nbsp;October&nbsp;2025,@troutrot fixed [footnotes](file:///Users/martinpacker/md2pptx/docs/user-guide.html#creating-footnotes). Also [`italiccolour`](#specifying-bold-and-italic-text-colour-with-boldcolour-and-italiccolour) fixed. [Checklists](#checklist-related-helper-routines) now use graphics instead of weird characters.
@@ -2413,17 +2413,43 @@ With this option the first table with a caption is numbered "1".
 The table number is incremented by 1 for every table with a caption.
 It would be odd for it to be incremented for a table without a caption - as it would leave a gap in the visible numbering.
 
-##### Controlling Whether Table Captions Are Above Or Below The Table - tableCaptionAtTop
+##### Controlling Whether Table Captions Are Above Or Below The Table - `tableCaptionAtTop`
 <a-id="controlling-whether-table-captions-are-above-or-below-the-table-tablecaptionattop"></a>
 
 You can specify whether a table's caption is just above the table or just below it.
-For example:
+For example: 
 
     TableCaptionAtTop: yes
 
 places all tables' captions just above the tables.
 
 The default is `no`.
+
+##### Controlling A Table Caption's Height - `tableCaptionHeight`
+<a id="controlling-a-table-captions-height-tablecaptionheight"></a>
+
+You might want to control the height of the presentation's table captions.
+For example: 
+
+    tableCaptionHeight: 0.5
+
+This specifies the space allotted to the caption to be 0.5 inches high.
+
+The default is 0.4 inches.
+
+##### Controlling Table Captions' Alignment - `tableCaptionAlignment`
+<a id="controlling-table-captions-alignment-tablecaptionalignment"></a>
+
+You can control whether table captions are left-, right-, or centre-aligned.
+For example:
+
+    tableCaptionAlignment: right
+
+This specifies table captions be right-aligned.
+
+The default is to left align all table captions.
+
+You can use the abbreviations `l`, `r`, and `c`.
 
 #### Card Metadata
 
