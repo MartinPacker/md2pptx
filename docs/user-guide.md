@@ -416,7 +416,7 @@ To use md2pptx you need to download it and install the prerequisites.
 To install md2pptx and its prerequisites
 
 1. Have Python 3.8 or higher installed.
-1. Install python-pptx using the command `pip3 install python-pptx`. (You might have to install pip firsst.)
+1. Install python-pptx using the command `pip3 install python-pptx`. (You might have to install pip first.)
 1. Optionally install CairoSVG - using the command `pip3 install cairosvg`. (This is for SVG graphics support.)
 1. Install md2pptx by copying a version and unzipping it or using `git clone`. md2pptx can be found [here](https://github.com/MartinPacker/md2pptx).
 
@@ -481,6 +481,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|6.1.1+|26&nbsp;December&nbsp;2025|You can now have multiple lists - bulleted or numbered - on a slide.|
 |6.1.1|15&nbsp;December&nbsp;2025|Enhanced table caption support with [TableCaptionAtTop](#controlling-whether-table-captions-are-above-or-below-the-table-tablecaptionattop)&comma; [Specifying Table Captions' Heights](#controlling-a-table-captions-height-tablecaptionheight)&comma; [Specifying Table Captions' Alignment](#controlling-table-captions-alignment-tablecaptionalignment).|
 |6.1|28&nbsp;November&nbsp;2025|Added support for [inserting slides from other presentations](#inserting-slides-from-other-presentations) - using AppleScript. Added support for [ApplesScipt prologue and epilogue files](#prologue-epilogue-files). Incorporated a fix from @misaka4e21.|
 |6.0.3|26&nbsp;October&nbsp;2025|Added support for [table captions](#table-captions).|
@@ -697,9 +698,13 @@ The title of the slide is defined by coding a Markdown Heading Level 3 (`###`).
 
 Bulleted list items are introduced by an asterisk.
 
-**Note:** Some dialects of Markdown allow other bullet markers but md2pptx doesn't. You can be sure by coding `*` you have valid Markdown that md2pptx can also process correctly. For an explanation of why you have to stick to `*` see [here](#task-list-slides).
+**Notes:**
 
-To nest bullets use a tab character or 2 spaces to indent the sub-bullets. md2pptx doesn't have a limit on the level of nesting but Powerpoint probably does.
+* Some dialects of Markdown allow other bullet markers but md2pptx doesn't. You can be sure by coding `*` you have valid Markdown that md2pptx can also process correctly. For an explanation of why you have to stick to `*` see [here](#task-list-slides).
+
+* To nest bullets use a tab character or 2 spaces to indent the sub-bullets. md2pptx doesn't have a limit on the level of nesting but Powerpoint probably does.
+
+* You can have multiple lists on a slide. You can separate the list by another element (for example a table) or by a blank line followed by a line just containing `<br/>` or `<br />`.
 
 Terminate the bulleted list slide with a blank line.
 
@@ -724,7 +729,11 @@ Markdown takes care of the numbering. In the above example there are two numbere
 
 Numbering with `1.` is actually a useful practice - as it makes it easier to reorder a numbered list (by moving the lines around).
 
-**Note:** You can mix numbered and bulleted items in a list.
+**Notes:**
+
+* You can mix numbered and bulleted items in a list.
+
+* You can have multiple lists on a slide. You can separate the list by another element (for example a table) or by a blank line followed by a line just containing `<br/>` or `<br />`.
 
 ### Graphics, Video And Audio slides
 <a id="graphics-video-and-audio-slides"></a>

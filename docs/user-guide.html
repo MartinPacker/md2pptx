@@ -1629,7 +1629,7 @@ Of\ Names\ And\ Numbers.md: Of\ Names\ And\ Numbers.mdp
 <p>To install md2pptx and its prerequisites</p>
 <ol>
 <li>Have Python 3.8 or higher installed.</li>
-<li>Install python-pptx using the command <code>pip3 install python-pptx</code>. (You might have to install pip firsst.)</li>
+<li>Install python-pptx using the command <code>pip3 install python-pptx</code>. (You might have to install pip first.)</li>
 <li>Optionally install CairoSVG - using the command <code>pip3 install cairosvg</code>. (This is for SVG graphics support.)</li>
 <li>Install md2pptx by copying a version and unzipping it or using <code>git clone</code>. md2pptx can be found <a href="https://github.com/MartinPacker/md2pptx">here</a>.</li>
 </ol>
@@ -1687,6 +1687,11 @@ THE SOFTWARE.
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">6.1.1+</td>
+<td align="right">26&nbsp;December&nbsp;2025</td>
+<td align="left">You can now have multiple lists - bulleted or numbered - on a slide.</td>
+</tr>
 <tr>
 <td align="left">6.1.1</td>
 <td align="right">15&nbsp;December&nbsp;2025</td>
@@ -2358,8 +2363,18 @@ sectionTitleSize: 30
 <p>The title of the slide is defined by coding a Markdown Heading Level 3 (<code>###</code>).</p>
 <p><strong>Note:</strong> You can allow the title to spill onto a second line but it is better to break titles up using <code>&lt;br/&gt;</code>. Doing so enables md2pptx to layout slide contents below the title better. It also allows you to specify a different (probably) smaller font size for the second and subsequent lines of the title.</p>
 <p>Bulleted list items are introduced by an asterisk.</p>
-<p><strong>Note:</strong> Some dialects of Markdown allow other bullet markers but md2pptx doesn&rsquo;t. You can be sure by coding <code>*</code> you have valid Markdown that md2pptx can also process correctly. For an explanation of why you have to stick to <code>*</code> see <a href="#task-list-slides">here</a>.</p>
+<p><strong>Notes:</strong></p>
+<ul>
+<li>
+<p>Some dialects of Markdown allow other bullet markers but md2pptx doesn&rsquo;t. You can be sure by coding <code>*</code> you have valid Markdown that md2pptx can also process correctly. For an explanation of why you have to stick to <code>*</code> see <a href="#task-list-slides">here</a>.</p>
+</li>
+<li>
 <p>To nest bullets use a tab character or 2 spaces to indent the sub-bullets. md2pptx doesn&rsquo;t have a limit on the level of nesting but Powerpoint probably does.</p>
+</li>
+<li>
+<p>You can have multiple lists on a slide. You can separate the list by another element (for example a table) or by a blank line followed by a line just containing <code>&lt;br/&gt;</code> or <code>&lt;br /&gt;</code>.</p>
+</li>
+</ul>
 <p>Terminate the bulleted list slide with a blank line.</p>
 <p><strong>Note:</strong> You can alter the number of spaces that represent each level of indenting. See <a href="#specifying-how-many-spaces-represent-an-indentation-level-with-indentspaces">Specifying How Many Spaces Represent An Indentation Level With <code>IndentSpaces</code></a>. If you use tabs they will be converted to the the appropriate number of spaces internally.</p>
 <h4 id="numbered-list-items">Numbered List Items<a class="headerlink" href="#numbered-list-items" title="Permanent link"></a></h4>
@@ -2376,7 +2391,15 @@ sectionTitleSize: 30
 <p>Numbered list items are introduced with an integer, followed by a full stop.</p>
 <p>Markdown takes care of the numbering. In the above example there are two numbered items. While the first will indeed be numbered &ldquo;1&rdquo; the second will be numbered &ldquo;2&rdquo;, despite the <code>1.</code> coding.</p>
 <p>Numbering with <code>1.</code> is actually a useful practice - as it makes it easier to reorder a numbered list (by moving the lines around).</p>
-<p><strong>Note:</strong> You can mix numbered and bulleted items in a list.</p>
+<p><strong>Notes:</strong></p>
+<ul>
+<li>
+<p>You can mix numbered and bulleted items in a list.</p>
+</li>
+<li>
+<p>You can have multiple lists on a slide. You can separate the list by another element (for example a table) or by a blank line followed by a line just containing <code>&lt;br/&gt;</code> or <code>&lt;br /&gt;</code>.</p>
+</li>
+</ul>
 <h3 id="graphics-video-and-audio-slides">Graphics, Video And Audio slides<a class="headerlink" href="#graphics-video-and-audio-slides" title="Permanent link"></a></h3>
 <p><a id="graphics-video-and-audio-slides"></a></p>
 <p>You can embed three kinds of media in slides:</p>
