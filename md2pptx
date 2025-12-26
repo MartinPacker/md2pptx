@@ -709,6 +709,7 @@ def sendToBack(shapes, shape):
 
 # Turn a paragraph into a numbered list item
 def makeNumberedListItem(p):
+    originalFontSize = p.font.size
     if (
         p._element.getchildren()[0].tag
         == "{http://schemas.openxmlformats.org/drawingml/2006/main}pPr"
@@ -730,6 +731,8 @@ def makeNumberedListItem(p):
     buAutoNum = OxmlElement("a:buAutoNum")
     buAutoNum.set("type", "arabicPeriod")
     pPr.append(buAutoNum)
+
+    p.font.size = originalFontSize
 
 # Add a drop shadow to a shape
 def createShadow(shape):
