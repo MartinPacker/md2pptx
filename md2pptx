@@ -8,8 +8,8 @@ First argument is file to write to
 Reads from stdin
 """
 
-md2pptx_level = "6.1.1"
-md2pptx_date = "15 December, 2025"
+md2pptx_level = "6.1.1+"
+md2pptx_date = "26 December, 2025"
 
 import re
 import sys
@@ -707,7 +707,7 @@ def sendToBack(shapes, shape):
     firstShapeElement.addprevious(shape._element)
 
 
-# Turn a paragraph into a numbered inList item
+# Turn a paragraph into a numbered list item
 def makeNumberedListItem(p):
     if (
         p._element.getchildren()[0].tag
@@ -940,13 +940,14 @@ def getVideoInfo(audioVideoInfo):
 
 
 # Render a list of bullets
-def renderText(shape, bullets):
+def renderText(shape, bulletList):
     baseTextDecrement = globals.processingOptions.getCurrentOption("baseTextDecrement")
     baseTextSize = globals.processingOptions.getCurrentOption("baseTextSize")
 
     tf = shape.text_frame
 
-    for bulletNumber, bullet in enumerate(bullets):
+    shape.text = ""
+    for bulletNumber, bullet in enumerate(bulletList):
         para0 = tf.paragraphs[0]
 
         if bulletNumber == 0:
@@ -956,16 +957,19 @@ def renderText(shape, bullets):
             # We need a new paragraph
             p = tf.add_paragraph()
 
+        # Unpack bullet information
+        level, textToFormat, bulletType = bullet
+
         # Set the paragraph's level - zero-indexed
-        p.level = int(bullet[0])
+        p.level = int(level)
 
         # Set the paragraph's font size, adjusted for level, if necessary
         if baseTextSize > 0:
             p.font.size = Pt(baseTextSize - p.level * baseTextDecrement)
 
-        addFormattedText(p, bullet[1])
+        addFormattedText(p, textToFormat)
 
-        if bullet[2] == "numbered":
+        if bulletType == "numbered":
             makeNumberedListItem(p)
 
     tf.auto_size = MSO_AUTO_SIZE.TEXT_TO_FIT_SHAPE
@@ -1873,11 +1877,11 @@ def createContentSlide(presentation, slideNumber, slideInfo):
 
     # Create the slide and check for bullets and/or cards
     if (slideInfo.bullets == []) & (slideInfo.cards == []):
-        # No bullets or cards so "title only"
+        # No bullets or cards so "title only" layout wanted
         slideLayout = titleOnlyLayout
         haveBulletsCards = False
     else:
-        # Either bullets or cards or both so not "title only"
+        # Either bullets or cards or both so "content slide" layout wanted
         slideLayout = contentSlideLayout
         haveBulletsCards = True
 
@@ -1933,6 +1937,7 @@ def createContentSlide(presentation, slideNumber, slideInfo):
 
     codeBlockNumber = 0
     tableBlockNumber = 0
+    listBlockNumber = 0
 
     for b in range(blocksToRender):
         if globals.processingOptions.getCurrentOption("contentSplitDirection") == "vertical":
@@ -1961,7 +1966,8 @@ def createContentSlide(presentation, slideNumber, slideInfo):
             tableBlockNumber += 1
 
         elif slideInfo.sequence[b] == "list":
-            createListBlock(slideInfo, slide, renderingRectangle)
+            createListBlock(slideInfo, slide, renderingRectangle, listBlockNumber)
+            listBlockNumber += 1
         else:
             createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber)
             codeBlockNumber += 1
@@ -1972,7 +1978,7 @@ def createContentSlide(presentation, slideNumber, slideInfo):
     return slide
 
 
-def createListBlock(slideInfo, slide, renderingRectangle):
+def createListBlock(slideInfo, slide, renderingRectangle, listBlockNumber):
     horizontalCardGap = globals.processingOptions.getCurrentOption("horizontalcardgap")
     verticalCardGap = globals.processingOptions.getCurrentOption("verticalcardgap")
     cardTitleAlign = globals.processingOptions.getCurrentOption("cardtitlealign")
@@ -1997,13 +2003,15 @@ def createListBlock(slideInfo, slide, renderingRectangle):
 
     # Get bulleted text shape - either for bullets above cards or first card's body shape
     bulletsShape = findBodyShape(slide)
+    if listBlockNumber > 0:
+        bulletsShape = addClonedShape(slide, bulletsShape)
 
     # Set bulleted shape top, left, width
     bulletsShape.top = renderingRectangle.top
     bulletsShape.left = renderingRectangle.left
     bulletsShape.width = renderingRectangle.width
 
-    bulletCount = len(slideInfo.bullets)
+    bulletCount = len(slideInfo.bullets[listBlockNumber])
 
     # Set bulleted text height - depending on whether there's a card
     # Remainder is card area height - if there are cards
@@ -2312,7 +2320,7 @@ def createListBlock(slideInfo, slide, renderingRectangle):
     bulletsShape.bottom = bulletsShape.top + bulletsShape.height
 
     # Fill in the main bullets shape
-    renderText(bulletsShape, slideInfo.bullets)
+    renderText(bulletsShape, slideInfo.bullets[listBlockNumber])
 
     # Second go on each card
     for c, card in enumerate(slideInfo.cards):
@@ -4461,15 +4469,18 @@ def createFootnoteSlides(prs, slideNumber, footnoteDefinitions):
                 slideNumber += 1
             bullets = []
             old_sNum = 0
+        if bullets == []:
+            bullets.append([])
 
-        bullets.append(
-            [
-                1,
-                str(footnoteNumber + 1) + ". " + footnoteDefinitions[footnoteNumber][1],
-                "bullet",
-            ]
-        )
+        lastBulletList = bullets[-1]
 
+        lastBulletList.append([
+            1,
+            str(footnoteNumber + 1) + ". " + footnoteDefinitions[footnoteNumber][1],
+            "bullet",
+        ])
+        
+        bullets[-1] = lastBulletList
     # Print a final "footnote" slide
     footnotesSlideNumber += 1
     if footnoteCount > footnotesPerPage:
@@ -4657,6 +4668,10 @@ for line in input_file:
             afterMetadataAndHTML.append(line)
 
         elif startswithOneOf(lineLstrip, ["<video ", "<audio "]):
+            # Line goes to post-metadata array
+            afterMetadataAndHTML.append(line)
+
+        elif line in ["<br/>\n", "<br />\n"]:
             # Line goes to post-metadata array
             afterMetadataAndHTML.append(line)
 
@@ -5735,6 +5750,9 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
         inHTMLCode = False
         inTitle = False
 
+    elif startswithOneOf(line, ["<br/>", "<br />"]):
+        inList = False
+
     if line.startswith("```"):
         inCode = not inCode
         if inCode:
@@ -6319,52 +6337,35 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
         if (href != "") & (href in slideHrefs.keys()):
             print(f"Heading Reference redefined: '{href}' for slide {slideNumber}")
 
-    elif match := bulletRegex.match(line):
-        # Bulleted list
-        bulletLine = match.group(3).lstrip()
+    elif match := (bulletRegex.match(line)) or (numberRegex.match(line)):
+        if match.re is bulletRegex:
+            listItemType = "bulleted"
+        else:
+            listItemType = "numbered"
 
-        bulletLevel = calculateIndentationLevel(
+        # Is a list item
+        listItemLine = match.group(3).lstrip()
+
+        listItemLevel = calculateIndentationLevel(
             match.start(2), globals.processingOptions.getCurrentOption("indentSpaces")
         )
         
-        bulletType = "bulleted"
-        
         if inCard:
             # Bullet is on a card
-            cardBullets.append([bulletLevel, bulletLine, bulletType])
+            cardBullets.append([listItemLevel, listItemLine, listItemType])
 
             # Update bullet list for the card
             cards[-1].bullets = cardBullets
         else:
-            # Bullet is not on a card        
-            bullets.append([bulletLevel, bulletLine, bulletType])
-
-        if inList is False:
-            sequence.append("list")
-
-        inList = True
-        inTable = False
-        inTitle = False
-
-    elif match := numberRegex.match(line):
-        # Numbered list
-        bulletLine = match.group(3).lstrip()
-
-        bulletLevel = calculateIndentationLevel(
-            match.start(2), globals.processingOptions.getCurrentOption("indentSpaces")
-        )
-
-        bulletType = "numbered"
-
-        if inCard:
-            # Bullet is on a card
-            cardBullets.append([bulletLevel, bulletLine, bulletType])
-
-            # Update bullet list for the card
-            cards[-1].bullets = cardBullets
-        else:
-            # Bullet is not on a card        
-            bullets.append([bulletLevel, bulletLine, bulletType])
+            # Bullet is not on a card
+            if inList is False:
+                bulletList = []
+                bulletList.append([listItemLevel, listItemLine, listItemType])
+                bullets.append(bulletList)
+            else:
+                bulletList = bullets[-1]
+                bulletList.append([listItemLevel, listItemLine, listItemType])
+                bullets[-1] = bulletList                
 
         if inList is False:
             sequence.append("list")
