@@ -1,0 +1,39 @@
+
+md2pptx Markdown To Powerpoint Converter 6.1.1+ 26 December, 2025
+=================================================================
+
+Open source project: https://github.com/MartinPacker/md2pptx
+
+md2pptx is found in /Users/martinpacker/md2pptx
+
+External Dependencies:
+
+  Python: 3.12.3
+  python-pptx: 1.0.2
+  Pillow: 11.0.0
+  CairoSVG: 2.8.2
+  graphviz: 0.21
+
+Internal Dependencies:
+
+  funnel: 0.2
+  runPython: 0.11
+
+Metadata:
+=========
+
+Name                                     Value
+----                                     -----
+template                                 Martin Template.pptx
+
+Using /Users/martinpacker/md2pptx/Martin Template.pptx as base for presentation
+
+Writing processing summary slide with metadata on it.
+
+Slides:
+=======
+
+   1       Slide With Bulleted List And Numbered List Next To Each Other
+
+Processing complete.
+Elapsed time: 0.018s
