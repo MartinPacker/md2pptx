@@ -99,6 +99,19 @@ namespaceURL = {
     "r":   "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
 }
 
+def showRenderingRectangle(slide, renderingRectangle):
+    rr = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE,
+        renderingRectangle.left,
+        renderingRectangle.top,
+        renderingRectangle.width,
+        renderingRectangle.height
+    )
+    
+    rr.fill.background()
+    rr.line.color.rgb = RGBColor(255, 0, 0) 
+                    
+                    
+
 def namespacesFragment(prefixes):
     xml = ""
     for prefix in prefixes:
@@ -1504,6 +1517,7 @@ def handleGraphViz(slide, renderingRectangle, codeLines, codeType):
     dotGraphicWidth, dotGraphicHeight = getGraphicDimensions(dotFile)
 
     # Adjust those dimensions with the usual scaling rules
+    # Note: No <figcaption> adjustment
     (dotPicWidth, dotPicHeight, scaledByHeight) = scalePicture(
         renderingRectangle.width,
         renderingRectangle.height,
@@ -2467,6 +2481,7 @@ def createListBlock(slideInfo, slide, renderingRectangle, listBlockNumber):
 
             else:
                 # Scale graphic, audio, or video
+                # Note: No <figcaption> adjustment
                 (cardMediaWidth, cardMediaHeight, scaledByHeight) = scalePicture(
                     cardGraphicSizeRaw,
                     cardGraphicSizeRaw,
@@ -2920,17 +2935,21 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
         figCaps = slideInfo.figureCaptions
         figCapCount = len(figCaps)
 
-        figCapHeight = Inches(0.25)
+        figCapHeight = Inches(0.3)
         
         topLeftFigCapHeight = figCapHeight if figureNumber < figCapCount else 0
         
         if (topLeftGraphicFilename != "") | (topLeftVideo is not None):
+            # Establish dimensions, taking into account any <figcaption>
             (
                 topLeftPicWidth,
                 topLeftPicHeight,
                 usingHeightToScale,
             ) = scalePicture(
-                maxPicWidth, maxPicHeight, topLeftMediaWidth, topLeftMediaHeight
+                maxPicWidth,
+                maxPicHeight - topLeftFigCapHeight,
+                topLeftMediaWidth,
+                topLeftMediaHeight
             )
 
             if usingHeightToScale:
@@ -2957,8 +2976,8 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                     # Center sole top media item
                     topLeftPicX = midGraphicsSpaceX - topLeftPicWidth / 2
 
-            # Calculate vertical start
-            topLeftPicY = renderingRectangle.top + (maxPicHeight - topLeftPicHeight) / 2
+            # Calculate vertical start - centred within the rendering rectangle
+            topLeftPicY = renderingRectangle.top + (maxPicHeight - topLeftPicHeight - topLeftFigCapHeight) / 2
 
             if gridRows == 2:
                 topLeftPicY -= Inches(0.2)
@@ -2993,7 +3012,18 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                         topLeftGraphicTitle,
                         "",
                     )
-            )
+                )
+                
+                topLeftFigCap = slide.shapes.add_textbox(topLeftPicX,
+                    renderingRectangle.bottom - topLeftFigCapHeight,
+                    topLeftPicWidth,
+                    topLeftFigCapHeight
+                )
+                topLeftFigCapTF = topLeftFigCap.text_frame
+                topLeftFigCapP = topLeftFigCapTF.paragraphs[0]
+                addFormattedText(topLeftFigCapP, f"*{figureCaptions[-1]}")
+                
+                topLeftFigCapP.font.size = Pt(16)
 
         elif topLeftVideo is not None:
             if leftMediaMissing or topLeftMediaMissing:
@@ -3042,14 +3072,16 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
             if (topRightGraphicFilename != "") | (topRightVideo is not None):
                 figureNumber += 1
 
-                topRightFigCapHeight = figCapHeight if figureNumber < figCapCount else 0
-        
+                # Establish dimensions
                 (
                     topRightPicWidth,
                     topRightPicHeight,
                     usingHeightToScale,
                 ) = scalePicture(
-                    maxPicWidth, maxPicHeight, topRightMediaWidth, topRightMediaHeight
+                    maxPicWidth,
+                    maxPicHeight,
+                    topRightMediaWidth,
+                    topRightMediaHeight
                 )
 
                 if usingHeightToScale:
@@ -3151,8 +3183,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
             if (bottomLeftGraphicFilename != "") | (bottomLeftVideo is not None):
                 figureNumber += 1
 
-                bottomLeftFigCapHeight = figCapHeight if figureNumber < figCapCount else 0
-        
+                # Establish dimensions
                 (
                     bottomLeftPicWidth,
                     bottomLeftPicHeight,
@@ -3260,8 +3291,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                 if (bottomRightGraphicFilename != "") | (bottomRightVideo is not None):
                     figureNumber += 1
 
-                    bottomRightFigCapHeight = figCapHeight if figureNumber < figCapCount else 0
-        
+                    # Establish dimensions
                     (
                         bottomRightPicWidth,
                         bottomRightPicHeight,
