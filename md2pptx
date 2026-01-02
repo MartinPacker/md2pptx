@@ -3035,7 +3035,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                     maxPicWidth,
                     maxPicHeight - Inches(0.2)
                 )
-                    
+
             else:
                 if topLeftVideoType == "Local":
                     # Can use local file directly
