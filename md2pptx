@@ -9,7 +9,7 @@ Reads from stdin
 """
 
 md2pptx_level = "6.1.1+"
-md2pptx_date = "26 December, 2025"
+md2pptx_date = "2 January, 2026"
 
 import re
 import sys
@@ -118,6 +118,7 @@ class SlideInfo:
         code,
         sequence,
         tableCaptions,
+        figureCaptions,
     ):
         self.titleText = titleText
         self.subtitleText = subtitleText
@@ -128,6 +129,7 @@ class SlideInfo:
         self.code = code
         self.sequence = sequence
         self.tableCaptions = tableCaptions
+        self.figureCaptions = figureCaptions
 
 
 # Information about a single table. (A slide might have more than one - or none.)
@@ -2006,10 +2008,11 @@ def createListBlock(slideInfo, slide, renderingRectangle, listBlockNumber):
 
     # Get bulleted text shape - either for bullets above cards or first card's body shape
     bulletsShape = findBodyShape(slide)
+    
     if listBlockNumber > 0:
         bulletsShape = addClonedShape(slide, bulletsShape)
 
-    # Set bulleted shape top, left, width
+        # Set bulleted shape top, left, width
     bulletsShape.top = renderingRectangle.top
     bulletsShape.left = renderingRectangle.left
     bulletsShape.width = renderingRectangle.width
@@ -2175,7 +2178,12 @@ def createListBlock(slideInfo, slide, renderingRectangle, listBlockNumber):
                         graphicTitle = "" if card.graphicTitle == None else card.graphicTitle
 
                         pictureInfos.append(
-                            (card.graphicShape, mediaURL, graphicTitle)
+                            (
+                                card.graphicShape,
+                                mediaURL,
+                                graphicTitle,
+                                "",
+                            )
                         )
 
                 except:
@@ -2907,6 +2915,15 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
         # Calculate the size of each graphic - scaled by the above rect    #
         ####################################################################
 
+        figureNumber = 0
+
+        figCaps = slideInfo.figureCaptions
+        figCapCount = len(figCaps)
+
+        figCapHeight = Inches(0.25)
+        
+        topLeftFigCapHeight = figCapHeight if figureNumber < figCapCount else 0
+        
         if (topLeftGraphicFilename != "") | (topLeftVideo is not None):
             (
                 topLeftPicWidth,
@@ -2970,7 +2987,12 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                     topLeftGraphicHref = None
 
                 pictureInfos.append(
-                    (topLeftPicture, topLeftGraphicHref, topLeftGraphicTitle)
+                    (
+                        topLeftPicture,
+                        topLeftGraphicHref,
+                        topLeftGraphicTitle,
+                        "",
+                    )
             )
 
         elif topLeftVideo is not None:
@@ -3018,6 +3040,10 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
         if gridColumns == 2:
             # Top right media item
             if (topRightGraphicFilename != "") | (topRightVideo is not None):
+                figureNumber += 1
+
+                topRightFigCapHeight = figCapHeight if figureNumber < figCapCount else 0
+        
                 (
                     topRightPicWidth,
                     topRightPicHeight,
@@ -3069,7 +3095,12 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                         topRightGraphicHref = None
 
                     pictureInfos.append(
-                        (topRightPicture, topRightGraphicHref, topRightGraphicTitle)
+                        (
+                            topRightPicture,
+                            topRightGraphicHref,
+                            topRightGraphicTitle,
+                            "",
+                        )
                     )
 
             elif topRightVideo is not None:
@@ -3118,6 +3149,10 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
             # Need second row of media items
             # Bottom left media item
             if (bottomLeftGraphicFilename != "") | (bottomLeftVideo is not None):
+                figureNumber += 1
+
+                bottomLeftFigCapHeight = figCapHeight if figureNumber < figCapCount else 0
+        
                 (
                     bottomLeftPicWidth,
                     bottomLeftPicHeight,
@@ -3182,7 +3217,12 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                         bottomLeftGraphicHref = None
 
                     pictureInfos.append(
-                       (bottomLeftPicture, bottomLeftGraphicHref, bottomLeftGraphicTitle)
+                       (
+                           bottomLeftPicture,
+                           bottomLeftGraphicHref,
+                           bottomLeftGraphicTitle,
+                           "",
+                        )
                     )
 
             elif bottomLeftVideo is not None:
@@ -3218,6 +3258,10 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
             if gridColumns == 2:
                 # Bottom right media item
                 if (bottomRightGraphicFilename != "") | (bottomRightVideo is not None):
+                    figureNumber += 1
+
+                    bottomRightFigCapHeight = figCapHeight if figureNumber < figCapCount else 0
+        
                     (
                         bottomRightPicWidth,
                         bottomRightPicHeight,
@@ -3283,6 +3327,7 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                                 bottomRightPicture,
                                 bottomRightGraphicHref,
                                 bottomRightGraphicTitle,
+                                "",
                             )
                         )
                 elif bottomRightVideo is not None:
@@ -4277,7 +4322,8 @@ def createTaskSlides(prs, slideNumber, tasks, titleStem):
                     [],
                     [],
                     ["table"],
-                    ['']
+                    [''],
+                    [],
                 )
                 
                 slide = createContentSlide(prs, slideNumber, slideInfo)
@@ -4331,7 +4377,8 @@ def createTaskSlides(prs, slideNumber, tasks, titleStem):
         [],
         [],
         ["table"],
-        ['']
+        [''],
+        [],
     )
         
     slide = createContentSlide(prs, slideNumber, slideInfo)
@@ -4386,7 +4433,8 @@ def createGlossarySlides(prs, slideNumber, abbrevDictionary):
                     [],
                     [],
                     ["table"],
-                    ['']
+                    [''],
+                    [],
                 )
                 slide = createContentSlide(prs, slideNumber, slideInfo)
 
@@ -4411,8 +4459,19 @@ def createGlossarySlides(prs, slideNumber, abbrevDictionary):
         title = glossaryTitle
 
     glossaryBlock = [glossaryRows]
-    slideInfo = SlideInfo(title, "", "table", [], glossaryBlock, [], [], ["table"],[]
+    slideInfo = SlideInfo(
+        title,
+        "",
+        "table",
+        [],
+        glossaryBlock,
+        [],
+        [],
+        ["table"],
+        [''],
+        [],
     )
+
     slide = createContentSlide(prs, slideNumber, slideInfo)
     glossarySlides.append(slide)
     slideNumber += 1
@@ -4460,8 +4519,18 @@ def createFootnoteSlides(prs, slideNumber, footnoteDefinitions):
                     title = footnotesTitle
 
                 slideInfo = SlideInfo(
-                    title, "", "content", bullets, [], cards, [], ["list", []]
+                    title,
+                    "",
+                    "content",
+                    bullets,
+                    [],
+                    cards,
+                    [],
+                    ["list"],
+                    [''],
+                    [],
                 )
+                
                 slideNumber, slide, sequence = createSlide(prs, slideNumber, slideInfo)
 
                 footnoteSlides.append(slide)
@@ -4493,8 +4562,19 @@ def createFootnoteSlides(prs, slideNumber, footnoteDefinitions):
         # Only one footnotes page
         title = footnotesTitle
 
-    slideInfo = SlideInfo(title, "", "content", bullets, [], cards, [], ["list"], []
+    slideInfo = SlideInfo(
+        title,
+        "",
+        "content",
+        bullets,
+        [],
+        cards,
+        [],
+        ["list"],
+        [''],
+        [],
     )
+
     slideNumber, slide, sequence = createSlide(prs, slideNumber, slideInfo)
 
     footnoteSlides.append(slide)
@@ -4600,6 +4680,7 @@ dynamicMetadata2Regex = re.compile("^<!-- md2pptx: (.+): (.+) -->")
 dynamicMetadata1Regex = re.compile("^<!-- md2pptx: (.+) -->")
 indirectReferenceAnchorRegex = re.compile(r"^\[(.+?)\]: (.+)")
 indirectReferenceUsageRegex = re.compile(r"[(.+?)]\[(.+?)]")
+figcaptionRegex = re.compile(r"^<figcaption>(.+)</figcaption>$")
 
 # Default slide layout enumeration
 globals.processingOptions.setOptionValuesArray(
@@ -4678,6 +4759,9 @@ for line in input_file:
             # Line goes to post-metadata array
             afterMetadataAndHTML.append(line)
 
+        elif line.startswith("<figcaption>"):
+            # Line goes to post-metadata array
+            afterMetadataAndHTML.append(line)
         else:
             inHTML = True
 
@@ -5617,6 +5701,8 @@ slideTitle = ""
 slideSubtitle = ""
 bullets = []
 tableRows = []
+tableCaptions = []
+figureCaptions = []
 cards = []
 code = []
 inCode = False
@@ -5665,6 +5751,10 @@ for line in afterMetadataAndHTML:
 
     elif line.startswith("<a id="):
         # This is an anchor line so keep it separate
+        linesAfterConcatenation.append(line)
+
+    elif line.startswith("<figcaption>"):
+        # This is a figure caption line so keep it separate
         linesAfterConcatenation.append(line)
 
     elif startswithOneOf(line, ["<video ", "<audio "]):
@@ -5726,7 +5816,6 @@ for line in linesAfterConcatenation:
     metadataLinenumber += 1
 
 lastTableLine = -1
-tableCaptions = []
 
 # Pass 5: Main pass over the input file, now that footnote
 # references have been gathered
@@ -6291,7 +6380,9 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
                     code,
                     sequence,
                     tableCaptions,
+                    figureCaptions,
                 )
+
                 slideNumber, slide, sequence = createSlide(prs, slideNumber, slideInfo)
 
                 # Register the previous slide's href - if there was one
@@ -6327,9 +6418,10 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
             slideSubtitle = ""
             bullets = []
             tableRows = []
+            tableCaptions = []
+            figureCaptions = []
             cards = []
             code = []
-            tableCaptions = []
 
             if (notes_text != "") & (slide != None):
                 createSlideNotes(slide, notes_text)
@@ -6339,6 +6431,13 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
         # Check whether any heading reference is a duplicate
         if (href != "") & (href in slideHrefs.keys()):
             print(f"Heading Reference redefined: '{href}' for slide {slideNumber}")
+
+    elif match := figcaptionRegex.match(line.rstrip()):
+        # Extract the figure caption text
+        if inTable:
+            # Update latest graphic to have a figure caption
+            figcap = match.group(1)
+            figureCaptions.append(figcap)
 
     elif match := (bulletRegex.match(line)) or (numberRegex.match(line)):
         if match.re is bulletRegex:
@@ -6524,6 +6623,7 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
     ):
         tableCaption = line[1:-1]
         tableCaptions.append(tableCaption)
+
     else:
         # Not in a table
         inTable = False
@@ -6551,7 +6651,16 @@ if len(tableCaptions) < len(tableRows):
 ######################################################################################
 if (inBlock is True) | (inCode is True) | (inTable is True):
     slideInfo = SlideInfo(
-        slideTitle, slideSubtitle, blockType, bullets, tableRows, cards, code, sequence, tableCaptions
+        slideTitle,
+        slideSubtitle,
+        blockType,
+        bullets,
+        tableRows,
+        cards,
+        code,
+        sequence,
+        tableCaptions,
+        figureCaptions,
     )
     slideNumber, slide, sequence = createSlide(prs, slideNumber, slideInfo)
 
@@ -6772,7 +6881,7 @@ for href in globals.href_runs.keys():
 # There's a corresponding entry in picture_tooltips
 
 # fix up any clickable picture links
-for (picture, href, tooltip) in pictureInfos:
+for (picture, href, tooltip, figcap) in pictureInfos:
     # Pick up link target - if any
     if href == None:
         target = None
