@@ -9,7 +9,7 @@ Reads from stdin
 """
 
 md2pptx_level = "6.1.1+"
-md2pptx_date = "2 January, 2026"
+md2pptx_date = "21 January, 2026"
 
 import re
 import sys
@@ -3014,16 +3014,17 @@ def createTableBlock(slideInfo, slide, renderingRectangle, tableBlockNumber):
                     )
                 )
                 
-                topLeftFigCap = slide.shapes.add_textbox(topLeftPicX,
-                    renderingRectangle.bottom - topLeftFigCapHeight,
-                    topLeftPicWidth,
-                    topLeftFigCapHeight
-                )
-                topLeftFigCapTF = topLeftFigCap.text_frame
-                topLeftFigCapP = topLeftFigCapTF.paragraphs[0]
-                addFormattedText(topLeftFigCapP, f"*{figureCaptions[-1]}")
-                
-                topLeftFigCapP.font.size = Pt(16)
+                if len(figureCaptions) > 0:
+                    topLeftFigCap = slide.shapes.add_textbox(topLeftPicX,
+                        renderingRectangle.bottom - topLeftFigCapHeight,
+                        topLeftPicWidth,
+                        topLeftFigCapHeight
+                    )
+                    topLeftFigCapTF = topLeftFigCap.text_frame
+                    topLeftFigCapP = topLeftFigCapTF.paragraphs[0]
+                    addFormattedText(topLeftFigCapP, f"*{figureCaptions[-1]}")
+                    
+                    topLeftFigCapP.font.size = Pt(16)
 
         elif topLeftVideo is not None:
             if leftMediaMissing or topLeftMediaMissing:
