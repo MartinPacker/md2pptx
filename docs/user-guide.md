@@ -36,6 +36,7 @@ As you can see in the [change log](#change-log), md2pptx is frequently updated -
 		* [Video And Audio Slides](#video-and-audio-slides)
 			* [Video Slides](#video-slides)
 			* [Audio Slides](#audio-slides)
+			* [Figure captions](#figure-captions)
 	* [Table Slides](#table-slides)
 		* [Table Captions](#table-captions)
 		* [Special Case: Two Graphics Side By Side](#special-case-two-graphics-side-by-side)
@@ -481,7 +482,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
-|6.1.1+|26&nbsp;December&nbsp;2025|You can now have multiple lists - bulleted or numbered - on a slide.|
+|6.2|25&nbsp;January&nbsp;2026|You can now have multiple lists - bulleted or numbered - on a slide. Added [figure caption](#figure-captions) support.|
 |6.1.1|15&nbsp;December&nbsp;2025|Enhanced table caption support with [TableCaptionAtTop](#controlling-whether-table-captions-are-above-or-below-the-table-tablecaptionattop)&comma; [Specifying Table Captions' Heights](#controlling-a-table-captions-height-tablecaptionheight)&comma; [Specifying Table Captions' Alignment](#controlling-table-captions-alignment-tablecaptionalignment).|
 |6.1|28&nbsp;November&nbsp;2025|Added support for [inserting slides from other presentations](#inserting-slides-from-other-presentations) - using AppleScript. Added support for [ApplesScipt prologue and epilogue files](#prologue-epilogue-files). Incorporated a fix from @misaka4e21.|
 |6.0.3|26&nbsp;October&nbsp;2025|Added support for [table captions](#table-captions).|
@@ -746,7 +747,8 @@ You can embed three kinds of media in slides:
 
 These media items can be from your file system, or over the web.
 
-If a local file is found a simple "missing" file message is printed.
+If a local file is not found a simple "missing" file message is printed.
+Additionally, a placeholder rectangle is rendered on a slide.
 
 In the case of over the web, two kinds of errors can be detected and reported:
 
@@ -881,6 +883,16 @@ Optionally, you can code a `poster` attribute. This defines a static graphic to 
 1. Unlike with graphics specified according to [Graphics Slides](#graphics-slides), the poster graphic's dimensions are not used to scale the poster graphic or the audio file.
 1. md2pptx supports only the simplest form of the `<audio>` element.
 
+##### Figure captions
+
+If a slide contains a single graphic you can add a caption below it.
+Code a `<figcaption>` HTML element immediately below the graphic.
+For example:
+
+    ![](mygraphic.png)
+    <figcaption>This Is My Graphic</figcaption>
+
+The caption takes up space within the rendering area allotted to the graphic.
 ### Table Slides
 <a id="table-slides"></a>
 
@@ -3897,6 +3909,7 @@ Known deviations are:
 * [GraphViz .dot files](#graphviz) aren't rendered by most Markdown processors.
 * [Funnels](#funnels) aren't rendered by any other Markdown processor.
 * [run-python functionality](#running-inline-python) isn't supported by any other Markdown processor.
+* Figure and table captions allow embed styling in md2pptx. This isn't the case in other Markdown processors.
 
 ## Running Inline Python
 <a id="running-inline-python"></a>

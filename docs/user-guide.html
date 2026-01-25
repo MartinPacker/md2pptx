@@ -1117,6 +1117,7 @@ img {
 <li><a href="#video-and-audio-slides">Video And Audio Slides</a><ul>
 <li><a href="#video-slides">Video Slides</a></li>
 <li><a href="#audio-slides">Audio Slides</a></li>
+<li><a href="#figure-captions">Figure captions</a></li>
 </ul>
 </li>
 </ul>
@@ -1688,9 +1689,9 @@ THE SOFTWARE.
 </thead>
 <tbody>
 <tr>
-<td align="left">6.1.1+</td>
-<td align="right">26&nbsp;December&nbsp;2025</td>
-<td align="left">You can now have multiple lists - bulleted or numbered - on a slide.</td>
+<td align="left">6.2</td>
+<td align="right">25&nbsp;January&nbsp;2026</td>
+<td align="left">You can now have multiple lists - bulleted or numbered - on a slide. Added <a href="#figure-captions">figure caption</a> support.</td>
 </tr>
 <tr>
 <td align="left">6.1.1</td>
@@ -2409,7 +2410,8 @@ sectionTitleSize: 30
 <li><a href="#audio-slides">Audio files</a></li>
 </ul>
 <p>These media items can be from your file system, or over the web.</p>
-<p>If a local file is found a simple &ldquo;missing&rdquo; file message is printed.</p>
+<p>If a local file is not found a simple &ldquo;missing&rdquo; file message is printed.
+Additionally, a placeholder rectangle is rendered on a slide.</p>
 <p>In the case of over the web, two kinds of errors can be detected and reported:</p>
 <ul>
 <li>The domain is unreachable, reported as a socket error.</li>
@@ -2515,6 +2517,14 @@ sectionTitleSize: 30
 <li>Unlike with graphics specified according to <a href="#graphics-slides">Graphics Slides</a>, the poster graphic&rsquo;s dimensions are not used to scale the poster graphic or the audio file.</li>
 <li>md2pptx supports only the simplest form of the <code>&lt;audio&gt;</code> element.</li>
 </ol>
+<h5 id="figure-captions">Figure captions<a class="headerlink" href="#figure-captions" title="Permanent link"></a></h5>
+<p>If a slide contains a single graphic you can add a caption below it.
+Code a <code>&lt;figcaption&gt;</code> HTML element immediately below the graphic.
+For example:</p>
+<pre><code>![](mygraphic.png)
+&lt;figcaption&gt;This Is My Graphic&lt;/figcaption&gt;
+</code></pre>
+<p>The caption takes up space within the rendering area allotted to the graphic.</p>
 <h3 id="table-slides">Table Slides<a class="headerlink" href="#table-slides" title="Permanent link"></a></h3>
 <p><a id="table-slides"></a></p>
 <p>You can create a table slide using Markdown&rsquo;s table format.</p>
@@ -4955,6 +4965,7 @@ For example</p>
 <li><a href="#graphviz">GraphViz .dot files</a> aren&rsquo;t rendered by most Markdown processors.</li>
 <li><a href="#funnels">Funnels</a> aren&rsquo;t rendered by any other Markdown processor.</li>
 <li><a href="#running-inline-python">run-python functionality</a> isn&rsquo;t supported by any other Markdown processor.</li>
+<li>Figure and table captions allow embed styling in md2pptx. This isn&rsquo;t the case in other Markdown processors.</li>
 </ul>
 <h2 id="running-inline-python">Running Inline Python<a class="headerlink" href="#running-inline-python" title="Permanent link"></a></h2>
 <p><a id="running-inline-python"></a></p>
