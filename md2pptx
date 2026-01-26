@@ -8,8 +8,8 @@ First argument is file to write to
 Reads from stdin
 """
 
-md2pptx_level = "6.2"
-md2pptx_date = "25 January, 2026"
+md2pptx_level = "6.2.1"
+md2pptx_date = "26 January, 2026"
 
 import re
 import sys
@@ -2031,7 +2031,10 @@ def createListBlock(slideInfo, slide, renderingRectangle, listBlockNumber):
     bulletsShape.left = renderingRectangle.left
     bulletsShape.width = renderingRectangle.width
 
-    bulletCount = len(slideInfo.bullets[listBlockNumber])
+    if len(slideInfo.bullets) == 0:
+        bulletCount = 0
+    else:
+        bulletCount = len(slideInfo.bullets[listBlockNumber])
 
     # Set bulleted text height - depending on whether there's a card
     # Remainder is card area height - if there are cards
@@ -2345,7 +2348,8 @@ def createListBlock(slideInfo, slide, renderingRectangle, listBlockNumber):
     bulletsShape.bottom = bulletsShape.top + bulletsShape.height
 
     # Fill in the main bullets shape
-    renderText(bulletsShape, slideInfo.bullets[listBlockNumber])
+    if len(slideInfo.bullets) > 0:
+        renderText(bulletsShape, slideInfo.bullets[listBlockNumber])
 
     # Second go on each card
     for c, card in enumerate(slideInfo.cards):
