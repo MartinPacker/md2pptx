@@ -2,4 +2,6 @@
 
 from .md2pptx import main
 
-__version__ = "6.2.1"
+from importlib.metadata import version
+
+__version__ = version("md2pptx")

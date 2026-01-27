@@ -8,7 +8,9 @@ First argument is file to write to
 Reads from stdin
 """
 
-md2pptx_level = "6.2.1"
+from importlib.metadata import version
+
+md2pptx_level = version("md2pptx")
 md2pptx_date = "26 January, 2026"
 
 import re
