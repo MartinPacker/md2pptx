@@ -44,4 +44,4 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/md2pptx"]
-include = ["src/md2pptx/*.pptx"]
+include = ["src/md2pptx/*.pptx", "src/md2pptx/media/*"]
