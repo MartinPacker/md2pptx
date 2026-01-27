@@ -13,16 +13,16 @@ from pptx.enum.chart import XL_CHART_TYPE
 from pptx.enum.chart import XL_LEGEND_POSITION
 from pptx.enum.text import PP_ALIGN
 from pptx.dml.color import RGBColor
-from colour import setColour, parseColour
+from .colour import setColour, parseColour
 from pptx.enum.shapes import MSO_SHAPE_TYPE
 from pptx.enum.shapes import PP_PLACEHOLDER
-from paragraph import *
+from .paragraph import *
 from pptx.util import Inches, Pt
 from pptx.enum.shapes import MSO_CONNECTOR, MSO_SHAPE
 
-from media import *
+from .media import *
 
-import globals
+from . import globals
 
 class RunPython:
     def __init__(

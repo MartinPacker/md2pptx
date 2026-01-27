@@ -1,0 +1,42 @@
+[project]
+name = "md2pptx"
+version = "6.2.1"
+description = "Markdown to Powerpoint Converter"
+readme = "README.md"
+authors = [
+    { name = "Martin Packman", email = "martin_packer@uk.ibm.com" }
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+requires-python = ">=3.8"
+dependencies = [
+    "python-pptx",
+    "lxml"
+]
+
+[project.optional-dependencies]
+extra = [
+    "cairosvg",
+    "Pillow",
+    "graphviz"
+]
+
+[project.scripts]
+md2pptx = "md2pptx.md2pptx:main"
+
+[project.urls]
+"Homepage" = "https://github.com/md2pptx/md2pptx"
+"Repository" = "https://github.com/md2pptx/md2pptx"
+"Issues" = "https://github.com/md2pptx/md2pptx/issues"
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"

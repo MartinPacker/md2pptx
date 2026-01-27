@@ -42,15 +42,15 @@ import shutil
 import socket
 from pptx.oxml import parse_xml
 import uuid
-import funnel
-import runPython
-from card import Card
-from rectangle import Rectangle
-from colour import *
-from paragraph import *
-from symbols import resolveSymbols
-import globals
-from processingOptions import *
+from . import funnel
+from . import runPython
+from .card import Card
+from .rectangle import Rectangle
+from .colour import *
+from .paragraph import *
+from .symbols import resolveSymbols
+from . import globals
+from .processingOptions import *
 
 
 from lxml import etree
@@ -4663,27 +4663,28 @@ print("\nInternal Dependencies:")
 print(f"\n  funnel: {funnel.version}")
 print(f"  runPython: {runPython.version}")
 
-input_file = []
+def main():
+    input_file = []
 
-if len(sys.argv) > 2:
-    # Have input file as well as output file
-    input_filename = sys.argv[1]
-    output_filename = sys.argv[2]
+    if len(sys.argv) > 2:
+        # Have input file as well as output file
+        input_filename = sys.argv[1]
+        output_filename = sys.argv[2]
 
-    if Path(input_filename).exists():
-        input_path = Path(input_filename)
+        if Path(input_filename).exists():
+            input_path = Path(input_filename)
 
-        with input_path.open(mode='r', encoding='utf-8') as file:
-            input_file = file.readlines()
+            with input_path.open(mode='r', encoding='utf-8') as file:
+                input_file = file.readlines()
+        else:
+            print("Input file specified but does not exist. Terminating.")
+    elif len(sys.argv) == 1:
+        print("No parameters. Terminating")
+        sys.exit()
     else:
-        print("Input file specified but does not exist. Terminating.")
-elif len(sys.argv) == 1:
-    print("No parameters. Terminating")
-    sys.exit()
-else:
-    output_filename = sys.argv[1]
+        output_filename = sys.argv[1]
 
-    input_file = sys.stdin.readlines()
+        input_file = sys.stdin.readlines()
 
 if len(input_file) == 0:
     print("Empty input file. Terminating")

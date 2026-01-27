@@ -10,10 +10,10 @@ import re
 from pptx.dml.color import RGBColor, MSO_THEME_COLOR
 from pptx.util import Pt
 
-import globals
-from processingOptions import *
-from symbols import resolveSymbols
-from colour import *
+from . import globals
+from .processingOptions import *
+from .symbols import resolveSymbols
+from .colour import *
 
 # Following functions are workarounds for python-pptx not having these functions for the font object
 def setSubscript(font):
