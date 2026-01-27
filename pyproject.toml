@@ -31,7 +31,7 @@ extra = [
 ]
 
 [project.scripts]
-md2pptx = "md2pptx.md2pptx:main"
+md2pptx = "md2pptx:main"
 
 [project.urls]
 "Homepage" = "https://github.com/md2pptx/md2pptx"
