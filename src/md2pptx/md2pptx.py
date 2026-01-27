@@ -5216,7 +5216,9 @@ for line in metadata_lines:
 
     elif (name == "template") | (name == "master"):
         if value == "Martin Master.pptx":
-            slideTemplateFile = "Martin Template.pptx"
+            slideTemplateFile = "templates/Martin Template.pptx"
+        elif value == "Martin Template.pptx":
+            slideTemplateFile = "templates/Martin Template.pptx"
         else:
             slideTemplateFile = value
         globals.processingOptions.setOptionValues("slideTemplateFile", slideTemplateFile)
