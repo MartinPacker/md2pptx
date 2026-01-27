@@ -4663,28 +4663,27 @@ print("\nInternal Dependencies:")
 print(f"\n  funnel: {funnel.version}")
 print(f"  runPython: {runPython.version}")
 
-def main():
-    input_file = []
+input_file = []
 
-    if len(sys.argv) > 2:
-        # Have input file as well as output file
-        input_filename = sys.argv[1]
-        output_filename = sys.argv[2]
+if len(sys.argv) > 2:
+    # Have input file as well as output file
+    input_filename = sys.argv[1]
+    output_filename = sys.argv[2]
 
-        if Path(input_filename).exists():
-            input_path = Path(input_filename)
+    if Path(input_filename).exists():
+        input_path = Path(input_filename)
 
-            with input_path.open(mode='r', encoding='utf-8') as file:
-                input_file = file.readlines()
-        else:
-            print("Input file specified but does not exist. Terminating.")
-    elif len(sys.argv) == 1:
-        print("No parameters. Terminating")
-        sys.exit()
+        with input_path.open(mode='r', encoding='utf-8') as file:
+            input_file = file.readlines()
     else:
-        output_filename = sys.argv[1]
+        print("Input file specified but does not exist. Terminating.")
+elif len(sys.argv) == 1:
+    print("No parameters. Terminating")
+    sys.exit()
+else:
+    output_filename = sys.argv[1]
 
-        input_file = sys.stdin.readlines()
+    input_file = sys.stdin.readlines()
 
 if len(input_file) == 0:
     print("Empty input file. Terminating")
