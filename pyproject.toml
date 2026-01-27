@@ -18,7 +18,7 @@ classifiers = [
 ]
 requires-python = ">=3.8"
 dependencies = [
-    "python-pptx",
+    "python-pptx~=1.0.2",
     "lxml"
 ]
 

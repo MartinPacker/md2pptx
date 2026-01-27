@@ -12,8 +12,8 @@ setup(
     package_dir={"": "src"},
     include_package_data=True,
     install_requires=[
-        "python-pptx>=0.6.21",
-        "lxml>=4.9.0",
+        "python-pptx~=1.0.2",
+        "lxml",
     ],
     extras_require={
         "full": [
