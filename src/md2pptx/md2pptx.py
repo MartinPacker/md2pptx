@@ -8,7 +8,9 @@ First argument is file to write to
 Reads from stdin
 """
 
-md2pptx_level = "6.2.1"
+from importlib.metadata import version
+
+md2pptx_level = version("md2pptx")
 md2pptx_date = "26 January, 2026"
 
 import re
@@ -42,15 +44,15 @@ import shutil
 import socket
 from pptx.oxml import parse_xml
 import uuid
-import funnel
-import runPython
-from card import Card
-from rectangle import Rectangle
-from colour import *
-from paragraph import *
-from symbols import resolveSymbols
-import globals
-from processingOptions import *
+from . import funnel
+from . import runPython
+from .card import Card
+from .rectangle import Rectangle
+from .colour import *
+from .paragraph import *
+from .symbols import resolveSymbols
+from . import globals
+from .processingOptions import *
 
 
 from lxml import etree
@@ -5214,7 +5216,9 @@ for line in metadata_lines:
 
     elif (name == "template") | (name == "master"):
         if value == "Martin Master.pptx":
-            slideTemplateFile = "Martin Template.pptx"
+            slideTemplateFile = "templates/Martin Template.pptx"
+        elif value == "Martin Template.pptx":
+            slideTemplateFile = "templates/Martin Template.pptx"
         else:
             slideTemplateFile = value
         globals.processingOptions.setOptionValues("slideTemplateFile", slideTemplateFile)

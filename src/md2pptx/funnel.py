@@ -7,12 +7,12 @@ version = "0.1"
 
 import csv
 import io
-from rectangle import Rectangle
+from .rectangle import Rectangle
 from pptx.util import Inches, Pt
 from pptx.enum.text import PP_ALIGN
 from pptx.dml.color import RGBColor, MSO_THEME_COLOR
-from colour import setColour
-from symbols import resolveSymbols
+from .colour import setColour
+from .symbols import resolveSymbols
 
 
 def massageFunnelText(text):
