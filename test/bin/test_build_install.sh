@@ -3,6 +3,9 @@
 # Test script for md2pptx project
 # Uses uv tool to build, install, and test the project
 
+# Navigate to project root directory
+cd "$(dirname "$(dirname "$(dirname "$0")")")"
+
 echo "=== Testing md2pptx project ==="
 echo ""
 

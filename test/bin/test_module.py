@@ -11,7 +11,7 @@ import tempfile
 from io import StringIO
 
 # Add the src directory to the path so we can import the module
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'src'))
 
 try:
     from md2pptx import main
