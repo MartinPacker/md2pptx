@@ -17,6 +17,7 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 requires-python = ">=3.8"
+license = "MIT"
 dependencies = [
     "python-pptx~=1.0.2",
     "lxml"
