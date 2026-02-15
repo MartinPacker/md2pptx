@@ -2,12 +2,12 @@
 runPython
 """
 
-version = "0.11"
+version = "0.12"
 
 import csv
 from pptx.chart.data import CategoryChartData
 from pptx.oxml.xmlchemy import OxmlElement, serialize_for_reading
-from pptx.oxml import parse_xml
+from pptx.oxml import parse_xml, parse_from_template
 from pptx.dml.color import RGBColor
 from pptx.enum.chart import XL_CHART_TYPE
 from pptx.enum.chart import XL_LEGEND_POSITION
@@ -567,3 +567,11 @@ class RunPython:
         annotations = RunPython.readCSV(filename)
         
         RunPython.doAnnotations(slide, annotations, lineWidth, shapeWidth)
+
+    def attachXMLstring(element, XMLstring, location = 0):
+        parsedXML = parse_xml(XMLstring)
+        element.insert(location, parsedXML)
+
+    def attachXMLfile(element, XMLfile, location = 0):
+        parsedXML = parse_from_template(XMLfile)
+        element.insert(location, parsedXML)
