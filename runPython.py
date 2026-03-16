@@ -569,9 +569,46 @@ class RunPython:
         RunPython.doAnnotations(slide, annotations, lineWidth, shapeWidth)
 
     def attachXMLstring(element, XMLstring, location = 0):
-        parsedXML = parse_xml(XMLstring)
-        element.insert(location, parsedXML)
+        try:
+            parsedXML = parse_xml(XMLstring)
+
+            element.insert(location, parsedXML)
+            
+            return parsedXML
+
+        except etree.XMLSyntaxError as e:
+            return e
 
     def attachXMLfile(element, XMLfile, location = 0):
-        parsedXML = parse_from_template(XMLfile)
-        element.insert(location, parsedXML)
+        try:
+            adjustedFilename = os.path.abspath(os.path.expanduser(XMLfile))
+            with open(adjustedFilename) as f:
+                XMLstring = f.read()
+            
+            return RunPython.attachXMLstring(element, XMLstring, location = 0)
+
+        except IOError as ioe:
+            return None
+
+    def attachXMLParagraphFromString(myShape, XMLtext, location = 0):
+        tf = myShape.text_frame
+        p = tf.add_paragraph()
+
+        return RunPython.attachXMLstring(p._element, XMLtext, location)
+
+
+    def attachXMLParagraphFromFile(myShape, filename, location = 0):
+        tf = myShape.text_frame
+        p = tf.add_paragraph()
+
+        return RunPython.attachXMLfile(p._element, filename, location)
+
+
+    def formatXMLasString(element, pretty = True):
+        return etree.tostring(element, pretty_print = pretty)
+
+    def formatXMLasFile(element, filename, pretty = True):
+        adjustedFilename = os.path.abspath(os.path.expanduser(XMLfile))
+
+        etree.ElementTree(element).write(adjustedFilename, pretty_print = pretty)
+        
