@@ -41,8 +41,11 @@ class RunPython:
 
     # Helper function for run-python
     def readCSV(filename):
+        # Fix up filename
+        adjustedFilename = os.path.abspath(os.path.expanduser(filename))
+
         my_csv = []
-        with open(filename, 'r') as csvfile:
+        with open(adjustedFilename, 'r') as csvfile:
             chart_reader = csv.reader(csvfile, quoting = csv.QUOTE_NONNUMERIC)
             for row in chart_reader:
                 my_csv.append(row)
@@ -594,7 +597,9 @@ class RunPython:
         tf = myShape.text_frame
         p = tf.add_paragraph()
 
-        return RunPython.attachXMLstring(p._element, XMLtext, location)
+        x = RunPython.attachXMLstring(p._element, XMLtext, location)
+        
+        return x
 
 
     def attachXMLParagraphFromFile(myShape, filename, location = 0):
