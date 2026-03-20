@@ -482,6 +482,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|6.2.1+|20&nbsp;March&nbsp;2026|XML Injection prototype|
 |6.2.1|26&nbsp;January&nbsp;2026|Fixed crasher introduced in v6.2 for cards.|
 |6.2|25&nbsp;January&nbsp;2026|You can now have multiple lists - bulleted or numbered - on a slide. Added [figure caption](#figure-captions) support.|
 |6.1.1|15&nbsp;December&nbsp;2025|Enhanced table caption support with [TableCaptionAtTop](#controlling-whether-table-captions-are-above-or-below-the-table-tablecaptionattop)&comma; [Specifying Table Captions' Heights](#controlling-a-table-captions-height-tablecaptionheight)&comma; [Specifying Table Captions' Alignment](#controlling-table-captions-alignment-tablecaptionalignment).|

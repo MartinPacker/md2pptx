@@ -1,6 +1,6 @@
 
-mdpre Markdown Preprocessor v1.1.3 (28 September, 2025)
-=======================================================
+mdpre Markdown Preprocessor v1.1.5 (12 March, 2026)
+===================================================
 
 - opened <stdout> for writing
 Def makefile = file-3
@@ -11,39 +11,39 @@ Def output = stdout
 
 Def input = stdin
 
-Def node = Mac-Studio-Max.local
+Def node = PiDPlus
 
-Def version = Darwin Kernel Version 25.3.0: Sun Jan  4 19:17:33 PST 2026; root:xnu-12377.80.267~81/RELEASE_ARM64_T6000
+Def version = #1 SMP PREEMPT Debian 1:6.12.75-1+rpt1 (2026-03-11)
 
-Def architecture = 64bit
+Def architecture = 64bit ELF
 
-Def machine = arm64
+Def machine = aarch64
 
-Def system = Darwin
+Def system = Linux
 
-Def release = 25.3.0
+Def release = 6.12.75+rpt-rpi-2712
 
-Def python_version = 3.12.3
+Def python_version = 3.13.5
 
 Def python_implementation = CPython
 
-Def processor = arm
+Def processor
 
-Def mdpre_date = 28 September, 2025
+Def mdpre_date = 12 March, 2026
 
-Def mdpre_level = 1.1.3
+Def mdpre_level = 1.1.5
 
 Def userid = martinpacker
 
-Def day = 26
+Def day = 20
 
-Def month = January
+Def month = March
 
 Def year = 2026
 
-Def time = 17&colon;10
+Def time = 09&colon;58
 
-Def date = 26 January&comma; 2026
+Def date = 20 March&comma; 2026
 
 Def TOC = Table Of Contents
 
@@ -750,7 +750,7 @@ CSV Stop
 
 .....  Building This User Guide
 
--------------------------------------------------------
+---------------------------------------------------
 - Processing completed.
--------------------------------------------------------
+---------------------------------------------------
 
