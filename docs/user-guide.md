@@ -324,6 +324,7 @@ As you can see in the [change log](#change-log), md2pptx is frequently updated -
 			* [RunPython.annotationsFromCSV](#runpythonannotationsfromcsv)
 				* [Input](#input)
 				* [Output](#output)
+		* [XML-Related Helper routines](#xmlrelated-helper-routines)
 	* [Inline Python Examples](#inline-python-examples)
 		* [Graphing Example](#graphing-example)
 		* [Table Manipulation Example](#table-manipulation-example)
@@ -482,8 +483,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
-|6.2.1+|20&nbsp;March&nbsp;2026|XML Injection prototype|
-|6.2.1|26&nbsp;January&nbsp;2026|Fixed crasher introduced in v6.2 for cards.|
+|6.2.1+|22&nbsp;March&nbsp;2026|Introduced [XML-Related Helper routines](#xml-related-helper-routines).|
 |6.2|25&nbsp;January&nbsp;2026|You can now have multiple lists - bulleted or numbered - on a slide. Added [figure caption](#figure-captions) support.|
 |6.1.1|15&nbsp;December&nbsp;2025|Enhanced table caption support with [TableCaptionAtTop](#controlling-whether-table-captions-are-above-or-below-the-table-tablecaptionattop)&comma; [Specifying Table Captions' Heights](#controlling-a-table-captions-height-tablecaptionheight)&comma; [Specifying Table Captions' Alignment](#controlling-table-captions-alignment-tablecaptionalignment).|
 |6.1|28&nbsp;November&nbsp;2025|Added support for [inserting slides from other presentations](#inserting-slides-from-other-presentations) - using AppleScript. Added support for [ApplesScipt prologue and epilogue files](#prologue-epilogue-files). Incorporated a fix from @misaka4e21.|
@@ -4557,6 +4557,13 @@ Each line describes a single annotation.
 
 This function uses [`RunPython.readCSV`](#runpythonreadcsv) to read in a CSV file.
 It calls [`RunPython.doAnnotations`](#runpythondoannotations) to perform the annotations.
+
+<a id="xmlrelated-helper-routines"></a>
+<a id="xml-related-helper-routines"></a>
+#### XML-Related Helper routines
+
+md2pptx makes it easier to experiment with injecting XML into presentation .pptx files.
+In some cases this might be the only way to create the presentation you want, so this might be an Production tool as much as an environment to experiment with. 
 
 <a id="inline-python-examples"></a>
 ### Inline Python Examples
