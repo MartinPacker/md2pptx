@@ -4854,6 +4854,7 @@ You can see the first four cells are dimensions and the fifth an "annotation cod
 * The seventh is a rectangle with text in it. Its foreground colour is defaulted and its background is set to a theme colour.
 * The eighth is a rectangle with rounded corners, with text in it. Both the foreground and background are set to RGB colours.
 
+
 <a id="postprocessing-the-presentation-with-scripting"></a>
 ## Post-Processing The Presentation With Scripting
 

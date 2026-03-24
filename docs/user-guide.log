@@ -11,23 +11,23 @@ Def output = stdout
 
 Def input = stdin
 
-Def node = PiDPlus
+Def node = Mac.domain_not_set.invalid
 
-Def version = #1 SMP PREEMPT Debian 1:6.12.75-1+rpt1 (2026-03-11)
+Def version = Darwin Kernel Version 25.4.0: Thu Mar  5 22:45:07 PST 2026; root:xnu-12377.101.14~19/RELEASE_ARM64_T6000
 
-Def architecture = 64bit ELF
+Def architecture = 64bit
 
-Def machine = aarch64
+Def machine = arm64
 
-Def system = Linux
+Def system = Darwin
 
-Def release = 6.12.75+rpt-rpi-2712
+Def release = 25.4.0
 
-Def python_version = 3.13.5
+Def python_version = 3.12.3
 
 Def python_implementation = CPython
 
-Def processor
+Def processor = arm
 
 Def mdpre_date = 12 March, 2026
 
@@ -35,15 +35,15 @@ Def mdpre_level = 1.1.5
 
 Def userid = martinpacker
 
-Def day = 22
+Def day = 24
 
 Def month = March
 
 Def year = 2026
 
-Def time = 20&colon;13
+Def time = 17&colon;20
 
-Def date = 22 March&comma; 2026
+Def date = 24 March&comma; 2026
 
 Def TOC = Table Of Contents
 
@@ -554,6 +554,8 @@ CSV Stop
 
 .....  Deviations From Standard Markdown
 
+------> Start of RunPython.mdp (@2)
+
 .....  Running Inline Python
 
 ..... .....  An Important Caution
@@ -723,6 +725,8 @@ CSV Stop
 ..... ..... .....  Slide With Some Bullets Removed Example
 
 ..... ..... .....  Annotations Example
+
+------> End of RunPython.mdp (@2)
 
 .....  Post-Processing The Presentation With Scripting
 
