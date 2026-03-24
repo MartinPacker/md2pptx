@@ -1,0 +1,23 @@
+#### Drawing-Related Helper Routines
+
+<a id="runpythonmakedrawnshape"></a>
+##### RunPython.makeDrawnShape
+
+This function draws a shape from a set of vertices, optionally filling it and adding text.
+
+###### Input
+
+* The `slide` to add the shape to. Generally this is the `slide` object provided by md2pptx when your python code gets control.
+* An array of points. Each point is of the form:
+    * x coordinate - in EMU units
+    * y coordinate - in EMU units
+* Whether the shape is to be filled. Defaults to `False`.
+* Text to add to the shape. Defaults to `None`.
+* The text colour. Defaults to `None` - which leads to black text. See [Specifying Colours](#specifying-colours).
+* The fill colour. Defaults to `None` - which, in the case of the shape being filled, leads to the presentation's default colour. See [Specifying Colours](#specifying-colours).
+* Whether the shape is to be filled. Defaults to `True`.
+
+###### Output
+
+* The created shape
+

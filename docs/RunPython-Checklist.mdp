@@ -1,0 +1,171 @@
+<a id="checklistrelated-helper-routines"></a>
+<a id="checklist-related-helper-routines"></a>
+#### Checklist-Related Helper routines
+
+There are a number of functions that can help you make checklists, including pulling in a CSV file with status in.
+These checklists can have ticked, crossed, question mark, partially filled, or empty boxes - depending on the input data.
+
+<a id="runpythonmaketruthy"></a>
+##### RunPython.makeTruthy
+
+This function massages the output from [`RunPython.readCSV`](#runpythonreadcsv) to prepare it for input to [RunPython.makeChecklist](#runpythonmakechecklist).
+
+By default it operates on the second column and
+
+* sets cells with text value `"yes"` to `"Yes"``.
+* sets cells with text value `"no"` to `"No"`.
+* sets cells with text value `""` to `"Unset"`.
+* sets cells with text value `"maybe"` to `"Maybe"`
+* sets cells with text value `"partial"` to `"Partial"`
+
+These tests are case insensitive.
+
+The column number and text string values can be changed from the defaults:
+
+* If you pass in a single string the match is against that string.
+* If you pass in an array of strings the match is against any one of those strings.
+
+[`RunPython.checklistFromCSV`](#runpythonchecklistfromcsv) changes these values substantially from the defaults.
+
+###### Input
+
+* Data in the form created by [RunPython.readCSV](#runpythonreadcsv).
+* Column number to massage, zero-indexed. Defaults to "1".
+* String (or array of strings) to be set to `"Yes"`. Defaults to `"Yes"`.
+* String (or array of strings) to be set to `"No"`. Defaults to `"No"`.
+* String (or array of strings) to be set to `"Unset"`. Defaults to `""`.
+* String (or array of strings) to be set to `"Maybe"`. Defaults to `"maybe"`.
+* String (or array of strings) to be set to `"Partial"`. Defaults to `"partial"`.
+
+###### Output
+
+* Data in the form created by [RunPython.readCSV](#runpythonreadcsv).
+
+The idea behind this function is to allow people to create CSV files with string values for state.
+Once massaged the resulting array of arrays can be fed into [`RunPython.makeChecklist`](#runpythonmakechecklist).
+
+<a id="runpythonchecklistfromcsv"></a>
+##### RunPython.checklistFromCSV
+
+This function creates a checklist in a textbox from a CSV file.
+The checklist items can be indented and can, optionally, be coloured to reflect their state.
+
+###### Input
+
+* The `slide` to create the checklist on. Generally this is the `slide` object provided by md2pptx when your python code gets control.
+* The rectangle to render any new textbox in. Most likely this is the `renderingRectangle` object provided by md2pptx when your python code gets control.
+* The name of the CSV file containing the list of items and their statuses.
+* The index of the shape to try to use as a textbox. This is optional.
+* Whether to colour the checklist items according to their state. This is optional and can be enabled by coding `colourChecks=True` as a parameter. The default is not to colour the checklist items.
+
+###### Output
+
+* The textbox shape containing the rendered checklist.
+
+
+`RunPython.checklistFromCSV` overrides the default status strings when calling [RunPython.makeTruthy](#runpythonmaketruthy):
+
+* `"Yes"` can be coded as `"yes"`, `"x"`, or `"y"`.
+* `"No"` can be coded as `"no"`, or `"n"`.
+* `"Unset"` can be coded as `""`, or `" "`.
+* `"Maybe"` can be coded as `"maybe"`, `"m"`, or `"?"`.
+* `"Partial"` can be coded as `"partial"`, or `"p"`.
+
+In the above case is not important.
+
+This function uses the following lower level routines
+
+* [`RunPython.readCSV`](#runpythonreadcsv) to read in a CSV file.
+* [`RunPython.makeTruthy`](#runpythonmaketruthy) to massage the contents of the CSV file.
+* [`RunPython.ensureTextbox`](#runpythonensuretextbox) to find a textbox. The shape index you optionally pass in is passed on to `RunPython.ensureTextbox`.
+* [`RunPython.makeChecklist`](#runpythonmakechecklist) to create the checklist content.
+* [`RunPython.doChecklistChecks`](#runpythondochecklistchecks) - called by [`RunPython.makeChecklist`](#runpythonmakechecklist).
+
+See [Slide WIth A Checklist Examples](#slide-with-a-checklist-examples) for examples with the format of the CSV file.
+
+<a id="runpythonmakechecklist"></a>
+##### RunPython.makeChecklist
+
+This function creates a checklist in a textbox from an array.
+The checklist items can be indented and can, optionally, be coloured to reflect their state.
+
+###### Input
+
+* The textbox shape to build the checklist in.
+* The checklist.
+* The index for the text of each item within each row. Defaults to `0`.
+* The index for the checked status of each item within each row. Defaults to `1`.
+* The index for the indentation level of each item within each row. Defaults to `2`.
+* Whether to colour the checklist items according to their state. This is optional and can be enabled by coding `colourChecks=True` as a parameter. The default is not to colour the checklist items.
+
+###### Output
+
+* The textbox shape containing the rendered checklist.
+
+This function is called by [`RunPython.checklistFromCSV`](#runpythonchecklistfromcsv).
+In turn it calls [`RunPython.doChecklistChecks`](#runpythondochecklistchecks) to do the actually placement of checkmarks.
+
+Here is an example of a checklist array:
+
+
+```
+[
+  ['Retrieved data', "Yes", 1],
+  ['Built databases', "No", 1],
+  ['Analysis', "Unset", 1],
+  ['Architectural Introduction', "Unset", 2],
+  ['CPU', "Unset", 2],
+  ['Memory and I/O', "Unset", 2],
+  ['WLM', "Unset", 2],
+  ['Parallel Sysplex', "Unset", 2],
+  ['DDF', "Unset", 2],
+  ['Batch', "Unset", 2],
+  ['Workshop', "Unset", 1],
+  ['Executive Summary', "Unset", 1]
+]
+```
+
+In this example the checklist items are plain text.
+They can be more complex than that, perhaps with some words bolded or wrapped in a `<span>` element.
+To do this simply ensure the first element of each item has the appropriate markup.
+For example:
+```
+[
+  ['Retrieved data', "Yes", 1],
+  ['Built databases', "No", 1],
+  ['Analysis', "Unset", 1],
+  ['Architectural Introduction', "Unset", 2],
+  ['CPU', "Unset", 2],
+  ['Memory and I/O', "Unset", 2],
+  ['WLM', "Unset", 2],
+  ['Parallel Sysplex', "Unset", 2],
+  ['<span class="optional">DDF</span>', "Unset", 2],
+  ['Batch', "Unset", 2],
+  ['Workshop', "Unset", 1],
+  ['<span class="Important">Executive Summary</span>', "Unset", 1]
+]
+```
+
+<a id="runpythondochecklistchecks"></a>
+##### RunPython.doChecklistChecks
+
+This function adds check marks to the checklist items and, optionally, colours them to reflect their state.
+
+###### Input
+
+* The textbox shape to set the checkmarks for.
+* A list - one per paragraph - of checkmark indicators.
+* Whether to colour the checklist items according to their state. This is optional and can be enabled by coding `colourChecks=True` as a parameter. The default is not to colour the checklist items.
+
+###### Output
+
+* The textbox shape containing the rendered checklist.
+
+The checkmark indicators are:
+
+* `"Yes"` - leave the paragraph unchecked.
+* `"No"` - give the paragraph a tick.
+* `"Unset"` - give the paragraph a cross.
+* `"Maybe"` - give the paragraph a question mark.
+* `"Partial"` - give the paragraph a partially filled box.
+

@@ -1,0 +1,98 @@
+#### General Helper Routines
+
+These general helper routines are meant equally to help with graphing and table manipulation.
+They can be combined. So, for example you could combine [runPython.readCSV](#runpythonreadcsv), [runPython.filterRows](#runpythonfilterrows),  and [runPython.transposeArray](#runpythontransposearray):
+
+    chart_csv = RunPython.transposeArray(RunPython.filterRows(RunPython.readCSV("chartdata.csv"), myFilter))
+
+<a id="runpythonreadcsv"></a>
+##### RunPython.readCSV
+
+This function reads a CSV file into variables.
+
+###### Input
+
+* file name.
+
+###### Output
+
+* A list of rows, each row containing a list of cell values (e.g. `[["A","B"],[1,2],[3,4]]`)
+
+The flavour of CSV reader is:
+
+    chart_reader = csv.reader(csvfile, quoting = csv.QUOTE_NONNUMERIC)
+
+
+<a id="runpythonfilterrows"></a>
+##### RunPython.filterRows
+
+This function filters your array of data using a function you supply, returning another array.
+
+###### Input
+
+* Data in the form created by [RunPython.readCSV](#runpythonreadcsv).
+* A function you supply, returning `True` for "keep the row, otherwise `False`. The function should expect two parameters:
+    * The row number, zero-indexed
+    * The row as a Python list
+
+###### Output
+
+* Data in the form created by [RunPython.readCSV](#runpythonreadcsv).
+
+<a id="runpythontransposearray"></a>
+##### RunPython.transposeArray
+
+This function transposes your array of data, returning another array.
+
+###### Input
+
+* Data in the form created by [RunPython.readCSV](#runpythonreadcsv).
+
+###### Output
+
+* Data in the form created by [RunPython.readCSV](#runpythonreadcsv).
+
+<a id="runpythonensuretextbox"></a>
+##### RunPython.ensureTextbox
+
+This function ensures your program has a textbox to insert content into.
+
+###### Input
+
+* The `slide` to add any needed textbox to. Generally this is the `slide` object provided by md2pptx when your python code gets control.
+* The rectangle to render any new textbox in. Most likely this is the `renderingRectangle` object provided by md2pptx when your python code gets control.
+* The index of the shape to try to use as a textbox. This is optional.
+
+###### Output
+
+* The textbox shape that is found or created.
+
+There are two use cases:
+
+1. If a shape index is passed in this routine will check if it is a textbox. If so it will be returned. If not, or if the index is invalid, a new textbox will be returned.
+
+1. If no shape index is passed in this routine will search for the last textbox shape on the slide. If it is at index `0` that is presumed to be a slide title and a new textbox is created. If no textbox is found a new one is created.
+
+This function is used in [`RunPython.checklistFromCSV`](#runpythonchecklistfromcsv).
+
+<a id="runpythonrunfromfile"></a>
+##### RunPython.runFromFile
+
+You can run python from a file, but you need to pass in a few parameters. For example:
+
+    runFromFile(self, "test.py", prs, slide, renderingRectangle):
+
+Unless you wanted to alter the rendering rectangle dimensions, you should probably use the above, substituting your code's file name for `test.py`.
+
+###### Input
+
+* `self` - the RunPython instance.
+* The file to execute Python code from.
+* The `Presentation` the code is to operate on.  Generally this is the `prs` object provided by md2pptx when your python code gets control.
+* The `slide` to add any needed textbox to. Generally this is the `slide` object provided by md2pptx when your python code gets control.
+* The rectangle to render any new textbox in. Most likely this is the `renderingRectangle` object provided by md2pptx when your python code gets control.
+
+###### Output
+
+* Nothing is returned.
+

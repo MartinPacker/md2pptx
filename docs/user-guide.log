@@ -41,7 +41,7 @@ Def month = March
 
 Def year = 2026
 
-Def time = 17&colon;20
+Def time = 20&colon;17
 
 Def date = 24 March&comma; 2026
 
@@ -558,6 +558,8 @@ CSV Stop
 
 .....  Running Inline Python
 
+---------> Start of RunPython-Preamble.mdp (@3)
+
 ..... .....  An Important Caution
 
 ..... .....  How To Invoke Python In md2pptx
@@ -568,7 +570,11 @@ CSV Stop
 
 ..... .....  Variables You Can Rely On
 
+---------> End of RunPython-Preamble.mdp (@3)
+
 ..... .....  Python Helper Routines
+
+---------> Start of RunPython-General.mdp (@3)
 
 ..... ..... .....  General Helper Routines
 
@@ -602,6 +608,10 @@ CSV Stop
 
 ..... ..... ..... ..... .....  Output
 
+---------> End of RunPython-General.mdp (@3)
+
+---------> Start of RunPython-Chart.mdp (@3)
+
 ..... ..... .....  Chart-Related Helper Routines
 
 ..... ..... ..... .....  RunPython.makeChartData
@@ -615,6 +625,10 @@ CSV Stop
 ..... ..... ..... ..... .....  Input
 
 ..... ..... ..... ..... .....  Output
+
+---------> End of RunPython-Chart.mdp (@3)
+
+---------> Start of RunPython-Table.mdp (@3)
 
 ..... ..... .....  Table-Related Helper Routines
 
@@ -642,6 +656,10 @@ CSV Stop
 
 ..... ..... ..... ..... .....  Output
 
+---------> End of RunPython-Table.mdp (@3)
+
+---------> Start of RunPython-Drawing.mdp (@3)
+
 ..... ..... .....  Drawing-Related Helper Routines
 
 ..... ..... ..... .....  RunPython.makeDrawnShape
@@ -649,6 +667,10 @@ CSV Stop
 ..... ..... ..... ..... .....  Input
 
 ..... ..... ..... ..... .....  Output
+
+---------> End of RunPython-Drawing.mdp (@3)
+
+---------> Start of RunPython-Checklist.mdp (@3)
 
 ..... ..... .....  Checklist-Related Helper routines
 
@@ -676,6 +698,10 @@ CSV Stop
 
 ..... ..... ..... ..... .....  Output
 
+---------> End of RunPython-Checklist.mdp (@3)
+
+---------> Start of RunPython-Text.mdp (@3)
+
 ..... ..... .....  Text Paragraph Helper Routines
 
 ..... ..... ..... .....  RunPython.removeBullet
@@ -696,6 +722,10 @@ CSV Stop
 
 ..... ..... ..... ..... .....  Output
 
+---------> End of RunPython-Text.mdp (@3)
+
+---------> Start of RunPython-Annotations.mdp (@3)
+
 ..... ..... .....  Annotations-Related Helper routines
 
 ..... ..... ..... .....  RunPython.doAnnotations
@@ -710,7 +740,15 @@ CSV Stop
 
 ..... ..... ..... ..... .....  Output
 
+---------> End of RunPython-Annotations.mdp (@3)
+
+---------> Start of RunPython-XML.mdp (@3)
+
 ..... ..... .....  XML-Related Helper routines
+
+---------> End of RunPython-XML.mdp (@3)
+
+---------> Start of RunPython-Examples.mdp (@3)
 
 ..... .....  Inline Python Examples
 
@@ -725,6 +763,8 @@ CSV Stop
 ..... ..... .....  Slide With Some Bullets Removed Example
 
 ..... ..... .....  Annotations Example
+
+---------> End of RunPython-Examples.mdp (@3)
 
 ------> End of RunPython.mdp (@2)
 

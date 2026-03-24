@@ -1,0 +1,38 @@
+#### Chart-Related Helper Routines
+
+<a id="runpythonmakechartdata"></a>
+##### RunPython.makeChartData
+
+This function makes a [CategoryChartData](https://python-pptx.readthedocs.io/en/latest/api/chart-data.html?highlight=categorychartdata) object, potentially for use with [`RunPython.makeChart`](#runpythonmakechart).
+
+###### Input
+
+* The chart data in the form created by [`RunPython.readCSV`](#runpythonreadcsv).
+* `True` for series being columns, `False` otherwise. `True` is the default. `True` causes the output array to be transposed.
+* Optional list of column numbers to filter on. This is zero-indexed and uses Python list syntax. Filtering occurs before any transposition.
+
+**Note:** You can use this function to reorder (e.g. `[3 1 2]`) and even duplicate rows (e.g. `[4 1 1]`).
+
+###### Output
+
+* A [CategoryChartData](https://python-pptx.readthedocs.io/en/latest/api/chart-data.html?highlight=categorychartdata) object.
+
+<a id="runpythonmakechart"></a>
+##### RunPython.makeChart
+
+This function takes a [CategoryChartData](https://python-pptx.readthedocs.io/en/latest/api/chart-data.html?highlight=categorychartdata) object, possibly made by [`RunPython.makeChartData`](#runpythonmakechartdata), and creates a
+[Chart](https://python-pptx.readthedocs.io/en/latest/api/chart.html) shape from it.
+This shape is added to the slide identified by the variable `slide`.
+
+###### Input
+
+* The `slide` to add the chart to. Generally this is the `slide` object provided by md2pptx when your python code gets control.
+* The chart type. This is one of the values documented in [XL_CHART_TYPE](https://python-pptx.readthedocs.io/en/latest/api/enum/XlChartType.html).
+* The rectangle to render the new chart in. Most likely this is the `renderingRectangle` object provided by md2pptx when your python code gets control.
+* The chart data in [CategoryChartData](https://python-pptx.readthedocs.io/en/latest/api/chart-data.html?highlight=categorychartdata) format. Most likely this was created by [`RunPython.makeChartData`](#runpythonmakechartdata).
+* The title of the chart. This string defaults to `None` - which prevents a title being created.
+* The legend position for the chart. This is one of the values documented in [XL_LEGEND_POSITION](https://python-pptx.readthedocs.io/en/latest/api/enum/XlLegendPosition.html). This defaults to `None` which prevents a legend being created.
+
+###### Output
+
+* A [`Chart`](https://python-pptx.readthedocs.io/en/latest/api/chart.html) object - which you can further manipulate.

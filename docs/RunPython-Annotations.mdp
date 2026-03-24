@@ -1,0 +1,100 @@
+<a id="annotations-related-helper-routines"></a>
+<a id="annotationsrelated-helper-routines"></a>
+#### Annotations-Related Helper routines
+
+You can annotate a slide using these helper routines.
+
+A number of annotation types are supported:
+
+* Lines, with or without line ending arrow heads
+* Rectangles, with or without rounded corners, with or without text
+* Ovals, with or without text
+* Images
+
+The foreground colour can be set for each annotation.
+For an annotation with a closed shape the background colour can also be set.
+
+For lines and shapes' border line widths can be specified - in points.
+Line widths can be set independently of shapes' line widths.
+Whether an individual shape's border line or a line is double can be set - with `-` signifying a single line and `=` a double.
+
+All dimensions, except for line widths, are in inches and can be negative.
+Positions are relative to the top left of the slide.
+
+How to specify colours is described in [Specifying Colours](#specifying-colours).
+This information will be handy with most of the annotations described below.
+
+An annotation consists of a number of values.
+For [RunPython.doAnnotations](#runpythondoannotations) this is a list of values.
+For [RunPython.annotationsFromCSV](#runpythonannotationsfromcsv) this is a line in a CSV file.
+
+Each annotation starts with four floating point values:
+
+1. The starting x value, relative to the left edge of the slide.
+1. The starting y value, relative to the top edge of the slide.
+1. The width of the annotation. (Or the end x value relative to the beginning.)
+1. The height of the annotation. (Or the end y value relative to the end.)
+
+The fifth item is either a code for the type of annotation or the text of the annotation.
+
+The remainder of the list / line depends on the type of the annotation:
+
+* For a line the fifth item is one of `-`, `=`, `<-`, `<=`, `->`, `=>`, `<->`, or `<=>`:
+    * `-`  and `=` denote a line with no arrow heads. The first denotes the line is single, the second double.
+    * `<-` and `<=` denote a line with an arrow head at the beginning. The first denotes the line is single, the second double.
+    * `->` and `=>` denote a line with an arrow head at the end. The first denotes the line is single, the second double.
+    * `<->` and `<=>` denote a line with arrow heads at both ends. The first denotes the line is single, the second double.
+
+    An optional line colour can be specified as the sixth item. For example `#FF0000` or `ACCENT 1`.
+
+* For a rectangle or oval the fifth item is one of `[]`, `[-]`, `[=]`, `()`, `(-)`, `(=)`, `o`, or `O`:
+    * `[]`, `[-]`, and `[=]` denote a rectangle without rounded corners. The first two denote the border line is single, the third double.
+    * `()`, `(-)`, and `(=)` denote a rectangle with rounded corners. The first two denote the border line is single, the third double.
+    * `o` and `O` denote an oval. The first denotes the line is single, the second double.
+    
+    If there is a non-empty sixth item it is text to be centred in the shape.
+    If there is a non-empty seventh item it is the foreground colour.
+    If there is a non-empty eighth item it is the background colour.
+
+* For a graphic the fifth item begins with a `!` and the remaining characters are the filename.
+The graphic is scaled to fit the rectangle defined by the first four items.
+
+* Any other string is literally a text annotation, without a box.
+If there is a non-empty sixth item it is the foreground colour.
+
+<a id="runpythondoannotations"></a>
+##### RunPython.doAnnotations
+
+This function adds annotations to a slide from a list of lists.
+Each top-level list item describes a single annotation.
+
+###### Input
+
+* The slide to annotate. Generally this is the `slide` object provided by md2pptx when your python code gets control.
+* Data in the form created by [RunPython.readCSV](#runpythonreadcsv).
+* Optional line width - in points. Defaults to `None` which means the width isn't explicitly set.
+* Optional shapes' border line width - in points. Defaults to `None` which means the width isn't explicitly set.
+
+###### Output
+
+* Nothing is returned.
+
+<a id="runpythonannotationsfromcsv"></a>
+##### RunPython.annotationsFromCSV
+
+This function adds annotations to a slide from a CSV file.
+Each line describes a single annotation.
+
+###### Input
+
+* The slide to annotate. Generally this is the `slide` object provided by md2pptx when your python code gets control.
+* The name of the file to read annotations from.
+* Optional line width - in points. Defaults to `None` which means the width isn't explicitly set.
+* Optional shapes' border line width - in points. Defaults to `None` which means the width isn't explicitly set.
+
+###### Output
+
+* Nothing is returned.
+
+This function uses [`RunPython.readCSV`](#runpythonreadcsv) to read in a CSV file.
+It calls [`RunPython.doAnnotations`](#runpythondoannotations) to perform the annotations.

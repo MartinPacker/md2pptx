@@ -1,0 +1,46 @@
+#### Text Paragraph Helper Routines
+
+There are a number of routines to enable you to manipulate paragraphs in text boxes.
+Recall each text box has a set of paragraphs, which might or might not have bullets.
+
+<a id="runpythonremovebullet"></a>
+##### RunPython.removeBullet
+
+This function removes a single bullet from a shape.
+
+###### Input
+
+* The text box shape to remove the bullet from.
+* The index of the paragraph to remove the bullet from. The first paragraph has an index of 0.
+
+###### Output
+
+* The text box shape
+
+<a id="runpythonremovebullets"></a>
+##### RunPython.removeBullets
+
+This function removes all the bullets from a text box shape.
+
+###### Input
+
+* The text box shape to remove all the bullets from.
+
+###### Output
+
+* The text box shape.
+
+<a id="runpythonremoveselectedbullets"></a>
+##### RunPython.removeSelectedBullets
+
+This function removes selected bullets from a text box shape.
+
+###### Input
+
+* The text box shape to remove selected bullets from.
+* A list of paragraph numbers to remove the bullets for. Each entry is a zero-indexed paragraph number.
+
+###### Output
+
+* The text box shape.
+

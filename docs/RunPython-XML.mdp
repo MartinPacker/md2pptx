@@ -1,0 +1,7 @@
+<a id="xmlrelated-helper-routines"></a>
+<a id="xml-related-helper-routines"></a>
+#### XML-Related Helper routines
+
+md2pptx makes it easier to experiment with injecting XML into presentation .pptx files.
+In some cases this might be the only way to create the presentation you want, so this might be an Production tool as much as an environment to experiment with. 
+

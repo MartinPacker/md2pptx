@@ -1,0 +1,73 @@
+#### Table-Related Helper Routines
+
+<a id="runpythonmaketable"></a>
+##### RunPython.makeTable
+
+This function creates a table from input data and makes a [`Table`](https://python-pptx.readthedocs.io/en/latest/api/table.html) shape from it.
+This shape is added to the slide identified by the variable `slide`.
+
+###### Input
+
+* The `slide` to add the table to. Generally this is the `slide` object provided by md2pptx when your python code gets control.
+* The rectangle to render the new table in. Most likely this is the `renderingRectangle` object provided by md2pptx when your python code gets control.
+* The table data in the form created by [`RunPython.readCSV`](#runpythonreadcsv).
+
+###### Output
+
+* A [`Table`](https://python-pptx.readthedocs.io/en/latest/api/table.html) object - which you can further manipulate.
+
+<a id="runpythonapplycellfillrgb"></a>
+##### RunPython.applyCellFillRGB
+
+This function sets the background colour of a cell in an existing [`Table`](https://python-pptx.readthedocs.io/en/latest/api/table.html) object.
+
+###### Input
+
+* The [`Table`](https://python-pptx.readthedocs.io/en/latest/api/table.html) object.
+* The row number. Zero-indexed and not bounds checked.
+* The column number. Zero-indexed and not bounds checked.
+* The red value - between 0 and 255.
+* The green value - between 0 and 255.
+* The blue value - between 0 and 255.
+
+###### Output
+
+* Nothing is returned.
+
+<a id="runpythonapplycelllistfillrgb"></a>
+##### RunPython.applyCellListFillRGB
+
+This function sets the background colour of a list of cells in an existing [`Table`](https://python-pptx.readthedocs.io/en/latest/api/table.html) object.
+
+###### Input
+
+* The [`Table`](https://python-pptx.readthedocs.io/en/latest/api/table.html) object.
+* The list of cells. Each item in the list is of the form
+    * The row number. Zero-indexed and not bounds checked.
+    * The column number. Zero-indexed and not bounds checked.
+* The red value - between 0 and 255.
+* The green value - between 0 and 255.
+* The blue value - between 0 and 255.
+
+###### Output
+
+* Nothing is returned.
+
+
+<a id="runpythonaligntablecelltext"></a>
+##### RunPython.alignTableCellText
+
+This function aligns all the text paragraphs in a table cell. \
+Generally there will be only one paragraph in a cell - but this function iterates over them all.
+
+###### Input
+
+* The [`Table`](https://python-pptx.readthedocs.io/en/latest/api/table.html) object.
+* The row number. Zero-indexed and not bounds checked.
+* The column number. Zero-indexed and not bounds checked.
+* Alignment. See [PP_PARAGRAPH_ALIGNMENT](https://python-pptx.readthedocs.io/en/latest/api/enum/PpParagraphAlignment.html).
+* (Optional) paragraph number. If not specified all paragraphs in the cell will be aligned. If specified just the (zero-indexed) paragraph will be aligned.
+
+###### Output
+
+* Nothing is returned.
