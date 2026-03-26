@@ -1703,7 +1703,39 @@ img {
 </li>
 </ul>
 </li>
-<li><a href="#xmlrelated-helper-routines">XML-Related Helper routines</a></li>
+<li><a href="#xmlrelated-helper-routines">XML-Related Helper routines</a><ul>
+<li><a href="#runpythonattachxmlstring">RunPython.attachXMLstring</a><ul>
+<li><a href="#input">Input</a></li>
+<li><a href="#output">Output</a></li>
+</ul>
+</li>
+<li><a href="#runpythonattachxmlfile">RunPython.attachXMLfile</a><ul>
+<li><a href="#input">Input</a></li>
+<li><a href="#output">Output</a></li>
+</ul>
+</li>
+<li><a href="#runpythonattachxmlparagraphfromstring">RunPython.attachXMLParagraphFromString</a><ul>
+<li><a href="#input">Input</a></li>
+<li><a href="#output">Output</a></li>
+</ul>
+</li>
+<li><a href="#runpythonattachxmlparagraphfromfile">RunPython.attachXMLParagraphFromFile</a><ul>
+<li><a href="#input">Input</a></li>
+<li><a href="#output">Output</a></li>
+</ul>
+</li>
+<li><a href="#runpythonformatxmlasstring">RunPython.formatXMLasString</a><ul>
+<li><a href="#input">Input</a></li>
+<li><a href="#output">Output</a></li>
+</ul>
+</li>
+<li><a href="#runpythonformatxmlasfile">RunPython.formatXMLasFile</a><ul>
+<li><a href="#input">Input</a></li>
+<li><a href="#output">Output</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#inline-python-examples">Inline Python Examples</a><ul>
@@ -5699,6 +5731,87 @@ It calls <a href="#runpythondoannotations"><code>RunPython.doAnnotations</code><
 <h4 id="xml-related-helper-routines">XML-Related Helper routines<a class="headerlink" href="#xml-related-helper-routines" title="Permanent link"></a></h4>
 <p>md2pptx makes it easier to experiment with injecting XML into presentation .pptx files.
 In some cases this might be the only way to create the presentation you want, so this might be an Production tool as much as an environment to experiment with. </p>
+<p>The helper routines include some to help with extracting and formatting XML from a presentation.</p>
+<p><a id="runpythonattachxmlstring"></a></p>
+<h5 id="runpythonattachxmlstring">RunPython.attachXMLstring<a class="headerlink" href="#runpythonattachxmlstring" title="Permanent link"></a></h5>
+<p>This function parses an XML string and attaches it as a child pf the specified element.</p>
+<h6 id="input_21">Input<a class="headerlink" href="#input_21" title="Permanent link"></a></h6>
+<ul>
+<li>The element to attach the XML as a child of.</li>
+<li>The XML string to be parsed and attached.</li>
+<li>The location as a child of the element. The default is &lsquo;0&rsquo; which is the first child.</li>
+</ul>
+<h6 id="output_21">Output<a class="headerlink" href="#output_21" title="Permanent link"></a></h6>
+<ul>
+<li>If successful the element that represents the root of the XML string. On failure it&rsquo;s the <code>etree.XMLSyntaxError</code> exception raised on parsing the input string.</li>
+</ul>
+<p><a id="runpythonattachxmlfile"></a></p>
+<h5 id="runpythonattachxmlfile">RunPython.attachXMLfile<a class="headerlink" href="#runpythonattachxmlfile" title="Permanent link"></a></h5>
+<p>This function parses a file containing an XML string and attaches it as a child pf the specified element.</p>
+<h6 id="input_22">Input<a class="headerlink" href="#input_22" title="Permanent link"></a></h6>
+<ul>
+<li>The element to attach the XML as a child of.</li>
+<li>The name of the file containing the XML string to be parsed and attached.</li>
+<li>The location as a child of the element. The default is &lsquo;0&rsquo; which is the first child.</li>
+</ul>
+<h6 id="output_22">Output<a class="headerlink" href="#output_22" title="Permanent link"></a></h6>
+<ul>
+<li>If successful the element that represents the root of the XML string. On failure it&rsquo;s the <code>etree.XMLSyntaxError</code> exception raised on parsing the input string or <code>None</code> if the source file could not be read.</li>
+</ul>
+<p>This function calls <a href="#runpythonattachxmlstring">RunPython.attachXMLstring</a></p>
+<p><a id="runpythonattachxmlparagraphfromstring"></a></p>
+<h5 id="runpythonattachxmlparagraphfromstring">RunPython.attachXMLParagraphFromString<a class="headerlink" href="#runpythonattachxmlparagraphfromstring" title="Permanent link"></a></h5>
+<p>This function creates a new paragraph and then parses an XML string and attaches it as a child pf the new paragraph.</p>
+<h6 id="input_23">Input<a class="headerlink" href="#input_23" title="Permanent link"></a></h6>
+<ul>
+<li>The shape to add a paragraph to and then attach the XML as a child of.</li>
+<li>The XML string to be parsed and attached.</li>
+<li>The location as a child of the element. The default is &lsquo;0&rsquo; which is the first child.</li>
+</ul>
+<h6 id="output_23">Output<a class="headerlink" href="#output_23" title="Permanent link"></a></h6>
+<ul>
+<li>If successful the element that represents the root of the XML string. On failure it&rsquo;s the <code>etree.XMLSyntaxError</code> exception raised on parsing the input string or <code>None</code> if the source file could not be read.</li>
+</ul>
+<p>This function calls <a href="#runpythonattachxmlstring">RunPython.attachXMLstring</a></p>
+<p><a id="runpythonattachxmlparagraphfromfile"></a></p>
+<h5 id="runpythonattachxmlparagraphfromfile">RunPython.attachXMLParagraphFromFile<a class="headerlink" href="#runpythonattachxmlparagraphfromfile" title="Permanent link"></a></h5>
+<p>This function creates a new paragraph and then parses a file with an XML string and attaches it as a child pf the new paragraph.</p>
+<h6 id="input_24">Input<a class="headerlink" href="#input_24" title="Permanent link"></a></h6>
+<ul>
+<li>The shape to add a paragraph to and then attach the XML as a child of.</li>
+<li>The name of the file containing the XML string to be parsed and attached.</li>
+<li>The location as a child of the element. The default is &lsquo;0&rsquo; which is the first child.</li>
+</ul>
+<h6 id="output_24">Output<a class="headerlink" href="#output_24" title="Permanent link"></a></h6>
+<ul>
+<li>If successful the element that represents the root of the XML string. On failure it&rsquo;s the <code>etree.XMLSyntaxError</code> exception raised on parsing the input string or <code>None</code> if the source file could not be read.</li>
+</ul>
+<p>This function calls <a href="#runpythonattachxmlfile">RunPython.attachXMLfile</a></p>
+<p><a id="runpythonformatxmlasstring"></a></p>
+<h5 id="runpythonformatxmlasstring">RunPython.formatXMLasString<a class="headerlink" href="#runpythonformatxmlasstring" title="Permanent link"></a></h5>
+<p>This function formats an element&rsquo;s XML so it can be printed or examined.</p>
+<h6 id="input_25">Input<a class="headerlink" href="#input_25" title="Permanent link"></a></h6>
+<ul>
+<li>The element to obtain the XML for.</li>
+<li>Whether the output should be &ldquo;pretty printed&rdquo; or not. The default is <code>True</code>.</li>
+</ul>
+<h6 id="output_25">Output<a class="headerlink" href="#output_25" title="Permanent link"></a></h6>
+<ul>
+<li>A string containing the XML for the element</li>
+</ul>
+<p><a id="runpythonformatxmlasfile"></a></p>
+<h5 id="runpythonformatxmlasfile">RunPython.formatXMLasFile<a class="headerlink" href="#runpythonformatxmlasfile" title="Permanent link"></a></h5>
+<p>This function formats an element&rsquo;s XML so it can be printed or examined and saves it to a file.</p>
+<h6 id="input_26">Input<a class="headerlink" href="#input_26" title="Permanent link"></a></h6>
+<ul>
+<li>The element to obtain the XML for.</li>
+<li>The filename to write to.</li>
+<li>Whether the output should be &ldquo;pretty printed&rdquo; or not. The default is <code>True</code>.</li>
+</ul>
+<h6 id="output_26">Output<a class="headerlink" href="#output_26" title="Permanent link"></a></h6>
+<ul>
+<li>Nothing</li>
+</ul>
 <p><a id="inline-python-examples"></a></p>
 <h3 id="inline-python-examples">Inline Python Examples<a class="headerlink" href="#inline-python-examples" title="Permanent link"></a></h3>
 <p>Here are a few examples that use the <a href="#python-helper-routines">Python helper routines</a>.</p>

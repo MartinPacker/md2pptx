@@ -5,3 +5,100 @@
 md2pptx makes it easier to experiment with injecting XML into presentation .pptx files.
 In some cases this might be the only way to create the presentation you want, so this might be an Production tool as much as an environment to experiment with. 
 
+The helper routines include some to help with extracting and formatting XML from a presentation.
+
+<a id="runpythonattachxmlstring"></a>
+##### RunPython.attachXMLstring
+
+This function parses an XML string and attaches it as a child pf the specified element.
+
+###### Input
+
+* The element to attach the XML as a child of.
+* The XML string to be parsed and attached.
+* The location as a child of the element. The default is '0' which is the first child.
+
+###### Output
+
+* If successful the element that represents the root of the XML string. On failure it's the `etree.XMLSyntaxError` exception raised on parsing the input string.
+
+<a id="runpythonattachxmlfile"></a>
+##### RunPython.attachXMLfile
+
+This function parses a file containing an XML string and attaches it as a child pf the specified element.
+
+###### Input
+
+* The element to attach the XML as a child of.
+* The name of the file containing the XML string to be parsed and attached.
+* The location as a child of the element. The default is '0' which is the first child.
+
+###### Output
+
+* If successful the element that represents the root of the XML string. On failure it's the `etree.XMLSyntaxError` exception raised on parsing the input string or `None` if the source file could not be read.
+
+This function calls [RunPython.attachXMLstring](#runpythonattachxmlstring)
+
+<a id="runpythonattachxmlparagraphfromstring"></a>
+##### RunPython.attachXMLParagraphFromString
+
+This function creates a new paragraph and then parses an XML string and attaches it as a child pf the new paragraph.
+
+###### Input
+
+* The shape to add a paragraph to and then attach the XML as a child of.
+* The XML string to be parsed and attached.
+* The location as a child of the element. The default is '0' which is the first child.
+
+###### Output
+
+* If successful the element that represents the root of the XML string. On failure it's the `etree.XMLSyntaxError` exception raised on parsing the input string or `None` if the source file could not be read.
+
+This function calls [RunPython.attachXMLstring](#runpythonattachxmlstring)
+
+<a id="runpythonattachxmlparagraphfromfile"></a>
+##### RunPython.attachXMLParagraphFromFile
+
+This function creates a new paragraph and then parses a file with an XML string and attaches it as a child pf the new paragraph.
+
+###### Input
+
+* The shape to add a paragraph to and then attach the XML as a child of.
+* The name of the file containing the XML string to be parsed and attached.
+* The location as a child of the element. The default is '0' which is the first child.
+
+###### Output
+
+* If successful the element that represents the root of the XML string. On failure it's the `etree.XMLSyntaxError` exception raised on parsing the input string or `None` if the source file could not be read.
+
+This function calls [RunPython.attachXMLfile](#runpythonattachxmlfile)
+
+
+<a id="runpythonformatxmlasstring"></a>
+##### RunPython.formatXMLasString
+
+This function formats an element's XML so it can be printed or examined.
+
+###### Input
+
+* The element to obtain the XML for.
+* Whether the output should be "pretty printed" or not. The default is `True`.
+
+###### Output
+
+* A string containing the XML for the element
+
+<a id="runpythonformatxmlasfile"></a>
+##### RunPython.formatXMLasFile
+
+This function formats an element's XML so it can be printed or examined and saves it to a file.
+
+###### Input
+
+* The element to obtain the XML for.
+* The filename to write to.
+* Whether the output should be "pretty printed" or not. The default is `True`.
+
+###### Output
+
+* Nothing

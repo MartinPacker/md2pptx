@@ -1,6 +1,8 @@
 
-mdpre Markdown Preprocessor v1.1.5 (12 March, 2026)
-===================================================
+mdpre Markdown Preprocessor v1.1.5+ (25 March, 2026)
+====================================================
+
+Cheetah templating engine imported
 
 - opened <stdout> for writing
 Def makefile = file-3
@@ -11,11 +13,11 @@ Def output = stdout
 
 Def input = stdin
 
-Def node = Mac.domain_not_set.invalid
+Def node = Mac-Studio-Max.local
 
-Def version = Darwin Kernel Version 25.4.0: Thu Mar  5 22:45:07 PST 2026; root:xnu-12377.101.14~19/RELEASE_ARM64_T6000
+Def version = Darwin Kernel Version 25.4.0: Thu Mar 19 19:30:44 PDT 2026; root:xnu-12377.101.15~1/RELEASE_ARM64_T6000
 
-Def architecture = 64bit
+Def architecture = 64bit Mach-O
 
 Def machine = arm64
 
@@ -23,27 +25,27 @@ Def system = Darwin
 
 Def release = 25.4.0
 
-Def python_version = 3.12.3
+Def python_version = 3.14.3
 
 Def python_implementation = CPython
 
 Def processor = arm
 
-Def mdpre_date = 12 March, 2026
+Def mdpre_date = 25 March, 2026
 
-Def mdpre_level = 1.1.5
+Def mdpre_level = 1.1.5+
 
 Def userid = martinpacker
 
-Def day = 24
+Def day = 26
 
 Def month = March
 
 Def year = 2026
 
-Def time = 20&colon;17
+Def time = 16&colon;48
 
-Def date = 24 March&comma; 2026
+Def date = 26 March&comma; 2026
 
 Def TOC = Table Of Contents
 
@@ -746,6 +748,42 @@ CSV Stop
 
 ..... ..... .....  XML-Related Helper routines
 
+..... ..... ..... .....  RunPython.attachXMLstring
+
+..... ..... ..... ..... .....  Input
+
+..... ..... ..... ..... .....  Output
+
+..... ..... ..... .....  RunPython.attachXMLfile
+
+..... ..... ..... ..... .....  Input
+
+..... ..... ..... ..... .....  Output
+
+..... ..... ..... .....  RunPython.attachXMLParagraphFromString
+
+..... ..... ..... ..... .....  Input
+
+..... ..... ..... ..... .....  Output
+
+..... ..... ..... .....  RunPython.attachXMLParagraphFromFile
+
+..... ..... ..... ..... .....  Input
+
+..... ..... ..... ..... .....  Output
+
+..... ..... ..... .....  RunPython.formatXMLasString
+
+..... ..... ..... ..... .....  Input
+
+..... ..... ..... ..... .....  Output
+
+..... ..... ..... .....  RunPython.formatXMLasFile
+
+..... ..... ..... ..... .....  Input
+
+..... ..... ..... ..... .....  Output
+
 ---------> End of RunPython-XML.mdp (@3)
 
 ---------> Start of RunPython-Examples.mdp (@3)
@@ -796,7 +834,7 @@ CSV Stop
 
 .....  Building This User Guide
 
----------------------------------------------------
+----------------------------------------------------
 - Processing completed.
----------------------------------------------------
+----------------------------------------------------
 
