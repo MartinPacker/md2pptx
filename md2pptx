@@ -5687,12 +5687,17 @@ if slideTemplateFile != "":
         # Slide template file is not present if we expand path
         slideTemplateFile = md2pptx_path + os.sep + slideTemplateFile
         if not Path(slideTemplateFile).exists():
+            # Template not found. Fall back to the python-pptx built-in
+            # default so the user still gets something to review, and warn
+            # so they know the configured template was missing.
             print(
-                f"\nTemplate file {originalSlideTemplateFile} does not exist. Terminating."
+                f"\nTemplate file {originalSlideTemplateFile} does not exist. "
+                f"Falling back to the python-pptx built-in template."
             )
-            sys.exit()
+            slideTemplateFile = ""
 
-    print(f"\nUsing {slideTemplateFile} as base for presentation")
+    if slideTemplateFile != "":
+        print(f"\nUsing {slideTemplateFile} as base for presentation")
 
 if slideTemplateFile == "":
     # Use default slide deck that comes with python-pptx as base
