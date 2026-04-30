@@ -499,8 +499,10 @@ To quote from the python-pptx license statement:
 
 ## Change Log
 
+
 |Level|Date|What|
 |:-|-:|:-|
+|6.3.1+|30&nbsp;April&nbsp;2026|@tmchow fixed [Issue 211](https://github.com/MartinPacker/md2pptx/issues/211) where a missing template file would cause termination.|
 |6.3.1|18&nbsp;April&nbsp;2026|Fixed crasher in Section Expansion code|
 |6.3|26&nbsp;March&nbsp;2026|Introduced [XML-Related Helper routines](#xml-related-helper-routines).|
 |6.2|25&nbsp;January&nbsp;2026|You can now have multiple lists - bulleted or numbered - on a slide. Added [figure caption](#figure-captions) support.|
@@ -1648,6 +1650,7 @@ To force a line break code `<br/>`. This, being HTML, is legitimate in Markdown 
 
 Some other HTML-originated text effects work - as Markdown allows you to embed HTML (elements and attributes):
 
+[]
 |Effect|HTML Element|Example|Produces|
 |:-|-:|:-|:-|
 |Superscript|`sup`|`x<sup>2</sup>`|x<sup>2</sup>|
@@ -1744,6 +1747,7 @@ Notice the `color` specification is in Hexadecimal RGB (Red Green Blue) format. 
 
 md2pptx supports a few [HTML entity references](https://en.wikipedia.org/wiki/List_of_XML_and_HTML_character_entity_references)&colon;
 
+[]
 |Entity Reference|Character|Entity Reference|Character|Entity Reference|Character|Entity Reference|Character|
 |:-|:-:|:-|:-:|:-|:-:|:-|:-:|
 |`&lt;`|&lt;|`&larr;`|&larr;|`&auml;`|&auml;|`grave;`|&grave;|
@@ -2224,6 +2228,8 @@ Templates are searched for in the following sequence:
 
 1. Using the name as given. For example `hipodz.pptx` will search the current directory.
 2. In the md2pptx installation directory.
+
+If the template can't be found or if `template` is not specified md2pptx will revert to python-pptx's built in template. That gives you something to review but is probably not what you want to publish.
 
 #### Hiding Slides - `hidden`
 <a id="hiding-slides-hidden"></a>
@@ -3089,6 +3095,7 @@ will cause footers to be displayed with a 14 point font. The default value is 8 
 
 The usual heading levels for different types of slides are as follows:
 
+[]
 |Level|Slide type|
 |-:|:-|
 |1|Presentation title|
@@ -3098,6 +3105,7 @@ The usual heading levels for different types of slides are as follows:
 
 However, you might need to "demote" all these slide types to, say:
 
+[]
 |Level|Slide type|
 |-:|:-|
 |2|Presentation title|
@@ -3863,6 +3871,7 @@ It's probably also not useful to add elements. Take care with moving and resizin
 
 The following table shows how each slide type is created.
 
+[]
 |Slide Type|Origin|Metadata<br/>Override|Non-Title Content|
 |:-|:-|:-|:-|
 |Processing Summary|Original slide from Template||Metadata: Second Shape|

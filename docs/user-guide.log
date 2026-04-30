@@ -1,6 +1,6 @@
 
-mdpre Markdown Preprocessor v1.2 (11 April, 2026)
-=================================================
+mdpre Markdown Preprocessor v1.2+ (28 April, 2026)
+==================================================
 
 Cheetah templating engine not imported
 
@@ -13,7 +13,7 @@ Def output = stdout
 
 Def input = stdin
 
-Def node = MacBookPro.domain_not_set.invalid
+Def node = bluemac.local
 
 Def version = Darwin Kernel Version 25.4.0: Thu Mar 19 19:30:44 PDT 2026; root:xnu-12377.101.15~1/RELEASE_ARM64_T6000
 
@@ -31,21 +31,21 @@ Def python_implementation = CPython
 
 Def processor = arm
 
-Def mdpre_date = 11 April, 2026
+Def mdpre_date = 28 April, 2026
 
-Def mdpre_level = 1.2
+Def mdpre_level = 1.2+
 
 Def userid = martinpacker
 
-Def day = 18
+Def day = 30
 
 Def month = April
 
 Def year = 2026
 
-Def time = 17&colon;17
+Def time = 20&colon;27
 
-Def date = 18 April&comma; 2026
+Def date = 30 April&comma; 2026
 
 Def TOC = Table Of Contents
 
@@ -834,7 +834,7 @@ CSV Stop
 
 .....  Building This User Guide
 
--------------------------------------------------
+--------------------------------------------------
 - Processing completed.
--------------------------------------------------
+--------------------------------------------------
 

@@ -8,8 +8,8 @@ First argument is file to write to
 Reads from stdin
 """
 
-md2pptx_level = "6.3.1"
-md2pptx_date = "18 April, 2026"
+md2pptx_level = "6.3.1+"
+md2pptx_date = "30 April, 2026"
 
 import re
 import sys
