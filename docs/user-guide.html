@@ -1890,8 +1890,8 @@ THE SOFTWARE.
 </thead>
 <tbody>
 <tr>
-<td align="left">6.3.1+</td>
-<td align="right">30&nbsp;April&nbsp;2026</td>
+<td align="left">6.3.2</td>
+<td align="right">3&nbsp;May&nbsp;2026</td>
 <td align="left"><a class="magiclink magiclink-github magiclink-mention" href="https://github.com/tmchow" title="GitHub User: tmchow">@tmchow</a> fixed <a href="https://github.com/MartinPacker/md2pptx/issues/211">Issue 211</a> where a missing template file would cause termination.</td>
 </tr>
 <tr>
@@ -3292,13 +3292,42 @@ End Sub
 <p>To specify a <code>monospace font</code> use the back tick character - <code>`</code> - at the start and end of the text run.</p>
 <p>To force a line break code <code>&lt;br/&gt;</code>. This, being HTML, is legitimate in Markdown and will be treated as a line break. I don&rsquo;t want one here so I won&rsquo;t code one here.</p>
 <p>Some other HTML-originated text effects work - as Markdown allows you to embed HTML (elements and attributes):</p>
-<p>[]
-|Effect|HTML Element|Example|Produces|
-|:-|-:|:-|:-|
-|Superscript|<code>sup</code>|<code>x&lt;sup&gt;2&lt;/sup&gt;</code>|x<sup>2</sup>|
-|Subscript|<code>sub</code>|<code>C&lt;sub&gt;6&lt;/sub&gt;H&lt;sub&gt;12&lt;/sub&gt;O&lt;sub&gt;6&lt;/sub&gt;</code>|C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>|
-|Underline|<code>ins</code>|<code>this is &lt;ins&gt;important&lt;/ins&gt;</code>|this is <ins>important</ins>|
-|Strikethrough|<code>del</code>|<code>this is &lt;del&gt;obsolete&gt;/del&gt;</code>|this is <del>obsolete</del>|</p>
+<table>
+<thead>
+<tr>
+<th align="left">Effect</th>
+<th align="right">HTML Element</th>
+<th align="left">Example</th>
+<th align="left">Produces</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">Superscript</td>
+<td align="right"><code>sup</code></td>
+<td align="left"><code>x&lt;sup&gt;2&lt;/sup&gt;</code></td>
+<td align="left">x<sup>2</sup></td>
+</tr>
+<tr>
+<td align="left">Subscript</td>
+<td align="right"><code>sub</code></td>
+<td align="left"><code>C&lt;sub&gt;6&lt;/sub&gt;H&lt;sub&gt;12&lt;/sub&gt;O&lt;sub&gt;6&lt;/sub&gt;</code></td>
+<td align="left">C<sub>6</sub>H<sub>12</sub>O<sub>6</sub></td>
+</tr>
+<tr>
+<td align="left">Underline</td>
+<td align="right"><code>ins</code></td>
+<td align="left"><code>this is &lt;ins&gt;important&lt;/ins&gt;</code></td>
+<td align="left">this is <ins>important</ins></td>
+</tr>
+<tr>
+<td align="left">Strikethrough</td>
+<td align="right"><code>del</code></td>
+<td align="left"><code>this is &lt;del&gt;obsolete&gt;/del&gt;</code></td>
+<td align="left">this is <del>obsolete</del></td>
+</tr>
+</tbody>
+</table>
 <p><strong>Note:</strong> Superscript works by raising the text baseline. Subscript works by lowering it. This is how Powerpoint itself does it.</p>
 <p><a id="using-html-%3Cspan%3E-elements-to-specify-text-colours-and-underlining"></a></p>
 <h3 id="using-html-span-elements-to-specify-text-effects">Using HTML <code>&lt;span&gt;</code> Elements To Specify Text Effects<a class="headerlink" href="#using-html-span-elements-to-specify-text-effects" title="Permanent link"></a></h3>
@@ -3372,25 +3401,182 @@ End Sub
 <h3 id="html-entity-references">HTML Entity References<a class="headerlink" href="#html-entity-references" title="Permanent link"></a></h3>
 <p><a id="html-entity-references"></a></p>
 <p>md2pptx supports a few <a href="https://en.wikipedia.org/wiki/List_of_XML_and_HTML_character_entity_references">HTML entity references</a>&colon;</p>
-<p>[]
-|Entity Reference|Character|Entity Reference|Character|Entity Reference|Character|Entity Reference|Character|
-|:-|:-:|:-|:-:|:-|:-:|:-|:-:|
-|<code>&amp;lt;</code>|&lt;|<code>&amp;larr;</code>|&larr;|<code>&amp;auml;</code>|&auml;|<code>grave;</code>|&grave;|
-|<code>&amp;gt;</code>|&gt;|<code>&amp;rarr;</code>|&rarr;|<code>&amp;Auml;</code>|&Auml;|<code>&amp;apos;</code>|&apos;|
-|<code>&amp;ge;</code>|&ge;|<code>&amp;uarr;</code>|&uarr;|<code>&amp;uuml;</code>|&uuml;|<code>&amp;lsquo;</code>|&lsquo;|
-|<code>&amp;le;</code>|&le;|<code>&amp;darr;</code>|&darr;|<code>&amp;Uuml;</code>|&Uuml;|<code>&amp;rsquo;</code>|&rsquo;|
-|<code>&amp;asymp;</code>|&asymp;|<code>&amp;harr;</code>|&harr;|<code>&amp;ouml;</code>|&ouml;|<code>&amp;quot;</code>|&quot;|
-|<code>&amp;Delta;</code>|&Delta;|<code>&amp;varr;</code>|&varr;|<code>&amp;Ouml;</code>|&Ouml;|<code>&amp;ldquo;</code>|&ldquo;|
-|<code>&amp;delta;</code>|&delta;|<code>&amp;nearr;</code>|&nearr;|<code>&amp;szlig;</code>|&szlig;|<code>&amp;rdquo;</code>|&rdquo;|
-|<code>&amp;sim;</code>|&sim;|<code>&amp;nwarr;</code>|&nwarr;|<code>&amp;euro;</code>|&euro;|<code>&amp;Oslash;</code>|&Oslash;|
-|<code>&amp;lowast;</code>|&lowast;|<code>&amp;searr;</code>|&searr;|<code>&amp;hellip;</code>|&hellip;|<code>&amp;oslash;</code>|&oslash;|
-|<code>&amp;semi;</code>|&semi;|<code>&amp;swarr;</code>|&swarr;|<code>&amp;percnt;</code>|&percnt;|
-|<code>&amp;colon;</code>|&colon;|<code>&amp;lsqb;</code>|&lsqb;|<code>&amp;divide;</code>|&divide;|
-|<code>&amp;amp;</code>|&amp;|<code>&amp;rsqb;</code>|&rsqb;|<code>&amp;forall;</code>|&forall;|
-|<code>&amp;comma;</code>|&comma;|<code>&amp;infin;</code>|&infin;|<code>&amp;exist;</code>|&exist;|
-|<code>&amp;check;</code>|&check;|<code>&amp;times;</code>|&times;|<code>&amp;lambda;</code>|&lambda;|
-|<code>&amp;mu;</code>|&mu;|<code>&amp;nu;</code>|&nu;|<code>&amp;pi;</code>|&pi;|
-|<code>&amp;rho;</code>|&rho;|<code>&amp;nbsp;</code>|<em>non-breaking space</em>|<code>&amp;dash;</code>|&dash;|</p>
+<table>
+<thead>
+<tr>
+<th align="left">Entity Reference</th>
+<th align="center">Character</th>
+<th align="left">Entity Reference</th>
+<th align="center">Character</th>
+<th align="left">Entity Reference</th>
+<th align="center">Character</th>
+<th align="left">Entity Reference</th>
+<th align="center">Character</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><code>&amp;lt;</code></td>
+<td align="center">&lt;</td>
+<td align="left"><code>&amp;larr;</code></td>
+<td align="center">&larr;</td>
+<td align="left"><code>&amp;auml;</code></td>
+<td align="center">&auml;</td>
+<td align="left"><code>grave;</code></td>
+<td align="center">&grave;</td>
+</tr>
+<tr>
+<td align="left"><code>&amp;gt;</code></td>
+<td align="center">&gt;</td>
+<td align="left"><code>&amp;rarr;</code></td>
+<td align="center">&rarr;</td>
+<td align="left"><code>&amp;Auml;</code></td>
+<td align="center">&Auml;</td>
+<td align="left"><code>&amp;apos;</code></td>
+<td align="center">&apos;</td>
+</tr>
+<tr>
+<td align="left"><code>&amp;ge;</code></td>
+<td align="center">&ge;</td>
+<td align="left"><code>&amp;uarr;</code></td>
+<td align="center">&uarr;</td>
+<td align="left"><code>&amp;uuml;</code></td>
+<td align="center">&uuml;</td>
+<td align="left"><code>&amp;lsquo;</code></td>
+<td align="center">&lsquo;</td>
+</tr>
+<tr>
+<td align="left"><code>&amp;le;</code></td>
+<td align="center">&le;</td>
+<td align="left"><code>&amp;darr;</code></td>
+<td align="center">&darr;</td>
+<td align="left"><code>&amp;Uuml;</code></td>
+<td align="center">&Uuml;</td>
+<td align="left"><code>&amp;rsquo;</code></td>
+<td align="center">&rsquo;</td>
+</tr>
+<tr>
+<td align="left"><code>&amp;asymp;</code></td>
+<td align="center">&asymp;</td>
+<td align="left"><code>&amp;harr;</code></td>
+<td align="center">&harr;</td>
+<td align="left"><code>&amp;ouml;</code></td>
+<td align="center">&ouml;</td>
+<td align="left"><code>&amp;quot;</code></td>
+<td align="center">&quot;</td>
+</tr>
+<tr>
+<td align="left"><code>&amp;Delta;</code></td>
+<td align="center">&Delta;</td>
+<td align="left"><code>&amp;varr;</code></td>
+<td align="center">&varr;</td>
+<td align="left"><code>&amp;Ouml;</code></td>
+<td align="center">&Ouml;</td>
+<td align="left"><code>&amp;ldquo;</code></td>
+<td align="center">&ldquo;</td>
+</tr>
+<tr>
+<td align="left"><code>&amp;delta;</code></td>
+<td align="center">&delta;</td>
+<td align="left"><code>&amp;nearr;</code></td>
+<td align="center">&nearr;</td>
+<td align="left"><code>&amp;szlig;</code></td>
+<td align="center">&szlig;</td>
+<td align="left"><code>&amp;rdquo;</code></td>
+<td align="center">&rdquo;</td>
+</tr>
+<tr>
+<td align="left"><code>&amp;sim;</code></td>
+<td align="center">&sim;</td>
+<td align="left"><code>&amp;nwarr;</code></td>
+<td align="center">&nwarr;</td>
+<td align="left"><code>&amp;euro;</code></td>
+<td align="center">&euro;</td>
+<td align="left"><code>&amp;Oslash;</code></td>
+<td align="center">&Oslash;</td>
+</tr>
+<tr>
+<td align="left"><code>&amp;lowast;</code></td>
+<td align="center">&lowast;</td>
+<td align="left"><code>&amp;searr;</code></td>
+<td align="center">&searr;</td>
+<td align="left"><code>&amp;hellip;</code></td>
+<td align="center">&hellip;</td>
+<td align="left"><code>&amp;oslash;</code></td>
+<td align="center">&oslash;</td>
+</tr>
+<tr>
+<td align="left"><code>&amp;semi;</code></td>
+<td align="center">&semi;</td>
+<td align="left"><code>&amp;swarr;</code></td>
+<td align="center">&swarr;</td>
+<td align="left"><code>&amp;percnt;</code></td>
+<td align="center">&percnt;</td>
+<td align="left"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="left"><code>&amp;colon;</code></td>
+<td align="center">&colon;</td>
+<td align="left"><code>&amp;lsqb;</code></td>
+<td align="center">&lsqb;</td>
+<td align="left"><code>&amp;divide;</code></td>
+<td align="center">&divide;</td>
+<td align="left"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="left"><code>&amp;amp;</code></td>
+<td align="center">&amp;</td>
+<td align="left"><code>&amp;rsqb;</code></td>
+<td align="center">&rsqb;</td>
+<td align="left"><code>&amp;forall;</code></td>
+<td align="center">&forall;</td>
+<td align="left"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="left"><code>&amp;comma;</code></td>
+<td align="center">&comma;</td>
+<td align="left"><code>&amp;infin;</code></td>
+<td align="center">&infin;</td>
+<td align="left"><code>&amp;exist;</code></td>
+<td align="center">&exist;</td>
+<td align="left"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="left"><code>&amp;check;</code></td>
+<td align="center">&check;</td>
+<td align="left"><code>&amp;times;</code></td>
+<td align="center">&times;</td>
+<td align="left"><code>&amp;lambda;</code></td>
+<td align="center">&lambda;</td>
+<td align="left"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="left"><code>&amp;mu;</code></td>
+<td align="center">&mu;</td>
+<td align="left"><code>&amp;nu;</code></td>
+<td align="center">&nu;</td>
+<td align="left"><code>&amp;pi;</code></td>
+<td align="center">&pi;</td>
+<td align="left"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="left"><code>&amp;rho;</code></td>
+<td align="center">&rho;</td>
+<td align="left"><code>&amp;nbsp;</code></td>
+<td align="center"><em>non-breaking space</em></td>
+<td align="left"><code>&amp;dash;</code></td>
+<td align="center">&dash;</td>
+<td align="left"></td>
+<td align="center"></td>
+</tr>
+</tbody>
+</table>
 <h3 id="numeric-character-references">Numeric Character References<a class="headerlink" href="#numeric-character-references" title="Permanent link"></a></h3>
 <p><a id="numeric-character-references"></a></p>
 <p>md2pptx supports a few <a href="https://en.wikipedia.org/wiki/Numeric_character_reference">HTML numeric character references</a>&colon;</p>
@@ -4306,21 +4492,59 @@ For example:</p>
 <p><a id="slide-heading-levels-topheadinglevel"></a></p>
 <h4 id="slide-heading-levels-topheadinglevel">Slide Heading Levels - <code>TopHeadingLevel</code><a class="headerlink" href="#slide-heading-levels-topheadinglevel" title="Permanent link"></a></h4>
 <p>The usual heading levels for different types of slides are as follows:</p>
-<p>[]
-|Level|Slide type|
-|-:|:-|
-|1|Presentation title|
-|2|Section title|
-|3|Content|
-|4|Card|</p>
+<table>
+<thead>
+<tr>
+<th align="right">Level</th>
+<th align="left">Slide type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="right">1</td>
+<td align="left">Presentation title</td>
+</tr>
+<tr>
+<td align="right">2</td>
+<td align="left">Section title</td>
+</tr>
+<tr>
+<td align="right">3</td>
+<td align="left">Content</td>
+</tr>
+<tr>
+<td align="right">4</td>
+<td align="left">Card</td>
+</tr>
+</tbody>
+</table>
 <p>However, you might need to &ldquo;demote&rdquo; all these slide types to, say:</p>
-<p>[]
-|Level|Slide type|
-|-:|:-|
-|2|Presentation title|
-|3|Section title|
-|4|Content|
-|5|Card|</p>
+<table>
+<thead>
+<tr>
+<th align="right">Level</th>
+<th align="left">Slide type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="right">2</td>
+<td align="left">Presentation title</td>
+</tr>
+<tr>
+<td align="right">3</td>
+<td align="left">Section title</td>
+</tr>
+<tr>
+<td align="right">4</td>
+<td align="left">Content</td>
+</tr>
+<tr>
+<td align="right">5</td>
+<td align="left">Card</td>
+</tr>
+</tbody>
+</table>
 <p>This might be, for example, because the same Markdown is destined for a formal publication, where the top level heading is reserved for the publication&rsquo;s title. To achieve this demotion you only need to specify the top level in the slide hierarchy:</p>
 <pre><code>TopHeadingLevel: 2
 </code></pre>
@@ -4852,18 +5076,72 @@ For example</p>
 <h3 id="slide-template-sequence">Slide Template Sequence<a class="headerlink" href="#slide-template-sequence" title="Permanent link"></a></h3>
 <p><a id="slide-template-sequence"></a></p>
 <p>The following table shows how each slide type is created.</p>
-<p>[]
-|Slide Type|Origin|Metadata<br/>Override|Non-Title Content|
-|:-|:-|:-|:-|
-|Processing Summary|Original slide from Template||Metadata: Second Shape|
-|Presentation Title|Slide Layout 0|TitleSlideLayout|Subtitle: Second Shape|
-|Section|Slide Layout 1|SectionSlideLayout|Subtitle: Second Shape|
-|Graphic With Title|Slide Layout 5|TitleOnlyLayout|Graphic: New Shape|
-|Graphic Without Title|Slide Layout 6|BlankLayout|Graphic: New Shape|
-|Code|Slide Layout 5|TitleOnlyLayout|Code: New Shape|
-|Content|Slide Layout 2|ContentSlideLayout|Bulleted List: Second Shape|
-|Table|Slide Layout 5|TitleOnlyLayout|Table: New Shape|
-|Tasks|Slide Layout 2|ContentSlideLayout| Bulleted List: Second Shape|</p>
+<table>
+<thead>
+<tr>
+<th align="left">Slide Type</th>
+<th align="left">Origin</th>
+<th align="left">Metadata<br/>Override</th>
+<th align="left">Non-Title Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">Processing Summary</td>
+<td align="left">Original slide from Template</td>
+<td align="left"></td>
+<td align="left">Metadata: Second Shape</td>
+</tr>
+<tr>
+<td align="left">Presentation Title</td>
+<td align="left">Slide Layout 0</td>
+<td align="left">TitleSlideLayout</td>
+<td align="left">Subtitle: Second Shape</td>
+</tr>
+<tr>
+<td align="left">Section</td>
+<td align="left">Slide Layout 1</td>
+<td align="left">SectionSlideLayout</td>
+<td align="left">Subtitle: Second Shape</td>
+</tr>
+<tr>
+<td align="left">Graphic With Title</td>
+<td align="left">Slide Layout 5</td>
+<td align="left">TitleOnlyLayout</td>
+<td align="left">Graphic: New Shape</td>
+</tr>
+<tr>
+<td align="left">Graphic Without Title</td>
+<td align="left">Slide Layout 6</td>
+<td align="left">BlankLayout</td>
+<td align="left">Graphic: New Shape</td>
+</tr>
+<tr>
+<td align="left">Code</td>
+<td align="left">Slide Layout 5</td>
+<td align="left">TitleOnlyLayout</td>
+<td align="left">Code: New Shape</td>
+</tr>
+<tr>
+<td align="left">Content</td>
+<td align="left">Slide Layout 2</td>
+<td align="left">ContentSlideLayout</td>
+<td align="left">Bulleted List: Second Shape</td>
+</tr>
+<tr>
+<td align="left">Table</td>
+<td align="left">Slide Layout 5</td>
+<td align="left">TitleOnlyLayout</td>
+<td align="left">Table: New Shape</td>
+</tr>
+<tr>
+<td align="left">Tasks</td>
+<td align="left">Slide Layout 2</td>
+<td align="left">ContentSlideLayout</td>
+<td align="left">Bulleted List: Second Shape</td>
+</tr>
+</tbody>
+</table>
 <p><strong>Notes:</strong></p>
 <ol>
 <li>When looking for a title md2pptx looks first for a title shape and, failing that, uses the first shape. It&rsquo;s the Template Designer&rsquo;s responsibility to size and position it sensibly.</li>

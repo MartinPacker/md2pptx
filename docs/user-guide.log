@@ -1,6 +1,6 @@
 
-mdpre Markdown Preprocessor v1.2+ (28 April, 2026)
-==================================================
+mdpre Markdown Preprocessor v1.2+ (1 May, 2026)
+===============================================
 
 Cheetah templating engine not imported
 
@@ -31,21 +31,21 @@ Def python_implementation = CPython
 
 Def processor = arm
 
-Def mdpre_date = 28 April, 2026
+Def mdpre_date = 1 May, 2026
 
 Def mdpre_level = 1.2+
 
 Def userid = martinpacker
 
-Def day = 30
+Def day = 3
 
-Def month = April
+Def month = May
 
 Def year = 2026
 
-Def time = 20&colon;27
+Def time = 13&colon;31
 
-Def date = 30 April&comma; 2026
+Def date = 3 May&comma; 2026
 
 Def TOC = Table Of Contents
 
@@ -834,7 +834,7 @@ CSV Stop
 
 .....  Building This User Guide
 
---------------------------------------------------
+-----------------------------------------------
 - Processing completed.
---------------------------------------------------
+-----------------------------------------------
 

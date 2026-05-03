@@ -170,12 +170,10 @@ To quote from the python-pptx license statement:
 
 ## Change Log
 
-
-
 =colalign l r l
 =csv
 Level,Date,What
-6.3.1+,30&nbsp;April&nbsp;2026,@tmchow fixed [Issue 211](https://github.com/MartinPacker/md2pptx/issues/211) where a missing template file would cause termination.
+6.3.2,3&nbsp;May&nbsp;2026,@tmchow fixed [Issue 211](https://github.com/MartinPacker/md2pptx/issues/211) where a missing template file would cause termination.
 6.3.1,18&nbsp;April&nbsp;2026,Fixed crasher in Section Expansion code
 6.3,26&nbsp;March&nbsp;2026,Introduced [XML-Related Helper routines](#xml-related-helper-routines).
 6.2,25&nbsp;January&nbsp;2026,You can now have multiple lists - bulleted or numbered - on a slide. Added [figure caption](#figure-captions) support.
