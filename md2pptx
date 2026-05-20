@@ -5006,6 +5006,8 @@ globals.processingOptions.setOptionValuesArray(
 
 globals.processingOptions.setOptionValues("monoFont", "Courier")
 
+globals.processingOptions.setOptionValues("mathxsl", "")
+
 topHeadingLevel = 1
 titleLevel = topHeadingLevel
 sectionLevel = titleLevel + 1
@@ -5694,6 +5696,9 @@ for line in metadata_lines:
         applescriptPrologueFiles.append(prologFile)
         globals.processingOptions.setOptionValues("applescriptprologue", applescriptPrologueFiles)
         
+    elif name == "mathxsl":
+        globals.processingOptions.setOptionValues(name, os.path.expanduser(value))
+
     elif name in ["applescriptepilog", "applescriptepilogue"]:
         if value[:1] == "!":
             epilogFile = md2pptx_path + os.sep + "applescript" + os.sep + value[1:]
@@ -5704,6 +5709,11 @@ for line in metadata_lines:
         applescriptEpilogueFiles.append(epilogFile)
         globals.processingOptions.setOptionValues("applescriptepilogue", applescriptEpilogueFiles)
         
+# Set up inline math inserter if mathxsl option is provided
+if (mathxsl_path := globals.processingOptions.getCurrentOption("mathxsl")) != "":
+    from paragraph import setup_math_inserter
+    setup_math_inserter(mathxsl_path)
+
 # Add any prologue file contents to the AppleScript that will be generated
 if (applescriptPrologueFiles := globals.processingOptions.getCurrentOption("applescriptprologue")) is not []:
     for prologueFile in applescriptPrologueFiles:
