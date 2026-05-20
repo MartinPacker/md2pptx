@@ -1023,9 +1023,24 @@ def findBodyShape(slide):
 # Returns a top, left, width, height for content to be rendered into
 def getContentRect(presentation, slide, topOfContent, margin):
     numbersHeight = globals.processingOptions.getCurrentOption("numbersHeight")
-    # Left and right are always defined by the margins
-    rectLeft = margin
-    rectWidth = presentation.slide_width - 2 * margin
+    useTemplateLayout = globals.processingOptions.getCurrentOption("useTemplateLayout")
+    if useTemplateLayout:
+        # When useTemplateLayout is enabled, prefer the template body placeholder's
+        # left/width so content stays within the template's defined area.
+        bodyShape = findBodyShape(slide)
+        if bodyShape is not None:
+            rectLeft = max(margin, int(bodyShape.left))
+            rectWidth = min(int(bodyShape.width), presentation.slide_width - rectLeft - margin)
+            if rectWidth <= 0:
+                rectLeft = margin
+                rectWidth = presentation.slide_width - 2 * margin
+        else:
+            rectLeft = margin
+            rectWidth = presentation.slide_width - 2 * margin
+    else:
+        # Left and right are always defined by the margins
+        rectLeft = margin
+        rectWidth = presentation.slide_width - 2 * margin
     if topOfContent == 0:
         # There is no title on this slide
         rectTop = margin
@@ -1036,6 +1051,29 @@ def getContentRect(presentation, slide, topOfContent, margin):
         rectHeight = presentation.slide_height - rectTop - max(margin, numbersHeight)
 
     return (rectLeft, rectWidth, rectTop, rectHeight)
+
+
+def applyBodyIndentation(destination_shape, slide):
+    """If useTemplateLayout is enabled, copy paragraph indentation/margin
+    settings from the template body placeholder to the destination shape.
+    """
+    if not globals.processingOptions.getCurrentOption("useTemplateLayout"):
+        return
+    try:
+        body = findBodyShape(slide)
+        if body is None:
+            return
+        src_pPr = body.text_frame.paragraphs[0]._pPr
+        for p in destination_shape.text_frame.paragraphs:
+            dst_pPr = p._pPr
+            if dst_pPr is None:
+                dst_pPr = OxmlElement('a:pPr')
+                p._p.append(dst_pPr)
+            for attr in ('marL', 'marR', 'indent'):
+                if src_pPr is not None and src_pPr.get(attr) is not None:
+                    dst_pPr.set(attr, src_pPr.get(attr))
+    except Exception:
+        return
 
 
 # Finds the title and adds the text to it, returning title bottom, title shape, and
@@ -1668,6 +1706,8 @@ def createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber):
         renderingRectangle.height,
     )
 
+    applyBodyIndentation(codeBox, slide)
+
     # Try to control text frame but SHAPE_TO_FIT_TEXT doesn't seem to work
     tf = codeBox.text_frame
     tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
@@ -1861,6 +1901,8 @@ def createAbstractSlide(presentation, slideNumber, titleText, paragraphs):
 
     abstractBox = findBodyShape(slide)
 
+
+    applyBodyIndentation(abstractBox, slide)
 
     p = abstractBox.text_frame.paragraphs[0]
     tf = abstractBox.text_frame
@@ -5051,6 +5093,8 @@ globals.processingOptions.setOptionValuesArray(
 
 globals.processingOptions.setOptionValues("marginBase", Inches(0.2))
 
+globals.processingOptions.setOptionValues("useTemplateLayout", False)
+
 globals.processingOptions.setOptionValues("transition", "none")
 
 globals.processingOptions.setOptionValues("deleteFirstSlide", False)
@@ -5255,6 +5299,12 @@ for line in metadata_lines:
             globals.processingOptions.setOptionValues(name, True)
         else:
              globals.processingOptions.setOptionValues(name, False)
+
+    elif name == "usetemplatelayout":
+        if value.lower() == "yes":
+            globals.processingOptions.setOptionValues(name, True)
+        else:
+            globals.processingOptions.setOptionValues(name, False)
 
     elif name == "hidden":
         if value.lower() == "yes":
