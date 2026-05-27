@@ -77,58 +77,9 @@ def inject_inline_math(p_elem: etree._Element, omath_elem: etree._Element) -> No
         p_elem.append(a14m)
 
 
-def _rPr(lang: str = "en-US", bold: bool = False, italic: bool = False) -> etree._Element:
-    """Build <a:rPr> with Cambria Math font."""
-    el = etree.Element(_t(A, "rPr"))
-    el.set("lang", lang)
-    el.set("b", "1" if bold else "0")
-    el.set("i", "1" if italic else "0")
-    el.set("smtClean", "0")
-    latin = etree.SubElement(el, _t(A, "latin"))
-    latin.set("typeface", "Cambria Math")
-    latin.set("panose", "02040503050406030204")
-    latin.set("pitchFamily", "18")
-    latin.set("charset", "0")
-    return el
 
-
-def inject_block_math(p_elem: etree._Element, omath_elem: etree._Element,
-                      eq_number: str | None = None) -> None:
-    """Inject block math via <m:oMathPara> with optional equation number.
-
-    When eq_number is given, wraps the equation in <m:eqArr> and appends a
-    # separator run followed by a <m:d> delimiter — identical to the structure
-    PowerPoint produces when the user types '#(n)' in its own equation editor.
-    """
-    if eq_number:
-        eqArr = etree.Element(_t(M, "eqArr"))
-
-        eqArrPr = etree.SubElement(eqArr, _t(M, "eqArrPr"))
-        ctrlPr  = etree.SubElement(eqArrPr, _t(M, "ctrlPr"))
-        ctrlPr.append(_rPr(italic=True))
-
-        e_elem = etree.SubElement(eqArr, _t(M, "e"))
-
-        for child in list(omath_elem):
-            e_elem.append(child)
-
-        hash_r = etree.SubElement(e_elem, _t(M, "r"))
-        hash_r.append(_rPr(italic=True))
-        hash_t = etree.SubElement(hash_r, _t(M, "t"))
-        hash_t.text = "#"
-
-        d_elem  = etree.SubElement(e_elem, _t(M, "d"))
-        dPr     = etree.SubElement(d_elem, _t(M, "dPr"))
-        ctrlPr2 = etree.SubElement(dPr, _t(M, "ctrlPr"))
-        ctrlPr2.append(_rPr(italic=True))
-        d_e     = etree.SubElement(d_elem, _t(M, "e"))
-        num_r   = etree.SubElement(d_e, _t(M, "r"))
-        num_r.append(_rPr(italic=True))
-        num_t   = etree.SubElement(num_r, _t(M, "t"))
-        num_t.text = eq_number
-
-        omath_elem.append(eqArr)
-
+def inject_block_math(p_elem: etree._Element, omath_elem: etree._Element) -> None:
+    """Inject a centered block equation via <m:oMathPara centerGroup>."""
     oMathPara   = etree.Element(_t(M, "oMathPara"), nsmap={"m": M})
     oMathParaPr = etree.SubElement(oMathPara, _t(M, "oMathParaPr"))
     jc          = etree.SubElement(oMathParaPr, _t(M, "jc"))
@@ -143,6 +94,45 @@ def inject_block_math(p_elem: etree._Element, omath_elem: etree._Element,
         endParaRPr.addprevious(a14m)
     else:
         p_elem.append(a14m)
+
+
+def inject_numbered_block_math(p_elem: etree._Element, omath_elem: etree._Element,
+                                eq_number: str) -> None:
+    """Inject a numbered block equation using DrawingML tab stops.
+
+    The paragraph pPr must already contain a centred tab at shape_width//2
+    and a right-aligned tab at shape_width (added by the caller).  Content
+    layout: [tab→centre] [inline oMath] [tab→right] [(eq_number)]
+    """
+    def _append(elem: etree._Element) -> None:
+        endParaRPr = p_elem.find(_t(A, "endParaRPr"))
+        if endParaRPr is not None:
+            endParaRPr.addprevious(elem)
+        else:
+            p_elem.append(elem)
+
+    # Leading tab: moves insertion point to the centre tab stop
+    r_tab1 = etree.Element(_t(A, "r"))
+    etree.SubElement(r_tab1, _t(A, "rPr"))
+    etree.SubElement(r_tab1, _t(A, "t")).text = "\t"
+    _append(r_tab1)
+
+    # Inline equation (no oMathPara wrapper so it stays on the same line)
+    a14m = etree.Element(_t(A14, "m"), nsmap={"a14": A14})
+    a14m.append(omath_elem)
+    _append(a14m)
+
+    # Trailing tab: moves insertion point to the right tab stop
+    r_tab2 = etree.Element(_t(A, "r"))
+    etree.SubElement(r_tab2, _t(A, "rPr"))
+    etree.SubElement(r_tab2, _t(A, "t")).text = "\t"
+    _append(r_tab2)
+
+    # Equation number text
+    r_num = etree.Element(_t(A, "r"))
+    etree.SubElement(r_num, _t(A, "rPr"))
+    etree.SubElement(r_num, _t(A, "t")).text = f"({eq_number})"
+    _append(r_num)
 
 
 def _prep_math_shape(shape) -> None:
@@ -244,11 +234,24 @@ class PptxMath:
         pPr.set("marL", "0")
         pPr.set("indent", "0")
         etree.SubElement(pPr, _t(A, "buNone"))
+        if eq_number:
+            # Centre tab at midpoint, right tab at shape right edge
+            w = renderingRectangle.width
+            tabLst = etree.SubElement(pPr, _t(A, "tabLst"))
+            tab_c = etree.SubElement(tabLst, _t(A, "tab"))
+            tab_c.set("pos", str(w // 2))
+            tab_c.set("algn", "ctr")
+            tab_r = etree.SubElement(tabLst, _t(A, "tab"))
+            tab_r.set("pos", str(w))
+            tab_r.set("algn", "r")
         p._p.insert(0, pPr)
 
         try:
             omath = inserter.make_inline_omml(latex)
-            inject_block_math(p._p, omath, eq_number)
+            if eq_number:
+                inject_numbered_block_math(p._p, omath, eq_number)
+            else:
+                inject_block_math(p._p, omath)
         except Exception as e:
             sys.stderr.write(f"Math conversion failed: {e}\n")
             p.text = latex
