@@ -105,7 +105,7 @@ def inject_block_math(p_elem: etree._Element, omath_elem: etree._Element,
 
         eqArrPr = etree.SubElement(eqArr, _t(M, "eqArrPr"))
         ctrlPr  = etree.SubElement(eqArrPr, _t(M, "ctrlPr"))
-        ctrlPr.append(_rPr())
+        ctrlPr.append(_rPr(italic=True))
 
         e_elem = etree.SubElement(eqArr, _t(M, "e"))
 
@@ -120,10 +120,10 @@ def inject_block_math(p_elem: etree._Element, omath_elem: etree._Element,
         d_elem  = etree.SubElement(e_elem, _t(M, "d"))
         dPr     = etree.SubElement(d_elem, _t(M, "dPr"))
         ctrlPr2 = etree.SubElement(dPr, _t(M, "ctrlPr"))
-        ctrlPr2.append(_rPr())
+        ctrlPr2.append(_rPr(italic=True))
         d_e     = etree.SubElement(d_elem, _t(M, "e"))
         num_r   = etree.SubElement(d_e, _t(M, "r"))
-        num_r.append(_rPr())
+        num_r.append(_rPr(italic=True))
         num_t   = etree.SubElement(num_r, _t(M, "t"))
         num_t.text = eq_number
 
@@ -241,6 +241,9 @@ class PptxMath:
         p = tf.paragraphs[0]
 
         pPr = etree.Element(_t(A, "pPr"))
+        pPr.set("marL", "0")
+        pPr.set("indent", "0")
+        etree.SubElement(pPr, _t(A, "buNone"))
         p._p.insert(0, pPr)
 
         try:
