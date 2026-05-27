@@ -15,26 +15,6 @@ from processingOptions import *
 from symbols import resolveSymbols
 from colour import *
 
-try:
-    from pptx_math import MathInserter, inject_inline_math as _inject_inline_math
-    _PPTX_MATH_AVAILABLE = True
-except ImportError:
-    _PPTX_MATH_AVAILABLE = False
-
-_math_inserter = None
-
-
-def setup_math_inserter(xsl_path: str) -> None:
-    """Initialise the module-level math inserter with the given MML2OMML.XSL path."""
-    global _math_inserter
-    if not _PPTX_MATH_AVAILABLE:
-        print("Warning: pptx_math module not found. Math insertion disabled.")
-        return
-    try:
-        _math_inserter = MathInserter(xsl_path=xsl_path)
-    except Exception as e:
-        print(f"Warning: Failed to initialise math inserter: {e}")
-
 # Following functions are workarounds for python-pptx not having these functions for the font object
 def setSubscript(font):
     if font.size is None:
@@ -134,9 +114,6 @@ def parseText(text):
     text2 = text2.replace(" * ", " &lowast; ")
     if text2[-2:] == " *":
         text2 = text2[:-2] + " &lowast;"
-
-    # Replace any $...$ (inline math) with sentinel \uFDE4...\uFDE4
-    text2 = re.sub(r'\$([^$\n]+)\$', lambda m: u"\uFDE4" + m.group(1) + u"\uFDE4", text2)
 
     # Replace any footnote reference starts with char "\uFDD0"
     text2 = text2.replace("[^", u"\uFDD0")
@@ -556,17 +533,6 @@ def parseText(text):
                 fragment = ""
                 state = "fnref"
 
-        elif c == u"\uFDE4":
-            # Inline math delimiter: $...$
-            if state == "N":
-                textArray.append([state, fragment])
-                fragment = ""
-                state = "Math"
-            else:
-                textArray.append([state, fragment])
-                fragment = ""
-                state = "N"
-
         else:
             fragment = fragment + c
 
@@ -629,21 +595,6 @@ def addFormattedText(p, text):
 
             # Ensure "\#" is rendered as a literal octothorpe
             subfragment = subfragment.replace("&#x23;", "#")
-
-            # Inline math: inject OMML directly into the paragraph XML, skip run creation
-            if fragType == "Math":
-                if _math_inserter is not None and _PPTX_MATH_AVAILABLE:
-                    try:
-                        omath = _math_inserter.make_inline_omml(subfragment)
-                        _inject_inline_math(p._p, omath)
-                    except Exception:
-                        run = p.add_run()
-                        run.text = f"${subfragment}$"
-                else:
-                    run = p.add_run()
-                    run.text = f"${subfragment}$"
-                flattenedText = flattenedText + f"${subfragment}$"
-                continue
 
             run = p.add_run()
 
