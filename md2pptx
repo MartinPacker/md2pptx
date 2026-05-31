@@ -401,11 +401,6 @@ def startswithOneOf(haystack, needleList):
     return False
 
 
-# Splits a string into words, converting each word to an integer. Returns them as a
-# sorted list
-def sortedNumericList(string):
-    return sorted(list(map(int, set(string.split()))))
-
 
 def substituteFooterVariables(footerText, liveFooters):
     # Decide if the footer should be a live link to the section slide
