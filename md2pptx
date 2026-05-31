@@ -2022,9 +2022,9 @@ def createListBlock(slideInfo, slide, renderingRectangle, listBlockNumber):
     cardTitleBackgrounds = globals.processingOptions.getCurrentOption("cardtitlebackground")
     cardColours = globals.processingOptions.getCurrentOption("cardcolour")
     cardDividerColour = globals.processingOptions.getCurrentOption("carddividercolour")
-    cardGraphicSize = globals.processingOptions.getCurrentOption("cardgraphicsize")
+    cardGraphicSize = globals.processingOptions.getCurrentOption("cardGraphicSize")
     cardGraphicPosition = globals.processingOptions.getCurrentOption("cardGraphicPosition")
-    cardGraphicPadding = int(Inches(globals.processingOptions.getCurrentOption("cardgraphicpadding")))
+    cardGraphicPadding = int(Inches(globals.processingOptions.getCurrentOption("cardGraphicPadding")))
     marginBase = globals.processingOptions.getCurrentOption("marginBase")
     pageTitleSize = globals.processingOptions.getCurrentOption("pageTitleSize")
     pageSubtitleSize = globals.processingOptions.getCurrentOption("pageSubtitleSize")
@@ -3858,17 +3858,14 @@ def flattenBullets(bullets: list) -> list:
     return flattenedBullets
 
 
-def funnelColourOptionName(name: str) -> str:
-    funnelColourOptions = {
-        "funneltitlecolour": "funnelTitleColour",
-        "funneltitlecolor": "funnelTitleColour",
-        "funnelbordercolour": "funnelBorderColour",
-        "funnelbordercolor": "funnelBorderColour",
-        "funneltextcolour": "funnelTextColour",
-        "funneltextcolor": "funnelTextColour",
-    }
 
-    return funnelColourOptions[name]
+def dynamicallySetColourOption(optionName: str, optionValue: str) -> None:
+    if optionValue in ["default", "pres", "pop", "prev"]:
+        globals.processingOptions.dynamicallySetOption(optionName, optionValue, "")
+    else:
+        globals.processingOptions.dynamicallySetOption(
+            optionName, parseColour(optionValue.strip()), ""
+        )
 
 
 def sectionSlideKey(titleText: str) -> str:
@@ -5405,8 +5402,14 @@ for line in metadata_lines:
         if value.lower() == "yes":
             globals.processingOptions.setOptionValues(name, True)
 
-    elif name in ["cardpercent", "cardgraphicsize", "cardgraphicpadding"]:
+    elif name == "cardpercent":
         globals.processingOptions.setOptionValues(name, float(value))
+
+    elif name == "cardgraphicsize":
+        globals.processingOptions.setOptionValues("cardGraphicSize", float(value))
+
+    elif name == "cardgraphicpadding":
+        globals.processingOptions.setOptionValues("cardGraphicPadding", float(value))
 
     elif name == "cardlayout":
         if value in ["horizontal", "vertical"]:
@@ -5434,7 +5437,7 @@ for line in metadata_lines:
 
     elif name == "cardgraphicposition":
         if value in ["before", "after"]:
-            globals.processingOptions.setOptionValues(name, value)
+            globals.processingOptions.setOptionValues("cardGraphicPosition", value)
         else:
             print(
                 f'cardGraphicPosition value \'{value}\' unsupported. "before",or "after" required.'
@@ -5653,7 +5656,7 @@ for line in metadata_lines:
         )
 
     elif name == "funnellabelspercent":
-        globals.processingOptions.setOptionValues(name, float(value))
+        globals.processingOptions.setOptionValues("funnelLabelsPercent", float(value))
 
     elif name in ["funnellabelposition", "funnellabelsposition"]:
         if value in ["before", "after"]:
@@ -6074,10 +6077,6 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
                     "pagesubtitlesize",
                     # Cards' vertical percent of content area
                     "cardpercent",
-                    # Card graphic's vertical or horizontal space
-                    "cardgraphicsize",
-                    # Card graphic padding
-                    "cardgraphicpadding",
                     # Base text size
                     "basetextsize",
                     # Base text decrement
@@ -6086,8 +6085,6 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
                     "horizontalcardgap",
                     # Vertical card gap
                     "verticalcardgap",
-                    # Funnel label percentage
-                    "funnellabelspercent",
                 ]:
                     globals.processingOptions.dynamicallySetOption(
                         # Use the metadata key directly
@@ -6183,10 +6180,22 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
                         metadataKey, metadataValue, ""
                     )
 
+                elif metadataKey == "cardgraphicsize":
+                    # Card graphic's vertical or horizontal space
+                    globals.processingOptions.dynamicallySetOption(
+                        "cardGraphicSize", metadataValue, "float"
+                    )
+
+                elif metadataKey == "cardgraphicpadding":
+                    # Card graphic padding
+                    globals.processingOptions.dynamicallySetOption(
+                        "cardGraphicPadding", metadataValue, "float"
+                    )
+
                 elif metadataKey == "cardgraphicposition":
                     # Card graphic position - before or after
                     globals.processingOptions.dynamicallySetOption(
-                        metadataKey, metadataValue, ""
+                        "cardGraphicPosition", metadataValue, ""
                     )
 
                 elif metadataKey == "cardshape":
@@ -6235,24 +6244,17 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
                         "funnelColours", valueArray2, ""
                     )
 
-                elif metadataKey in [
-                    "funneltitlecolour",
-                    "funneltitlecolor",
-                    "funnelbordercolour",
-                    "funnelbordercolor",
-                    "funneltextcolour",
-                    "funneltextcolor",
-                ]:
-                    # Funnel single colour options
-                    funnelColourOption = funnelColourOptionName(metadataKey)
-                    if metadataValue in ["default", "pres", "pop", "prev"]:
-                        globals.processingOptions.dynamicallySetOption(
-                            funnelColourOption, metadataValue, ""
-                        )
-                    else:
-                        globals.processingOptions.dynamicallySetOption(
-                            funnelColourOption, parseColour(metadataValue.strip()), ""
-                        )
+                elif metadataKey in ["funneltitlecolour", "funneltitlecolor"]:
+                    # Funnel single title colour option
+                    dynamicallySetColourOption("funnelTitleColour", metadataValue)
+
+                elif metadataKey in ["funnelbordercolour", "funnelbordercolor"]:
+                    # Funnel single border colour option
+                    dynamicallySetColourOption("funnelBorderColour", metadataValue)
+
+                elif metadataKey in ["funneltextcolour", "funneltextcolor"]:
+                    # Funnel single text colour option
+                    dynamicallySetColourOption("funnelTextColour", metadataValue)
 
                 elif metadataKey == "backgroundimage":
                     # Slide background image
@@ -6397,6 +6399,12 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
                         print(
                             f"Invalid value for {metadataKey}: {metadataValue} in '{line}"
                         )
+
+                elif metadataKey == "funnellabelspercent":
+                    # Funnel label percentage
+                    globals.processingOptions.dynamicallySetOption(
+                        "funnelLabelsPercent", metadataValue, "float"
+                    )
 
                 elif metadataKey in ["funnellabelposition", "funnellabelsposition"]:
                     if metadataValue.lower() in [
