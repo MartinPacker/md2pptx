@@ -1,0 +1,16 @@
+[project]
+name = "md2pptx"
+version = "6.3.2"
+description = "Convert a subset of Markdown into PowerPoint presentations."
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "cairosvg",
+    "graphviz",
+    "lxml",
+    "pillow",
+    "python-pptx",
+]
+
+[tool.uv]
+package = false
