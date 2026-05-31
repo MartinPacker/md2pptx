@@ -570,7 +570,7 @@ def applyTableLineStyling(
                     columnStyling = ""
                 cellStyling[rowNumber][columnNumber] = rowStyling + columnStyling
 
-    elif wholeTableLineStyling == "all":
+    elif wholeTableLineStyling in ["all", "both"]:
         # All edges of all cells have lines
         for rowNumber, row in enumerate(table.rows):
             lastColumn = len(row.cells) - 1
