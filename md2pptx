@@ -5415,7 +5415,7 @@ for line in metadata_lines:
                 f'CardTitlePosition value \'{value}\' unsupported. "inside", "above", "before", or "after" required.'
             )
 
-    elif name == "cardGraphicPosition":
+    elif name == "cardgraphicposition":
         if value in ["before", "after"]:
             globals.processingOptions.setOptionValues(name, value)
         else:
@@ -6059,6 +6059,8 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
                     "cardpercent",
                     # Card graphic's vertical or horizontal space
                     "cardgraphicsize",
+                    # Card graphic padding
+                    "cardgraphicpadding",
                     # Base text size
                     "basetextsize",
                     # Base text decrement
@@ -6164,7 +6166,7 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
                         metadataKey, metadataValue, ""
                     )
 
-                elif metadataKey == "cardGraphicPosition":
+                elif metadataKey == "cardgraphicposition":
                     # Card graphic position - before or after
                     globals.processingOptions.dynamicallySetOption(
                         metadataKey, metadataValue, ""
