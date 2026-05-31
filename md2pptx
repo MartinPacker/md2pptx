@@ -3858,6 +3858,19 @@ def flattenBullets(bullets: list) -> list:
     return flattenedBullets
 
 
+def funnelColourOptionName(name: str) -> str:
+    funnelColourOptions = {
+        "funneltitlecolour": "funnelTitleColour",
+        "funneltitlecolor": "funnelTitleColour",
+        "funnelbordercolour": "funnelBorderColour",
+        "funnelbordercolor": "funnelBorderColour",
+        "funneltextcolour": "funnelTextColour",
+        "funneltextcolor": "funnelTextColour",
+    }
+
+    return funnelColourOptions[name]
+
+
 def createTOCSlide(presentation, slideNumber, titleText, bullets, tocStyle):
     global SectionSlides
     titleOnlyLayout = globals.processingOptions.getCurrentOption("titleOnlyLayout")
@@ -5638,9 +5651,9 @@ for line in metadata_lines:
     elif name == "funnellabelspercent":
         globals.processingOptions.setOptionValues(name, float(value))
 
-    elif name == "funnellabelposition":
+    elif name in ["funnellabelposition", "funnellabelsposition"]:
         if value in ["before", "after"]:
-            globals.processingOptions.setOptionValues(name, value)
+            globals.processingOptions.setOptionValues("funnelLabelPosition", value)
         else:
             print(
                 f'funnelLabelPosition value \'{value}\' unsupported. "before" or "after" required.'
@@ -6220,13 +6233,22 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
 
                 elif metadataKey in [
                     "funneltitlecolour",
+                    "funneltitlecolor",
                     "funnelbordercolour",
+                    "funnelbordercolor",
                     "funneltextcolour",
+                    "funneltextcolor",
                 ]:
                     # Funnel single colour options
-                    globals.processingOptions.dynamicallySetOption(
-                        metadataKey, metadataValue, ""
-                    )
+                    funnelColourOption = funnelColourOptionName(metadataKey)
+                    if metadataValue in ["default", "pres", "pop", "prev"]:
+                        globals.processingOptions.dynamicallySetOption(
+                            funnelColourOption, metadataValue, ""
+                        )
+                    else:
+                        globals.processingOptions.dynamicallySetOption(
+                            funnelColourOption, parseColour(metadataValue.strip()), ""
+                        )
 
                 elif metadataKey == "backgroundimage":
                     # Slide background image
@@ -6372,13 +6394,13 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
                             f"Invalid value for {metadataKey}: {metadataValue} in '{line}"
                         )
 
-                elif metadataKey == "funnellabelposition":
+                elif metadataKey in ["funnellabelposition", "funnellabelsposition"]:
                     if metadataValue.lower() in [
                         "before",
                         "after",
                     ]:
                         globals.processingOptions.dynamicallySetOption(
-                            metadataKey,
+                            "funnelLabelPosition",
                             metadataValue,
                             "",
                         )
