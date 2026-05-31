@@ -5659,8 +5659,10 @@ for line in metadata_lines:
         globals.processingOptions.setOptionValues("funnelLabelsPercent", float(value))
 
     elif name in ["funnellabelposition", "funnellabelsposition"]:
-        if value in ["before", "after"]:
-            globals.processingOptions.setOptionValues("funnelLabelPosition", value)
+        if value.lower() in ["before", "after"]:
+            globals.processingOptions.setOptionValues(
+                "funnelLabelPosition", value.lower()
+            )
         else:
             print(
                 f'funnelLabelPosition value \'{value}\' unsupported. "before" or "after" required.'
@@ -6413,7 +6415,7 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
                     ]:
                         globals.processingOptions.dynamicallySetOption(
                             "funnelLabelPosition",
-                            metadataValue,
+                            metadataValue.lower(),
                             "",
                         )
                     else:
