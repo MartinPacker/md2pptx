@@ -3871,6 +3871,10 @@ def funnelColourOptionName(name: str) -> str:
     return funnelColourOptions[name]
 
 
+def sectionSlideKey(titleText: str) -> str:
+    return titleText.strip()
+
+
 def createTOCSlide(presentation, slideNumber, titleText, bullets, tocStyle):
     global SectionSlides
     titleOnlyLayout = globals.processingOptions.getCurrentOption("titleOnlyLayout")
@@ -3922,7 +3926,7 @@ def createTOCSlide(presentation, slideNumber, titleText, bullets, tocStyle):
                 TOCruns.append(p.runs[0])
 
         # Store the new slide in the list of section slides - for fixing up links
-        SectionSlides[titleText] = slide
+        SectionSlides[sectionSlideKey(titleText)] = slide
 
         return slide
 
@@ -3932,7 +3936,7 @@ def createTOCSlide(presentation, slideNumber, titleText, bullets, tocStyle):
         )
         title = findTitleShape(slide)
 
-    SectionSlides[titleText] = slide
+    SectionSlides[sectionSlideKey(titleText)] = slide
 
     shapes = slide.shapes
 
@@ -6876,7 +6880,7 @@ if (len(tasks) > 0) & (taskSlides != "none"):
 if globals.processingOptions.getCurrentOption("tocLinks"):
     # Linkify section items
     for run in TOCruns:
-        createRunHyperlinkOrTooltip(run, SectionSlides[run.text])
+        createRunHyperlinkOrTooltip(run, SectionSlides[sectionSlideKey(run.text)])
 
 if globals.processingOptions.getCurrentOption("sectionArrows"):
     # Add navigation arrows between section slides
