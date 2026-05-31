@@ -3847,6 +3847,17 @@ def delinkify(text):
         return (text, "")
 
 
+def flattenBullets(bullets: list) -> list:
+    flattenedBullets = []
+    for bulletList in bullets:
+        if len(bulletList) == 3 and isinstance(bulletList[0], int):
+            flattenedBullets.append(bulletList)
+        else:
+            flattenedBullets.extend(bulletList)
+
+    return flattenedBullets
+
+
 def createTOCSlide(presentation, slideNumber, titleText, bullets, tocStyle):
     global SectionSlides
     titleOnlyLayout = globals.processingOptions.getCurrentOption("titleOnlyLayout")
@@ -3855,6 +3866,7 @@ def createTOCSlide(presentation, slideNumber, titleText, bullets, tocStyle):
     marginBase = globals.processingOptions.getCurrentOption("marginBase")
     pageTitleSize = globals.processingOptions.getCurrentOption("pageTitleSize")
     pageSubtitleSize = globals.processingOptions.getCurrentOption("pageSubtitleSize")
+    tocBullets = flattenBullets(bullets)
 
     if tocStyle != "plain":
         if titleText == tocTitle:
@@ -3879,7 +3891,7 @@ def createTOCSlide(presentation, slideNumber, titleText, bullets, tocStyle):
             )
         else:
             # Remove the links from the bullets and replace with target slide title
-            for bullet in bullets:
+            for bullet in tocBullets:
                 linkMatch = linkRegex.match(bullet[1])
                 bullet[1] = linkMatch.group(1)
 
@@ -3929,7 +3941,7 @@ def createTOCSlide(presentation, slideNumber, titleText, bullets, tocStyle):
     )
 
     # Create global list of TOC entries
-    for bullet in bullets:
+    for bullet in tocBullets:
         bulletLevel, bulletText, bulletType = bullet
         if bulletLevel == 0:
             # Level 0 is top level so create a TOC entry
