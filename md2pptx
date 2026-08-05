@@ -9,7 +9,7 @@ Reads from stdin
 """
 
 md2pptx_level = "6.3.2+"
-md2pptx_date = "21 May, 2026"
+md2pptx_date = "5 August, 2026"
 
 import re
 import sys
@@ -1837,11 +1837,15 @@ def createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber):
 
 def createAbstractSlide(presentation, slideNumber, titleText, paragraphs):
     titleOnlyLayout = globals.processingOptions.getCurrentOption("titleOnlyLayout")
+    contentSlideLayout = globals.processingOptions.getCurrentOption("contentSlideLayout")
     marginBase = globals.processingOptions.getCurrentOption("marginBase")
     pageTitleSize = globals.processingOptions.getCurrentOption("pageTitleSize")
     pageSubtitleSize = globals.processingOptions.getCurrentOption("pageSubtitleSize")
 
-    slide = addSlide(presentation, presentation.slide_layouts[titleOnlyLayout], None)
+    # Workaround for Issue 229
+    paragraphs = paragraphs[0]
+    
+    slide = addSlide(presentation, presentation.slide_layouts[contentSlideLayout], None)
 
     shapes = slide.shapes
 
@@ -1852,18 +1856,8 @@ def createAbstractSlide(presentation, slideNumber, titleText, paragraphs):
 
     reportSlideTitle(slideNumber, 3, "Abstract: " + flattenedTitle)
 
-    # Get the rectangle the content will draw in
-    contentLeft, contentWidth, contentTop, contentHeight = getContentRect(
-        presentation, slide, slideTitleBottom, marginBase
-    )
+    abstractBox = findBodyShape(slide)
 
-    # Add abstract text
-    abstractBox = slide.shapes.add_textbox(
-        contentLeft,
-        contentTop,
-        contentWidth,
-        contentHeight,
-    )
 
     p = abstractBox.text_frame.paragraphs[0]
     tf = abstractBox.text_frame
@@ -1877,13 +1871,21 @@ def createAbstractSlide(presentation, slideNumber, titleText, paragraphs):
             # Spacer paragraph
             p = tf.add_paragraph()
             f = p.font
-            f.size = Pt(baseTextSize) if baseTextSize > 0 else Pt(22)
+            f.size = Pt(8)
 
             # Content paragraph
             p = tf.add_paragraph()
             f = p.font
             f.size = Pt(baseTextSize) if baseTextSize > 0 else Pt(22)
+
         addFormattedText(p, paragraphText)
+
+        if paragraphLevel > 0:
+            # Needs a bullet but 1 less than indentation level
+            p.level = paragraphLevel - 1
+        else:
+            # As top level should not have a bullet
+            removeBullet(p)
 
     tf.word_wrap = True
 

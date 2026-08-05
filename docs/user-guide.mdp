@@ -173,7 +173,7 @@ To quote from the python-pptx license statement:
 =colalign l r l
 =csv
 Level,Date,What
-6.3.2+,21&nbsp;May&nbsp;2026,Enhanced slide footers: [Issue 213](https://github.com/MartinPacker/md2pptx/issues/213).<br/>@maayanmatsliah-tech refactored `parseThemeColour`: [Issue 214](https://github.com/MartinPacker/md2pptx/issues/214).<br/>Make `parseThemeColour` handle bad theme colour specification better: [Issue 215](https://github.com/MartinPacker/md2pptx/issues/215).<br/>@troutrot fixed Issues [217](https://github.com/MartinPacker/md2pptx/pull/217)&comma; [218](https://github.com/MartinPacker/md2pptx/pull/218)&comma; [219](https://github.com/MartinPacker/md2pptx/pull/219)&comma; and [221](https://github.com/MartinPacker/md2pptx/issues/221)/[223](https://github.com/MartinPacker/md2pptx/pull/223).<br/>@Adichapati fixed [Issue 220](https://github.com/MartinPacker/md2pptx/pull/220).
+6.3.2+,21&nbsp;May&nbsp;2026,Enhanced slide footers: [Issue 213](https://github.com/MartinPacker/md2pptx/issues/213).<br/>@maayanmatsliah-tech refactored `parseThemeColour`: [Issue 214](https://github.com/MartinPacker/md2pptx/issues/214).<br/>Make `parseThemeColour` handle bad theme colour specification better: [Issue 215](https://github.com/MartinPacker/md2pptx/issues/215).<br/>@troutrot fixed Issues [217](https://github.com/MartinPacker/md2pptx/pull/217)&comma; [218](https://github.com/MartinPacker/md2pptx/pull/218)&comma; [219](https://github.com/MartinPacker/md2pptx/pull/219)&comma; and [221](https://github.com/MartinPacker/md2pptx/issues/221)/[223](https://github.com/MartinPacker/md2pptx/pull/223).<br/>@Adichapati fixed [Issue 220](https://github.com/MartinPacker/md2pptx/pull/220).<br>Improved &amp; fixed Abstract Slides ([Issue 229](https://github.com/MartinPacker/md2pptx/pull/229)).
 6.3.2,3&nbsp;May&nbsp;2026,@tmchow fixed [Issue 211](https://github.com/MartinPacker/md2pptx/issues/211) where a missing template file would cause termination.
 6.3.1,18&nbsp;April&nbsp;2026,Fixed crasher in Section Expansion code
 6.3,26&nbsp;March&nbsp;2026,Introduced [XML-Related Helper routines](#xml-related-helper-routines).
@@ -2123,11 +2123,16 @@ The default value for `hidden` is `no`.
 #### Specifying An Abstract Slide With `abstractTitle`
 <a id="specifying-an-abstract-slide-with-abstracttitle"></a>
 
-You can arrange for a single-level bulleted list slide to be formatted specially - as an abstract.
+You can arrange for a bulleted list slide to be formatted specially - as an abstract.
 
-Instead of each list item having a bullet, it is treated as a paragraph. \
+Instead of each top level list item having a bullet, it is treated as a paragraph. \
 This is more appropriate for an abstract slide. \
-(An extra blank paragraph is added between each paragraph - to space it out.)
+
+
+**Notes:**
+
+1. Second and further level bullets **are** treated as bullets.
+1. A thin extra blank paragraph is added between each paragraph - to space it out.
 
 To indicate an abstract slide code
 
