@@ -9,7 +9,10 @@ Reads from stdin
 """
 
 md2pptx_level = "6.3.2+"
-md2pptx_date = "5 August, 2026"
+md2pptx_date = "8 August, 2026"
+
+minimumPython = (3, 11)
+minimumPythonString = f"{minimumPython[0]}.{minimumPython[1]}"
 
 import re
 import sys
@@ -4411,10 +4414,18 @@ def createTaskSlides(prs, slideNumber, tasks, titleStem):
             sortedTagList = sorted(tagList)
             tags = str.join(",", sortedTagList)
 
-        if sNum != old_sNum:
-            taskRows.append([str(sNum), dueDate, taskText, tags, done])
-        else:
-            taskRows.append(["", dueDate, taskText, tags, done])
+        # Ensure missing values are non-breaking spaces
+        if dueDate == '':
+            dueDate = '&nbsp;'
+        if taskText == '':
+            taskText = '&nbsp;'
+        if tags == '':
+            tags = '&nbsp;'
+        if done == '':
+            done = '&nbsp;'
+          
+        taskRows.append([str(sNum), dueDate, taskText, tags, done])
+        
         old_sNum = sNum
 
     # Print a final "tasks" slide
@@ -4675,7 +4686,17 @@ print("\nOpen source project: https://github.com/MartinPacker/md2pptx")
 print(f"\nmd2pptx is found in {md2pptx_path}")
 
 print("\nExternal Dependencies:")
-print("\n  Python: " + platform.python_version())
+
+
+pythonVersion = "Python: " + platform.python_version()
+
+if sys.version_info < minimumPython:
+  versionCommentary = f" (Less than minumum supported Python version: {minimumPythonString})"
+else:
+  versionCommentary = ""
+  
+
+print(f"\n  {pythonVersion}{versionCommentary}")
 
 print("  python-pptx: " + pptx_version)
 
@@ -5810,6 +5831,9 @@ for line in afterMetadataAndHTML:
         # These are around code lines
         linesAfterConcatenation.append(line)
         inHTMLCode = False
+
+    elif line.startswith("-"):
+        linesAfterConcatenation.append(line)
 
     elif line.startswith("```"):
         linesAfterConcatenation.append(line)

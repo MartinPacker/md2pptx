@@ -37,21 +37,23 @@ Def mdpre_level = 1.2.1+
 
 Def userid = martinpacker
 
-Def day = 5
+Def day = 8
 
 Def month = August
 
 Def year = 2026
 
-Def time = 17&colon;25
+Def time = 15&colon;05
 
-Def date = 5 August&comma; 2026
+Def date = 8 August&comma; 2026
 
 Def TOC = Table Of Contents
 
 Def md = Markdown
 
 Def pp = Powerpoint
+
+Def minpythonlevel = 3.11
 
 Markdown To Powerpoint User Guide
 
