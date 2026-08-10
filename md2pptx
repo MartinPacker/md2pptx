@@ -4749,7 +4749,7 @@ slideNumber = 1
 
 bulletRegex = re.compile(r"^(\s)*(\*)(.*)")
 numberRegex = re.compile(r"^(\s)*(\d+)\.(.*)")
-metadataRegex = re.compile("^(.+):(.+)")
+metadataRegex = re.compile("^([^:]+):(.+)")
 
 graphicRE = r"!\[(.*?)\]\((.+?)\)"
 graphicRegex = re.compile(graphicRE)
