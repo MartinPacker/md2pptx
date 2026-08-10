@@ -1908,6 +1908,85 @@ def createAbstractSlide(presentation, slideNumber, titleText, paragraphs):
     return slide
 
 
+# A footnote reference [^ref] in body text. The definition line "[^ref]: ..."
+# is excluded by the negative lookahead.
+slideFootnoteRefRegex = re.compile(r"\[\^([^\]]+)\](?!:)")
+
+
+def collectStrings(obj, acc):
+    if isinstance(obj, str):
+        acc.append(obj)
+    elif isinstance(obj, (list, tuple)):
+        for o in obj:
+            collectStrings(o, acc)
+
+
+def slideFootnoteNumbers(slideInfo):
+    # Zero-based numbers of the footnotes cited on this slide, in order
+    acc = []
+    for part in (slideInfo.titleText, slideInfo.bullets, slideInfo.tableRows,
+                 slideInfo.cards):
+        collectStrings(part, acc)
+
+    numbers = []
+    for text in acc:
+        for ref in slideFootnoteRefRegex.findall(text):
+            if ref in globals.footnoteReferences:
+                n = globals.footnoteReferences.index(ref)
+                if n not in numbers:
+                    numbers.append(n)
+    return sorted(numbers)
+
+
+def slideFootnoteHeight(numbers, fontSize, widthEmu):
+    # Height in EMU the footnote block needs. Long definitions wrap onto
+    # several lines, so estimate the line count. Underestimating makes the
+    # block overlap the content, so assume few characters per line.
+    if not numbers:
+        return 0
+
+    widthPt = widthEmu / 12700
+    charsPerLine = max(20, int(widthPt / (fontSize * 0.50)))
+
+    lines = 0
+    for n in numbers:
+        text = "[" + str(n + 1) + "] " + globals.footnoteDefinitions[n][1]
+        lines += max(1, -(-len(text) // charsPerLine))
+
+    return int(Pt(fontSize * 1.30) * lines + Pt(4))
+
+
+def addSlideFootnotes(slide, numbers, left, width, top, fontSize):
+    # Lay the cited definitions out at the foot of the slide as "[n] text"
+    if not numbers:
+        return None
+
+    height = slideFootnoteHeight(numbers, fontSize, width)
+    box = slide.shapes.add_textbox(left, top, width, height)
+    tf = box.text_frame
+    tf.word_wrap = True
+    tf.margin_left = 0
+    tf.margin_right = 0
+    tf.margin_top = 0
+    tf.margin_bottom = 0
+
+    for i, n in enumerate(numbers):
+        p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
+        p.space_before = Pt(0)
+        p.space_after = Pt(0)
+        run = p.add_run()
+        run.text = "[" + str(n + 1) + "] " + globals.footnoteDefinitions[n][1]
+        run.font.size = Pt(fontSize)
+    return box
+
+
+def slideFootnotesFontSize():
+    # footnotesFontSize defaults to 0, meaning "leave the footnote slide's
+    # own text size alone". On-slide footnotes need a concrete size.
+    fontSize = globals.processingOptions.getCurrentOption("footnotesFontSize")
+    return fontSize if fontSize > 0 else 12
+
+
 # Unified creation of a table or a code or a content slide
 def createContentSlide(presentation, slideNumber, slideInfo):
     titleOnlyLayout = globals.processingOptions.getCurrentOption("titleOnlyLayout")
@@ -1962,6 +2041,19 @@ def createContentSlide(presentation, slideNumber, slideInfo):
     contentLeft, contentWidth, contentTop, contentHeight = getContentRect(
         presentation, slide, slideTitleBottom, marginBase
     )
+
+    ####################################################################
+    # If the cited footnotes are to go at the foot of this slide, take #
+    # the space they need out of the content area first. Adding them   #
+    # afterwards would overlap the content.                            #
+    ####################################################################
+    slideFootnotes = []
+    footnotesFontSize = slideFootnotesFontSize()
+    if globals.processingOptions.getCurrentOption("footnotesOnSlide") == "yes":
+        slideFootnotes = slideFootnoteNumbers(slideInfo)
+        contentHeight -= slideFootnoteHeight(
+            slideFootnotes, footnotesFontSize, contentWidth
+        )
 
     ####################################################################
     # Check whether there are too many elements in the sequence to     #
@@ -2019,6 +2111,16 @@ def createContentSlide(presentation, slideNumber, slideInfo):
         else:
             createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber)
             codeBlockNumber += 1
+
+    if slideFootnotes:
+        addSlideFootnotes(
+            slide,
+            slideFootnotes,
+            contentLeft,
+            contentWidth,
+            contentTop + contentHeight + Pt(4),
+            footnotesFontSize,
+        )
 
     if want_numbers_content is True:
         addFooter(presentation, slideNumber, slide)
@@ -5044,7 +5146,14 @@ globals.processingOptions.setOptionValuesArray(
 
 # Footnotes defaults
 globals.processingOptions.setOptionValuesArray(
-    [["footnotesTitle", "Footnotes"], ["footnotesPerPage", 20], ["footnotesFontSize", 0]]
+    [
+        ["footnotesTitle", "Footnotes"],
+        ["footnotesPerPage", 20],
+        ["footnotesFontSize", 0],
+        # "yes" places the cited footnotes at the foot of each citing slide,
+        # as "[n] text", instead of collecting them onto footnote slides.
+        ["footnotesOnSlide", "no"],
+    ]
 )
 
 # Table Of Contents defaults
@@ -5546,6 +5655,9 @@ for line in metadata_lines:
 
     elif name == "footnotesfontsize":
         globals.processingOptions.setOptionValues(name, float(value))
+
+    elif name == "footnotesonslide":
+        globals.processingOptions.setOptionValues(name, value.lower())
 
     elif name == "footnotestitle":
         globals.processingOptions.setOptionValues(name, value)
@@ -6796,7 +6908,10 @@ if (inBlock is True) | (inCode is True) | (inTable is True):
 # Add a footnotes slide - if there were any footnote definitions                     #
 #                                                                                    #
 ######################################################################################
-if len(globals.footnoteDefinitions) > 0:
+if (
+    len(globals.footnoteDefinitions) > 0
+    and globals.processingOptions.getCurrentOption("footnotesOnSlide") != "yes"
+):
     slideNumber, footnoteSlides = createFootnoteSlides(
         prs, slideNumber, globals.footnoteDefinitions
     )

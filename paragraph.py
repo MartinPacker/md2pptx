@@ -626,7 +626,15 @@ def addFormattedText(p, text):
                 fnref = fragment[1]
                 if fnref in globals.footnoteReferences:
                     footnoteNumber = globals.footnoteReferences.index(fnref)
-                    run.text = str(footnoteNumber + 1)
+                    if (
+                        globals.processingOptions.getCurrentOption("footnotesOnSlide")
+                        == "yes"
+                    ):
+                        # The definitions are laid out as "[n] text" at the foot
+                        # of the slide, so bracket the reference to match
+                        run.text = "[" + str(footnoteNumber + 1) + "]"
+                    else:
+                        run.text = str(footnoteNumber + 1)
                     # Support multiple runs per footnote reference
                     if footnoteNumber not in globals.footnoteRunsDictionary:
                         globals.footnoteRunsDictionary[footnoteNumber] = []
