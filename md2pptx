@@ -47,6 +47,7 @@ from pptx.oxml import parse_xml
 import uuid
 import funnel
 import runPython
+import pptx_math
 from card import Card
 from rectangle import Rectangle
 from colour import *
@@ -1588,6 +1589,10 @@ def handleRunPython(pythonType, prs, slide, renderingRectangle, codeLinesOrFile,
     else:
         r.runFromFile(codeLinesOrFile[0], prs, slide, renderingRectangle)
 
+def handleMath(prs, slide, renderingRectangle, codeLines, codeType):
+    m = pptx_math.PptxMath()
+    m.run(prs, slide, renderingRectangle, codeLines, codeType)
+
 def createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber):
     monoFont = globals.processingOptions.getCurrentOption("monoFont")
     baseTextSize = globals.processingOptions.getCurrentOption("baseTextSize")
@@ -1639,6 +1644,11 @@ def createCodeBlock(slideInfo, slide, renderingRectangle, codeBlockNumber):
                     # Run Python file
                     runPythonFile = codeTypeRaw.split(" ")[1]
                     handleRunPython("fromfile", prs, slide, renderingRectangle, [runPythonFile], codeType)
+
+                return slide
+
+            elif codeType.startswith("math") or codeType.startswith("maths"):
+                handleMath(prs, slide, renderingRectangle, codeLines[1:-1], codeType)
 
                 return slide
 
@@ -4718,6 +4728,7 @@ else:
 print("\nInternal Dependencies:")
 print(f"\n  funnel: {funnel.version}")
 print(f"  runPython: {runPython.version}")
+print(f"  pptx_math: {pptx_math.version}")
 
 input_file = []
 
@@ -5005,6 +5016,8 @@ globals.processingOptions.setOptionValuesArray(
 )
 
 globals.processingOptions.setOptionValues("monoFont", "Courier")
+
+globals.processingOptions.setOptionValues("mathxsl", "")
 
 topHeadingLevel = 1
 titleLevel = topHeadingLevel
@@ -5694,6 +5707,9 @@ for line in metadata_lines:
         applescriptPrologueFiles.append(prologFile)
         globals.processingOptions.setOptionValues("applescriptprologue", applescriptPrologueFiles)
         
+    elif name == "mathxsl":
+        globals.processingOptions.setOptionValues(name, os.path.expanduser(value))
+
     elif name in ["applescriptepilog", "applescriptepilogue"]:
         if value[:1] == "!":
             epilogFile = md2pptx_path + os.sep + "applescript" + os.sep + value[1:]

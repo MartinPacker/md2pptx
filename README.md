@@ -48,6 +48,10 @@ You can install python-pptx with
 
   `pip3 install python-pptx`
 
+Some optional features require additional packages:
+
+* **Inline math** (`mathxsl` option): `pip3 install latex2mathml lxml`
+
 (On a Raspberry Pi you might want to use `pip3` (or `python3 -m pip`) to install for Python 3.)
 
 You will probably need to issue the following command from the directory where you install it:

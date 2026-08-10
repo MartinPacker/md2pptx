@@ -532,6 +532,7 @@ def parseText(text):
 
                 fragment = ""
                 state = "fnref"
+
         else:
             fragment = fragment + c
 
