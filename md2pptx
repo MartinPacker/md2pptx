@@ -1902,8 +1902,6 @@ def createAbstractSlide(presentation, slideNumber, titleText, paragraphs):
     abstractBox = findBodyShape(slide)
 
 
-    applyBodyIndentation(abstractBox, slide)
-
     p = abstractBox.text_frame.paragraphs[0]
     tf = abstractBox.text_frame
     f = p.font
