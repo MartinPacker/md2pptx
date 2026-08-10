@@ -244,6 +244,16 @@ class PptxMath:
             tab_r = etree.SubElement(tabLst, _t(A, "tab"))
             tab_r.set("pos", str(w))
             tab_r.set("algn", "r")
+
+        # Without this the equation inherits the text box default (18pt) and
+        # comes out smaller than the surrounding body text.  Setting it on the
+        # paragraph's defRPr covers the math runs, the tabs and the equation
+        # number alike.  defRPr must follow tabLst in the DrawingML sequence.
+        baseTextSize = globals.processingOptions.getCurrentOption("baseTextSize")
+        if baseTextSize > 0:
+            defRPr = etree.SubElement(pPr, _t(A, "defRPr"))
+            defRPr.set("sz", str(int(round(baseTextSize * 100))))
+
         p._p.insert(0, pPr)
 
         try:
