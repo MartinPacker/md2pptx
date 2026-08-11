@@ -185,11 +185,26 @@ class MathInserter:
         xsl_path = Path(xsl_path)
         if not xsl_path.exists():
             raise FileNotFoundError(f"MML2OMML.XSL not found: {xsl_path}")
-        self._transform = etree.XSLT(etree.parse(str(xsl_path)))
+        self._xsl_path = xsl_path
+        try:
+            self._transform = etree.XSLT(etree.parse(str(xsl_path)))
+        except etree.XSLTParseError as e:
+            raise ValueError(
+                f"{xsl_path} is not a stylesheet libxslt can compile: {e}. "
+                f"Copies of MML2OMML.XSL differ; another copy may compile."
+            ) from e
 
     def make_inline_omml(self, latex: str) -> etree._Element:
         omml  = _latex_to_omml(latex, self._transform)
-        omath = _extract_oMath(omml)
+        try:
+            omath = _extract_oMath(omml)
+        except ValueError as e:
+            raise ValueError(
+                f"{self._xsl_path} produced no OMML. It has to convert MathML "
+                f"into OMML, which is what MML2OMML.XSL does; a stylesheet "
+                f"converting the other way matches nothing here and yields an "
+                f"empty result. {e}"
+            ) from e
         _add_cambria_math_rpr(omath)
         return omath
 
@@ -208,7 +223,7 @@ class PptxMath:
 
         try:
             inserter = MathInserter(mathxsl_path)
-        except (FileNotFoundError, Exception) as e:
+        except Exception as e:
             sys.stderr.write(f"Math block skipped: {e}\n")
             return
 
@@ -263,7 +278,12 @@ class PptxMath:
             else:
                 inject_block_math(p._p, omath)
         except Exception as e:
-            sys.stderr.write(f"Math conversion failed: {e}\n")
+            # Name the formula: a deck can hold many math blocks and the
+            # literal LaTeX is what the reader will see left in the slide.
+            oneLine = " ".join(latex.split())
+            if len(oneLine) > 60:
+                oneLine = oneLine[:57] + "..."
+            sys.stderr.write(f"Math conversion failed for '{oneLine}': {e}\n")
             p.text = latex
 
         # Must be called after injection: serialises and re-parses the sp
