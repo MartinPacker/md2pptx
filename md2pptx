@@ -1912,6 +1912,11 @@ def createAbstractSlide(presentation, slideNumber, titleText, paragraphs):
 # is excluded by the negative lookahead.
 slideFootnoteRefRegex = re.compile(r"\[\^([^\]]+)\](?!:)")
 
+# Footnote numbers already written out at the foot of an earlier slide.
+# Slides are created in document order, so membership here means "the reader
+# has already been given this definition".
+slideFootnotesAlreadyShown = set()
+
 
 def collectStrings(obj, acc):
     if isinstance(obj, str):
@@ -2050,7 +2055,14 @@ def createContentSlide(presentation, slideNumber, slideInfo):
     slideFootnotes = []
     footnotesFontSize = slideFootnotesFontSize()
     if globals.processingOptions.getCurrentOption("footnotesOnSlide") == "yes":
-        slideFootnotes = slideFootnoteNumbers(slideInfo)
+        # A definition is written out only on the slide that cites it first.
+        # Later slides show the bracketed number on its own, as a reader who
+        # has seen the definition once does not need it repeated.
+        slideFootnotes = [
+            n for n in slideFootnoteNumbers(slideInfo)
+            if n not in slideFootnotesAlreadyShown
+        ]
+        slideFootnotesAlreadyShown.update(slideFootnotes)
         contentHeight -= slideFootnoteHeight(
             slideFootnotes, footnotesFontSize, contentWidth
         )
