@@ -5676,7 +5676,12 @@ for line in metadata_lines:
         globals.processingOptions.setOptionValues(name, float(value))
 
     elif name == "footnotesonslide":
-        globals.processingOptions.setOptionValues(name, value.lower())
+        if value.lower() in ["yes", "no"]:
+            globals.processingOptions.setOptionValues(name, value.lower())
+        else:
+            print(
+                f'FootnotesOnSlide value \'{value}\' unsupported. "yes" or "no" required.'
+            )
 
     elif name == "footnotestitle":
         globals.processingOptions.setOptionValues(name, value)
