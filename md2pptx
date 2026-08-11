@@ -1917,6 +1917,12 @@ slideFootnoteRefRegex = re.compile(r"\[\^([^\]]+)\](?!:)")
 # has already been given this definition".
 slideFootnotesAlreadyShown = set()
 
+# Gap between the bottom of the content and the top of the footnote block.
+# Counted once, in what is taken out of the content rectangle and again when
+# the block is positioned, so the block ends exactly where the content would
+# have ended and never reaches into the slide number band below it.
+slideFootnoteGap = Pt(4)
+
 
 def collectStrings(obj, acc):
     if isinstance(obj, str):
@@ -1958,7 +1964,7 @@ def slideFootnoteHeight(numbers, fontSize, widthEmu):
         text = "[" + str(n + 1) + "] " + globals.footnoteDefinitions[n][1]
         lines += max(1, -(-len(text) // charsPerLine))
 
-    return int(Pt(fontSize * 1.30) * lines + Pt(4))
+    return int(Pt(fontSize * 1.30) * lines)
 
 
 def addSlideFootnotes(slide, numbers, left, width, top, fontSize):
@@ -2063,9 +2069,10 @@ def createContentSlide(presentation, slideNumber, slideInfo):
             if n not in slideFootnotesAlreadyShown
         ]
         slideFootnotesAlreadyShown.update(slideFootnotes)
-        contentHeight -= slideFootnoteHeight(
-            slideFootnotes, footnotesFontSize, contentWidth
-        )
+        if slideFootnotes:
+            contentHeight -= slideFootnoteGap + slideFootnoteHeight(
+                slideFootnotes, footnotesFontSize, contentWidth
+            )
 
     ####################################################################
     # Check whether there are too many elements in the sequence to     #
@@ -2130,7 +2137,7 @@ def createContentSlide(presentation, slideNumber, slideInfo):
             slideFootnotes,
             contentLeft,
             contentWidth,
-            contentTop + contentHeight + Pt(4),
+            contentTop + contentHeight + slideFootnoteGap,
             footnotesFontSize,
         )
 
