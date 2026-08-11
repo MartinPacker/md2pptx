@@ -70,7 +70,6 @@ As you can see in the [change log](#change-log), md2pptx is frequently updated -
 		* [Sample Macro To Remove The First Slide And Save As A .pptx File](#sample-macro-to-remove-the-first-slide-and-save-as-a-pptx-file)
 * [HTML Comments](#html-comments)
 * [Special Text Formatting](#special-text-formatting)
-	* [Inline Math](#inline-math)
 	* [Using HTML `<span>` Elements To Specify Text Effects](#using-html-<span>-elements-to-specify-text-effects)
 		* [Using HTML `<span>` Elements with `class`](#using-html-<span>-elements-with-class)
 		* [Using HTML `<span>` Elements with `style`](#using-html-<span>-elements-with-style)
@@ -98,7 +97,6 @@ As you can see in the [change log](#change-log), md2pptx is frequently updated -
 			* [Presentation Subtitle Size - `presSubtitleSize`](#presentation-subtitle-size-pressubtitlesize)
 			* [Page Title Alignment `pagetitlealign`](#page-title-alignment-pagetitlealign)
 		* [Monospace Font - `monoFont`](#monospace-font-monofont)
-		* [Inline Math - `mathxsl`](#inline-math-mathxsl)
 		* [Margin size - `marginBase` and `tableMargin`](#margin-size-marginbase-and-tablemargin)
 		* [Controlling Adjusting Title Positions And Sizes - `AdjustTitles`](#controlling-adjusting-title-positions-and-sizes-adjusttitles)
 		* [Associating A Class Name with A Background Colour With `style.bgcolor`](#associating-a-class-name-with-a-background-colour-with-stylebgcolor)
@@ -507,7 +505,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
-|6.3.3+|10&nbsp;August&nbsp;2026|@troutrot fixed [Issue 231](https://github.com/MartinPacker/md2pptx/issues/231) where metadata couldn't contain colons.|
+|6.3.3+|11&nbsp;August&nbsp;2026|@troutrot fixed [Issue 231](https://github.com/MartinPacker/md2pptx/issues/231) where metadata couldn't contain colons.|
 |6.3.3|9&nbsp;August&nbsp;2026|Enhanced slide footers: [Issue 213](https://github.com/MartinPacker/md2pptx/issues/213).<br/>@maayanmatsliah-tech refactored `parseThemeColour`: [Issue 214](https://github.com/MartinPacker/md2pptx/issues/214).<br/>Make `parseThemeColour` handle bad theme colour specification better: [Issue 215](https://github.com/MartinPacker/md2pptx/issues/215).<br/>@troutrot fixed Issues [217](https://github.com/MartinPacker/md2pptx/pull/217)&comma; [218](https://github.com/MartinPacker/md2pptx/pull/218)&comma; [219](https://github.com/MartinPacker/md2pptx/pull/219)&comma; and [221](https://github.com/MartinPacker/md2pptx/issues/221)/[223](https://github.com/MartinPacker/md2pptx/pull/223).<br/>@Adichapati fixed [Issue 220](https://github.com/MartinPacker/md2pptx/pull/220).<br>Improved &amp; fixed Abstract Slides ([Issue 229](https://github.com/MartinPacker/md2pptx/pull/229)).<br/>Fixed issue [230](https://github.com/MartinPacker/md2pptx/issues/230) - Taskpaper issue.<br/><br/>**Note:** md2pptx now only supports Python 3.11 or later. A warning message is displayed if your Python version is less than this.|
 |6.3.2|3&nbsp;May&nbsp;2026|@tmchow fixed [Issue 211](https://github.com/MartinPacker/md2pptx/issues/211) where a missing template file would cause termination.|
 |6.3.1|18&nbsp;April&nbsp;2026|Fixed crasher in Section Expansion code|
@@ -1665,15 +1663,6 @@ Some other HTML-originated text effects work - as Markdown allows you to embed H
 
 **Note:** Superscript works by raising the text baseline. Subscript works by lowering it. This is how Powerpoint itself does it.
 
-### Inline Math
-<a id="inline-math"></a>
-
-If you have configured the [`mathxsl`](#inline-math-mathxsl) metadata option, you can embed LaTeX inline math expressions by surrounding them with dollar signs:
-
-	* The Euler identity $e^{i\pi}+1=0$ is beautiful.
-
-Each `$...$` expression is converted to a native PowerPoint math object (OMML). See [Inline Math - `mathxsl`](#inline-math-mathxsl) for setup instructions.
-
 <a id="using-html-%3Cspan%3E-elements-to-specify-text-colours-and-underlining"></a>
 ### Using HTML `<span>` Elements To Specify Text Effects
 
@@ -2106,31 +2095,6 @@ Example:
 	monoFont: Arial
 
 The default is Courier.
-
-#### Inline Math - `mathxsl`
-<a id="inline-math-mathxsl"></a>
-
-To render LaTeX inline math expressions as native PowerPoint math objects, specify the path to `MML2OMML.XSL` (supplied with Microsoft Office):
-
-	mathxsl: /path/to/MML2OMML.XSL
-
-Once set, surround any LaTeX expression with dollar signs in your bullet text:
-
-	* The Euler identity $e^{i\pi}+1=0$ is beautiful.
-	* The quadratic formula $\frac{-b \pm \sqrt{b^2-4ac}}{2a}$ solves ax²+bx+c=0.
-
-md2pptx converts each `$...$` expression to OMML (Office Math Markup Language) and embeds it directly in the slide XML, so the formula renders as a native PowerPoint equation object.
-
-**Requirements:**
-
-* `MML2OMML.XSL` — included with a local Microsoft Office installation (typically under `Office/root/`)
-* `pip3 install latex2mathml lxml`
-
-**Notes:**
-
-* If `mathxsl` is not specified, `$...$` is left as-is in the output text.
-* If conversion fails for a particular expression, md2pptx falls back to rendering the literal `$...$` text.
-* `~` in the XSL path is expanded to the user's home directory.
 
 #### Margin size - `marginBase` and `tableMargin`
 <a id="margin-size-marginbase-and-tablemargin"></a>

@@ -37,15 +37,15 @@ Def mdpre_level = 1.2.1+
 
 Def userid = martinpacker
 
-Def day = 10
+Def day = 11
 
 Def month = August
 
 Def year = 2026
 
-Def time = 17&colon;16
+Def time = 11&colon;27
 
-Def date = 10 August&comma; 2026
+Def date = 11 August&comma; 2026
 
 Def TOC = Table Of Contents
 

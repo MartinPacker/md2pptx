@@ -174,7 +174,7 @@ To quote from the python-pptx license statement:
 =colalign l r l
 =csv
 Level,Date,What
-6.3.3+,10&nbsp;August&nbsp;2026,@troutrot fixed [Issue 231](https://github.com/MartinPacker/md2pptx/issues/231) where metadata couldn't contain colons.
+6.3.3+,11&nbsp;August&nbsp;2026,@troutrot fixed [Issue 231](https://github.com/MartinPacker/md2pptx/issues/231) where metadata couldn't contain colons.
 6.3.3,9&nbsp;August&nbsp;2026,Enhanced slide footers: [Issue 213](https://github.com/MartinPacker/md2pptx/issues/213).<br/>@maayanmatsliah-tech refactored `parseThemeColour`: [Issue 214](https://github.com/MartinPacker/md2pptx/issues/214).<br/>Make `parseThemeColour` handle bad theme colour specification better: [Issue 215](https://github.com/MartinPacker/md2pptx/issues/215).<br/>@troutrot fixed Issues [217](https://github.com/MartinPacker/md2pptx/pull/217)&comma; [218](https://github.com/MartinPacker/md2pptx/pull/218)&comma; [219](https://github.com/MartinPacker/md2pptx/pull/219)&comma; and [221](https://github.com/MartinPacker/md2pptx/issues/221)/[223](https://github.com/MartinPacker/md2pptx/pull/223).<br/>@Adichapati fixed [Issue 220](https://github.com/MartinPacker/md2pptx/pull/220).<br>Improved &amp; fixed Abstract Slides ([Issue 229](https://github.com/MartinPacker/md2pptx/pull/229)).<br/>Fixed issue [230](https://github.com/MartinPacker/md2pptx/issues/230) - Taskpaper issue.<br/><br/>**Note:** md2pptx now only supports Python 3.11 or later. A warning message is displayed if your Python version is less than this.
 6.3.2,3&nbsp;May&nbsp;2026,@tmchow fixed [Issue 211](https://github.com/MartinPacker/md2pptx/issues/211) where a missing template file would cause termination.
 6.3.1,18&nbsp;April&nbsp;2026,Fixed crasher in Section Expansion code
