@@ -1,8 +1,8 @@
 
-mdpre Markdown Preprocessor v1.2.1+ (3 May, 2026)
-=================================================
+mdpre Markdown Preprocessor v1.2.1+ (17 May, 2026)
+==================================================
 
-Cheetah templating engine not imported
+Cheetah templating engine imported
 
 - opened <stdout> for writing
 Def makefile = file-3
@@ -13,9 +13,9 @@ Def output = stdout
 
 Def input = stdin
 
-Def node = bluemac.local
+Def node = Mac-Studio-Max.local
 
-Def version = Darwin Kernel Version 25.6.0: Sat Jul 11 15:26:21 PDT 2026; root:xnu-12377.161.13~4/RELEASE_ARM64_T6000
+Def version = Darwin Kernel Version 27.0.0: Wed Aug  5 22:15:17 PDT 2026; root:xnu-13432.1.6.501.1~1/RELEASE_ARM64_T6000
 
 Def architecture = 64bit Mach-O
 
@@ -23,7 +23,7 @@ Def machine = arm64
 
 Def system = Darwin
 
-Def release = 25.6.0
+Def release = 27.0.0
 
 Def python_version = 3.14.3
 
@@ -31,21 +31,21 @@ Def python_implementation = CPython
 
 Def processor = arm
 
-Def mdpre_date = 3 May, 2026
+Def mdpre_date = 17 May, 2026
 
 Def mdpre_level = 1.2.1+
 
 Def userid = martinpacker
 
-Def day = 11
+Def day = 14
 
 Def month = August
 
 Def year = 2026
 
-Def time = 13&colon;58
+Def time = 16&colon;30
 
-Def date = 11 August&comma; 2026
+Def date = 14 August&comma; 2026
 
 Def TOC = Table Of Contents
 
@@ -389,6 +389,8 @@ CSV Stop
 ..... ..... ..... .....  Footnotes Font Size - footnotesFontSize
 
 ..... ..... ..... .....  Footnotes Per Page - footnotesPerPage
+
+..... ..... ..... .....  Footnote Placement - footnotesOnSlide
 
 ..... ..... .....  Slide Heading Levels - `TopHeadingLevel`
 
@@ -844,7 +846,7 @@ CSV Stop
 
 .....  Building This User Guide
 
--------------------------------------------------
+--------------------------------------------------
 - Processing completed.
--------------------------------------------------
+--------------------------------------------------
 

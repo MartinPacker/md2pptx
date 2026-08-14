@@ -1467,6 +1467,7 @@ img {
 <li><a href="#footnotes-title-prefix-footnotestitle">Footnotes Title Prefix - footnotesTitle</a></li>
 <li><a href="#footnotes-font-size-footnotesfontsize">Footnotes Font Size - footnotesFontSize</a></li>
 <li><a href="#footnotes-per-page-footnotesperpage">Footnotes Per Page - footnotesPerPage</a></li>
+<li><a href="#footnote-placement-footnotesonslide">Footnote Placement - footnotesOnSlide</a></li>
 </ul>
 </li>
 <li><a href="#slide-heading-levels-topheadinglevel">Slide Heading Levels - <code>TopHeadingLevel</code></a></li>
@@ -1897,7 +1898,7 @@ THE SOFTWARE.
 <tbody>
 <tr>
 <td align="left">6.3.3+</td>
-<td align="right">11&nbsp;August&nbsp;2026</td>
+<td align="right">14&nbsp;August&nbsp;2026</td>
 <td align="left"><a class="magiclink magiclink-github magiclink-mention" href="https://github.com/troutrot" title="GitHub User: troutrot">@troutrot</a> fixed <a href="https://github.com/MartinPacker/md2pptx/issues/231">Issue 231</a> where metadata couldn&rsquo;t contain colons&comma; added Latex support (<a href="https://github.com/MartinPacker/md2pptx/issues/231">Issue 225</a> and <a href="https://github.com/MartinPacker/md2pptx/issues/233">Issue 233</a>)&comma; and introduced optional &ldquo;on the slide&rdquo; footnotes <a href="https://github.com/MartinPacker/md2pptx/issues/232">Issue 232</a>)</td>
 </tr>
 <tr>
@@ -3674,7 +3675,8 @@ For example:</p>
 <pre><code>[^test1]: This is the actual footnote - with *multiple* runs.
 </code></pre>
 <p>In this example the word &ldquo;multiple&rdquo; is italicised.</p>
-<p>If you have defined footnotes one or more Footnotes slides will be added to the end of the presentation.</p>
+<p>If you have defined footnotes one or more Footnotes slides will be added to the end of the presentation.
+Alternatively you can cause footnotes to appear at the bottom of the slide they&rsquo;re defined on.</p>
 <p>Footnotes are automatically numbered, starting with 1.</p>
 <h3 id="referring-to-a-footnote">Referring To A Footnote<a class="headerlink" href="#referring-to-a-footnote" title="Permanent link"></a></h3>
 <p><a id="referring-to-a-footnote"></a></p>
@@ -4541,6 +4543,12 @@ If you need to change this you can code something like</p>
 <pre><code>footnotesPerPage: 10
 </code></pre>
 <p>This will reduce the maximum number of footnotes on a slide to 10.</p>
+<h5 id="footnote-placement-footnotesonslide">Footnote Placement - footnotesOnSlide<a class="headerlink" href="#footnote-placement-footnotesonslide" title="Permanent link"></a></h5>
+<p>By default md2pptx places footnotes on slides at the end of the presentation.
+You can instead instruct it to place footnotes at the bottom of the slides they are defined on:</p>
+<pre><code>footnotesOnSlide: yes
+</code></pre>
+<p>The default is <code>no</code>.</p>
 <p><a id="slide-heading-levels-topheadinglevel"></a></p>
 <h4 id="slide-heading-levels-topheadinglevel">Slide Heading Levels - <code>TopHeadingLevel</code><a class="headerlink" href="#slide-heading-levels-topheadinglevel" title="Permanent link"></a></h4>
 <p>The usual heading levels for different types of slides are as follows:</p>

@@ -172,6 +172,7 @@ As you can see in the [change log](#change-log), md2pptx is frequently updated -
 			* [Footnotes Title Prefix - footnotesTitle](#footnotes-title-prefix-footnotestitle)
 			* [Footnotes Font Size - footnotesFontSize](#footnotes-font-size-footnotesfontsize)
 			* [Footnotes Per Page - footnotesPerPage](#footnotes-per-page-footnotesperpage)
+			* [Footnote Placement - footnotesOnSlide](#footnote-placement-footnotesonslide)
 		* [Slide Heading Levels - `TopHeadingLevel`](#slide-heading-levels-topheadinglevel)
 		* [Slides With Multiple Content Blocks](#slides-with-multiple-content-blocks)
 			* [Horizontal Or Vertical Split - `ContentSplitDirection`](#horizontal-or-vertical-split-contentsplitdirection)
@@ -505,7 +506,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
-|6.3.3+|11&nbsp;August&nbsp;2026|@troutrot fixed [Issue 231](https://github.com/MartinPacker/md2pptx/issues/231) where metadata couldn't contain colons&comma; added Latex support ([Issue 225](https://github.com/MartinPacker/md2pptx/issues/231) and [Issue 233](https://github.com/MartinPacker/md2pptx/issues/233))&comma; and introduced optional "on the slide" footnotes [Issue 232](https://github.com/MartinPacker/md2pptx/issues/232))|
+|6.3.3+|14&nbsp;August&nbsp;2026|@troutrot fixed [Issue 231](https://github.com/MartinPacker/md2pptx/issues/231) where metadata couldn't contain colons&comma; added Latex support ([Issue 225](https://github.com/MartinPacker/md2pptx/issues/231) and [Issue 233](https://github.com/MartinPacker/md2pptx/issues/233))&comma; and introduced optional "on the slide" footnotes [Issue 232](https://github.com/MartinPacker/md2pptx/issues/232))|
 |6.3.3|9&nbsp;August&nbsp;2026|Enhanced slide footers: [Issue 213](https://github.com/MartinPacker/md2pptx/issues/213).<br/>@maayanmatsliah-tech refactored `parseThemeColour`: [Issue 214](https://github.com/MartinPacker/md2pptx/issues/214).<br/>Make `parseThemeColour` handle bad theme colour specification better: [Issue 215](https://github.com/MartinPacker/md2pptx/issues/215).<br/>@troutrot fixed Issues [217](https://github.com/MartinPacker/md2pptx/pull/217)&comma; [218](https://github.com/MartinPacker/md2pptx/pull/218)&comma; [219](https://github.com/MartinPacker/md2pptx/pull/219)&comma; and [221](https://github.com/MartinPacker/md2pptx/issues/221)/[223](https://github.com/MartinPacker/md2pptx/pull/223).<br/>@Adichapati fixed [Issue 220](https://github.com/MartinPacker/md2pptx/pull/220).<br>Improved &amp; fixed Abstract Slides ([Issue 229](https://github.com/MartinPacker/md2pptx/pull/229)).<br/>Fixed issue [230](https://github.com/MartinPacker/md2pptx/issues/230) - Taskpaper issue.<br/><br/>**Note:** md2pptx now only supports Python 3.11 or later. A warning message is displayed if your Python version is less than this.|
 |6.3.2|3&nbsp;May&nbsp;2026|@tmchow fixed [Issue 211](https://github.com/MartinPacker/md2pptx/issues/211) where a missing template file would cause termination.|
 |6.3.1|18&nbsp;April&nbsp;2026|Fixed crasher in Section Expansion code|
@@ -1870,6 +1871,7 @@ For example:
 In this example the word "multiple" is italicised.
 
 If you have defined footnotes one or more Footnotes slides will be added to the end of the presentation.
+Alternatively you can cause footnotes to appear at the bottom of the slide they're defined on.
 
 Footnotes are automatically numbered, starting with 1.
 
@@ -3136,6 +3138,15 @@ If you need to change this you can code something like
     footnotesPerPage: 10
 
 This will reduce the maximum number of footnotes on a slide to 10.
+
+##### Footnote Placement - footnotesOnSlide
+
+By default md2pptx places footnotes on slides at the end of the presentation.
+You can instead instruct it to place footnotes at the bottom of the slides they are defined on:
+
+    footnotesOnSlide: yes
+
+The default is `no`.
 
 <a id="slide-heading-levels-topheadinglevel"></a>
 #### Slide Heading Levels - `TopHeadingLevel`
