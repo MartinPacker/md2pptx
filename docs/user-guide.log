@@ -37,15 +37,15 @@ Def mdpre_level = 1.2.1+
 
 Def userid = martinpacker
 
-Def day = 14
+Def day = 15
 
 Def month = August
 
 Def year = 2026
 
-Def time = 16&colon;30
+Def time = 14&colon;20
 
-Def date = 14 August&comma; 2026
+Def date = 15 August&comma; 2026
 
 Def TOC = Table Of Contents
 
@@ -138,13 +138,27 @@ CSV Stop
 
 ..... ..... ..... .....  Special Processing Of Code Within Triple Backticks
 
+------> Start of graphviz.mdp (@2)
+
 ..... ..... ..... ..... .....  GraphViz
+
+------> End of graphviz.mdp (@2)
 
 ..... ..... .....  Indented Text
 
 ..... ..... .....  `<pre>`
 
+------> Start of funnels.mdp (@2)
+
 ..... .....  Funnels
+
+------> End of funnels.mdp (@2)
+
+------> Start of latex.mdp (@2)
+
+..... .....  LaTeX
+
+------> End of latex.mdp (@2)
 
 ..... .....  Task List Slides
 
@@ -391,6 +405,8 @@ CSV Stop
 ..... ..... ..... .....  Footnotes Per Page - footnotesPerPage
 
 ..... ..... ..... .....  Footnote Placement - footnotesOnSlide
+
+..... ..... .....  LATeX Stylesheet Location - `mathxsl`
 
 ..... ..... .....  Slide Heading Levels - `TopHeadingLevel`
 

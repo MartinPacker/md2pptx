@@ -1318,6 +1318,7 @@ img {
 </ul>
 </li>
 <li><a href="#funnels">Funnels</a></li>
+<li><a href="#latex">LaTeX</a></li>
 <li><a href="#task-list-slides">Task List Slides</a></li>
 <li><a href="#slides-with-more-than-one-content-block">Slides With More Than One Content Block</a></li>
 <li><a href="#adding-slide-notes">Adding Slide Notes</a></li>
@@ -1470,6 +1471,7 @@ img {
 <li><a href="#footnote-placement-footnotesonslide">Footnote Placement - footnotesOnSlide</a></li>
 </ul>
 </li>
+<li><a href="#latex-stylesheet-location-mathxsl">LATeX Stylesheet Location - <code>mathxsl</code></a></li>
 <li><a href="#slide-heading-levels-topheadinglevel">Slide Heading Levels - <code>TopHeadingLevel</code></a></li>
 <li><a href="#slides-with-multiple-content-blocks">Slides With Multiple Content Blocks</a><ul>
 <li><a href="#horizontal-or-vertical-split-contentsplitdirection">Horizontal Or Vertical Split - <code>ContentSplitDirection</code></a></li>
@@ -1898,8 +1900,8 @@ THE SOFTWARE.
 <tbody>
 <tr>
 <td align="left">6.3.3+</td>
-<td align="right">14&nbsp;August&nbsp;2026</td>
-<td align="left"><a class="magiclink magiclink-github magiclink-mention" href="https://github.com/troutrot" title="GitHub User: troutrot">@troutrot</a> fixed <a href="https://github.com/MartinPacker/md2pptx/issues/231">Issue 231</a> where metadata couldn&rsquo;t contain colons&comma; added Latex support (<a href="https://github.com/MartinPacker/md2pptx/issues/231">Issue 225</a> and <a href="https://github.com/MartinPacker/md2pptx/issues/233">Issue 233</a>)&comma; and introduced optional &ldquo;on the slide&rdquo; footnotes <a href="https://github.com/MartinPacker/md2pptx/issues/232">Issue 232</a>)</td>
+<td align="right">15&nbsp;August&nbsp;2026</td>
+<td align="left"><a class="magiclink magiclink-github magiclink-mention" href="https://github.com/troutrot" title="GitHub User: troutrot">@troutrot</a> fixed <a href="https://github.com/MartinPacker/md2pptx/issues/231">Issue 231</a> where metadata couldn&rsquo;t contain colons&comma; added LaTeX support (<a href="https://github.com/MartinPacker/md2pptx/issues/231">Issue 225</a> and <a href="https://github.com/MartinPacker/md2pptx/issues/233">Issue 233</a>)&comma; and introduced optional &ldquo;on the slide&rdquo; footnotes <a href="https://github.com/MartinPacker/md2pptx/issues/232">Issue 232</a>)</td>
 </tr>
 <tr>
 <td align="left">6.3.3</td>
@@ -2994,7 +2996,13 @@ for(i = 0; i &lt; 10; i++){
 <p><strong>Note:</strong> It does not support <code>&lt;span&gt;</code> elements.</p>
 <p><a id="special-processing-of-code-within-triple-backticks"></a></p>
 <h5 id="special-processing-of-code-within-triple-backticks">Special Processing Of Code Within Triple Backticks<a class="headerlink" href="#special-processing-of-code-within-triple-backticks" title="Permanent link"></a></h5>
-<p>If you have GraphViz installed you can render GraphViz diagrams as graphics.</p>
+<p>While triple backticks denote code there are a number of more sophisticated things you can do with them:</p>
+<ul>
+<li>If you have GraphViz installed you can render GraphViz diagrams as graphics.</li>
+<li><a href="#running-inline-python">RunPython</a> allows you to run Python code.</li>
+<li>You can create <a href="#funnels">Funnel Diagrams</a>.</li>
+<li>If you have latex2mathml and lxml installed - probably via <code>pip</code> - you can embed <a href="#latex">LaTeX</a>.</li>
+</ul>
 <p><a id="graphviz"></a></p>
 <h6 id="graphviz">GraphViz<a class="headerlink" href="#graphviz" title="Permanent link"></a></h6>
 <p>On startup md2pptx will check whether the graphviz Python package is installed. It cannot check if the GraphViz application is installed - but you need that as well to process GraphViz .dot data.</p>
@@ -3071,6 +3079,24 @@ for(i = 0; i &lt; 10; i++){
 <li>You can specify aspects of funnels&rsquo; appearance with <a href="#funnel-metadata">metadata</a>.</li>
 <li>Any CSV columns after the first two are ignored.</li>
 </ol>
+<h3 id="latex">LaTeX<a class="headerlink" href="#latex" title="Permanent link"></a></h3>
+<p><a id="latex"></a></p>
+<p>To use md2pptx&rsquo;s in-built LaTeX support you must have latex2mathml installed and specify the converter stylesheet you are going to use.
+This stylesheet is generally obtained from a Microsoft Office installation.
+Its name is usually <code>MML2OMML.XSL</code>.
+Specify its location with</p>
+<pre><code>mathxsl: ~/md2pptx/MML2OMML.XSL
+</code></pre>
+<p>If the prerequisites are met you can code equations such as</p>
+<pre><code>### Numbered equation
+
+```math 1.3.4
+e^{i\pi}+1=0
+```
+</code></pre>
+<p>and get slides that look like this:</p>
+<p><img alt="" src="/Users/martinpacker/md2pptx/docs/equation.png" /></p>
+<p><strong>Note:</strong> The equation number is optional and can be any character string you like.</p>
 <h3 id="task-list-slides">Task List Slides<a class="headerlink" href="#task-list-slides" title="Permanent link"></a></h3>
 <p><a id="task-list-slides"></a></p>
 <p>You can create tasks in a subset of the <a href="https://support.omnigroup.com/omnifocus-taskpaper-reference/">Taskpaper</a> format by coding a line that starts with a <code>-</code>:</p>
@@ -4549,6 +4575,13 @@ You can instead instruct it to place footnotes at the bottom of the slides they 
 <pre><code>footnotesOnSlide: yes
 </code></pre>
 <p>The default is <code>no</code>.</p>
+<p><a id="latex-stylesheet-location-mathxsl"></a></p>
+<h4 id="latex-stylesheet-location-mathxsl">LATeX Stylesheet Location - <code>mathxsl</code><a class="headerlink" href="#latex-stylesheet-location-mathxsl" title="Permanent link"></a></h4>
+<p>As described in <a href="#latex">LaTeX</a>, you need to specify the stylesheet location if you are to use the function.
+Here is an example:</p>
+<pre><code>mathxsl: ~/md2pptx/MML2OMML.XSL
+</code></pre>
+<p><strong>Note:</strong> It&rsquo;s probably a good idea to keep the stylesheet safe and copy it into the md2pptx directory after installing md2pptx - if that&rsquo;s where you use it.</p>
 <p><a id="slide-heading-levels-topheadinglevel"></a></p>
 <h4 id="slide-heading-levels-topheadinglevel">Slide Heading Levels - <code>TopHeadingLevel</code><a class="headerlink" href="#slide-heading-levels-topheadinglevel" title="Permanent link"></a></h4>
 <p>The usual heading levels for different types of slides are as follows:</p>
@@ -5242,6 +5275,7 @@ For example</p>
 <li><a href="#graphviz">GraphViz .dot files</a> aren&rsquo;t rendered by most Markdown processors.</li>
 <li><a href="#funnels">Funnels</a> aren&rsquo;t rendered by any other Markdown processor.</li>
 <li><a href="#running-inline-python">run-python functionality</a> isn&rsquo;t supported by any other Markdown processor.</li>
+<li>Embedded <a href="#latex">LaTeX</a> isn&rsquo;t supported by any other Markdown processor.</li>
 <li>Figure and table captions allow embed styling in md2pptx. This isn&rsquo;t the case in other Markdown processors.</li>
 </ul>
 <h2 id="running-inline-python">Running Inline Python<a class="headerlink" href="#running-inline-python" title="Permanent link"></a></h2>

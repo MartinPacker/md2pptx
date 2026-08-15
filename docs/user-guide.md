@@ -55,6 +55,7 @@ As you can see in the [change log](#change-log), md2pptx is frequently updated -
 		* [Indented Text](#indented-text)
 		* [`<pre>`](#<pre>)
 	* [Funnels](#funnels)
+	* [LaTeX](#latex)
 	* [Task List Slides](#task-list-slides)
 	* [Slides With More Than One Content Block](#slides-with-more-than-one-content-block)
 	* [Adding Slide Notes](#adding-slide-notes)
@@ -173,6 +174,7 @@ As you can see in the [change log](#change-log), md2pptx is frequently updated -
 			* [Footnotes Font Size - footnotesFontSize](#footnotes-font-size-footnotesfontsize)
 			* [Footnotes Per Page - footnotesPerPage](#footnotes-per-page-footnotesperpage)
 			* [Footnote Placement - footnotesOnSlide](#footnote-placement-footnotesonslide)
+		* [LATeX Stylesheet Location - `mathxsl`](#latex-stylesheet-location-mathxsl)
 		* [Slide Heading Levels - `TopHeadingLevel`](#slide-heading-levels-topheadinglevel)
 		* [Slides With Multiple Content Blocks](#slides-with-multiple-content-blocks)
 			* [Horizontal Or Vertical Split - `ContentSplitDirection`](#horizontal-or-vertical-split-contentsplitdirection)
@@ -506,7 +508,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
-|6.3.3+|14&nbsp;August&nbsp;2026|@troutrot fixed [Issue 231](https://github.com/MartinPacker/md2pptx/issues/231) where metadata couldn't contain colons&comma; added Latex support ([Issue 225](https://github.com/MartinPacker/md2pptx/issues/231) and [Issue 233](https://github.com/MartinPacker/md2pptx/issues/233))&comma; and introduced optional "on the slide" footnotes [Issue 232](https://github.com/MartinPacker/md2pptx/issues/232))|
+|6.3.3+|15&nbsp;August&nbsp;2026|@troutrot fixed [Issue 231](https://github.com/MartinPacker/md2pptx/issues/231) where metadata couldn't contain colons&comma; added LaTeX support ([Issue 225](https://github.com/MartinPacker/md2pptx/issues/231) and [Issue 233](https://github.com/MartinPacker/md2pptx/issues/233))&comma; and introduced optional "on the slide" footnotes [Issue 232](https://github.com/MartinPacker/md2pptx/issues/232))|
 |6.3.3|9&nbsp;August&nbsp;2026|Enhanced slide footers: [Issue 213](https://github.com/MartinPacker/md2pptx/issues/213).<br/>@maayanmatsliah-tech refactored `parseThemeColour`: [Issue 214](https://github.com/MartinPacker/md2pptx/issues/214).<br/>Make `parseThemeColour` handle bad theme colour specification better: [Issue 215](https://github.com/MartinPacker/md2pptx/issues/215).<br/>@troutrot fixed Issues [217](https://github.com/MartinPacker/md2pptx/pull/217)&comma; [218](https://github.com/MartinPacker/md2pptx/pull/218)&comma; [219](https://github.com/MartinPacker/md2pptx/pull/219)&comma; and [221](https://github.com/MartinPacker/md2pptx/issues/221)/[223](https://github.com/MartinPacker/md2pptx/pull/223).<br/>@Adichapati fixed [Issue 220](https://github.com/MartinPacker/md2pptx/pull/220).<br>Improved &amp; fixed Abstract Slides ([Issue 229](https://github.com/MartinPacker/md2pptx/pull/229)).<br/>Fixed issue [230](https://github.com/MartinPacker/md2pptx/issues/230) - Taskpaper issue.<br/><br/>**Note:** md2pptx now only supports Python 3.11 or later. A warning message is displayed if your Python version is less than this.|
 |6.3.2|3&nbsp;May&nbsp;2026|@tmchow fixed [Issue 211](https://github.com/MartinPacker/md2pptx/issues/211) where a missing template file would cause termination.|
 |6.3.1|18&nbsp;April&nbsp;2026|Fixed crasher in Section Expansion code|
@@ -1245,7 +1247,12 @@ Triple backticks are supported. Surround the block of text by them:
 <a id="special-processing-of-code-within-triple-backticks"></a>
 ##### Special Processing Of Code Within Triple Backticks
 
-If you have GraphViz installed you can render GraphViz diagrams as graphics.
+While triple backticks denote code there are a number of more sophisticated things you can do with them:
+
+* If you have GraphViz installed you can render GraphViz diagrams as graphics.
+* [RunPython](#running-inline-python) allows you to run Python code.
+* You can create [Funnel Diagrams](#funnels).
+* If you have latex2mathml and lxml installed - probably via `pip` - you can embed [LaTeX](#latex).
 
 <a id="graphviz"></a>
 ###### GraphViz
@@ -1279,6 +1286,7 @@ This is how the above code is rendered
 
 
 ![](graphviz-rendered.png)
+
 
 #### Indented Text
 
@@ -1340,6 +1348,31 @@ Each row leads to a funnel stage. The first column is the text for the label abo
 1. You can force line breaks in both the funnel stage titles and the funnel stage bodies.
 1. You can specify aspects of funnels' appearance with [metadata](#funnel-metadata).
 1. Any CSV columns after the first two are ignored.
+
+
+### LaTeX
+<a id="latex"></a>
+
+To use md2pptx's in-built LaTeX support you must have latex2mathml installed and specify the converter stylesheet you are going to use.
+This stylesheet is generally obtained from a Microsoft Office installation.
+Its name is usually `MML2OMML.XSL`.
+Specify its location with
+
+    mathxsl: ~/md2pptx/MML2OMML.XSL
+
+If the prerequisites are met you can code equations such as
+
+    ### Numbered equation
+
+    ```math 1.3.4
+    e^{i\pi}+1=0
+    ```
+
+and get slides that look like this:
+
+![](equation.png)
+
+**Note:** The equation number is optional and can be any character string you like.
 
 ### Task List Slides
 <a id="task-list-slides"></a>
@@ -3148,6 +3181,16 @@ You can instead instruct it to place footnotes at the bottom of the slides they 
 
 The default is `no`.
 
+<a id="latex-stylesheet-location-mathxsl"></a>
+#### LATeX Stylesheet Location - `mathxsl`
+
+As described in [LaTeX](#latex), you need to specify the stylesheet location if you are to use the function.
+Here is an example:
+
+    mathxsl: ~/md2pptx/MML2OMML.XSL
+
+**Note:** It's probably a good idea to keep the stylesheet safe and copy it into the md2pptx directory after installing md2pptx - if that's where you use it.
+
 <a id="slide-heading-levels-topheadinglevel"></a>
 #### Slide Heading Levels - `TopHeadingLevel`
 
@@ -3994,6 +4037,7 @@ Known deviations are:
 * [GraphViz .dot files](#graphviz) aren't rendered by most Markdown processors.
 * [Funnels](#funnels) aren't rendered by any other Markdown processor.
 * [run-python functionality](#running-inline-python) isn't supported by any other Markdown processor.
+* Embedded [LaTeX](#latex) isn't supported by any other Markdown processor.
 * Figure and table captions allow embed styling in md2pptx. This isn't the case in other Markdown processors.
 
 ## Running Inline Python
