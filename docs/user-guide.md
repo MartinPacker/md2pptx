@@ -1353,10 +1353,10 @@ Each row leads to a funnel stage. The first column is the text for the label abo
 ### LaTeX
 <a id="latex"></a>
 
-To use md2pptx's in-built LaTeX support you must have latex2mathml installed and specify the converter stylesheet you are going to use.
+To use md2pptx's in-built LaTeX support you must have latex2mathml installed and a converter stylesheet available.
 This stylesheet is generally obtained from a Microsoft Office installation.
 Its name is usually `MML2OMML.XSL`.
-Specify its location with
+Copy it to the md2pptx install directory as `mml2omml.xsl`, or specify its location with
 
     mathxsl: ~/md2pptx/MML2OMML.XSL
 
@@ -3184,12 +3184,13 @@ The default is `no`.
 <a id="latex-stylesheet-location-mathxsl"></a>
 #### LATeX Stylesheet Location - `mathxsl`
 
-As described in [LaTeX](#latex), you need to specify the stylesheet location if you are to use the function.
-Here is an example:
+As described in [LaTeX](#latex), md2pptx needs a copy of the MML2OMML stylesheet to use this function.
+By default it looks for `mml2omml.xsl` in the md2pptx install directory.
+You can specify a different location with, for example:
 
     mathxsl: ~/md2pptx/MML2OMML.XSL
 
-**Note:** It's probably a good idea to keep the stylesheet safe and copy it into the md2pptx directory after installing md2pptx - if that's where you use it.
+If the specified file does not exist, md2pptx also tries the install-directory copy as a fallback.
 
 <a id="slide-heading-levels-topheadinglevel"></a>
 #### Slide Heading Levels - `TopHeadingLevel`

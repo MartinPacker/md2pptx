@@ -180,6 +180,39 @@ def _hoist_math_namespaces(shape) -> None:
 
 # ── MathInserter ──────────────────────────────────────────────────────────────
 
+def _resolve_mathxsl_path(
+    configured_path: str | Path | None,
+    fallback_path: str | Path | None = None,
+) -> Path:
+    """Return the configured stylesheet or the copy beside md2pptx.
+
+    A user-supplied path takes precedence.  If it is absent or no ``mathxsl``
+    option was supplied, look for ``mml2omml.xsl`` in the installation
+    directory.
+    """
+    fallback = (
+        Path(fallback_path).expanduser()
+        if fallback_path is not None
+        else Path(__file__).resolve().with_name("mml2omml.xsl")
+    )
+
+    configured = Path(configured_path).expanduser() if configured_path else None
+    if configured is not None and configured.is_file():
+        return configured
+    if fallback.is_file():
+        return fallback
+
+    if configured is not None:
+        raise FileNotFoundError(
+            f"MML2OMML.XSL not found: {configured}; "
+            f"installation-directory fallback not found: {fallback}"
+        )
+    raise FileNotFoundError(
+        f"mathxsl option not set and installation-directory fallback "
+        f"not found: {fallback}"
+    )
+
+
 class MathInserter:
     def __init__(self, xsl_path: str | Path):
         xsl_path = Path(xsl_path)
@@ -216,12 +249,10 @@ class PptxMath:
         pass
 
     def run(self, prs, slide, renderingRectangle, codeLines, codeType):
-        mathxsl_path = globals.processingOptions.getCurrentOption("mathxsl")
-        if not mathxsl_path:
-            sys.stderr.write("Math block skipped: mathxsl option not set.\n")
-            return
-
         try:
+            mathxsl_path = _resolve_mathxsl_path(
+                globals.processingOptions.getCurrentOption("mathxsl")
+            )
             inserter = MathInserter(mathxsl_path)
         except Exception as e:
             sys.stderr.write(f"Math block skipped: {e}\n")
