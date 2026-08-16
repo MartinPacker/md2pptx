@@ -218,8 +218,13 @@ class PptxMath:
     def run(self, prs, slide, renderingRectangle, codeLines, codeType):
         mathxsl_path = globals.processingOptions.getCurrentOption("mathxsl")
         if not mathxsl_path:
-            sys.stderr.write("Math block skipped: mathxsl option not set.\n")
-            return
+            # Fall back to the bundled copy next to the md2pptx script
+            bundled = Path(__file__).resolve().parent / "mml2omml.xsl"
+            if bundled.exists():
+                mathxsl_path = str(bundled)
+            else:
+                sys.stderr.write("Math block skipped: mathxsl option not set.\n")
+                return
 
         try:
             inserter = MathInserter(mathxsl_path)
