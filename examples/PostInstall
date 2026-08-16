@@ -1,0 +1,13 @@
+#!/bin/sh
+md2pptx="$HOME/md2pptx"
+postinstall="$HOME/For-md2pptx"
+
+echo "Copying from $postinstall to $md2pptx"
+
+# Copy template presentation files
+cp "$postinstall/WhiteLabel.pptm" "$md2pptx"
+cp "$postinstall/Martin.pptm" "$md2pptx"
+cp "$postinstall/MartinDave.pptm" "$md2pptx"
+
+# Copy MathML XSLT file
+cp "$postinstall/mml2omml.xsl" "$md2pptx"
