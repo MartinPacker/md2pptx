@@ -1,10 +1,10 @@
 ### LaTeX
 <a id="latex"></a>
 
-To use md2pptx's in-built LaTeX support you must have latex2mathml installed and specify the converter stylesheet you are going to use.
+To use md2pptx's in-built LaTeX support you must have latex2mathml installed and a converter stylesheet available.
 This stylesheet is generally obtained from a Microsoft Office installation.
 Its name is usually `MML2OMML.XSL`.
-Specify its location with
+Copy it to the md2pptx install directory as `mml2omml.xsl`, or specify its location with
 
     mathxsl: ~/md2pptx/MML2OMML.XSL
 

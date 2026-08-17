@@ -3081,10 +3081,10 @@ for(i = 0; i &lt; 10; i++){
 </ol>
 <h3 id="latex">LaTeX<a class="headerlink" href="#latex" title="Permanent link"></a></h3>
 <p><a id="latex"></a></p>
-<p>To use md2pptx&rsquo;s in-built LaTeX support you must have latex2mathml installed and specify the converter stylesheet you are going to use.
+<p>To use md2pptx&rsquo;s in-built LaTeX support you must have latex2mathml installed and a converter stylesheet available.
 This stylesheet is generally obtained from a Microsoft Office installation.
 Its name is usually <code>MML2OMML.XSL</code>.
-Specify its location with</p>
+Copy it to the md2pptx install directory as <code>mml2omml.xsl</code>, or specify its location with</p>
 <pre><code>mathxsl: ~/md2pptx/MML2OMML.XSL
 </code></pre>
 <p>If the prerequisites are met you can code equations such as</p>
@@ -4577,11 +4577,12 @@ You can instead instruct it to place footnotes at the bottom of the slides they 
 <p>The default is <code>no</code>.</p>
 <p><a id="latex-stylesheet-location-mathxsl"></a></p>
 <h4 id="latex-stylesheet-location-mathxsl">LATeX Stylesheet Location - <code>mathxsl</code><a class="headerlink" href="#latex-stylesheet-location-mathxsl" title="Permanent link"></a></h4>
-<p>As described in <a href="#latex">LaTeX</a>, you need to specify the stylesheet location if you are to use the function.
-Here is an example:</p>
+<p>As described in <a href="#latex">LaTeX</a>, md2pptx needs a copy of the MML2OMML stylesheet to use this function.
+By default it looks for <code>mml2omml.xsl</code> in the md2pptx install directory.
+You can specify a different location with, for example:</p>
 <pre><code>mathxsl: ~/md2pptx/MML2OMML.XSL
 </code></pre>
-<p><strong>Note:</strong> It&rsquo;s probably a good idea to keep the stylesheet safe and copy it into the md2pptx directory after installing md2pptx - if that&rsquo;s where you use it.</p>
+<p>If the specified file does not exist, md2pptx also tries the install-directory copy as a fallback.</p>
 <p><a id="slide-heading-levels-topheadinglevel"></a></p>
 <h4 id="slide-heading-levels-topheadinglevel">Slide Heading Levels - <code>TopHeadingLevel</code><a class="headerlink" href="#slide-heading-levels-topheadinglevel" title="Permanent link"></a></h4>
 <p>The usual heading levels for different types of slides are as follows:</p>
