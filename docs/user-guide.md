@@ -508,7 +508,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
-|6.3.3+|15&nbsp;August&nbsp;2026|@troutrot fixed [Issue 231](https://github.com/MartinPacker/md2pptx/issues/231) where metadata couldn't contain colons&comma; added LaTeX support ([Issue 225](https://github.com/MartinPacker/md2pptx/issues/231) and [Issue 233](https://github.com/MartinPacker/md2pptx/issues/233))&comma; and introduced optional "on the slide" footnotes [Issue 232](https://github.com/MartinPacker/md2pptx/issues/232))|
+|7.0|17&nbsp;August&nbsp;2026|@troutrot fixed [Issue 231](https://github.com/MartinPacker/md2pptx/issues/231) where metadata couldn't contain colons&comma; added LaTeX support ([Issue 225](https://github.com/MartinPacker/md2pptx/issues/231) and [Issue 233](https://github.com/MartinPacker/md2pptx/issues/233))&comma; and introduced optional "on the slide" footnotes [Issue 232](https://github.com/MartinPacker/md2pptx/issues/232)).<br/>Added sample post-install script ([Issue 235](https://github.com/MartinPacker/md2pptx/issues/235)).<br/>@ramgao enhanced the XSL finding logic ([Issue 237]([https://github.com/MartinPacker/md2pptx/issues/237)).|
 |6.3.3|9&nbsp;August&nbsp;2026|Enhanced slide footers: [Issue 213](https://github.com/MartinPacker/md2pptx/issues/213).<br/>@maayanmatsliah-tech refactored `parseThemeColour`: [Issue 214](https://github.com/MartinPacker/md2pptx/issues/214).<br/>Make `parseThemeColour` handle bad theme colour specification better: [Issue 215](https://github.com/MartinPacker/md2pptx/issues/215).<br/>@troutrot fixed Issues [217](https://github.com/MartinPacker/md2pptx/pull/217)&comma; [218](https://github.com/MartinPacker/md2pptx/pull/218)&comma; [219](https://github.com/MartinPacker/md2pptx/pull/219)&comma; and [221](https://github.com/MartinPacker/md2pptx/issues/221)/[223](https://github.com/MartinPacker/md2pptx/pull/223).<br/>@Adichapati fixed [Issue 220](https://github.com/MartinPacker/md2pptx/pull/220).<br>Improved &amp; fixed Abstract Slides ([Issue 229](https://github.com/MartinPacker/md2pptx/pull/229)).<br/>Fixed issue [230](https://github.com/MartinPacker/md2pptx/issues/230) - Taskpaper issue.<br/><br/>**Note:** md2pptx now only supports Python 3.11 or later. A warning message is displayed if your Python version is less than this.|
 |6.3.2|3&nbsp;May&nbsp;2026|@tmchow fixed [Issue 211](https://github.com/MartinPacker/md2pptx/issues/211) where a missing template file would cause termination.|
 |6.3.1|18&nbsp;April&nbsp;2026|Fixed crasher in Section Expansion code|
@@ -3188,7 +3188,7 @@ As described in [LaTeX](#latex), md2pptx needs a copy of the MML2OMML stylesheet
 By default it looks for `mml2omml.xsl` in the md2pptx install directory.
 You can specify a different location with, for example:
 
-    mathxsl: ~/md2pptx/MML2OMML.XSL
+    mathxsl: ~/my-stylesheets/MML2OMML.XSL
 
 If the specified file does not exist, md2pptx also tries the install-directory copy as a fallback.
 
