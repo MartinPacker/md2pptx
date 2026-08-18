@@ -44,6 +44,7 @@ import platform
 import shutil
 import socket
 from pptx.oxml import parse_xml
+from pptx.oxml.ns import qn
 import uuid
 import funnel
 import runPython
@@ -394,6 +395,41 @@ def createExpandingSections(prs):
 
         # Insert the fragment in the extension list in presentation.xml
         extLst.insert(0, xmlFragment)
+
+
+def setTextLanguage(prs, language):
+    """Set the language attribute on every text run in the presentation.
+
+    PowerPoint picks its line breaking and proofing rules from this
+    attribute. The runs md2pptx creates have no <a:rPr> element at all, so
+    there is nothing for PowerPoint to go on and it falls back to whatever
+    the editing language happens to be. For Japanese and Chinese that means
+    the line breaking rules are not applied and punctuation can be pushed
+    to the start of a line.
+
+    Returns the number of runs changed. Runs that already carry a language -
+    for example ones that came in from the template - are left alone.
+    """
+    changed = 0
+
+    for slide in prs.slides:
+        for run in slide.shapes._spTree.iter(qn("a:r")):
+            runProperties = run.find(qn("a:rPr"))
+
+            if runProperties is None:
+                # <a:rPr> has to come before <a:t> so insert it rather than
+                # appending it
+                runProperties = run.makeelement(qn("a:rPr"), {})
+                run.insert(0, runProperties)
+
+            elif runProperties.get("lang") is not None:
+                # Leave a run that already has a language alone
+                continue
+
+            runProperties.set("lang", language)
+            changed += 1
+
+    return changed
 
 
 def deleteSlide(prs, slideNumber):
@@ -5149,6 +5185,8 @@ globals.processingOptions.setOptionValuesArray(
 
 globals.processingOptions.setOptionValues("monoFont", "Courier")
 
+globals.processingOptions.setOptionValues("textLanguage", "")
+
 globals.processingOptions.setOptionValues("mathxsl", "")
 
 topHeadingLevel = 1
@@ -5429,6 +5467,14 @@ for line in metadata_lines:
 
     elif name == "monofont":
         globals.processingOptions.setOptionValues(name, value)
+
+    elif name == "textlanguage":
+        if re.match(r"^[A-Za-z]{2,3}(-[A-Za-z0-9]+)*$", value):
+            globals.processingOptions.setOptionValues(name, value)
+        else:
+            print(
+                f"TextLanguage value '{value}' unsupported. A language tag such as \"ja-JP\" required."
+            )
 
     elif name == "marginbase":
         globals.processingOptions.setOptionValues(name, Inches(float(value)))
@@ -7182,6 +7228,11 @@ if globals.processingOptions.getCurrentOption("SectionsExpand"):
 onPresentationBeforeSave = globals.processingOptions.getCurrentOption("onPresentationBeforeSave")
 if onPresentationBeforeSave != "":
     exec(open(onPresentationBeforeSave).read())
+
+# Maybe set the language on every run - for line breaking and proofing
+textLanguage = globals.processingOptions.getCurrentOption("textLanguage")
+if textLanguage != "":
+    setTextLanguage(prs, textLanguage)
 
 prs.save(output_filename)
 
