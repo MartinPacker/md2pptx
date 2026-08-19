@@ -4927,6 +4927,7 @@ if len(input_file) == 0:
 slideNumber = 1
 
 bulletRegex = re.compile(r"^(\s)*(\*)(.*)")
+dashBulletRegex = re.compile(r"^(\s)*(\-)(.*)")
 numberRegex = re.compile(r"^(\s)*(\d+)\.(.*)")
 metadataRegex = re.compile("^([^:]+):(.+)")
 
@@ -5245,6 +5246,8 @@ globals.processingOptions.setOptionValues("transition", "none")
 
 globals.processingOptions.setOptionValues("deleteFirstSlide", False)
 
+globals.processingOptions.setOptionValues("dashesAreBullets", False)
+
 globals.processingOptions.setOptionValuesArray(
     [
         ["leftFooterText", ""],
@@ -5441,6 +5444,12 @@ for line in metadata_lines:
         globals.processingOptions.setOptionValues(name, float(value))
 
     elif name == "deletefirstslide":
+        if value.lower() == "yes":
+            globals.processingOptions.setOptionValues(name, True)
+        else:
+             globals.processingOptions.setOptionValues(name, False)
+
+    elif name == "dashesarebullets":
         if value.lower() == "yes":
             globals.processingOptions.setOptionValues(name, True)
         else:
@@ -6027,6 +6036,8 @@ slideHrefs = {}
 pictureInfos = []
 
 # Pass 2: Concatenate lines with continuations
+dashesarebullets = globals.processingOptions.getCurrentOption("dashesAreBullets")
+
 previousLine = "\n"
 linesAfterConcatenation = []
 
@@ -6042,6 +6053,9 @@ for line in afterMetadataAndHTML:
         inHTMLCode = False
 
     elif line.startswith("-"):
+        linesAfterConcatenation.append(line)
+
+    elif(dashesarebullets and line.lstrip().startswith("-")):
         linesAfterConcatenation.append(line)
 
     elif line.startswith("```"):
@@ -6128,6 +6142,8 @@ for line in linesAfterConcatenation:
 
 lastTableLine = -1
 
+
+
 # Pass 5: Main pass over the input file, now that footnote
 # references have been gathered
 for lineNumber, line in enumerate(linesAfterConcatenation):
@@ -6203,7 +6219,7 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
         inTitle = True
 
     # Taskpaper task
-    if line[:1] == "-":
+    if (line[:1] == "-") and (not dashesarebullets):
         # Get start of attributes
         attributesStart = line.find("@")
 
@@ -6750,8 +6766,12 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
             figcap = match.group(1)
             figureCaptions.append(figcap)
 
-    elif match := (bulletRegex.match(line)) or (numberRegex.match(line)):
+    elif match := (bulletRegex.match(line)) or \
+    (numberRegex.match(line)) or \
+    (dashBulletRegex.match(line)):
         if match.re is bulletRegex:
+            listItemType = "bulleted"
+        elif (match.re is dashBulletRegex) and dashesarebullets:
             listItemType = "bulleted"
         else:
             listItemType = "numbered"
