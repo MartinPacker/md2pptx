@@ -1318,7 +1318,11 @@ img {
 </ul>
 </li>
 <li><a href="#funnels">Funnels</a></li>
-<li><a href="#latex">LaTeX</a></li>
+<li><a href="#latex">LaTeX</a><ul>
+<li><a href="#maths-as-a-code-block">Maths As A Code Block</a></li>
+<li><a href="#inline-maths">Inline Maths</a></li>
+</ul>
+</li>
 <li><a href="#task-list-slides">Task List Slides</a></li>
 <li><a href="#slides-with-more-than-one-content-block">Slides With More Than One Content Block</a></li>
 <li><a href="#adding-slide-notes">Adding Slide Notes</a></li>
@@ -1381,6 +1385,7 @@ img {
 </ul>
 </li>
 <li><a href="#monospace-font-monofont">Monospace Font - <code>monoFont</code></a></li>
+<li><a href="#text-language-textlanguage">Text Language - <code>textLanguage</code></a></li>
 <li><a href="#margin-size-marginbase-and-tablemargin">Margin size - <code>marginBase</code> and <code>tableMargin</code></a></li>
 <li><a href="#controlling-adjusting-title-positions-and-sizes-adjusttitles">Controlling Adjusting Title Positions And Sizes - <code>AdjustTitles</code></a></li>
 <li><a href="#associating-a-class-name-with-a-background-colour-with-stylebgcolor">Associating A Class Name with A Background Colour With <code>style.bgcolor</code></a></li>
@@ -1901,12 +1906,12 @@ THE SOFTWARE.
 <tr>
 <td align="left">7.0+</td>
 <td align="right">19&nbsp;August&nbsp;2026</td>
-<td align="left"><a class="magiclink magiclink-github magiclink-mention" href="https://github.com/troutrot" title="GitHub User: troutrot">@troutrot</a> added <code>textLanguage</code> metadata item (<a href="https://github.com/MartinPacker/md2pptx/issues/243">Issue 243</a>) and Inline LaTeX support (<a href="https://github.com/MartinPacker/md2pptx/issues/242">Issue 242</a>).</td>
+<td align="left"><a class="magiclink magiclink-github magiclink-mention" href="https://github.com/troutrot" title="GitHub User: troutrot">@troutrot</a> added the <a href="#text-language-textlanguage"><code>textLanguage</code></a> metadata item (<a href="https://github.com/MartinPacker/md2pptx/issues/243">Issue 243</a>) and <a href="#inline-maths">Inline LaTeX</a> support (<a href="https://github.com/MartinPacker/md2pptx/issues/242">Issue 242</a>).</td>
 </tr>
 <tr>
 <td align="left">7.0</td>
 <td align="right">17&nbsp;August&nbsp;2026</td>
-<td align="left"><a class="magiclink magiclink-github magiclink-mention" href="https://github.com/troutrot" title="GitHub User: troutrot">@troutrot</a> fixed <a href="https://github.com/MartinPacker/md2pptx/issues/231">Issue 231</a> where metadata couldn&rsquo;t contain colons&comma; added LaTeX support (<a href="https://github.com/MartinPacker/md2pptx/issues/231">Issue 225</a> and <a href="https://github.com/MartinPacker/md2pptx/issues/233">Issue 233</a>)&comma; and introduced optional &ldquo;on the slide&rdquo; footnotes <a href="https://github.com/MartinPacker/md2pptx/issues/232">Issue 232</a>).<br/>Added sample post-install script (<a href="https://github.com/MartinPacker/md2pptx/issues/235">Issue 235</a>).<br/><a class="magiclink magiclink-github magiclink-mention" href="https://github.com/ramgao" title="GitHub User: ramgao">@ramgao</a> enhanced the XSL finding logic (<a href="/Users/martinpacker/md2pptx/docs/%5Bhttps%3A/github.com/MartinPacker/md2pptx/issues/237">Issue 237</a>).</td>
+<td align="left"><a class="magiclink magiclink-github magiclink-mention" href="https://github.com/troutrot" title="GitHub User: troutrot">@troutrot</a> fixed <a href="https://github.com/MartinPacker/md2pptx/issues/231">Issue 231</a> where metadata couldn&rsquo;t contain colons&comma; added <a href="#latex">LaTeX</a> support (<a href="https://github.com/MartinPacker/md2pptx/issues/231">Issue 225</a> and <a href="https://github.com/MartinPacker/md2pptx/issues/233">Issue 233</a>)&comma; and introduced optional &ldquo;on the slide&rdquo; footnotes <a href="https://github.com/MartinPacker/md2pptx/issues/232">Issue 232</a>).<br/>Added sample post-install script (<a href="https://github.com/MartinPacker/md2pptx/issues/235">Issue 235</a>).<br/><a class="magiclink magiclink-github magiclink-mention" href="https://github.com/ramgao" title="GitHub User: ramgao">@ramgao</a> enhanced the XSL finding logic (<a href="/Users/martinpacker/md2pptx/docs/%5Bhttps%3A/github.com/MartinPacker/md2pptx/issues/237">Issue 237</a>).</td>
 </tr>
 <tr>
 <td align="left">6.3.3</td>
@@ -3092,16 +3097,29 @@ Its name is usually <code>MML2OMML.XSL</code>.
 Copy it to the md2pptx install directory as <code>mml2omml.xsl</code>, or specify its location with</p>
 <pre><code>mathxsl: ~/md2pptx/MML2OMML.XSL
 </code></pre>
-<p>If the prerequisites are met you can code equations such as</p>
+<p>If the prerequisites are met you can code equations using LaTeX in one of two ways:</p>
+<h4 id="maths-as-a-code-block">Maths As A Code Block<a class="headerlink" href="#maths-as-a-code-block" title="Permanent link"></a></h4>
+<p><a id="block-maths"></a></p>
+<p>You can specify that equations appear in a block. For example</p>
 <pre><code>### Numbered equation
 
 ```math 1.3.4
 e^{i\pi}+1=0
 ```
 </code></pre>
-<p>and get slides that look like this:</p>
+<p>and get a slide that looks like this:</p>
 <p><img alt="" src="/Users/martinpacker/md2pptx/docs/equation.png" /></p>
-<p><strong>Note:</strong> The equation number is optional and can be any character string you like.</p>
+<p><strong>Notes:</strong></p>
+<ol>
+<li>The equation number is optional and can be any character string you like.</li>
+<li>You can code <code>maths</code> instead of <code>math</code>.</li>
+</ol>
+<h4 id="inline-maths">Inline Maths<a class="headerlink" href="#inline-maths" title="Permanent link"></a></h4>
+<p><a id="inline-maths"></a></p>
+<p>You can also set a formula within a line of text, using GitHub&rsquo;s inline form - a dollar sign against a backtick on each side of the LaTeX:</p>
+<pre><code>The patch loss $`L_{\mathrm{patch}}`$ is minimised over every patch.
+</code></pre>
+<p>The prerequisites are the same as for a <code>math</code> block.</p>
 <h3 id="task-list-slides">Task List Slides<a class="headerlink" href="#task-list-slides" title="Permanent link"></a></h3>
 <p><a id="task-list-slides"></a></p>
 <p>You can create tasks in a subset of the <a href="https://support.omnigroup.com/omnifocus-taskpaper-reference/">Taskpaper</a> format by coding a line that starts with a <code>-</code>:</p>
@@ -3864,6 +3882,13 @@ Keys are case insensitive. In this User Guide they are capitalised to aid compre
 <pre><code>monoFont: Arial
 </code></pre>
 <p>The default is Courier.</p>
+<h4 id="text-language-textlanguage">Text Language - <code>textLanguage</code><a class="headerlink" href="#text-language-textlanguage" title="Permanent link"></a></h4>
+<p><a id="text-language-textlanguage"></a></p>
+<p>Powerpoint takes its line breaking and proofing rules from the language recorded against each run of text, and md2pptx doesn&rsquo;t record one. For Japanese and Chinese that shows up on the slide: the line breaking rules aren&rsquo;t applied, so a comma or a full stop can be pushed to the start of the next line.</p>
+<p>You can set the language on every run of text in the presentation with a language tag - a two or three letter language code, optionally followed by subtags such as a region:</p>
+<pre><code>textLanguage: ja-JP
+</code></pre>
+<p>The default is for no language to be set.</p>
 <h4 id="margin-size-marginbase-and-tablemargin">Margin size - <code>marginBase</code> and <code>tableMargin</code><a class="headerlink" href="#margin-size-marginbase-and-tablemargin" title="Permanent link"></a></h4>
 <p><a id="margin-size-marginbase-and-tablemargin"></a></p>
 <p>You can increase or decrease the margin around things - in decimal fractions of an inch.</p>

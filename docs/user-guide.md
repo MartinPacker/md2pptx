@@ -56,6 +56,8 @@ As you can see in the [change log](#change-log), md2pptx is frequently updated -
 		* [`<pre>`](#<pre>)
 	* [Funnels](#funnels)
 	* [LaTeX](#latex)
+		* [Maths As A Code Block](#maths-as-a-code-block)
+		* [Inline Maths](#inline-maths)
 	* [Task List Slides](#task-list-slides)
 	* [Slides With More Than One Content Block](#slides-with-more-than-one-content-block)
 	* [Adding Slide Notes](#adding-slide-notes)
@@ -98,6 +100,7 @@ As you can see in the [change log](#change-log), md2pptx is frequently updated -
 			* [Presentation Subtitle Size - `presSubtitleSize`](#presentation-subtitle-size-pressubtitlesize)
 			* [Page Title Alignment `pagetitlealign`](#page-title-alignment-pagetitlealign)
 		* [Monospace Font - `monoFont`](#monospace-font-monofont)
+		* [Text Language - `textLanguage`](#text-language-textlanguage)
 		* [Margin size - `marginBase` and `tableMargin`](#margin-size-marginbase-and-tablemargin)
 		* [Controlling Adjusting Title Positions And Sizes - `AdjustTitles`](#controlling-adjusting-title-positions-and-sizes-adjusttitles)
 		* [Associating A Class Name with A Background Colour With `style.bgcolor`](#associating-a-class-name-with-a-background-colour-with-stylebgcolor)
@@ -508,8 +511,8 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
-|7.0+|19&nbsp;August&nbsp;2026|@troutrot added `textLanguage` metadata item ([Issue 243](https://github.com/MartinPacker/md2pptx/issues/243)) and Inline LaTeX support ([Issue 242](https://github.com/MartinPacker/md2pptx/issues/242)).|
-|7.0|17&nbsp;August&nbsp;2026|@troutrot fixed [Issue 231](https://github.com/MartinPacker/md2pptx/issues/231) where metadata couldn't contain colons&comma; added LaTeX support ([Issue 225](https://github.com/MartinPacker/md2pptx/issues/231) and [Issue 233](https://github.com/MartinPacker/md2pptx/issues/233))&comma; and introduced optional "on the slide" footnotes [Issue 232](https://github.com/MartinPacker/md2pptx/issues/232)).<br/>Added sample post-install script ([Issue 235](https://github.com/MartinPacker/md2pptx/issues/235)).<br/>@ramgao enhanced the XSL finding logic ([Issue 237]([https://github.com/MartinPacker/md2pptx/issues/237)).|
+|7.0+|19&nbsp;August&nbsp;2026|@troutrot added the [`textLanguage`](#text-language-textlanguage) metadata item ([Issue 243](https://github.com/MartinPacker/md2pptx/issues/243)) and [Inline LaTeX](#inline-maths) support ([Issue 242](https://github.com/MartinPacker/md2pptx/issues/242)).|
+|7.0|17&nbsp;August&nbsp;2026|@troutrot fixed [Issue 231](https://github.com/MartinPacker/md2pptx/issues/231) where metadata couldn't contain colons&comma; added [LaTeX](#latex) support ([Issue 225](https://github.com/MartinPacker/md2pptx/issues/231) and [Issue 233](https://github.com/MartinPacker/md2pptx/issues/233))&comma; and introduced optional "on the slide" footnotes [Issue 232](https://github.com/MartinPacker/md2pptx/issues/232)).<br/>Added sample post-install script ([Issue 235](https://github.com/MartinPacker/md2pptx/issues/235)).<br/>@ramgao enhanced the XSL finding logic ([Issue 237]([https://github.com/MartinPacker/md2pptx/issues/237)).|
 |6.3.3|9&nbsp;August&nbsp;2026|Enhanced slide footers: [Issue 213](https://github.com/MartinPacker/md2pptx/issues/213).<br/>@maayanmatsliah-tech refactored `parseThemeColour`: [Issue 214](https://github.com/MartinPacker/md2pptx/issues/214).<br/>Make `parseThemeColour` handle bad theme colour specification better: [Issue 215](https://github.com/MartinPacker/md2pptx/issues/215).<br/>@troutrot fixed Issues [217](https://github.com/MartinPacker/md2pptx/pull/217)&comma; [218](https://github.com/MartinPacker/md2pptx/pull/218)&comma; [219](https://github.com/MartinPacker/md2pptx/pull/219)&comma; and [221](https://github.com/MartinPacker/md2pptx/issues/221)/[223](https://github.com/MartinPacker/md2pptx/pull/223).<br/>@Adichapati fixed [Issue 220](https://github.com/MartinPacker/md2pptx/pull/220).<br>Improved &amp; fixed Abstract Slides ([Issue 229](https://github.com/MartinPacker/md2pptx/pull/229)).<br/>Fixed issue [230](https://github.com/MartinPacker/md2pptx/issues/230) - Taskpaper issue.<br/><br/>**Note:** md2pptx now only supports Python 3.11 or later. A warning message is displayed if your Python version is less than this.|
 |6.3.2|3&nbsp;May&nbsp;2026|@tmchow fixed [Issue 211](https://github.com/MartinPacker/md2pptx/issues/211) where a missing template file would cause termination.|
 |6.3.1|18&nbsp;April&nbsp;2026|Fixed crasher in Section Expansion code|
@@ -1361,7 +1364,12 @@ Copy it to the md2pptx install directory as `mml2omml.xsl`, or specify its locat
 
     mathxsl: ~/md2pptx/MML2OMML.XSL
 
-If the prerequisites are met you can code equations such as
+If the prerequisites are met you can code equations using LaTeX in one of two ways:
+
+#### Maths As A Code Block
+<a id="block-maths"></a>
+
+You can specify that equations appear in a block. For example
 
     ### Numbered equation
 
@@ -1369,11 +1377,23 @@ If the prerequisites are met you can code equations such as
     e^{i\pi}+1=0
     ```
 
-and get slides that look like this:
+and get a slide that looks like this:
 
 ![](equation.png)
 
-**Note:** The equation number is optional and can be any character string you like.
+**Notes:**
+
+1. The equation number is optional and can be any character string you like.
+1. You can code `maths` instead of `math`.
+
+#### Inline Maths
+<a id="inline-maths"></a>
+
+You can also set a formula within a line of text, using GitHub's inline form - a dollar sign against a backtick on each side of the LaTeX:
+
+    The patch loss $`L_{\mathrm{patch}}`$ is minimised over every patch.
+
+The prerequisites are the same as for a `math` block.
 
 ### Task List Slides
 <a id="task-list-slides"></a>
@@ -2131,6 +2151,17 @@ Example:
 	monoFont: Arial
 
 The default is Courier.
+
+#### Text Language - `textLanguage`
+<a id="text-language-textlanguage"></a>
+
+Powerpoint takes its line breaking and proofing rules from the language recorded against each run of text, and md2pptx doesn't record one. For Japanese and Chinese that shows up on the slide: the line breaking rules aren't applied, so a comma or a full stop can be pushed to the start of the next line.
+
+You can set the language on every run of text in the presentation with a language tag - a two or three letter language code, optionally followed by subtags such as a region:
+
+	textLanguage: ja-JP
+
+The default is for no language to be set.
 
 #### Margin size - `marginBase` and `tableMargin`
 <a id="margin-size-marginbase-and-tablemargin"></a>
