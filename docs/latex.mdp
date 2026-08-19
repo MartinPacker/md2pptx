@@ -21,3 +21,12 @@ and get slides that look like this:
 ![](equation.png)
 
 **Note:** The equation number is optional and can be any character string you like.
+
+#### Inline Maths
+<a id="inline-maths"></a>
+
+You can also set a formula within a line of text, using GitHub's inline form - a dollar sign against a backtick on each side of the LaTeX:
+
+    The patch loss $`L_{\mathrm{patch}}`$ is minimised over every patch.
+
+The prerequisites are the same as for a `math` block.

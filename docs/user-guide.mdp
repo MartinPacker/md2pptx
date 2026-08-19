@@ -1890,6 +1890,18 @@ Example:
 
 The default is Courier.
 
+#### Text Language - `textLanguage`
+<a id="text-language-textlanguage"></a>
+
+Powerpoint takes its line breaking and proofing rules from the language recorded against each run of text, and md2pptx doesn't record one. \
+For Japanese and Chinese that shows up on the slide: the line breaking rules aren't applied, so a comma or a full stop can be pushed to the start of the next line.
+
+You can set the language on every run of text in the presentation with a language tag - a two or three letter language code, optionally followed by subtags such as a region:
+
+	textLanguage: ja-JP
+
+The default is for no language to be set.
+
 #### Margin size - `marginBase` and `tableMargin`
 <a id="margin-size-marginbase-and-tablemargin"></a>
 
