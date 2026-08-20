@@ -1,3 +1,15 @@
+<!--
+
+IMPORTANT
+=========
+
+Do not edit the .md file.
+
+All edits must be made to the .mdp file (and any others it embeds).
+Then run the result through mdpre. (docs/makedocs is a good model.)
+
+-->
+
 <style>
 img {
   border: 2px solid #555 !important;
