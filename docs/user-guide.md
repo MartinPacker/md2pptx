@@ -129,7 +129,9 @@ As you can see in the [change log](#change-log), md2pptx is frequently updated -
 		* [Specifying Bold And Italic Text Effects With `BoldBold` And `ItalicItalic`](#specifying-bold-and-italic-text-effects-with-boldbold-and-italicitalic)
 		* [Controlling Task Slide Production With `taskSlides` and `tasksPerSlide`](#controlling-task-slide-production-with-taskslides-and-tasksperslide)
 		* [Controlling Glossary Slide Production With `glossaryTitle`, `glossaryTerm`, `glossaryMeaning`,`glossaryMeaningWidth`, and `glossaryTermsPerPage`](#controlling-glossary-slide-production-with-glossarytitle-glossaryterm-glossarymeaningglossarymeaningwidth-and-glossarytermsperpage)
-		* [Specifying How Many Spaces Represent An Indentation Level With `IndentSpaces`](#specifying-how-many-spaces-represent-an-indentation-level-with-indentspaces)
+		* [Bullets Metadata](#bullets-metadata)
+			* [Specifying How Many Spaces Represent An Indentation Level With `IndentSpaces`](#specifying-how-many-spaces-represent-an-indentation-level-with-indentspaces)
+			* [Dashes As Bullets - `dashesAreBullets`](#dashes-as-bullets-dashesarebullets)
 		* [Specifying Where Temporary Files Are Stored With `tempDir`](#specifying-where-temporary-files-are-stored-with-tempdir)
 		* [Deleting The First (Processing Summary) Slide - with `DeleteFirstSlide`](#deleting-the-first-(processing-summary)-slide-with-deletefirstslide)
 		* [Specifying Slide Background Images With `backgroundImage`](#specifying-slide-background-images-with-backgroundimage)
@@ -523,8 +525,8 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
-|7.0+|20&nbsp;August&nbsp;2026|@troutrot added the [`textLanguage`](#text-language-textlanguage) metadata item ([Issue 243](https://github.com/MartinPacker/md2pptx/issues/243)) and [Inline LaTeX](#inline-maths) support ([Issue 242](https://github.com/MartinPacker/md2pptx/issues/242)).|
-|7.0|17&nbsp;August&nbsp;2026|@troutrot fixed [Issue 231](https://github.com/MartinPacker/md2pptx/issues/231) where metadata couldn't contain colons&comma; added [LaTeX](#latex) support ([Issue 225](https://github.com/MartinPacker/md2pptx/issues/231) and [Issue 233](https://github.com/MartinPacker/md2pptx/issues/233))&comma; and introduced optional "on the slide" footnotes [Issue 232](https://github.com/MartinPacker/md2pptx/issues/232)).<br/>Added sample post-install script ([Issue 235](https://github.com/MartinPacker/md2pptx/issues/235)).<br/>@ramgao enhanced the XSL finding logic ([Issue 237]([https://github.com/MartinPacker/md2pptx/issues/237)).|
+|7.0+|20&nbsp;August&nbsp;2026|@troutrot added the [`textLanguage`](#text-language-textlanguage) metadata item ([Issue 243](https://github.com/MartinPacker/md2pptx/issues/243)) and [Inline LaTeX](#inline-maths) support ([Issue 242](https://github.com/MartinPacker/md2pptx/issues/242)).<br/>Added [`dashesAreBullets`](#dashes-as-bullets-dashesarebullets) to allow dashes to be used in bulleted lists (per [Issue 240](https://github.com/MartinPacker/md2pptx/issues/240)).|
+|7.0|17&nbsp;August&nbsp;2026|@troutrot fixed [Issue 231](https://github.com/MartinPacker/md2pptx/issues/231) where metadata couldn't contain colons&comma; added [LaTeX](#latex) support ([Issue 225](https://github.com/MartinPacker/md2pptx/issues/231) and [Issue 233](https://github.com/MartinPacker/md2pptx/issues/233))&comma; and introduced optional "on the slide" footnotes [Issue 232](https://github.com/MartinPacker/md2pptx/issues/232)).<br/>Added a sample post-install script ([Issue 235](https://github.com/MartinPacker/md2pptx/issues/235)).<br/>@ramgao enhanced the XSL finding logic ([Issue 237]([https://github.com/MartinPacker/md2pptx/issues/237)).|
 |6.3.3|9&nbsp;August&nbsp;2026|Enhanced slide footers: [Issue 213](https://github.com/MartinPacker/md2pptx/issues/213).<br/>@maayanmatsliah-tech refactored `parseThemeColour`: [Issue 214](https://github.com/MartinPacker/md2pptx/issues/214).<br/>Make `parseThemeColour` handle bad theme colour specification better: [Issue 215](https://github.com/MartinPacker/md2pptx/issues/215).<br/>@troutrot fixed Issues [217](https://github.com/MartinPacker/md2pptx/pull/217)&comma; [218](https://github.com/MartinPacker/md2pptx/pull/218)&comma; [219](https://github.com/MartinPacker/md2pptx/pull/219)&comma; and [221](https://github.com/MartinPacker/md2pptx/issues/221)/[223](https://github.com/MartinPacker/md2pptx/pull/223).<br/>@Adichapati fixed [Issue 220](https://github.com/MartinPacker/md2pptx/pull/220).<br>Improved &amp; fixed Abstract Slides ([Issue 229](https://github.com/MartinPacker/md2pptx/pull/229)).<br/>Fixed issue [230](https://github.com/MartinPacker/md2pptx/issues/230) - Taskpaper issue.<br/><br/>**Note:** md2pptx now only supports Python 3.11 or later. A warning message is displayed if your Python version is less than this.|
 |6.3.2|3&nbsp;May&nbsp;2026|@tmchow fixed [Issue 211](https://github.com/MartinPacker/md2pptx/issues/211) where a missing template file would cause termination.|
 |6.3.1|18&nbsp;April&nbsp;2026|Fixed crasher in Section Expansion code|
@@ -744,11 +746,11 @@ The title of the slide is defined by coding a Markdown Heading Level 3 (`###`).
 **Note:** You can allow the title to spill onto a second line but it is better to break titles up using `<br/>`. Doing so enables md2pptx to layout slide contents below the title better. It also allows you to specify a different (probably) smaller font size for the second and subsequent lines of the title.
 
 
-Bulleted list items are introduced by an asterisk.
+Bulleted list items are introduced by an asterisk (by default).
 
 **Notes:**
 
-* Some dialects of Markdown allow other bullet markers but md2pptx doesn't. You can be sure by coding `*` you have valid Markdown that md2pptx can also process correctly. For an explanation of why you have to stick to `*` see [here](#task-list-slides).
+* Some dialects of Markdown allow other bullet markers but md2pptx doesn't by default. You can be sure by coding `*` you have valid Markdown that md2pptx can also process correctly. For an explanation of why you should stick to `*` if possible see [here](#task-list-slides). You can override the default by specifying [`dashesAreBullets`](#dashes-as-bullets-dashesarebullets) metadata.
 
 * To nest bullets use a tab character or 2 spaces to indent the sub-bullets. md2pptx doesn't have a limit on the level of nesting but Powerpoint probably does.
 
@@ -1421,13 +1423,14 @@ Taskpaper is a very flexible and simple text-based task management system. md2pp
 * Anything after the `-` leading character and before the first `@` symbol, if any, is the task title.
 * Anything bracketed by `@due(` and `)` is treated as a due date - but the date isn't actively parsed.
 * Anything bracketed by `@tags(` and `)` is treated as a set of tags. Tags are separated by a space or a comma and they are sorted.
-* Anything bracketed by `@done(` and `)` is treated as a completion date - but it isn't actively parsed. (An uncompleted task need not have anything in inside the bracket - or the `@done` could be missing.)
+* Anything bracketed by `@done(` and `)` is treated as a completion date - but it isn't actively parsed. (An uncompleted task need not have anything inside the bracket - or the `@done` could be missing.)
 
 The task title, any due date, any tags, and any completion information, are added as a table row to the set of tasks.
 
-Because of Taskpaper support you can't start a bullet with a `-`. So always start bulleted list items with a `*`.
+**Note:** Because of Taskpaper support you can't by default start a bullet with a `-`. So always start bulleted list items with a `*` - unless you code the [`dashesAreBullets`](#dashes-as-bullets-dashesarebullets) metadata item.
+If you code `dashesAreBullets` md2pptx disables Taskpaper support.
 
-Tasks on the Tasks slides are shown with the slide number they were coded on. If you click on the slide number you are taken to the corresponding slide.
+Each task on a Tasks slide is shown with the slide number it was coded on. If you click on the slide number you are taken to the corresponding slide.
 
 Here's a more comprehensive example. Coding
 
@@ -2467,13 +2470,32 @@ Coding
 
 will cause the maximum number of glossary items on a Glossary slide to be 10. If there are more terms, a second slide will be created. And so on. The default is 20.
 
-#### Specifying How Many Spaces Represent An Indentation Level With `IndentSpaces`
+#### Bullets Metadata
+
+You can change some aspects of how md2pptx processes bulleted lists.
+
+<a id="specifying-how-many-spaces-represent-an-indentation-level-with-indentspaces"></a>
+##### Specifying How Many Spaces Represent An Indentation Level With `IndentSpaces`
 
 While the default for signifying each level of indentation for bullets is two spaces, you can change it by coding `IndentSpaces` for metadata. For example:
 
     IndentSpaces: 4
 
 You can change the value of `IndentSpaces` on a slide-by-slide basis, perhaps because you are including material from elsewhere that uses a different value. See [Dynamic IndentSpaces](#indentspaces-dynamic).
+
+<a id="dashes-as-bullets-dashesarebullets"></a>
+##### Dashes As Bullets - `dashesAreBullets`
+
+By default md2pptx requires you to use asterisks (`*`) to denote bulleted list items.
+Some tools create Markdown using dashes (`-`) to denote bulleted list items.
+
+You can override md2pptx's default behaviour by coding
+
+    dashesAreBullets: yes
+
+The default is `no`.
+
+**Note:** Enabling dashes disables md2pptx's [Taskpaper](#task-list-slides) task management support.
 
 ####  Specifying Where Temporary Files Are Stored With `tempDir`
 <a id="specifying-where-temporary-files-are-stored-with-tempdir"></a>

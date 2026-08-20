@@ -43,7 +43,7 @@ Def month = August
 
 Def year = 2026
 
-Def time = 11&colon;06
+Def time = 13&colon;12
 
 Def date = 20 August&comma; 2026
 
@@ -296,7 +296,11 @@ CSV Stop
 
 ..... ..... .....  Controlling Glossary Slide Production With `glossaryTitle`, `glossaryTerm`, `glossaryMeaning`,`glossaryMeaningWidth`, and `glossaryTermsPerPage`
 
-..... ..... .....  Specifying How Many Spaces Represent An Indentation Level With `IndentSpaces`
+..... ..... .....  Bullets Metadata
+
+..... ..... ..... .....  Specifying How Many Spaces Represent An Indentation Level With `IndentSpaces`
+
+..... ..... ..... .....  Dashes As Bullets - `dashesAreBullets`
 
 ..... ..... .....   Specifying Where Temporary Files Are Stored With `tempDir`
 

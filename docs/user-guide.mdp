@@ -289,13 +289,14 @@ Doing so enables md2pptx to layout slide contents below the title better. \
 It also allows you to specify a different (probably) smaller font size for the second and subsequent lines of the title.
 
 
-Bulleted list items are introduced by an asterisk.
+Bulleted list items are introduced by an asterisk (by default).
 
 **Notes:**
 
-* Some dialects of &md; allow other bullet markers but md2pptx doesn't. \
+* Some dialects of &md; allow other bullet markers but md2pptx doesn't by default. \
 You can be sure by coding `*` you have valid &md; that md2pptx can also process correctly. \
-For an explanation of why you have to stick to `*` see [here](#task-list-slides).
+For an explanation of why you should stick to `*` if possible see [here](#task-list-slides). \
+You can override the default by specifying [`dashesAreBullets`](#dashes-as-bullets-dashesarebullets) metadata.
 
 * To nest bullets use a tab character or 2 spaces to indent the sub-bullets. \
 md2pptx doesn't have a limit on the level of nesting but &pp; probably does.
@@ -952,14 +953,15 @@ md2pptx parses anything after the `-` simplistically but doesn't invalidate the 
 * Anything bracketed by `@tags(` and `)` is treated as a set of tags. \
 Tags are separated by a space or a comma and they are sorted.
 * Anything bracketed by `@done(` and `)` is treated as a completion date - but it isn't actively parsed. \
-(An uncompleted task need not have anything in inside the bracket - or the `@done` could be missing.)
+(An uncompleted task need not have anything inside the bracket - or the `@done` could be missing.)
 
 The task title, any due date, any tags, and any completion information, are added as a table row to the set of tasks.
 
-Because of Taskpaper support you can't start a bullet with a `-`. \
-So always start bulleted list items with a `*`.
+**Note:** Because of Taskpaper support you can't by default start a bullet with a `-`. \
+So always start bulleted list items with a `*` - unless you code the [`dashesAreBullets`](#dashes-as-bullets-dashesarebullets) metadata item.
+If you code `dashesAreBullets` md2pptx disables Taskpaper support.
 
-Tasks on the Tasks slides are shown with the slide number they were coded on. \
+Each task on a Tasks slide is shown with the slide number it was coded on. \
 If you click on the slide number you are taken to the corresponding slide.
 
 Here's a more comprehensive example. Coding
@@ -2092,7 +2094,12 @@ Coding
 
 will cause the maximum number of glossary items on a Glossary slide to be 10. If there are more terms, a second slide will be created. And so on. The default is 20.
 
-#### Specifying How Many Spaces Represent An Indentation Level With `IndentSpaces`
+#### Bullets Metadata
+
+You can change some aspects of how md2pptx processes bulleted lists.
+
+<a id="specifying-how-many-spaces-represent-an-indentation-level-with-indentspaces"></a>
+##### Specifying How Many Spaces Represent An Indentation Level With `IndentSpaces`
 
 While the default for signifying each level of indentation for bullets is two spaces, you can change it by coding `IndentSpaces` for metadata. For example:
 
@@ -2100,6 +2107,20 @@ While the default for signifying each level of indentation for bullets is two sp
 
 You can change the value of `IndentSpaces` on a slide-by-slide basis, perhaps because you are including material from elsewhere that uses a different value. \
 See [Dynamic IndentSpaces](#indentspaces-dynamic).
+
+<a id="dashes-as-bullets-dashesarebullets"></a>
+##### Dashes As Bullets - `dashesAreBullets`
+
+By default md2pptx requires you to use asterisks (`*`) to denote bulleted list items.
+Some tools create &md; using dashes (`-`) to denote bulleted list items.
+
+You can override md2pptx's default behaviour by coding
+
+    dashesAreBullets: yes
+
+The default is `no`.
+
+**Note:** Enabling dashes disables md2pptx's [Taskpaper](#task-list-slides) task management support.
 
 ####  Specifying Where Temporary Files Are Stored With `tempDir`
 <a id="specifying-where-temporary-files-are-stored-with-tempdir"></a>

@@ -1244,7 +1244,19 @@ body .markdown-body
 		.highlight .gc{color:#999;background-color:#EAF2F5}
   }
 }
-</style><title>user-guide</title></head><body data-theme="auto"><article class="markdown-body"><style>
+</style><title>user-guide</title></head><body data-theme="auto"><article class="markdown-body"><!--
+
+IMPORTANT
+=========
+
+Do not edit the .md file.
+
+All edits must be made to the .mdp file (and any others it embeds).
+Then run the result through mdpre. (docs/makedocs is a good model.)
+
+-->
+
+<style>
 img {
   border: 2px solid #555 !important;
 }
@@ -1402,7 +1414,11 @@ img {
 <li><a href="#specifying-bold-and-italic-text-effects-with-boldbold-and-italicitalic">Specifying Bold And Italic Text Effects With <code>BoldBold</code> And <code>ItalicItalic</code></a></li>
 <li><a href="#controlling-task-slide-production-with-taskslides-and-tasksperslide">Controlling Task Slide Production With <code>taskSlides</code> and <code>tasksPerSlide</code></a></li>
 <li><a href="#controlling-glossary-slide-production-with-glossarytitle-glossaryterm-glossarymeaningglossarymeaningwidth-and-glossarytermsperpage">Controlling Glossary Slide Production With <code>glossaryTitle</code>, <code>glossaryTerm</code>, <code>glossaryMeaning</code>,<code>glossaryMeaningWidth</code>, and <code>glossaryTermsPerPage</code></a></li>
+<li><a href="#bullets-metadata">Bullets Metadata</a><ul>
 <li><a href="#specifying-how-many-spaces-represent-an-indentation-level-with-indentspaces">Specifying How Many Spaces Represent An Indentation Level With <code>IndentSpaces</code></a></li>
+<li><a href="#dashes-as-bullets-dashesarebullets">Dashes As Bullets - <code>dashesAreBullets</code></a></li>
+</ul>
+</li>
 <li><a href="#specifying-where-temporary-files-are-stored-with-tempdir">Specifying Where Temporary Files Are Stored With <code>tempDir</code></a></li>
 <li><a href="#deleting-the-first-(processing-summary)-slide-with-deletefirstslide">Deleting The First (Processing Summary) Slide - with <code>DeleteFirstSlide</code></a></li>
 <li><a href="#specifying-slide-background-images-with-backgroundimage">Specifying Slide Background Images With <code>backgroundImage</code></a></li>
@@ -1906,12 +1922,12 @@ THE SOFTWARE.
 <tr>
 <td align="left">7.0+</td>
 <td align="right">20&nbsp;August&nbsp;2026</td>
-<td align="left"><a class="magiclink magiclink-github magiclink-mention" href="https://github.com/troutrot" title="GitHub User: troutrot">@troutrot</a> added the <a href="#text-language-textlanguage"><code>textLanguage</code></a> metadata item (<a href="https://github.com/MartinPacker/md2pptx/issues/243">Issue 243</a>) and <a href="#inline-maths">Inline LaTeX</a> support (<a href="https://github.com/MartinPacker/md2pptx/issues/242">Issue 242</a>).</td>
+<td align="left"><a class="magiclink magiclink-github magiclink-mention" href="https://github.com/troutrot" title="GitHub User: troutrot">@troutrot</a> added the <a href="#text-language-textlanguage"><code>textLanguage</code></a> metadata item (<a href="https://github.com/MartinPacker/md2pptx/issues/243">Issue 243</a>) and <a href="#inline-maths">Inline LaTeX</a> support (<a href="https://github.com/MartinPacker/md2pptx/issues/242">Issue 242</a>).<br/>Added <a href="#dashes-as-bullets-dashesarebullets"><code>dashesAreBullets</code></a> to allow dashes to be used in bulleted lists (per <a href="https://github.com/MartinPacker/md2pptx/issues/240">Issue 240</a>).</td>
 </tr>
 <tr>
 <td align="left">7.0</td>
 <td align="right">17&nbsp;August&nbsp;2026</td>
-<td align="left"><a class="magiclink magiclink-github magiclink-mention" href="https://github.com/troutrot" title="GitHub User: troutrot">@troutrot</a> fixed <a href="https://github.com/MartinPacker/md2pptx/issues/231">Issue 231</a> where metadata couldn&rsquo;t contain colons&comma; added <a href="#latex">LaTeX</a> support (<a href="https://github.com/MartinPacker/md2pptx/issues/231">Issue 225</a> and <a href="https://github.com/MartinPacker/md2pptx/issues/233">Issue 233</a>)&comma; and introduced optional &ldquo;on the slide&rdquo; footnotes <a href="https://github.com/MartinPacker/md2pptx/issues/232">Issue 232</a>).<br/>Added sample post-install script (<a href="https://github.com/MartinPacker/md2pptx/issues/235">Issue 235</a>).<br/><a class="magiclink magiclink-github magiclink-mention" href="https://github.com/ramgao" title="GitHub User: ramgao">@ramgao</a> enhanced the XSL finding logic (<a href="/Users/martinpacker/md2pptx/docs/%5Bhttps%3A/github.com/MartinPacker/md2pptx/issues/237">Issue 237</a>).</td>
+<td align="left"><a class="magiclink magiclink-github magiclink-mention" href="https://github.com/troutrot" title="GitHub User: troutrot">@troutrot</a> fixed <a href="https://github.com/MartinPacker/md2pptx/issues/231">Issue 231</a> where metadata couldn&rsquo;t contain colons&comma; added <a href="#latex">LaTeX</a> support (<a href="https://github.com/MartinPacker/md2pptx/issues/231">Issue 225</a> and <a href="https://github.com/MartinPacker/md2pptx/issues/233">Issue 233</a>)&comma; and introduced optional &ldquo;on the slide&rdquo; footnotes <a href="https://github.com/MartinPacker/md2pptx/issues/232">Issue 232</a>).<br/>Added a sample post-install script (<a href="https://github.com/MartinPacker/md2pptx/issues/235">Issue 235</a>).<br/><a class="magiclink magiclink-github magiclink-mention" href="https://github.com/ramgao" title="GitHub User: ramgao">@ramgao</a> enhanced the XSL finding logic (<a href="/Users/martinpacker/md2pptx/docs/%5Bhttps%3A/github.com/MartinPacker/md2pptx/issues/237">Issue 237</a>).</td>
 </tr>
 <tr>
 <td align="left">6.3.3</td>
@@ -2608,11 +2624,11 @@ sectionTitleSize: 30
 </code></pre>
 <p>The title of the slide is defined by coding a Markdown Heading Level 3 (<code>###</code>).</p>
 <p><strong>Note:</strong> You can allow the title to spill onto a second line but it is better to break titles up using <code>&lt;br/&gt;</code>. Doing so enables md2pptx to layout slide contents below the title better. It also allows you to specify a different (probably) smaller font size for the second and subsequent lines of the title.</p>
-<p>Bulleted list items are introduced by an asterisk.</p>
+<p>Bulleted list items are introduced by an asterisk (by default).</p>
 <p><strong>Notes:</strong></p>
 <ul>
 <li>
-<p>Some dialects of Markdown allow other bullet markers but md2pptx doesn&rsquo;t. You can be sure by coding <code>*</code> you have valid Markdown that md2pptx can also process correctly. For an explanation of why you have to stick to <code>*</code> see <a href="#task-list-slides">here</a>.</p>
+<p>Some dialects of Markdown allow other bullet markers but md2pptx doesn&rsquo;t by default. You can be sure by coding <code>*</code> you have valid Markdown that md2pptx can also process correctly. For an explanation of why you should stick to <code>*</code> if possible see <a href="#task-list-slides">here</a>. You can override the default by specifying <a href="#dashes-as-bullets-dashesarebullets"><code>dashesAreBullets</code></a> metadata.</p>
 </li>
 <li>
 <p>To nest bullets use a tab character or 2 spaces to indent the sub-bullets. md2pptx doesn&rsquo;t have a limit on the level of nesting but Powerpoint probably does.</p>
@@ -3131,11 +3147,12 @@ e^{i\pi}+1=0
 <li>Anything after the <code>-</code> leading character and before the first <code>@</code> symbol, if any, is the task title.</li>
 <li>Anything bracketed by <code>@due(</code> and <code>)</code> is treated as a due date - but the date isn&rsquo;t actively parsed.</li>
 <li>Anything bracketed by <code>@tags(</code> and <code>)</code> is treated as a set of tags. Tags are separated by a space or a comma and they are sorted.</li>
-<li>Anything bracketed by <code>@done(</code> and <code>)</code> is treated as a completion date - but it isn&rsquo;t actively parsed. (An uncompleted task need not have anything in inside the bracket - or the <code>@done</code> could be missing.)</li>
+<li>Anything bracketed by <code>@done(</code> and <code>)</code> is treated as a completion date - but it isn&rsquo;t actively parsed. (An uncompleted task need not have anything inside the bracket - or the <code>@done</code> could be missing.)</li>
 </ul>
 <p>The task title, any due date, any tags, and any completion information, are added as a table row to the set of tasks.</p>
-<p>Because of Taskpaper support you can&rsquo;t start a bullet with a <code>-</code>. So always start bulleted list items with a <code>*</code>.</p>
-<p>Tasks on the Tasks slides are shown with the slide number they were coded on. If you click on the slide number you are taken to the corresponding slide.</p>
+<p><strong>Note:</strong> Because of Taskpaper support you can&rsquo;t by default start a bullet with a <code>-</code>. So always start bulleted list items with a <code>*</code> - unless you code the <a href="#dashes-as-bullets-dashesarebullets"><code>dashesAreBullets</code></a> metadata item.
+If you code <code>dashesAreBullets</code> md2pptx disables Taskpaper support.</p>
+<p>Each task on a Tasks slide is shown with the slide number it was coded on. If you click on the slide number you are taken to the corresponding slide.</p>
 <p>Here&rsquo;s a more comprehensive example. Coding</p>
 <pre><code>- Complete abstract @due(2019-01-11) @tags(Anna,Martin)
 </code></pre>
@@ -4091,11 +4108,23 @@ baseTextDecrement: 1
 <pre><code>glossaryTermsPerPage: 10
 </code></pre>
 <p>will cause the maximum number of glossary items on a Glossary slide to be 10. If there are more terms, a second slide will be created. And so on. The default is 20.</p>
-<h4 id="specifying-how-many-spaces-represent-an-indentation-level-with-indentspaces">Specifying How Many Spaces Represent An Indentation Level With <code>IndentSpaces</code><a class="headerlink" href="#specifying-how-many-spaces-represent-an-indentation-level-with-indentspaces" title="Permanent link"></a></h4>
+<h4 id="bullets-metadata">Bullets Metadata<a class="headerlink" href="#bullets-metadata" title="Permanent link"></a></h4>
+<p>You can change some aspects of how md2pptx processes bulleted lists.</p>
+<p><a id="specifying-how-many-spaces-represent-an-indentation-level-with-indentspaces"></a></p>
+<h5 id="specifying-how-many-spaces-represent-an-indentation-level-with-indentspaces">Specifying How Many Spaces Represent An Indentation Level With <code>IndentSpaces</code><a class="headerlink" href="#specifying-how-many-spaces-represent-an-indentation-level-with-indentspaces" title="Permanent link"></a></h5>
 <p>While the default for signifying each level of indentation for bullets is two spaces, you can change it by coding <code>IndentSpaces</code> for metadata. For example:</p>
 <pre><code>IndentSpaces: 4
 </code></pre>
 <p>You can change the value of <code>IndentSpaces</code> on a slide-by-slide basis, perhaps because you are including material from elsewhere that uses a different value. See <a href="#indentspaces-dynamic">Dynamic IndentSpaces</a>.</p>
+<p><a id="dashes-as-bullets-dashesarebullets"></a></p>
+<h5 id="dashes-as-bullets-dashesarebullets">Dashes As Bullets - <code>dashesAreBullets</code><a class="headerlink" href="#dashes-as-bullets-dashesarebullets" title="Permanent link"></a></h5>
+<p>By default md2pptx requires you to use asterisks (<code>*</code>) to denote bulleted list items.
+Some tools create Markdown using dashes (<code>-</code>) to denote bulleted list items.</p>
+<p>You can override md2pptx&rsquo;s default behaviour by coding</p>
+<pre><code>dashesAreBullets: yes
+</code></pre>
+<p>The default is <code>no</code>.</p>
+<p><strong>Note:</strong> Enabling dashes disables md2pptx&rsquo;s <a href="#task-list-slides">Taskpaper</a> task management support.</p>
 <h4 id="specifying-where-temporary-files-are-stored-with-tempdir">Specifying Where Temporary Files Are Stored With <code>tempDir</code><a class="headerlink" href="#specifying-where-temporary-files-are-stored-with-tempdir" title="Permanent link"></a></h4>
 <p><a id="specifying-where-temporary-files-are-stored-with-tempdir"></a></p>
 <p>You can specify which directory temporary files are stored in. For example:</p>
