@@ -9,7 +9,7 @@ Reads from stdin
 """
 
 md2pptx_level = "7.0+"
-md2pptx_date = "19 August, 2026"
+md2pptx_date = "20 August, 2026"
 
 minimumPython = (3, 11)
 minimumPythonString = f"{minimumPython[0]}.{minimumPython[1]}"
@@ -5496,11 +5496,12 @@ for line in metadata_lines:
             globals.processingOptions.setOptionValues(name, True)
         else:
             globals.processingOptions.setOptionValues(name, False)
+
     elif name == "dashesarebullets":
         if value.lower() == "yes":
             globals.processingOptions.setOptionValues(name, True)
         else:
-             globals.processingOptions.setOptionValues(name, False)
+            globals.processingOptions.setOptionValues(name, False)
 
     elif name == "hidden":
         if value.lower() == "yes":
@@ -6083,7 +6084,7 @@ slideHrefs = {}
 pictureInfos = []
 
 # Pass 2: Concatenate lines with continuations
-dashesarebullets = globals.processingOptions.getCurrentOption("dashesAreBullets")
+dashesAreBullets = globals.processingOptions.getCurrentOption("dashesAreBullets")
 
 previousLine = "\n"
 linesAfterConcatenation = []
@@ -6102,7 +6103,7 @@ for line in afterMetadataAndHTML:
     elif line.startswith("-"):
         linesAfterConcatenation.append(line)
 
-    elif(dashesarebullets and line.lstrip().startswith("-")):
+    elif(dashesAreBullets and line.lstrip().startswith("-")):
         linesAfterConcatenation.append(line)
 
     elif line.startswith("```"):
@@ -6266,7 +6267,7 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
         inTitle = True
 
     # Taskpaper task
-    if (line[:1] == "-") and (not dashesarebullets):
+    if (line[:1] == "-") and (not dashesAreBullets):
         # Get start of attributes
         attributesStart = line.find("@")
 
@@ -6818,7 +6819,7 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
     (dashBulletRegex.match(line)):
         if match.re is bulletRegex:
             listItemType = "bulleted"
-        elif (match.re is dashBulletRegex) and dashesarebullets:
+        elif (match.re is dashBulletRegex) and dashesAreBullets:
             listItemType = "bulleted"
         else:
             listItemType = "numbered"
