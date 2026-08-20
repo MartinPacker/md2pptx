@@ -1,3 +1,15 @@
+<!--
+
+IMPORTANT
+=========
+
+Do not edit the .md file.
+
+All edits must be made to the .mdp file (and any others it embeds).
+Then run the result through mdpre. (docs/makedocs is a good model.)
+
+-->
+
 <style>
 img {
   border: 2px solid #555 !important;
@@ -55,6 +67,9 @@ As you can see in the [change log](#change-log), md2pptx is frequently updated -
 		* [Indented Text](#indented-text)
 		* [`<pre>`](#<pre>)
 	* [Funnels](#funnels)
+	* [LaTeX](#latex)
+		* [Maths As A Code Block](#maths-as-a-code-block)
+		* [Inline Maths](#inline-maths)
 	* [Task List Slides](#task-list-slides)
 	* [Slides With More Than One Content Block](#slides-with-more-than-one-content-block)
 	* [Adding Slide Notes](#adding-slide-notes)
@@ -97,6 +112,7 @@ As you can see in the [change log](#change-log), md2pptx is frequently updated -
 			* [Presentation Subtitle Size - `presSubtitleSize`](#presentation-subtitle-size-pressubtitlesize)
 			* [Page Title Alignment `pagetitlealign`](#page-title-alignment-pagetitlealign)
 		* [Monospace Font - `monoFont`](#monospace-font-monofont)
+		* [Text Language - `textLanguage`](#text-language-textlanguage)
 		* [Margin size - `marginBase` and `tableMargin`](#margin-size-marginbase-and-tablemargin)
 		* [Controlling Adjusting Title Positions And Sizes - `AdjustTitles`](#controlling-adjusting-title-positions-and-sizes-adjusttitles)
 		* [Associating A Class Name with A Background Colour With `style.bgcolor`](#associating-a-class-name-with-a-background-colour-with-stylebgcolor)
@@ -113,7 +129,9 @@ As you can see in the [change log](#change-log), md2pptx is frequently updated -
 		* [Specifying Bold And Italic Text Effects With `BoldBold` And `ItalicItalic`](#specifying-bold-and-italic-text-effects-with-boldbold-and-italicitalic)
 		* [Controlling Task Slide Production With `taskSlides` and `tasksPerSlide`](#controlling-task-slide-production-with-taskslides-and-tasksperslide)
 		* [Controlling Glossary Slide Production With `glossaryTitle`, `glossaryTerm`, `glossaryMeaning`,`glossaryMeaningWidth`, and `glossaryTermsPerPage`](#controlling-glossary-slide-production-with-glossarytitle-glossaryterm-glossarymeaningglossarymeaningwidth-and-glossarytermsperpage)
-		* [Specifying How Many Spaces Represent An Indentation Level With `IndentSpaces`](#specifying-how-many-spaces-represent-an-indentation-level-with-indentspaces)
+		* [Bullets Metadata](#bullets-metadata)
+			* [Specifying How Many Spaces Represent An Indentation Level With `IndentSpaces`](#specifying-how-many-spaces-represent-an-indentation-level-with-indentspaces)
+			* [Dashes As Bullets - `dashesAreBullets`](#dashes-as-bullets-dashesarebullets)
 		* [Specifying Where Temporary Files Are Stored With `tempDir`](#specifying-where-temporary-files-are-stored-with-tempdir)
 		* [Deleting The First (Processing Summary) Slide - with `DeleteFirstSlide`](#deleting-the-first-(processing-summary)-slide-with-deletefirstslide)
 		* [Specifying Slide Background Images With `backgroundImage`](#specifying-slide-background-images-with-backgroundimage)
@@ -172,6 +190,8 @@ As you can see in the [change log](#change-log), md2pptx is frequently updated -
 			* [Footnotes Title Prefix - footnotesTitle](#footnotes-title-prefix-footnotestitle)
 			* [Footnotes Font Size - footnotesFontSize](#footnotes-font-size-footnotesfontsize)
 			* [Footnotes Per Page - footnotesPerPage](#footnotes-per-page-footnotesperpage)
+			* [Footnote Placement - footnotesOnSlide](#footnote-placement-footnotesonslide)
+		* [LATeX Stylesheet Location - `mathxsl`](#latex-stylesheet-location-mathxsl)
 		* [Slide Heading Levels - `TopHeadingLevel`](#slide-heading-levels-topheadinglevel)
 		* [Slides With Multiple Content Blocks](#slides-with-multiple-content-blocks)
 			* [Horizontal Or Vertical Split - `ContentSplitDirection`](#horizontal-or-vertical-split-contentsplitdirection)
@@ -505,6 +525,8 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
+|7.0+|20&nbsp;August&nbsp;2026|@troutrot added the [`textLanguage`](#text-language-textlanguage) metadata item ([Issue 243](https://github.com/MartinPacker/md2pptx/issues/243)) and [Inline LaTeX](#inline-maths) support ([Issue 242](https://github.com/MartinPacker/md2pptx/issues/242)).<br/>Added [`dashesAreBullets`](#dashes-as-bullets-dashesarebullets) to allow dashes to be used in bulleted lists (per [Issue 240](https://github.com/MartinPacker/md2pptx/issues/240)).|
+|7.0|17&nbsp;August&nbsp;2026|@troutrot fixed [Issue 231](https://github.com/MartinPacker/md2pptx/issues/231) where metadata couldn't contain colons&comma; added [LaTeX](#latex) support ([Issue 225](https://github.com/MartinPacker/md2pptx/issues/231) and [Issue 233](https://github.com/MartinPacker/md2pptx/issues/233))&comma; and introduced optional "on the slide" footnotes [Issue 232](https://github.com/MartinPacker/md2pptx/issues/232)).<br/>Added a sample post-install script ([Issue 235](https://github.com/MartinPacker/md2pptx/issues/235)).<br/>@ramgao enhanced the XSL finding logic ([Issue 237]([https://github.com/MartinPacker/md2pptx/issues/237)).|
 |6.3.3|9&nbsp;August&nbsp;2026|Enhanced slide footers: [Issue 213](https://github.com/MartinPacker/md2pptx/issues/213).<br/>@maayanmatsliah-tech refactored `parseThemeColour`: [Issue 214](https://github.com/MartinPacker/md2pptx/issues/214).<br/>Make `parseThemeColour` handle bad theme colour specification better: [Issue 215](https://github.com/MartinPacker/md2pptx/issues/215).<br/>@troutrot fixed Issues [217](https://github.com/MartinPacker/md2pptx/pull/217)&comma; [218](https://github.com/MartinPacker/md2pptx/pull/218)&comma; [219](https://github.com/MartinPacker/md2pptx/pull/219)&comma; and [221](https://github.com/MartinPacker/md2pptx/issues/221)/[223](https://github.com/MartinPacker/md2pptx/pull/223).<br/>@Adichapati fixed [Issue 220](https://github.com/MartinPacker/md2pptx/pull/220).<br>Improved &amp; fixed Abstract Slides ([Issue 229](https://github.com/MartinPacker/md2pptx/pull/229)).<br/>Fixed issue [230](https://github.com/MartinPacker/md2pptx/issues/230) - Taskpaper issue.<br/><br/>**Note:** md2pptx now only supports Python 3.11 or later. A warning message is displayed if your Python version is less than this.|
 |6.3.2|3&nbsp;May&nbsp;2026|@tmchow fixed [Issue 211](https://github.com/MartinPacker/md2pptx/issues/211) where a missing template file would cause termination.|
 |6.3.1|18&nbsp;April&nbsp;2026|Fixed crasher in Section Expansion code|
@@ -724,11 +746,11 @@ The title of the slide is defined by coding a Markdown Heading Level 3 (`###`).
 **Note:** You can allow the title to spill onto a second line but it is better to break titles up using `<br/>`. Doing so enables md2pptx to layout slide contents below the title better. It also allows you to specify a different (probably) smaller font size for the second and subsequent lines of the title.
 
 
-Bulleted list items are introduced by an asterisk.
+Bulleted list items are introduced by an asterisk (by default).
 
 **Notes:**
 
-* Some dialects of Markdown allow other bullet markers but md2pptx doesn't. You can be sure by coding `*` you have valid Markdown that md2pptx can also process correctly. For an explanation of why you have to stick to `*` see [here](#task-list-slides).
+* Some dialects of Markdown allow other bullet markers but md2pptx doesn't by default. You can be sure by coding `*` you have valid Markdown that md2pptx can also process correctly. For an explanation of why you should stick to `*` if possible see [here](#task-list-slides). You can override the default by specifying [`dashesAreBullets`](#dashes-as-bullets-dashesarebullets) metadata.
 
 * To nest bullets use a tab character or 2 spaces to indent the sub-bullets. md2pptx doesn't have a limit on the level of nesting but Powerpoint probably does.
 
@@ -1243,7 +1265,12 @@ Triple backticks are supported. Surround the block of text by them:
 <a id="special-processing-of-code-within-triple-backticks"></a>
 ##### Special Processing Of Code Within Triple Backticks
 
-If you have GraphViz installed you can render GraphViz diagrams as graphics.
+While triple backticks denote code there are a number of more sophisticated things you can do with them:
+
+* If you have GraphViz installed you can render GraphViz diagrams as graphics.
+* [RunPython](#running-inline-python) allows you to run Python code.
+* You can create [Funnel Diagrams](#funnels).
+* If you have latex2mathml and lxml installed - probably via `pip` - you can embed [LaTeX](#latex).
 
 <a id="graphviz"></a>
 ###### GraphViz
@@ -1277,6 +1304,7 @@ This is how the above code is rendered
 
 
 ![](graphviz-rendered.png)
+
 
 #### Indented Text
 
@@ -1339,6 +1367,48 @@ Each row leads to a funnel stage. The first column is the text for the label abo
 1. You can specify aspects of funnels' appearance with [metadata](#funnel-metadata).
 1. Any CSV columns after the first two are ignored.
 
+
+### LaTeX
+<a id="latex"></a>
+
+To use md2pptx's in-built LaTeX support you must have latex2mathml installed and a converter stylesheet available.
+This stylesheet is generally obtained from a Microsoft Office installation.
+Its name is usually `MML2OMML.XSL`.
+Copy it to the md2pptx install directory as `mml2omml.xsl`, or specify its location with
+
+    mathxsl: ~/md2pptx/MML2OMML.XSL
+
+If the prerequisites are met you can code equations using LaTeX in one of two ways:
+
+#### Maths As A Code Block
+<a id="block-maths"></a>
+
+You can specify that equations appear in a block. For example
+
+    ### Numbered equation
+
+    ```math 1.3.4
+    e^{i\pi}+1=0
+    ```
+
+and get a slide that looks like this:
+
+![](equation.png)
+
+**Notes:**
+
+1. The equation number is optional and can be any character string you like.
+1. You can code `maths` instead of `math`.
+
+#### Inline Maths
+<a id="inline-maths"></a>
+
+You can also set a formula within a line of text, using GitHub's inline form - a dollar sign against a backtick on each side of the LaTeX:
+
+    The patch loss $`L_{\mathrm{patch}}`$ is minimised over every patch.
+
+The prerequisites are the same as for a `math` block.
+
 ### Task List Slides
 <a id="task-list-slides"></a>
 
@@ -1353,13 +1423,14 @@ Taskpaper is a very flexible and simple text-based task management system. md2pp
 * Anything after the `-` leading character and before the first `@` symbol, if any, is the task title.
 * Anything bracketed by `@due(` and `)` is treated as a due date - but the date isn't actively parsed.
 * Anything bracketed by `@tags(` and `)` is treated as a set of tags. Tags are separated by a space or a comma and they are sorted.
-* Anything bracketed by `@done(` and `)` is treated as a completion date - but it isn't actively parsed. (An uncompleted task need not have anything in inside the bracket - or the `@done` could be missing.)
+* Anything bracketed by `@done(` and `)` is treated as a completion date - but it isn't actively parsed. (An uncompleted task need not have anything inside the bracket - or the `@done` could be missing.)
 
 The task title, any due date, any tags, and any completion information, are added as a table row to the set of tasks.
 
-Because of Taskpaper support you can't start a bullet with a `-`. So always start bulleted list items with a `*`.
+**Note:** Because of Taskpaper support you can't by default start a bullet with a `-`. So always start bulleted list items with a `*` - unless you code the [`dashesAreBullets`](#dashes-as-bullets-dashesarebullets) metadata item.
+If you code `dashesAreBullets` md2pptx disables Taskpaper support.
 
-Tasks on the Tasks slides are shown with the slide number they were coded on. If you click on the slide number you are taken to the corresponding slide.
+Each task on a Tasks slide is shown with the slide number it was coded on. If you click on the slide number you are taken to the corresponding slide.
 
 Here's a more comprehensive example. Coding
 
@@ -1869,6 +1940,7 @@ For example:
 In this example the word "multiple" is italicised.
 
 If you have defined footnotes one or more Footnotes slides will be added to the end of the presentation.
+Alternatively you can cause footnotes to appear at the bottom of the slide they're defined on.
 
 Footnotes are automatically numbered, starting with 1.
 
@@ -2094,6 +2166,17 @@ Example:
 	monoFont: Arial
 
 The default is Courier.
+
+#### Text Language - `textLanguage`
+<a id="text-language-textlanguage"></a>
+
+Powerpoint takes its line breaking and proofing rules from the language recorded against each run of text, and md2pptx doesn't record one. For Japanese and Chinese that shows up on the slide: the line breaking rules aren't applied, so a comma or a full stop can be pushed to the start of the next line.
+
+You can set the language on every run of text in the presentation with a language tag - a two or three letter language code, optionally followed by subtags such as a region:
+
+	textLanguage: ja-JP
+
+The default is for no language to be set.
 
 #### Margin size - `marginBase` and `tableMargin`
 <a id="margin-size-marginbase-and-tablemargin"></a>
@@ -2387,13 +2470,32 @@ Coding
 
 will cause the maximum number of glossary items on a Glossary slide to be 10. If there are more terms, a second slide will be created. And so on. The default is 20.
 
-#### Specifying How Many Spaces Represent An Indentation Level With `IndentSpaces`
+#### Bullets Metadata
+
+You can change some aspects of how md2pptx processes bulleted lists.
+
+<a id="specifying-how-many-spaces-represent-an-indentation-level-with-indentspaces"></a>
+##### Specifying How Many Spaces Represent An Indentation Level With `IndentSpaces`
 
 While the default for signifying each level of indentation for bullets is two spaces, you can change it by coding `IndentSpaces` for metadata. For example:
 
     IndentSpaces: 4
 
 You can change the value of `IndentSpaces` on a slide-by-slide basis, perhaps because you are including material from elsewhere that uses a different value. See [Dynamic IndentSpaces](#indentspaces-dynamic).
+
+<a id="dashes-as-bullets-dashesarebullets"></a>
+##### Dashes As Bullets - `dashesAreBullets`
+
+By default md2pptx requires you to use asterisks (`*`) to denote bulleted list items.
+Some tools create Markdown using dashes (`-`) to denote bulleted list items.
+
+You can override md2pptx's default behaviour by coding
+
+    dashesAreBullets: yes
+
+The default is `no`.
+
+**Note:** Enabling dashes disables md2pptx's [Taskpaper](#task-list-slides) task management support.
 
 ####  Specifying Where Temporary Files Are Stored With `tempDir`
 <a id="specifying-where-temporary-files-are-stored-with-tempdir"></a>
@@ -3135,6 +3237,26 @@ If you need to change this you can code something like
     footnotesPerPage: 10
 
 This will reduce the maximum number of footnotes on a slide to 10.
+
+##### Footnote Placement - footnotesOnSlide
+
+By default md2pptx places footnotes on slides at the end of the presentation.
+You can instead instruct it to place footnotes at the bottom of the slides they are defined on:
+
+    footnotesOnSlide: yes
+
+The default is `no`.
+
+<a id="latex-stylesheet-location-mathxsl"></a>
+#### LATeX Stylesheet Location - `mathxsl`
+
+As described in [LaTeX](#latex), md2pptx needs a copy of the MML2OMML stylesheet to use this function.
+By default it looks for `mml2omml.xsl` in the md2pptx install directory.
+You can specify a different location with, for example:
+
+    mathxsl: ~/my-stylesheets/MML2OMML.XSL
+
+If the specified file does not exist, md2pptx also tries the install-directory copy as a fallback.
 
 <a id="slide-heading-levels-topheadinglevel"></a>
 #### Slide Heading Levels - `TopHeadingLevel`
@@ -3982,6 +4104,7 @@ Known deviations are:
 * [GraphViz .dot files](#graphviz) aren't rendered by most Markdown processors.
 * [Funnels](#funnels) aren't rendered by any other Markdown processor.
 * [run-python functionality](#running-inline-python) isn't supported by any other Markdown processor.
+* Embedded [LaTeX](#latex) isn't supported by any other Markdown processor.
 * Figure and table captions allow embed styling in md2pptx. This isn't the case in other Markdown processors.
 
 ## Running Inline Python

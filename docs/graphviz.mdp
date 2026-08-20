@@ -1,0 +1,36 @@
+<a id="graphviz"></a>
+###### GraphViz
+
+On startup md2pptx will check whether the graphviz Python package is installed. \
+It cannot check if the GraphViz application is installed - but you need that as well to process GraphViz .dot data.
+
+If both the graphviz package and the GraphViz application are installed you can render .dot file format lines. \
+Here is an example:
+
+	```dot
+	digraph G{
+	edge [dir=forward]
+	node [shape=plaintext]
+	
+	0 [label="0 (None)"]
+	0 -> 5 [label="root" color = blue]
+	1 [label="1 (Hello)"]
+	2 [label="2 (how)"]
+	2 -> 1 [label="advmod"]
+	3 [label="3 (are)" fontcolor = green]
+	4 [label="4 (you)"]
+	5 [label="5 (doing)"]
+	5 -> 3 [label="aux"]
+	5 -> 2 [label="advanced mod"]
+	5 -> 4 [label="nsubj"]
+	}
+	```
+
+This will be rendered as a graphic and inserted in the current slide. \
+The graphic will be scaled as appropriate.
+
+This is how the above code is rendered
+
+
+![](graphviz-rendered.png)
+

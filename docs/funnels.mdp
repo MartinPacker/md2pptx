@@ -1,0 +1,42 @@
+### Funnels
+<a id="funnels"></a>
+
+Funnels depict a funnel, with the wide part to the left. \
+Each successive stage in the funnel narrows the funnel. \
+In a sense this is like a pipeline, with stages. \
+Here each stage but the last narrows the pipe. \
+md2pptx can create such slides from CSV data. \
+A typical result looks like this:
+
+![](funnel-slide.png)
+
+In this example the funnel is rendered below some bullets. \
+You can render funnels on the same slide as other items, which can be of any type.
+
+The code to create this slide is:
+
+    ### This Is A Funnel Slide
+    <!-- md2pptx: contentSplit: 1 3 -->
+    <!-- md2pptx: funnelColours: ACCENT 3, ACCENT 4, ACCENT 5 , ACCENT 6 -->
+    
+    * Here is some text above the funnel diagram
+      * The funnel parts are described by two-column CSV rows
+        * Columns after the first two are ignored
+
+    ``` funnel
+    1000 / Week<br/>(Roughly),Website<br/>Hits
+    100 / Week,Enquiries
+    80 / Week,Qualified
+    70 / Week,Signed
+    65 / Week,Delivered
+    ```
+Each row leads to a funnel stage. \
+The first column is the text for the label above each stage body. \
+The second column is the text for the stage body.
+
+**Notes:**
+
+1. You can force line breaks in both the funnel stage titles and the funnel stage bodies.
+1. You can specify aspects of funnels' appearance with [metadata](#funnel-metadata).
+1. Any CSV columns after the first two are ignored.
+

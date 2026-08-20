@@ -1,0 +1,32 @@
+### LaTeX
+<a id="latex"></a>
+
+To use md2pptx's in-built LaTeX support you must have latex2mathml installed and a converter stylesheet available.
+This stylesheet is generally obtained from a Microsoft Office installation.
+Its name is usually `MML2OMML.XSL`.
+Copy it to the md2pptx install directory as `mml2omml.xsl`, or specify its location with
+
+    mathxsl: ~/md2pptx/MML2OMML.XSL
+
+If the prerequisites are met you can code equations such as
+
+    ### Numbered equation
+
+    ```math 1.3.4
+    e^{i\pi}+1=0
+    ```
+
+and get slides that look like this:
+
+![](equation.png)
+
+**Note:** The equation number is optional and can be any character string you like.
+
+#### Inline Maths
+<a id="inline-maths"></a>
+
+You can also set a formula within a line of text, using GitHub's inline form - a dollar sign against a backtick on each side of the LaTeX:
+
+    The patch loss $`L_{\mathrm{patch}}`$ is minimised over every patch.
+
+The prerequisites are the same as for a `math` block.
