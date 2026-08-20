@@ -4,6 +4,12 @@ processingOptions
 
 """
 
+
+# Splits a string into words, converting each word to an integer. Returns them as a
+# sorted list.
+def sortedNumericList(string: str) -> list[int]:
+    return sorted(list(map(int, set(string.split()))))
+
 # Note: Options stored with lower case keys
 class ProcessingOptions:
     def __init__(self):
