@@ -1,0 +1,133 @@
+## Change Log
+
+=colalign l r l
+=csv
+Level,Date,What
+7.0+,20&nbsp;August&nbsp;2026,@troutrot added the [`textLanguage`](#text-language-textlanguage) metadata item ([Issue 243](https://github.com/MartinPacker/md2pptx/issues/243)) and [Inline LaTeX](#inline-maths) support ([Issue 242](https://github.com/MartinPacker/md2pptx/issues/242)).
+7.0,17&nbsp;August&nbsp;2026,@troutrot fixed [Issue 231](https://github.com/MartinPacker/md2pptx/issues/231) where metadata couldn't contain colons&comma; added [LaTeX](#latex) support ([Issue 225](https://github.com/MartinPacker/md2pptx/issues/231) and [Issue 233](https://github.com/MartinPacker/md2pptx/issues/233))&comma; and introduced optional "on the slide" footnotes [Issue 232](https://github.com/MartinPacker/md2pptx/issues/232)).<br/>Added sample post-install script ([Issue 235](https://github.com/MartinPacker/md2pptx/issues/235)).<br/>@ramgao enhanced the XSL finding logic ([Issue 237]([https://github.com/MartinPacker/md2pptx/issues/237)).
+6.3.3,9&nbsp;August&nbsp;2026,Enhanced slide footers: [Issue 213](https://github.com/MartinPacker/md2pptx/issues/213).<br/>@maayanmatsliah-tech refactored `parseThemeColour`: [Issue 214](https://github.com/MartinPacker/md2pptx/issues/214).<br/>Make `parseThemeColour` handle bad theme colour specification better: [Issue 215](https://github.com/MartinPacker/md2pptx/issues/215).<br/>@troutrot fixed Issues [217](https://github.com/MartinPacker/md2pptx/pull/217)&comma; [218](https://github.com/MartinPacker/md2pptx/pull/218)&comma; [219](https://github.com/MartinPacker/md2pptx/pull/219)&comma; and [221](https://github.com/MartinPacker/md2pptx/issues/221)/[223](https://github.com/MartinPacker/md2pptx/pull/223).<br/>@Adichapati fixed [Issue 220](https://github.com/MartinPacker/md2pptx/pull/220).<br>Improved &amp; fixed Abstract Slides ([Issue 229](https://github.com/MartinPacker/md2pptx/pull/229)).<br/>Fixed issue [230](https://github.com/MartinPacker/md2pptx/issues/230) - Taskpaper issue.<br/><br/>**Note:** md2pptx now only supports Python 3.11 or later. A warning message is displayed if your Python version is less than this.
+6.3.2,3&nbsp;May&nbsp;2026,@tmchow fixed [Issue 211](https://github.com/MartinPacker/md2pptx/issues/211) where a missing template file would cause termination.
+6.3.1,18&nbsp;April&nbsp;2026,Fixed crasher in Section Expansion code
+6.3,26&nbsp;March&nbsp;2026,Introduced [XML-Related Helper routines](#xml-related-helper-routines).
+6.2,25&nbsp;January&nbsp;2026,You can now have multiple lists - bulleted or numbered - on a slide. Added [figure caption](#figure-captions) support.
+6.1.1,15&nbsp;December&nbsp;2025,Enhanced table caption support with [TableCaptionAtTop](#controlling-whether-table-captions-are-above-or-below-the-table-tablecaptionattop)&comma; [Specifying Table Captions' Heights](#controlling-a-table-captions-height-tablecaptionheight)&comma; [Specifying Table Captions' Alignment](#controlling-table-captions-alignment-tablecaptionalignment).
+6.1,28&nbsp;November&nbsp;2025,Added support for [inserting slides from other presentations](#inserting-slides-from-other-presentations) - using AppleScript. Added support for [ApplesScipt prologue and epilogue files](#prologue-epilogue-files). Incorporated a fix from @misaka4e21.
+6.0.3,26&nbsp;October&nbsp;2025,Added support for [table captions](#table-captions).
+6.0.2,12&nbsp;October&nbsp;2025,@troutrot fixed [footnotes](file:///Users/martinpacker/md2pptx/docs/user-guide.html#creating-footnotes). Also [`italiccolour`](#specifying-bold-and-italic-text-colour-with-boldcolour-and-italiccolour) fixed. [Checklists](#checklist-related-helper-routines) now use graphics instead of weird characters.
+6.0.1,13&nbsp;September&nbsp;2025,Tweaked the ability to [generate and run AppleScript](#postprocessing-the-presentation-with-scripting) to add an additional `activate` step and added some blank lines in the generated script.<br/>Added "Maybe" and "Partial" to checklists&comma; plus some synonyms.
+6.0,29&nbsp;August&nbsp;2025,Added the ability to [generate and run AppleScript](#postprocessing-the-presentation-with-scripting).
+5.4.5,20&nbsp;August&nbsp;2025,Added the ability to shade a table cell with [`style.cellcolor`](#associating-a-class-name-with-table-cell-shading-with-style-cellcolor).
+5.4.4,13&nbsp;July&nbsp;2025,Bugfix: Image loaded without JPEG file extension wasn't recognise as a JPEG
+5.4.3,14&nbsp;April&nbsp;2025,Bugfixes: [span style](#using-html-%3Cspan%3E-elements-with-style) issues. Moved `setHighlight` into paragraph.py.
+5.4.2,12&nbsp;April&nbsp;2025,Bugfixes: Codepoint 236 was trashed. Editing error in footnote font size handling. Shell script for building documentation.
+5.4.1,8&nbsp;March&nbsp;2025,Bugfix: indirectAnchors should've been a global
+5.4,23&nbsp;February&nbsp;2025,Added the ability to run Python code from named files in [`run-python`](#running-inline-python). Added [3 exit routine points](#python-exit-routines) where user Python code can run.
+5.3.1,16&nbsp;February&nbsp;2025,Added a double-headed arrow&comma; an oval&comma; double lines&comma; and line widths to [Annotations](#annotations-related-helper-routines). Added optional drop shadows for tables with [`tableShadow`](#controlling-whether-tables-have-drop-shadows-tableshadow).
+5.3,11&nbsp;February&nbsp;2025,Added [Annotations](#annotations-related-helper-routines) to [`run-python`](#running-inline-python).
+5.2.2,31&nbsp;December&nbsp;2024,[Checklist](#checklist-related-helper-routines) items can be richer&comma; for example using `<span>` elements.
+5.2.1,23&nbsp;November&nbsp;2024,[Checklist](#checklist-related-helper-routines) items can be optionally coloured red or green&comma; according to status.
+5.2,18&nbsp;November&nbsp;2024,Fixed symbol resolution in footers. Tweaked [`RunPython.ensureTextbox`](#runpythonensuretextbox). Added [`RunPython.removeBullet`](#runpythonremovebullet)&comma; [`RunPython.removeBullets`](#runpythonremovebullets)&comma; and [`RunPython.removeSelectedBullets`](#runpythonremoveselectedbullets). [Checklist](#checklist-related-helper-routines) items can be indented.
+5.1,26&nbsp;August&nbsp;2024,Fixed failed `html` import for [Numeric Character References](#numeric-character-references).<br/>Added Python functions for [checklist creation](#checklist-related-helper-routines).
+5.0.2,26&nbsp;July&nbsp;2024,Added optional `columns` parameter to [`RunPython.makeChartData`](#runpythonmakechartdata).<br/>Added [`RunPython.filterRows`](#runpythonfilterrows) and [`RunPython.transposeArray`](#runpythontransposearray) support.<br/>Specified 'UTF-8' on file read.
+5.0.1,14&nbsp;July&nbsp;2024,Added [`RunPython.alignTableCellText`](#runpythonaligntablecelltext) and [`RunPython.makeDrawnShape`](#runpythonmakedrawnshape)support.
+5.0,7&nbsp;July&nbsp;2024,Added [`run-python`](#running-inline-python) support.
+4.6.1,1&nbsp;July&nbsp;2024,Fixed breakage in `hidden`.
+4.6,30&nbsp;June&nbsp;2024,Use Unicode noncharacters instead of high 8-bit characters for markers.<br/>Added `hidden`[metadata](#hiding-slides-hidden) and [dynamic metadata](#hidden-dynamic) item.
+4.5,16&nbsp;June&nbsp;2024,Support for `fontsize` in [styling](#using-html-span-elements-to-specify-text-effects).
+4.4,6&nbsp;May&nbsp;2024,Support for Python 3.12 and 3.13 (tested with alphas 5 &amp; 6). `imghdr` package is no longer used to guess graphics file types.
+4.3.3,20&nbsp;January&nbsp;2024,Cards can now have audio where a graphic might be. Also media can have a "poster" image for when the media isn't playing. See [Card Graphics&comma; Video&comma; &amp; Audio](#card-graphics-video-audio).
+4.3.2,17&nbsp;January&nbsp;2024,Cards can now have a video where a graphic might be. See [Card Graphics&comma; Video&comma; &amp; Audio](#card-graphics-video-audio).
+4.3.1,13&nbsp;January&nbsp;2024,Card graphics are now clickable and can have tooltips. They can also use `data:` URL's.
+4.3,3&nbsp;January&nbsp;2024,Added [card graphics](#card-graphics-video-audio) support and [`CardGraphicPosition`](#card-graphic-positioning-cardgraphicposition)&comma; [`CardGraphicSize`](#card-graphic-size-cardgraphicsize)&comma; and [`CardGraphicPadding`](#card-graphic-padding-cardgraphicpadding).
+4.2.1,28&nbsp;December&nbsp;2023,Made [`backgroundImage`](#specifying-slide-background-images-with-backgroundimage) create **real** slide backgrounds.
+4.2,27&nbsp;December&nbsp;2023,Added background image support using [`backgroundImage`](#specifying-slide-background-images-with-backgroundimage).
+4.1.2,11&nbsp;July&nbsp;2023,Fixed two bugs: Using `<sub>` &amp; `<sup>` causes a crash. Also [Card Slides](#card-slides) cause a crash.
+4.1.1,10&nbsp;July&nbsp;2023,Added [`numbersFontSize`](#specifying-slide-number-font-size-with-numbersfontsize) and [`footerFontSize`](#specifying-footer-font-size-with-footerfontsize).
+4.1,28&nbsp;April&nbsp;2023,Added [`funnelLabelsPosition`](#funnel-labels-position-funnellabelsposition) and [`funnelWidest`](#funnel-orientation-funnelwidest). Added [`cardTitleBackground`](#card-title-background-colours-cardtitlebackground). Added quotation mark related [HTML entity references](#html-entity-references).
+4.0,7&nbsp;April&nbsp;2023,Added [Funnel](#funnels) support. [`CardColour`](#card-background-colour-cardcolour) can now be pluralised: `CardColors` or `CardColours`.
+3.7,26&nbsp;March&nbsp;2023,Added [`cardDividerColour`](#card-divider-colour-carddividercolour). Most colours now RGB or Theme Colour (documented in [Specifying Colours](#specifying-colours)).
+3.6,18&nbsp;March&nbsp;2023,Added [`cardTitleColour`](#card-title-colour-cardtitlecolour) &amp; `line` for [`cardshape`](#card-shape-cardshape). Allow multiple colours for [`cardColour`](#card-background-colour-cardcolour).
+3.5.2,14&nbsp;March&nbsp;2023,Added [`pageTitleAlign`](#page-title-alignment-pagetitlealign) - for content page title alignment.
+3.5.1,3&nbsp;March&nbsp;2023,[`pageSubtitleSize`](#page-subtitle-size-pagesubtitlesize) supports `same` meaning "same font size as first line".
+3.5.1,25&nbsp;February&nbsp;2023,Added support for separately scaling second and subsequent slide title lines - with [`pageSubtitleSize`](#page-subtitle-size-pagesubtitlesize).
+3.5,18&nbsp;February&nbsp;2023,Added support for GraphViz .dot file rendering within triple backticks
+3.4.1,23&nbsp;October&nbsp;2022,Added support for a few more [slide transitions](#slide-transitions-transition): `wipe`&comma; `vortex`&comma; `fracture`&comma; `split`&comma; and `push`.
+3.4,16&nbsp;October&nbsp;2022,Added support for a small number of [slide transitions](#slide-transitions-transition).
+3.3.3,8&nbsp;October&nbsp;2022,Fixed bug where coding a MultiMarkdown style heading ID deleted the text to the right. Noted outbound links from headings are a [deviation from standard Markdown](#deviations-from-standard-markdown).
+3.3.2,6&nbsp;September&nbsp;2022,Fixed bug where expanding sections crashed md2pptx. Clarified supported section name characters. See [sectionsExpand](#make-expandable-sections-sectionsexpand).
+3.3.1,3&nbsp;September&nbsp;2022,[Processing Summary](#processing-summary) slide can have up to 5 column pairs. `<span class=>` matching lower cased.
+3.3,9&nbsp;August&nbsp;2022,Added [sectionsExpand](#make-expandable-sections-sectionsexpand) to enable sections to expand and contract.
+3.2.2,10&nbsp;June&nbsp;2022,Enhanced [custom footer text](#footer-flexibility) with presentation title and subtitle. Added specifying individual lines from these and section titles. Handle `<br/>`.
+3.2.1,8&nbsp;June&nbsp;2022,Added [presTitleSize](#presentation-title-size-prestitlesize) and [presSubtitleSize](#presentation-subtitle-size-pressubtitlesize).
+3.2,22&nbsp;May&nbsp;2022,Clearing the Processing Summary slide no longer removes Action Button objects. [Pseudo-footers can be created](#specifying-footer-text).
+3.1,27&nbsp;April&nbsp;2022,Added support for [VBA macro invocation](#invoking-a-vba-macro) via `ppaction://macro?name=` syntax
+3.0.1,15&nbsp;April&nbsp;2022,Improved error handling for embedding graphics&comma; video&comma; and audio from the web. Documented [here](#graphics-video-and-audio-slides).
+3.0,11&nbsp;April&nbsp;2022,Added `<video>` and `<audio>` element support&comma; described [here](#video-and-audio-slides). Added some links to the Change Log.
+2.6.1,19&nbsp;March&nbsp;2022,Added [tableHeadingSize](#adjusting-table-heading-font-size-with-tableheadingsize) and fixed bug with cell spanning more than 2 columns.
+2.6,18&nbsp;March&nbsp;2022,Support [multi-column table cells](#multicolumn-table-cells) - complying with the MultiMarkdown spec. Added [`deleteFirstSlide`](#deleting-the-first-(processing-summary)-slide-with-deletefirstslide).
+2.5.5,5&nbsp;March&nbsp;2022,Make [`tableMargin`](#tablemargin-dynamic)&comma; [`marginBase`](#marginbase-dynamic)&comma; and [`numbersHeight`](#numbersheight-dynamic) dynamically settable.
+2.5.4,3&nbsp;March&nbsp;2022,Where possible use `Content-Type` HTTP header to determine graphics file type when fetched from the web.
+2.5.3,1&nbsp;March&nbsp;2022,Added exception handling when creating temporary file. Also when retrieving files from a URL.
+2.5.2,27&nbsp;February&nbsp;2022,Added [`tempDir`](#specifying-where-temporary-files-are-stored-with-tempdir) to specify where temporary files are stored.
+2.5.1,12&nbsp;February&nbsp;2022,Fixed bug 110 - crash on bad metadata line
+2.5,14&nbsp;November&nbsp;2021,Added support for `&nbsp;`. [`exportGraphics: yes`](#exporting-converted-svg-and-png-files-exportGraphics) exports PNG for SVG &amp; EPS files. Added support for EPS graphics.
+2.4.3,24&nbsp;October&nbsp;2021,Added support for indirect links&comma; complementing reference links.
+2.4.2,18&nbsp;October&nbsp;2021,Added [`hideMetadata: style`](#hidemetadata) - to suppress `style.` items in the Processing Summary slide. Also flag overridden values in same.
+2.4.1,2&nbsp;October&nbsp;2021,Fixed bug where code appeared in a slide's Notes slide
+2.4,19&nbsp;September&nbsp;2021,Some simple style information added to span support. fgcolor &amp; bgcolor hex RGB  metadata values are checked for validity.
+2.3.4,7&nbsp;September&nbsp;2021,Added [`SectionArrows`](#section-navigation-buttons-sectionarrows) which enables navigation buttons between Section slides. [`SectionArrowsColour`](#section-navigation-buttons-colour-sectionarrowscolour) sets the buttons' background colour. 
+2.3.3,27&nbsp;August&nbsp;2021,Added [`TOCStyle: plain`](#plain-style-table-of-contents) Table Of Contents layout. Also can enable internal links in TOC and Section slides. Fixed `addTableLines` bug.
+2.3.2,23&nbsp;August&nbsp;2021,Added [`TOCStyle: circle`](#circle-style-table-of-contents) Table Of Contents layout. Also metadata to control Table Of Contents layout.
+2.3.1,21&nbsp;August&nbsp;2021,Forgot to mention [`prev` / `pop`](#dynamic-metadata) in documentation for 2.3.
+2.3,21&nbsp;August&nbsp;2021,Fixed "slide title as heading reference bug". Added Python release to runtime output. Refactored metadata handling.
+2.2.5,5&nbsp;August&nbsp;2021,You can turn on lines after table rows and columns with `addTableRowLines` and `addTableColumnLines`. You can also do `addTableLines` on a slide-by-slide basis. Also `addTableLineColour`&comma; `addTableLineWidth`&comma; and `addTableLineCount`.
+2.2.4,30&nbsp;July&nbsp;2021,You can turn on a border round a table or all cells with `addTableLines`. Fixed bug where slide notes appeared containing code fragments and subtitles.
+2.2.3,25&nbsp;July&nbsp;2021,Code etc blocks can include numeric character and entity references
+2.2.2,22&nbsp;July&nbsp;2021,Fixed bug where code blocks not initialised to none on starting a new slide
+2.2.1,19&nbsp;July&nbsp;2021,Added `AdjustTitles` - to control whether md2pptx adjusts slide title positions and sizes. Made slide notes work again.
+2.2,20&nbsp;June&nbsp;2021,Added `IndentSpaces` - to control&comma; including dynamically&comma; how many spaces represent a single level of list indentation.
+2.1,21&nbsp;May&nbsp;2021,Added `&lambda;`&comma; `&mu;`&comma; `&nu;`&comma; `&pi`&comma; `&rho`. Allow more than one table or code block on a slide.
+2.0.2,3&nbsp;May&nbsp;2021,A single code block can share a slide with a list block or a table / graphics block
+2.0.1,1&nbsp;May&nbsp;2021,Added `&times;`&comma; `&percnt;`&comma; `&divide;`&comma; `&forall;`&comma; `&exist;`. Fixed 'three up graphic' layout bug.
+2.0,11&nbsp;April&nbsp;2021,Two slide content elements on a slide&comma; involving a major restructuring of the slide layout engine.
+1.9.5,28&nbsp;March&nbsp;2021,Added `&hellip;`. Allow specification of gaps between cards. Allow specification of heading level for title slide.
+1.9.4,21&nbsp;March&nbsp;2021,Added controls code slide foreground and background colour RGB values.
+1.9.3,21&nbsp;March&nbsp;2021,Added controls on how many columns wide code is and fixed pitch height to width ratio.
+1.9.2,16&nbsp;March&nbsp;2021,Added `<pre>`&comma; `<code>`&comma; triple backtick - with `<span>` colouring for `<pre>`. Added ways to make a no-title slide.
+1.9.1,6&nbsp;March&nbsp;2021,Added `&check;` entity reference. Reworked internals with more consistent layout and `getContentRec` and title formatting improvements. Prereq Python 3.8.
+1.9,17&nbsp;February&nbsp;2021,Add support to specify which slide in master. Also numbersMargin
+1.8.1,10&nbsp;February&nbsp;2021,Card options: Rounded versus square corners. Titles above or in cards
+1.8,31&nbsp;January&nbsp;2021,SVG support for file and web graphics
+1.7.2,24&nbsp;January&nbsp;2021,Make vertical bars optional around image references
+1.7.1,11&nbsp;January&nbsp;2021,Fixed bug where hyperlinks in slide titles didn't work
+1.7,9&nbsp;January&nbsp;2021,Added support for numbered list items
+1.6.3,2&nbsp;January&nbsp;2021,Added support for vertical cards. Also new `CardTitleAlign` and `CardLayout` metadata&comma; plus `basetextsize` and `basetextdecrement` Dynamic Metadata items.
+1.6.2,1&nbsp;January&nbsp;2021,Added 3 slide-level Dynamic Metadata capabilities and `cardpercent` metadata value.
+1.6.1,29&nbsp;December&nbsp;2020,Added `<a id=` as an alternative hyperlink anchor.
+1.6,22&nbsp;December&nbsp;2020,Added [Card Slide](#card-slides) support. Metadata keys are now case-insensitive.
+1.5,7&nbsp;December&nbsp;2020,Pictures now can have a tooltip. You can define inter-slide links on both pictures and runs of text. You can omit the final `|` of a table line.
+1.4,23&nbsp;November&nbsp;2020,Task slides' slide numbers are hyperlinked to the relevant slide
+1.3,20&nbsp;November&nbsp;2020,Glossary terms now have tooltips and hyperlinks to the relevant Glossary slide. Footnotes have hyperlinks to the relevant Footnotes slide.
+1.2,3&nbsp;November&nbsp;2020,Support URLs for graphics. Reworked Processing Summary slide to use a flowed table.
+1.1,25&nbsp;October&nbsp;2020,Introduce Template as a better replacement for Master - which still works. Add German characters. Better template file searching. Escape underscore. Better handling of continuation onto second and subsequent lines.
+1.0,13&nbsp;October&nbsp;2020,Python 3&comma; Support input filename as first command line parameter.
+0.9,4&nbsp;September&nbsp;2020,Footnote slide support
+0.8,14&nbsp;June&nbsp;2020,`bgcolor` is now `style.bgcolor`. Added `style.fgcolor` and `style.emphasis`.
+0.7.3,24&nbsp;May&nbsp;2020,Allow background colouring via `span` elements
+0.7.2,14&nbsp;April&nbsp;2020, Support three graphics on a slide. Added `&equals;` entity reference. Added `tableMargin`.
+0.7.1,14&nbsp;November&nbsp;2019, Make slide titles longer. Fixed formatting issue with one-graphic-above-another [table slide](#table-slides).
+0.7,3&nbsp;November&nbsp;2019,Support `abbr` element as a glossary item. Each distinct term leads to a glossary slide entry at the back of the presentation.
+0.6,8&nbsp;October&nbsp;2019,Support vertical pair of graphics in a table<br/>Fixed some issues with Markdown-syntax hyperlinks<br/>Support escaped square brackets `\[` and `\]`&comma;`&lsqb;` and `&rsqb;` being newly-supported alternatives
+0.5,12&nbsp;May&nbsp;2019,CriticMarkup support
+0.4.5,5&nbsp;May&nbsp;2019,Some numeric character references
+0.4.4,6&nbsp;March&nbsp;2019,Processing summary slide shows build date and time
+0.4.3,20&nbsp;January&nbsp;2019,Support a few HTML entity references - punctuation and arrows.<br/>Support split task slide sets - completed and incomplete.<br/>Task tags are sorted.
+0.4.2,13&nbsp;January&nbsp;2019,Tasks slide set controllable with metadata `taskSlides` and `tasksPerSlide`
+0.4.1,9&nbsp;January&nbsp;2019,Enhanced Taskpaper support with `@due`&comma; `@tags`&comma; and `@done`&comma; and reworked as a series of [table slides](#table-slides).
+0.4,7&nbsp;January&nbsp;2019,Support shrinking of table cell font and margins.<br/>Added two-to-by-two grid of graphics on a slide.
+0.3.2,3 January 2019,"Support `\#` as a literal octothorpe/hash/pound.<br/>Tidied up reporting.<br/>Added superscript, subscript, strikethrough, and underline text effects."
+0.3.1,3 November 2018,Fixed support for `<br/>` so it won't create a bullet on the new line.
+0.3,22 October 2018,Added customisation for bold and italic text
+0.2,3 September 2018,Added ways of controlling bullet sizes
+0.1,1 April 2018,Initial Prototype
+=endcsv
