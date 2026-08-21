@@ -473,6 +473,7 @@ There are two approaches to updating:
 * Obtaining the latest commit. Usually this is safe but is often missing documentation for enhancements. Those tend to be written just before release. You might do this with `git pull origin master`.
 * You might prefer the latest version. These are usually announced on social media and can be downloaded as a zip file.
 
+
 ### Use
 
 

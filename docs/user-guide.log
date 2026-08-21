@@ -15,7 +15,7 @@ Def input = stdin
 
 Def node = bluemac.local
 
-Def version = Darwin Kernel Version 25.6.0: Sat Jul 11 15:26:21 PDT 2026; root:xnu-12377.161.13~4/RELEASE_ARM64_T6000
+Def version = Darwin Kernel Version 25.6.0: Fri Jul 31 19:18:49 PDT 2026; root:xnu-12377.161.14~5/RELEASE_ARM64_T6000
 
 Def architecture = 64bit Mach-O
 
@@ -43,7 +43,7 @@ Def month = August
 
 Def year = 2026
 
-Def time = 10&colon;07
+Def time = 13&colon;11
 
 Def date = 21 August&comma; 2026
 
@@ -68,9 +68,13 @@ Table Of Contents - spec '2 * Table Of Contents'
 
 .....  How Do You Use md2pptx?
 
+------> Start of installation.mdp (@2)
+
 ..... .....  Installation
 
 ..... .....  Updating
+
+------> End of installation.mdp (@2)
 
 ..... .....  Use
 
