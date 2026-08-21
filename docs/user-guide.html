@@ -1331,7 +1331,6 @@ img {
 </li>
 <li><a href="#funnels">Funnels</a></li>
 <li><a href="#latex">LaTeX</a><ul>
-<li><a href="#maths-as-a-code-block">Maths As A Code Block</a></li>
 <li><a href="#inline-maths">Inline Maths</a></li>
 </ul>
 </li>
@@ -1921,7 +1920,7 @@ THE SOFTWARE.
 <tbody>
 <tr>
 <td align="left">7.0+</td>
-<td align="right">20&nbsp;August&nbsp;2026</td>
+<td align="right">21&nbsp;August&nbsp;2026</td>
 <td align="left"><a class="magiclink magiclink-github magiclink-mention" href="https://github.com/troutrot" title="GitHub User: troutrot">@troutrot</a> added the <a href="#text-language-textlanguage"><code>textLanguage</code></a> metadata item (<a href="https://github.com/MartinPacker/md2pptx/issues/243">Issue 243</a>)&comma; <a href="#inline-maths">Inline LaTeX</a> support (<a href="https://github.com/MartinPacker/md2pptx/issues/242">Issue 242</a>)&comma; and the <code>useTemplateLayout</code> metadata item (<a href="https://github.com/MartinPacker/md2pptx/issues/222">Issue 222</a>).<br/>Added <a href="#dashes-as-bullets-dashesarebullets"><code>dashesAreBullets</code></a> to allow dashes to be used in bulleted lists (per <a href="https://github.com/MartinPacker/md2pptx/issues/240">Issue 240</a>).</td>
 </tr>
 <tr>
@@ -3113,23 +3112,16 @@ Its name is usually <code>MML2OMML.XSL</code>.
 Copy it to the md2pptx install directory as <code>mml2omml.xsl</code>, or specify its location with</p>
 <pre><code>mathxsl: ~/md2pptx/MML2OMML.XSL
 </code></pre>
-<p>If the prerequisites are met you can code equations using LaTeX in one of two ways:</p>
-<h4 id="maths-as-a-code-block">Maths As A Code Block<a class="headerlink" href="#maths-as-a-code-block" title="Permanent link"></a></h4>
-<p><a id="block-maths"></a></p>
-<p>You can specify that equations appear in a block. For example</p>
+<p>If the prerequisites are met you can code equations such as</p>
 <pre><code>### Numbered equation
 
 ```math 1.3.4
 e^{i\pi}+1=0
 ```
 </code></pre>
-<p>and get a slide that looks like this:</p>
+<p>and get slides that look like this:</p>
 <p><img alt="" src="/Users/martinpacker/md2pptx/docs/equation.png" /></p>
-<p><strong>Notes:</strong></p>
-<ol>
-<li>The equation number is optional and can be any character string you like.</li>
-<li>You can code <code>maths</code> instead of <code>math</code>.</li>
-</ol>
+<p><strong>Note:</strong> The equation number is optional and can be any character string you like.</p>
 <h4 id="inline-maths">Inline Maths<a class="headerlink" href="#inline-maths" title="Permanent link"></a></h4>
 <p><a id="inline-maths"></a></p>
 <p>You can also set a formula within a line of text, using GitHub&rsquo;s inline form - a dollar sign against a backtick on each side of the LaTeX:</p>
