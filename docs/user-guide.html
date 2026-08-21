@@ -1274,8 +1274,13 @@ img {
 </ul>
 </li>
 <li><a href="#how-do-you-use-md2pptx">How Do You Use md2pptx?</a><ul>
-<li><a href="#installation">Installation</a></li>
+<li><a href="#installation">Installation</a><ul>
+<li><a href="#basic-installation-steps">Basic Installation Steps</a></li>
+<li><a href="#optional-installation-steps">Optional Installation Steps</a></li>
+<li><a href="#postinstallation-steps">Post-Installation Steps</a></li>
 <li><a href="#updating">Updating</a></li>
+</ul>
+</li>
 <li><a href="#use">Use</a></li>
 </ul>
 </li>
@@ -1857,14 +1862,59 @@ Of\ Names\ And\ Numbers.md: Of\ Names\ And\ Numbers.mdp
 <p>You write Markdown in exactly the same way as normal, with some understanding of how Markdown is converted to slides (using the information in <a href="#creating-slides">Creating Slides</a>).</p>
 <p>To use md2pptx you need to download it and install the prerequisites.</p>
 <h3 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link"></a></h3>
+<p>Basic installation of md2pptx is straightforward.
+There are, however, some optional steps that will unlock further capabilities.</p>
+<p>After installing md2pptx you might need to take some further actions.</p>
+<h4 id="basic-installation-steps">Basic Installation Steps<a class="headerlink" href="#basic-installation-steps" title="Permanent link"></a></h4>
 <p>To install md2pptx and its prerequisites</p>
 <ol>
 <li>Have Python 3.11 or higher installed.</li>
 <li>Install python-pptx using the command <code>pip3 install python-pptx</code>. (You might have to install pip first.)</li>
-<li>Optionally install CairoSVG - using the command <code>pip3 install cairosvg</code>. (This is for SVG graphics support.)</li>
 <li>Install md2pptx by copying a version and unzipping it or using <code>git clone</code>. md2pptx can be found <a href="https://github.com/MartinPacker/md2pptx">here</a>.</li>
 </ol>
-<h3 id="updating">Updating<a class="headerlink" href="#updating" title="Permanent link"></a></h3>
+<h4 id="optional-installation-steps">Optional Installation Steps<a class="headerlink" href="#optional-installation-steps" title="Permanent link"></a></h4>
+<p>Most md2pptx functions work without additional software or Python packages.</p>
+<p>Independently install any of the following to use the relevant additional functions.</p>
+<table>
+<thead>
+<tr>
+<th align="left">Package</th>
+<th align="left">PIP Command</th>
+<th align="left">Function</th>
+<th align="left">Mac OS Homebrew Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">CairoSVG</td>
+<td align="left"><code>pip3 install cairosvg</code></td>
+<td align="left">SVG graphics support</td>
+<td align="left"><code>brew install cairo</code></td>
+</tr>
+<tr>
+<td align="left">GraphViz</td>
+<td align="left"><code>pip3 install graphviz</code></td>
+<td align="left">Graphviz / DOT diagrams</td>
+<td align="left"><code>brew install graphviz</code></td>
+</tr>
+<tr>
+<td align="left">latex2mathml</td>
+<td align="left"><code>pip3 install latex2mathml</code></td>
+<td align="left">LaTeX formulae</td>
+<td align="left">Not Applicable</td>
+</tr>
+</tbody>
+</table>
+<p>For LaTeX support you will also need your own copy of MML2OMML.XSL (as described in <a href="#latex">LaTeX</a>).</p>
+<h4 id="post-installation-steps">Post-Installation Steps<a class="headerlink" href="#post-installation-steps" title="Permanent link"></a></h4>
+<p>Included - in <code>examples/PostInstall</code> - is an example script to copy into the md2pptx directory tree two types of item:</p>
+<ul>
+<li>Template presentation files</li>
+<li>A stylesheet - for LaTeX formula conversion</li>
+</ul>
+<p>The former will help if you create your own template presentation files.</p>
+<p>You will need to edit the example script and store it outside of the md2pptx directory tree.</p>
+<h4 id="updating">Updating<a class="headerlink" href="#updating" title="Permanent link"></a></h4>
 <p>If you examine <a href="#change-log">the change log</a> you&rsquo;ll notice md2pptx is updated on a frequent-but-irregular basis.
 Reviewing the changes you&rsquo;ll see they are a mixture of fixes and enhancements.</p>
 <p>There are two approaches to updating:</p>

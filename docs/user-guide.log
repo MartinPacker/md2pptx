@@ -43,7 +43,7 @@ Def month = August
 
 Def year = 2026
 
-Def time = 13&colon;11
+Def time = 14&colon;42
 
 Def date = 21 August&comma; 2026
 
@@ -72,7 +72,17 @@ Table Of Contents - spec '2 * Table Of Contents'
 
 ..... .....  Installation
 
-..... .....  Updating
+..... ..... .....  Basic Installation Steps
+
+..... ..... .....  Optional Installation Steps
+
+CSV Start
+
+CSV Stop
+
+..... ..... .....  Post-Installation Steps
+
+..... ..... .....  Updating
 
 ------> End of installation.mdp (@2)
 

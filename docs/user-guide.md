@@ -32,7 +32,10 @@ As you can see in the [change log](#change-log), md2pptx is frequently updated -
 	* [Using md2pptx With mdpre](#using-md2pptx-with-mdpre)
 * [How Do You Use md2pptx?](#how-do-you-use-md2pptx)
 	* [Installation](#installation)
-	* [Updating](#updating)
+		* [Basic Installation Steps](#basic-installation-steps)
+		* [Optional Installation Steps](#optional-installation-steps)
+		* [Post-Installation Steps](#postinstallation-steps)
+		* [Updating](#updating)
 	* [Use](#use)
 * [python-pptx license](#pythonpptx-license)
 * [Change Log](#change-log)
@@ -456,14 +459,46 @@ To use md2pptx you need to download it and install the prerequisites.
 
 ### Installation
 
+Basic installation of md2pptx is straightforward.
+There are, however, some optional steps that will unlock further capabilities.
+
+After installing md2pptx you might need to take some further actions.
+
+#### Basic Installation Steps
+
 To install md2pptx and its prerequisites
 
 1. Have Python 3.11 or higher installed.
 1. Install python-pptx using the command `pip3 install python-pptx`. (You might have to install pip first.)
-1. Optionally install CairoSVG - using the command `pip3 install cairosvg`. (This is for SVG graphics support.)
 1. Install md2pptx by copying a version and unzipping it or using `git clone`. md2pptx can be found [here](https://github.com/MartinPacker/md2pptx).
 
-### Updating
+
+#### Optional Installation Steps
+
+Most md2pptx functions work without additional software or Python packages.
+
+Independently install any of the following to use the relevant additional functions.
+
+|Package|PIP Command|Function|Mac OS Homebrew Command|
+|:-|:-|:-|:-|
+|CairoSVG|`pip3 install cairosvg`|SVG graphics support|`brew install cairo`|
+|GraphViz|`pip3 install graphviz`|Graphviz / DOT diagrams|`brew install graphviz`|
+|latex2mathml|`pip3 install latex2mathml`|LaTeX formulae|Not Applicable|
+
+For LaTeX support you will also need your own copy of MML2OMML.XSL (as described in [LaTeX](#latex)).
+
+#### Post-Installation Steps
+
+Included - in `examples/PostInstall` - is an example script to copy into the md2pptx directory tree two types of item:
+
+* Template presentation files
+* A stylesheet - for LaTeX formula conversion
+
+The former will help if you create your own template presentation files.
+
+You will need to edit the example script and store it outside of the md2pptx directory tree.
+
+#### Updating
 
 If you examine [the change log](#change-log) you'll notice md2pptx is updated on a frequent-but-irregular basis.
 Reviewing the changes you'll see they are a mixture of fixes and enhancements.
