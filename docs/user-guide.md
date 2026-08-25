@@ -71,6 +71,7 @@ As you can see in the [change log](#change-log), md2pptx is frequently updated -
 		* [`<pre>`](#<pre>)
 	* [Funnels](#funnels)
 	* [LaTeX](#latex)
+		* [Maths As A Code Block](#maths-as-a-code-block)
 		* [Inline Maths](#inline-maths)
 	* [Task List Slides](#task-list-slides)
 	* [Slides With More Than One Content Block](#slides-with-more-than-one-content-block)
@@ -100,6 +101,7 @@ As you can see in the [change log](#change-log), md2pptx is frequently updated -
 	* [Referring To A Footnote](#referring-to-a-footnote)
 * [Controlling The Presentation With Metadata](#controlling-the-presentation-with-metadata)
 	* [Specifying Metadata](#specifying-metadata)
+			* [Some Techniques For Incorporating Metadata](#some-techniques-for-incorporating-metadata)
 		* [Processing Summary](#processing-summary)
 		* [Specifying Colours](#specifying-colours)
 			* [Theme Colours](#theme-colours)
@@ -560,7 +562,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
-|7.0+|21&nbsp;August&nbsp;2026|@troutrot added the [`textLanguage`](#text-language-textlanguage) metadata item ([Issue 243](https://github.com/MartinPacker/md2pptx/issues/243))&comma; [Inline LaTeX](#inline-maths) support ([Issue 242](https://github.com/MartinPacker/md2pptx/issues/242))&comma; and the `useTemplateLayout` metadata item ([Issue 222](https://github.com/MartinPacker/md2pptx/issues/222)).<br/>Added [`dashesAreBullets`](#dashes-as-bullets-dashesarebullets) to allow dashes to be used in bulleted lists (per [Issue 240](https://github.com/MartinPacker/md2pptx/issues/240)).|
+|7.0+|20&nbsp;August&nbsp;2026|@troutrot added the [`textLanguage`](#text-language-textlanguage) metadata item ([Issue 243](https://github.com/MartinPacker/md2pptx/issues/243))&comma; [Inline LaTeX](#inline-maths) support ([Issue 242](https://github.com/MartinPacker/md2pptx/issues/242))&comma; and the `useTemplateLayout` metadata item ([Issue 222](https://github.com/MartinPacker/md2pptx/issues/222)).<br/>Added [`dashesAreBullets`](#dashes-as-bullets-dashesarebullets) to allow dashes to be used in bulleted lists (per [Issue 240](https://github.com/MartinPacker/md2pptx/issues/240)).|
 |7.0|17&nbsp;August&nbsp;2026|@troutrot fixed [Issue 231](https://github.com/MartinPacker/md2pptx/issues/231) where metadata couldn't contain colons&comma; added [LaTeX](#latex) support ([Issue 225](https://github.com/MartinPacker/md2pptx/issues/231) and [Issue 233](https://github.com/MartinPacker/md2pptx/issues/233))&comma; and introduced optional "on the slide" footnotes [Issue 232](https://github.com/MartinPacker/md2pptx/issues/232)).<br/>Added a sample post-install script ([Issue 235](https://github.com/MartinPacker/md2pptx/issues/235)).<br/>@ramgao enhanced the XSL finding logic ([Issue 237]([https://github.com/MartinPacker/md2pptx/issues/237)).|
 |6.3.3|9&nbsp;August&nbsp;2026|Enhanced slide footers: [Issue 213](https://github.com/MartinPacker/md2pptx/issues/213).<br/>@maayanmatsliah-tech refactored `parseThemeColour`: [Issue 214](https://github.com/MartinPacker/md2pptx/issues/214).<br/>Make `parseThemeColour` handle bad theme colour specification better: [Issue 215](https://github.com/MartinPacker/md2pptx/issues/215).<br/>@troutrot fixed Issues [217](https://github.com/MartinPacker/md2pptx/pull/217)&comma; [218](https://github.com/MartinPacker/md2pptx/pull/218)&comma; [219](https://github.com/MartinPacker/md2pptx/pull/219)&comma; and [221](https://github.com/MartinPacker/md2pptx/issues/221)/[223](https://github.com/MartinPacker/md2pptx/pull/223).<br/>@Adichapati fixed [Issue 220](https://github.com/MartinPacker/md2pptx/pull/220).<br>Improved &amp; fixed Abstract Slides ([Issue 229](https://github.com/MartinPacker/md2pptx/pull/229)).<br/>Fixed issue [230](https://github.com/MartinPacker/md2pptx/issues/230) - Taskpaper issue.<br/><br/>**Note:** md2pptx now only supports Python 3.11 or later. A warning message is displayed if your Python version is less than this.|
 |6.3.2|3&nbsp;May&nbsp;2026|@tmchow fixed [Issue 211](https://github.com/MartinPacker/md2pptx/issues/211) where a missing template file would cause termination.|
@@ -1413,7 +1415,12 @@ Copy it to the md2pptx install directory as `mml2omml.xsl`, or specify its locat
 
     mathxsl: ~/md2pptx/MML2OMML.XSL
 
-If the prerequisites are met you can code equations such as
+If the prerequisites are met you can code equations using LaTeX in one of two ways:
+
+#### Maths As A Code Block
+<a id="block-maths"></a>
+
+You can specify that equations appear in a block. For example
 
     ### Numbered equation
 
@@ -1421,11 +1428,14 @@ If the prerequisites are met you can code equations such as
     e^{i\pi}+1=0
     ```
 
-and get slides that look like this:
+and get a slide that looks like this:
 
 ![](equation.png)
 
-**Note:** The equation number is optional and can be any character string you like.
+**Notes:**
+
+1. The equation number is optional and can be any character string you like.
+1. You can code `maths` instead of `math`.
 
 #### Inline Maths
 <a id="inline-maths"></a>
@@ -2000,6 +2010,17 @@ Also any line containing invalid metadata (that is not in the form `key : value`
 "Whole presentation" refers to metadata that applies to every slide in the presentation - unless overridden. Whole presentation metadata items are described in [Metadata Keys](#metadata-keys).
 
 Some metadata items can be overridden dynamically - in the middle of the presentation. md2pptx will only support these where it makes sense to. These keys are described in [Dynamic Metadata](#dynamic-metadata).
+
+##### Some Techniques For Incorporating Metadata
+
+While you might be happy to include metadata items in the same file as your content, there are a couple of techniques that provide alternatives:
+
+* You could use [mdpre's](https://github.com/MartinPacker/mdpre) `=include` capability to pull in metadata from another file.
+* You could use command line file concatenation. For example zsh allows the following syntax: <br/>`md2pptx mypres.pptx < metadata.md < content.md`
+
+Both these techniques work with make files.
+
+An advantage of this technique is that - for authors who create multiple presentations that need the same look and feel - the metadata can be in a single place.
 
 #### Processing Summary
 <a id="processing-summary"></a>

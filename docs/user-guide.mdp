@@ -1543,6 +1543,18 @@ Some metadata items can be overridden dynamically - in the middle of the present
 md2pptx will only support these where it makes sense to. \
 These keys are described in [Dynamic Metadata](#dynamic-metadata).
 
+##### Some Techniques For Incorporating Metadata
+
+While you might be happy to include metadata items in the same file as your content, there are a couple of techniques that provide alternatives:
+
+* You could use [mdpre's](https://github.com/MartinPacker/mdpre) `=include` capability to pull in metadata from another file.
+* You could use command line file concatenation. For example zsh allows the following syntax: \
+<br/>`md2pptx mypres.pptx < metadata.md < content.md`
+
+Both these techniques work with make files.
+
+An advantage of this technique is that - for authors who create multiple presentations that need the same look and feel - the metadata can be in a single place.
+
 #### Processing Summary
 <a id="processing-summary"></a>
 
