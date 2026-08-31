@@ -1543,7 +1543,7 @@ Some metadata items can be overridden dynamically - in the middle of the present
 md2pptx will only support these where it makes sense to. \
 These keys are described in [Dynamic Metadata](#dynamic-metadata).
 
-##### Some Techniques For Incorporating Metadata
+#### Some Techniques For Incorporating Metadata
 
 While you might be happy to include metadata items in the same file as your content, there are a couple of techniques that provide alternatives:
 
@@ -1808,6 +1808,19 @@ You can disable adjusting the positions and sizes of slide titles:
     AdjustTitles: no
 
 The default is `yes`.
+
+<a id="ensuring-a-slides-layout-follows-the-template-usetemplatelayout"></a>
+#### Ensuring A Slide's Layout Follows The Template - `useTemplateLayout`
+
+Normally md2pptx will decide - based on things like margins - the horizontal layout of shapes on a slide.
+You might instead want to disable this and have md2pptx follow the template presentation's layout more closely.
+To do this specify:
+
+    useTemplateLayout: yes
+
+If you do content rectangles and paragraph indentation will follow the template's body placeholder dimensions instead of md2pptx's slide margins.
+    
+The defauly is `no`.
 
 #### Associating A Class Name with A Background Colour With `style.bgcolor`
 <a id="associating-a-class-name-with-a-background-color-with-style-bgcolor"></a>

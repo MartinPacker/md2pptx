@@ -101,7 +101,7 @@ As you can see in the [change log](#change-log), md2pptx is frequently updated -
 	* [Referring To A Footnote](#referring-to-a-footnote)
 * [Controlling The Presentation With Metadata](#controlling-the-presentation-with-metadata)
 	* [Specifying Metadata](#specifying-metadata)
-			* [Some Techniques For Incorporating Metadata](#some-techniques-for-incorporating-metadata)
+		* [Some Techniques For Incorporating Metadata](#some-techniques-for-incorporating-metadata)
 		* [Processing Summary](#processing-summary)
 		* [Specifying Colours](#specifying-colours)
 			* [Theme Colours](#theme-colours)
@@ -119,6 +119,7 @@ As you can see in the [change log](#change-log), md2pptx is frequently updated -
 		* [Text Language - `textLanguage`](#text-language-textlanguage)
 		* [Margin size - `marginBase` and `tableMargin`](#margin-size-marginbase-and-tablemargin)
 		* [Controlling Adjusting Title Positions And Sizes - `AdjustTitles`](#controlling-adjusting-title-positions-and-sizes-adjusttitles)
+		* [Ensuring A Slide's Layout Follows The Template - `useTemplateLayout`](#ensuring-a-slides-layout-follows-the-template-usetemplatelayout)
 		* [Associating A Class Name with A Background Colour With `style.bgcolor`](#associating-a-class-name-with-a-background-colour-with-stylebgcolor)
 		* [Associating A Class Name with A Foreground Colour With `style.fgcolor`](#associating-a-class-name-with-a-foreground-colour-with-stylefgcolor)
 		* [Associating A Class Name With Text Emphasis With `style.emphasis`](#associating-a-class-name-with-text-emphasis-with-styleemphasis)
@@ -562,7 +563,7 @@ To quote from the python-pptx license statement:
 
 |Level|Date|What|
 |:-|-:|:-|
-|7.0+|20&nbsp;August&nbsp;2026|@troutrot added the [`textLanguage`](#text-language-textlanguage) metadata item ([Issue 243](https://github.com/MartinPacker/md2pptx/issues/243))&comma; [Inline LaTeX](#inline-maths) support ([Issue 242](https://github.com/MartinPacker/md2pptx/issues/242))&comma; and the `useTemplateLayout` metadata item ([Issue 222](https://github.com/MartinPacker/md2pptx/issues/222)).<br/>Added [`dashesAreBullets`](#dashes-as-bullets-dashesarebullets) to allow dashes to be used in bulleted lists (per [Issue 240](https://github.com/MartinPacker/md2pptx/issues/240)).|
+|7.1|31&nbsp;August&nbsp;2026|@troutrot added the [`textLanguage`](#text-language-textlanguage) metadata item ([Issue 243](https://github.com/MartinPacker/md2pptx/issues/243))&comma; [Inline LaTeX](#inline-maths) support ([Issue 242](https://github.com/MartinPacker/md2pptx/issues/242))&comma; and the [`useTemplateLayout`](#ensuring-a-slides-layout-follows-the-template-usetemplatelayout) metadata item ([Issue 222](https://github.com/MartinPacker/md2pptx/issues/222)).<br/>Added [`dashesAreBullets`](#dashes-as-bullets-dashesarebullets) to allow dashes to be used in bulleted lists (per [Issue 240](https://github.com/MartinPacker/md2pptx/issues/240)).|
 |7.0|17&nbsp;August&nbsp;2026|@troutrot fixed [Issue 231](https://github.com/MartinPacker/md2pptx/issues/231) where metadata couldn't contain colons&comma; added [LaTeX](#latex) support ([Issue 225](https://github.com/MartinPacker/md2pptx/issues/231) and [Issue 233](https://github.com/MartinPacker/md2pptx/issues/233))&comma; and introduced optional "on the slide" footnotes [Issue 232](https://github.com/MartinPacker/md2pptx/issues/232)).<br/>Added a sample post-install script ([Issue 235](https://github.com/MartinPacker/md2pptx/issues/235)).<br/>@ramgao enhanced the XSL finding logic ([Issue 237]([https://github.com/MartinPacker/md2pptx/issues/237)).|
 |6.3.3|9&nbsp;August&nbsp;2026|Enhanced slide footers: [Issue 213](https://github.com/MartinPacker/md2pptx/issues/213).<br/>@maayanmatsliah-tech refactored `parseThemeColour`: [Issue 214](https://github.com/MartinPacker/md2pptx/issues/214).<br/>Make `parseThemeColour` handle bad theme colour specification better: [Issue 215](https://github.com/MartinPacker/md2pptx/issues/215).<br/>@troutrot fixed Issues [217](https://github.com/MartinPacker/md2pptx/pull/217)&comma; [218](https://github.com/MartinPacker/md2pptx/pull/218)&comma; [219](https://github.com/MartinPacker/md2pptx/pull/219)&comma; and [221](https://github.com/MartinPacker/md2pptx/issues/221)/[223](https://github.com/MartinPacker/md2pptx/pull/223).<br/>@Adichapati fixed [Issue 220](https://github.com/MartinPacker/md2pptx/pull/220).<br>Improved &amp; fixed Abstract Slides ([Issue 229](https://github.com/MartinPacker/md2pptx/pull/229)).<br/>Fixed issue [230](https://github.com/MartinPacker/md2pptx/issues/230) - Taskpaper issue.<br/><br/>**Note:** md2pptx now only supports Python 3.11 or later. A warning message is displayed if your Python version is less than this.|
 |6.3.2|3&nbsp;May&nbsp;2026|@tmchow fixed [Issue 211](https://github.com/MartinPacker/md2pptx/issues/211) where a missing template file would cause termination.|
@@ -2011,7 +2012,7 @@ Also any line containing invalid metadata (that is not in the form `key : value`
 
 Some metadata items can be overridden dynamically - in the middle of the presentation. md2pptx will only support these where it makes sense to. These keys are described in [Dynamic Metadata](#dynamic-metadata).
 
-##### Some Techniques For Incorporating Metadata
+#### Some Techniques For Incorporating Metadata
 
 While you might be happy to include metadata items in the same file as your content, there are a couple of techniques that provide alternatives:
 
@@ -2253,6 +2254,19 @@ You can disable adjusting the positions and sizes of slide titles:
     AdjustTitles: no
 
 The default is `yes`.
+
+<a id="ensuring-a-slides-layout-follows-the-template-usetemplatelayout"></a>
+#### Ensuring A Slide's Layout Follows The Template - `useTemplateLayout`
+
+Normally md2pptx will decide - based on things like margins - the horizontal layout of shapes on a slide.
+You might instead want to disable this and have md2pptx follow the template presentation's layout more closely.
+To do this specify:
+
+    useTemplateLayout: yes
+
+If you do content rectangles and paragraph indentation will follow the template's body placeholder dimensions instead of md2pptx's slide margins.
+    
+The defauly is `no`.
 
 #### Associating A Class Name with A Background Colour With `style.bgcolor`
 <a id="associating-a-class-name-with-a-background-color-with-style-bgcolor"></a>

@@ -1,6 +1,6 @@
 
-mdpre Markdown Preprocessor v1.2.1+ (23 August, 2026)
-=====================================================
+mdpre Markdown Preprocessor v1.2.2 (31 August, 2026)
+====================================================
 
 Cheetah templating engine imported
 
@@ -13,7 +13,7 @@ Def output = stdout
 
 Def input = stdin
 
-Def node = Mac.domain_not_set.invalid
+Def node = Mac-Studio-Max.local
 
 Def version = Darwin Kernel Version 27.0.0: Tue Aug 11 22:18:52 PDT 2026; root:xnu-13432.1.9~3/RELEASE_ARM64_T6000
 
@@ -31,21 +31,21 @@ Def python_implementation = CPython
 
 Def processor = arm
 
-Def mdpre_date = 23 August, 2026
+Def mdpre_date = 31 August, 2026
 
-Def mdpre_level = 1.2.1+
+Def mdpre_level = 1.2.2
 
 Def userid = martinpacker
 
-Def day = 25
+Def day = 31
 
 Def month = August
 
 Def year = 2026
 
-Def time = 15&colon;31
+Def time = 15&colon;22
 
-Def date = 25 August&comma; 2026
+Def date = 31 August&comma; 2026
 
 Def TOC = Table Of Contents
 
@@ -248,7 +248,7 @@ CSV Stop
 
 ..... .....  Specifying Metadata
 
-..... ..... ..... .....  Some Techniques For Incorporating Metadata
+..... ..... .....  Some Techniques For Incorporating Metadata
 
 ..... ..... .....  Processing Summary
 
@@ -283,6 +283,8 @@ CSV Stop
 ..... ..... .....  Margin size - `marginBase` and `tableMargin`
 
 ..... ..... .....  Controlling Adjusting Title Positions And Sizes - `AdjustTitles`
+
+..... ..... .....  Ensuring A Slide's Layout Follows The Template - `useTemplateLayout`
 
 ..... ..... .....  Associating A Class Name with A Background Colour With `style.bgcolor`
 
@@ -892,7 +894,7 @@ CSV Stop
 
 .....  Building This User Guide
 
------------------------------------------------------
+----------------------------------------------------
 - Processing completed.
------------------------------------------------------
+----------------------------------------------------
 

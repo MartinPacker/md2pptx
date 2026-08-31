@@ -1381,8 +1381,8 @@ img {
 </ul>
 </li>
 <li><a href="#controlling-the-presentation-with-metadata">Controlling The Presentation With Metadata</a><ul>
-<li><a href="#specifying-metadata">Specifying Metadata</a>
-        * <a href="#some-techniques-for-incorporating-metadata">Some Techniques For Incorporating Metadata</a><ul>
+<li><a href="#specifying-metadata">Specifying Metadata</a><ul>
+<li><a href="#some-techniques-for-incorporating-metadata">Some Techniques For Incorporating Metadata</a></li>
 <li><a href="#processing-summary">Processing Summary</a></li>
 <li><a href="#specifying-colours">Specifying Colours</a><ul>
 <li><a href="#theme-colours">Theme Colours</a></li>
@@ -1406,6 +1406,7 @@ img {
 <li><a href="#text-language-textlanguage">Text Language - <code>textLanguage</code></a></li>
 <li><a href="#margin-size-marginbase-and-tablemargin">Margin size - <code>marginBase</code> and <code>tableMargin</code></a></li>
 <li><a href="#controlling-adjusting-title-positions-and-sizes-adjusttitles">Controlling Adjusting Title Positions And Sizes - <code>AdjustTitles</code></a></li>
+<li><a href="#ensuring-a-slides-layout-follows-the-template-usetemplatelayout">Ensuring A Slide&rsquo;s Layout Follows The Template - <code>useTemplateLayout</code></a></li>
 <li><a href="#associating-a-class-name-with-a-background-colour-with-stylebgcolor">Associating A Class Name with A Background Colour With <code>style.bgcolor</code></a></li>
 <li><a href="#associating-a-class-name-with-a-foreground-colour-with-stylefgcolor">Associating A Class Name with A Foreground Colour With <code>style.fgcolor</code></a></li>
 <li><a href="#associating-a-class-name-with-text-emphasis-with-styleemphasis">Associating A Class Name With Text Emphasis With <code>style.emphasis</code></a></li>
@@ -1971,9 +1972,9 @@ THE SOFTWARE.
 </thead>
 <tbody>
 <tr>
-<td align="left">7.0+</td>
-<td align="right">20&nbsp;August&nbsp;2026</td>
-<td align="left"><a class="magiclink magiclink-github magiclink-mention" href="https://github.com/troutrot" title="GitHub User: troutrot">@troutrot</a> added the <a href="#text-language-textlanguage"><code>textLanguage</code></a> metadata item (<a href="https://github.com/MartinPacker/md2pptx/issues/243">Issue 243</a>)&comma; <a href="#inline-maths">Inline LaTeX</a> support (<a href="https://github.com/MartinPacker/md2pptx/issues/242">Issue 242</a>)&comma; and the <code>useTemplateLayout</code> metadata item (<a href="https://github.com/MartinPacker/md2pptx/issues/222">Issue 222</a>).<br/>Added <a href="#dashes-as-bullets-dashesarebullets"><code>dashesAreBullets</code></a> to allow dashes to be used in bulleted lists (per <a href="https://github.com/MartinPacker/md2pptx/issues/240">Issue 240</a>).</td>
+<td align="left">7.1</td>
+<td align="right">31&nbsp;August&nbsp;2026</td>
+<td align="left"><a class="magiclink magiclink-github magiclink-mention" href="https://github.com/troutrot" title="GitHub User: troutrot">@troutrot</a> added the <a href="#text-language-textlanguage"><code>textLanguage</code></a> metadata item (<a href="https://github.com/MartinPacker/md2pptx/issues/243">Issue 243</a>)&comma; <a href="#inline-maths">Inline LaTeX</a> support (<a href="https://github.com/MartinPacker/md2pptx/issues/242">Issue 242</a>)&comma; and the <a href="#ensuring-a-slides-layout-follows-the-template-usetemplatelayout"><code>useTemplateLayout</code></a> metadata item (<a href="https://github.com/MartinPacker/md2pptx/issues/222">Issue 222</a>).<br/>Added <a href="#dashes-as-bullets-dashesarebullets"><code>dashesAreBullets</code></a> to allow dashes to be used in bulleted lists (per <a href="https://github.com/MartinPacker/md2pptx/issues/240">Issue 240</a>).</td>
 </tr>
 <tr>
 <td align="left">7.0</td>
@@ -3812,7 +3813,7 @@ Keys are case insensitive. In this User Guide they are capitalised to aid compre
 <p>Also any line containing invalid metadata (that is not in the form <code>key : value</code>) will be flagged as an error but otherwise ignored.</p>
 <p>&ldquo;Whole presentation&rdquo; refers to metadata that applies to every slide in the presentation - unless overridden. Whole presentation metadata items are described in <a href="#metadata-keys">Metadata Keys</a>.</p>
 <p>Some metadata items can be overridden dynamically - in the middle of the presentation. md2pptx will only support these where it makes sense to. These keys are described in <a href="#dynamic-metadata">Dynamic Metadata</a>.</p>
-<h5 id="some-techniques-for-incorporating-metadata">Some Techniques For Incorporating Metadata<a class="headerlink" href="#some-techniques-for-incorporating-metadata" title="Permanent link"></a></h5>
+<h4 id="some-techniques-for-incorporating-metadata">Some Techniques For Incorporating Metadata<a class="headerlink" href="#some-techniques-for-incorporating-metadata" title="Permanent link"></a></h4>
 <p>While you might be happy to include metadata items in the same file as your content, there are a couple of techniques that provide alternatives:</p>
 <ul>
 <li>You could use <a href="https://github.com/MartinPacker/mdpre">mdpre&rsquo;s</a> <code>=include</code> capability to pull in metadata from another file.</li>
@@ -3982,6 +3983,15 @@ For everything else use <code>marginBase</code>.</p>
 <pre><code>AdjustTitles: no
 </code></pre>
 <p>The default is <code>yes</code>.</p>
+<p><a id="ensuring-a-slides-layout-follows-the-template-usetemplatelayout"></a></p>
+<h4 id="ensuring-a-slides-layout-follows-the-template-usetemplatelayout">Ensuring A Slide&rsquo;s Layout Follows The Template - <code>useTemplateLayout</code><a class="headerlink" href="#ensuring-a-slides-layout-follows-the-template-usetemplatelayout" title="Permanent link"></a></h4>
+<p>Normally md2pptx will decide - based on things like margins - the horizontal layout of shapes on a slide.
+You might instead want to disable this and have md2pptx follow the template presentation&rsquo;s layout more closely.
+To do this specify:</p>
+<pre><code>useTemplateLayout: yes
+</code></pre>
+<p>If you do content rectangles and paragraph indentation will follow the template&rsquo;s body placeholder dimensions instead of md2pptx&rsquo;s slide margins.</p>
+<p>The defauly is <code>no</code>.</p>
 <h4 id="associating-a-class-name-with-a-background-colour-with-stylebgcolor">Associating A Class Name with A Background Colour With <code>style.bgcolor</code><a class="headerlink" href="#associating-a-class-name-with-a-background-colour-with-stylebgcolor" title="Permanent link"></a></h4>
 <p><a id="associating-a-class-name-with-a-background-color-with-style-bgcolor"></a></p>
 <p>You can use HTML <code>&lt;span&gt;</code> elements to set the background colour, as described in <a href="#using-html-span-elements-to-specify-text-effects">Using HTML &lt;style&gt; Elements To Specify Text Effects</a>.</p>
