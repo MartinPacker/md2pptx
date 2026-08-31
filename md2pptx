@@ -446,11 +446,6 @@ def startswithOneOf(haystack, needleList):
     return False
 
 
-# Splits a string into words, converting each word to an integer. Returns them as a
-# sorted list
-def sortedNumericList(string):
-    return sorted(list(map(int, set(string.split()))))
-
 
 def substituteFooterVariables(footerText, liveFooters):
     # Decide if the footer should be a live link to the section slide
@@ -620,7 +615,7 @@ def applyTableLineStyling(
                     columnStyling = ""
                 cellStyling[rowNumber][columnNumber] = rowStyling + columnStyling
 
-    elif wholeTableLineStyling == "all":
+    elif wholeTableLineStyling in ["all", "both"]:
         # All edges of all cells have lines
         for rowNumber, row in enumerate(table.rows):
             lastColumn = len(row.cells) - 1
@@ -2244,9 +2239,9 @@ def createListBlock(slideInfo, slide, renderingRectangle, listBlockNumber):
     cardTitleBackgrounds = globals.processingOptions.getCurrentOption("cardtitlebackground")
     cardColours = globals.processingOptions.getCurrentOption("cardcolour")
     cardDividerColour = globals.processingOptions.getCurrentOption("carddividercolour")
-    cardGraphicSize = globals.processingOptions.getCurrentOption("cardgraphicsize")
+    cardGraphicSize = globals.processingOptions.getCurrentOption("cardGraphicSize")
     cardGraphicPosition = globals.processingOptions.getCurrentOption("cardGraphicPosition")
-    cardGraphicPadding = int(Inches(globals.processingOptions.getCurrentOption("cardgraphicpadding")))
+    cardGraphicPadding = int(Inches(globals.processingOptions.getCurrentOption("cardGraphicPadding")))
     marginBase = globals.processingOptions.getCurrentOption("marginBase")
     pageTitleSize = globals.processingOptions.getCurrentOption("pageTitleSize")
     pageSubtitleSize = globals.processingOptions.getCurrentOption("pageSubtitleSize")
@@ -4069,6 +4064,31 @@ def delinkify(text):
         return (text, "")
 
 
+def flattenBullets(bullets: list) -> list:
+    flattenedBullets = []
+    for bulletList in bullets:
+        if len(bulletList) == 3 and isinstance(bulletList[0], int):
+            flattenedBullets.append(bulletList)
+        else:
+            flattenedBullets.extend(bulletList)
+
+    return flattenedBullets
+
+
+
+def dynamicallySetColourOption(optionName: str, optionValue: str) -> None:
+    if optionValue in ["default", "pres", "pop", "prev"]:
+        globals.processingOptions.dynamicallySetOption(optionName, optionValue, "")
+    else:
+        globals.processingOptions.dynamicallySetOption(
+            optionName, parseColour(optionValue.strip()), ""
+        )
+
+
+def sectionSlideKey(titleText: str) -> str:
+    return titleText.strip()
+
+
 def createTOCSlide(presentation, slideNumber, titleText, bullets, tocStyle):
     global SectionSlides
     titleOnlyLayout = globals.processingOptions.getCurrentOption("titleOnlyLayout")
@@ -4077,6 +4097,7 @@ def createTOCSlide(presentation, slideNumber, titleText, bullets, tocStyle):
     marginBase = globals.processingOptions.getCurrentOption("marginBase")
     pageTitleSize = globals.processingOptions.getCurrentOption("pageTitleSize")
     pageSubtitleSize = globals.processingOptions.getCurrentOption("pageSubtitleSize")
+    tocBullets = flattenBullets(bullets)
 
     if tocStyle != "plain":
         if titleText == tocTitle:
@@ -4101,7 +4122,7 @@ def createTOCSlide(presentation, slideNumber, titleText, bullets, tocStyle):
             )
         else:
             # Remove the links from the bullets and replace with target slide title
-            for bullet in bullets:
+            for bullet in tocBullets:
                 linkMatch = linkRegex.match(bullet[1])
                 bullet[1] = linkMatch.group(1)
 
@@ -4119,7 +4140,7 @@ def createTOCSlide(presentation, slideNumber, titleText, bullets, tocStyle):
                 TOCruns.append(p.runs[0])
 
         # Store the new slide in the list of section slides - for fixing up links
-        SectionSlides[titleText] = slide
+        SectionSlides[sectionSlideKey(titleText)] = slide
 
         return slide
 
@@ -4129,7 +4150,7 @@ def createTOCSlide(presentation, slideNumber, titleText, bullets, tocStyle):
         )
         title = findTitleShape(slide)
 
-    SectionSlides[titleText] = slide
+    SectionSlides[sectionSlideKey(titleText)] = slide
 
     shapes = slide.shapes
 
@@ -4151,7 +4172,7 @@ def createTOCSlide(presentation, slideNumber, titleText, bullets, tocStyle):
     )
 
     # Create global list of TOC entries
-    for bullet in bullets:
+    for bullet in tocBullets:
         bulletLevel, bulletText, bulletType = bullet
         if bulletLevel == 0:
             # Level 0 is top level so create a TOC entry
@@ -5659,8 +5680,14 @@ for line in metadata_lines:
         if value.lower() == "yes":
             globals.processingOptions.setOptionValues(name, True)
 
-    elif name in ["cardpercent", "cardgraphicsize", "cardgraphicpadding"]:
+    elif name == "cardpercent":
         globals.processingOptions.setOptionValues(name, float(value))
+
+    elif name == "cardgraphicsize":
+        globals.processingOptions.setOptionValues("cardGraphicSize", float(value))
+
+    elif name == "cardgraphicpadding":
+        globals.processingOptions.setOptionValues("cardGraphicPadding", float(value))
 
     elif name == "cardlayout":
         if value in ["horizontal", "vertical"]:
@@ -5686,9 +5713,9 @@ for line in metadata_lines:
                 f'CardTitlePosition value \'{value}\' unsupported. "inside", "above", "before", or "after" required.'
             )
 
-    elif name == "cardGraphicPosition":
+    elif name == "cardgraphicposition":
         if value in ["before", "after"]:
-            globals.processingOptions.setOptionValues(name, value)
+            globals.processingOptions.setOptionValues("cardGraphicPosition", value)
         else:
             print(
                 f'cardGraphicPosition value \'{value}\' unsupported. "before",or "after" required.'
@@ -5915,11 +5942,13 @@ for line in metadata_lines:
         )
 
     elif name == "funnellabelspercent":
-        globals.processingOptions.setOptionValues(name, float(value))
+        globals.processingOptions.setOptionValues("funnelLabelsPercent", float(value))
 
-    elif name == "funnellabelposition":
-        if value in ["before", "after"]:
-            globals.processingOptions.setOptionValues(name, value)
+    elif name in ["funnellabelposition", "funnellabelsposition"]:
+        if value.lower() in ["before", "after"]:
+            globals.processingOptions.setOptionValues(
+                "funnelLabelPosition", value.lower()
+            )
         else:
             print(
                 f'funnelLabelPosition value \'{value}\' unsupported. "before" or "after" required.'
@@ -6349,8 +6378,6 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
                     "pagesubtitlesize",
                     # Cards' vertical percent of content area
                     "cardpercent",
-                    # Card graphic's vertical or horizontal space
-                    "cardgraphicsize",
                     # Base text size
                     "basetextsize",
                     # Base text decrement
@@ -6359,8 +6386,6 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
                     "horizontalcardgap",
                     # Vertical card gap
                     "verticalcardgap",
-                    # Funnel label percentage
-                    "funnellabelspercent",
                 ]:
                     globals.processingOptions.dynamicallySetOption(
                         # Use the metadata key directly
@@ -6456,10 +6481,22 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
                         metadataKey, metadataValue, ""
                     )
 
-                elif metadataKey == "cardGraphicPosition":
+                elif metadataKey == "cardgraphicsize":
+                    # Card graphic's vertical or horizontal space
+                    globals.processingOptions.dynamicallySetOption(
+                        "cardGraphicSize", metadataValue, "float"
+                    )
+
+                elif metadataKey == "cardgraphicpadding":
+                    # Card graphic padding
+                    globals.processingOptions.dynamicallySetOption(
+                        "cardGraphicPadding", metadataValue, "float"
+                    )
+
+                elif metadataKey == "cardgraphicposition":
                     # Card graphic position - before or after
                     globals.processingOptions.dynamicallySetOption(
-                        metadataKey, metadataValue, ""
+                        "cardGraphicPosition", metadataValue, ""
                     )
 
                 elif metadataKey == "cardshape":
@@ -6508,15 +6545,17 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
                         "funnelColours", valueArray2, ""
                     )
 
-                elif metadataKey in [
-                    "funneltitlecolour",
-                    "funnelbordercolour",
-                    "funneltextcolour",
-                ]:
-                    # Funnel single colour options
-                    globals.processingOptions.dynamicallySetOption(
-                        metadataKey, metadataValue, ""
-                    )
+                elif metadataKey in ["funneltitlecolour", "funneltitlecolor"]:
+                    # Funnel single title colour option
+                    dynamicallySetColourOption("funnelTitleColour", metadataValue)
+
+                elif metadataKey in ["funnelbordercolour", "funnelbordercolor"]:
+                    # Funnel single border colour option
+                    dynamicallySetColourOption("funnelBorderColour", metadataValue)
+
+                elif metadataKey in ["funneltextcolour", "funneltextcolor"]:
+                    # Funnel single text colour option
+                    dynamicallySetColourOption("funnelTextColour", metadataValue)
 
                 elif metadataKey == "backgroundimage":
                     # Slide background image
@@ -6662,14 +6701,20 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
                             f"Invalid value for {metadataKey}: {metadataValue} in '{line}"
                         )
 
-                elif metadataKey == "funnellabelposition":
+                elif metadataKey == "funnellabelspercent":
+                    # Funnel label percentage
+                    globals.processingOptions.dynamicallySetOption(
+                        "funnelLabelsPercent", metadataValue, "float"
+                    )
+
+                elif metadataKey in ["funnellabelposition", "funnellabelsposition"]:
                     if metadataValue.lower() in [
                         "before",
                         "after",
                     ]:
                         globals.processingOptions.dynamicallySetOption(
-                            metadataKey,
-                            metadataValue,
+                            "funnelLabelPosition",
+                            metadataValue.lower(),
                             "",
                         )
                     else:
@@ -7151,7 +7196,7 @@ if (len(tasks) > 0) & (taskSlides != "none"):
 if globals.processingOptions.getCurrentOption("tocLinks"):
     # Linkify section items
     for run in TOCruns:
-        createRunHyperlinkOrTooltip(run, SectionSlides[run.text])
+        createRunHyperlinkOrTooltip(run, SectionSlides[sectionSlideKey(run.text)])
 
 if globals.processingOptions.getCurrentOption("sectionArrows"):
     # Add navigation arrows between section slides
