@@ -6261,6 +6261,16 @@ for lineNumber, line in enumerate(linesAfterConcatenation):
             inCode = True
         inTitle = False
 
+    # A media line that starts with white space is still media - unless it's code
+    if (
+        (line[:1] == " ")
+        & (inCode is False)
+        & (inHTMLCode is False)
+        & (inFencedCode is False)
+        & startswithOneOf(line.lstrip(), ["<video ", "<audio ", "[![", "!["])
+    ):
+        line = line.lstrip()
+
     # Rewrite horizontal rule as a heading 3 with non-breaking space
     if startswithOneOf(line, ["<hr/>", "---", "***", "___"]):
         line = "### &nbsp;"
